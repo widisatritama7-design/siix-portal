@@ -4,8 +4,11 @@
         <flux:breadcrumbs.item href="{{ route('dashboard') }}" wire:navigate separator="slash">
             Dashboard
         </flux:breadcrumbs.item>
+        <flux:breadcrumbs.item href="{{ route('users') }}" wire:navigate separator="slash">
+            User
+        </flux:breadcrumbs.item>
         <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
-            User Management
+            Permission Management
         </flux:breadcrumbs.item>
     </flux:breadcrumbs>
 
@@ -13,33 +16,31 @@
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-2">
         <div>
             <h1 class="text-3xl font-bold text-zinc-800 dark:text-white">
-                User Management
+                Permission Management
             </h1>
             <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-                Manage your system users and their roles
+                Manage system permissions
             </p>
         </div>
         
-        <div class="flex gap-2">
-            <flux:button 
-                href="{{ route('role.management') }}" 
-                variant="ghost" 
-                icon="shield-check"
-                wire:navigate>
-                Manage Roles
-            </flux:button>
-            
-            <!-- Tombol Add User -->
-            <flux:button 
-                variant="primary" 
-                icon="plus" 
-                class="bg-blue-600 hover:bg-blue-700"
-                wire:click="resetForm"
-                x-on:click="$dispatch('open-modal', 'user-form-modal')"
-            >
-                Add New User
-            </flux:button>
-        </div>
+        <!-- Tombol Add Permission -->
+        <flux:button 
+            variant="primary" 
+            icon="plus" 
+            class="bg-blue-600 hover:bg-blue-700"
+            wire:click="resetForm"
+            x-on:click="$dispatch('open-modal', 'permission-form-modal')"
+        >
+            Add New Permission
+        </flux:button>
+    </div>
+
+    <!-- Info Card -->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <p class="text-sm text-blue-800">
+            Format permission: <span class="font-mono bg-white px-2 py-1 rounded">action</span> + <span class="font-mono bg-white px-2 py-1 rounded">resource</span> 
+            (contoh: "view users", "create roles", "delete permissions")
+        </p>
     </div>
 
     <!-- Search -->
@@ -47,100 +48,84 @@
         <div class="w-full sm:w-64">
             <flux:input
                 wire:model.live.debounce.300ms="search"
-                placeholder="Search users..."
+                placeholder="Search permissions..."
                 icon="magnifying-glass"
                 clearable
             />
         </div>
     </div>
 
-    <!-- Users Table -->
+    <!-- Permissions Table -->
     <flux:card class="overflow-hidden">
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead>
                     <tr class="bg-zinc-50 dark:bg-zinc-800/50">
                         <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">#</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">User</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Email</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Roles</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Joined</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Permission</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Assigned to Roles</th>
                         <th class="px-4 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
-                    @forelse($users as $index => $user)
-                    <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors" wire:key="user-{{ $user->id }}">
+                    @forelse($permissions as $index => $permission)
+                    <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors" wire:key="permission-{{ $permission->id }}">
                         <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400">
-                            {{ $users->firstItem() + $index }}
+                            {{ $permissions->firstItem() + $index }}
                         </td>
                         <td class="px-4 py-3">
                             <div class="flex items-center gap-3">
-                                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-medium shadow-lg">
-                                    {{ strtoupper(substr($user->name, 0, 1)) }}
+                                <div class="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path>
+                                    </svg>
                                 </div>
-                                <div>
-                                    <span class="text-sm font-semibold text-zinc-800 dark:text-white block">
-                                        {{ $user->name }}
-                                    </span>
-                                    <span class="text-xs text-zinc-500 dark:text-zinc-400">
-                                        ID: #{{ $user->id }}
-                                    </span>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-4 py-3">
-                            <div class="flex items-center gap-2">
-                                <flux:icon name="envelope" class="w-4 h-4 text-zinc-400" />
-                                <span class="text-sm text-zinc-600 dark:text-zinc-300">
-                                    {{ $user->email }}
+                                <span class="text-sm font-semibold text-zinc-800 dark:text-white">
+                                    {{ $permission->name }}
                                 </span>
                             </div>
                         </td>
                         <td class="px-4 py-3">
                             <div class="flex flex-wrap gap-1">
-                                @forelse($user->roles as $role)
-                                    <flux:badge size="sm" color="{{ $role->name == 'super-admin' ? 'purple' : ($role->name == 'admin' ? 'blue' : 'gray') }}">
+                                @forelse($permission->roles->take(2) as $role)
+                                    <span class="px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-full">
                                         {{ $role->name }}
-                                    </flux:badge>
+                                    </span>
                                 @empty
-                                    <span class="text-sm text-zinc-400">No roles</span>
+                                    <span class="text-sm text-zinc-400">Not assigned</span>
                                 @endforelse
-                            </div>
-                        </td>
-                        <td class="px-4 py-3">
-                            <div class="flex items-center gap-2">
-                                <flux:icon name="calendar" class="w-4 h-4 text-zinc-400" />
-                                <span class="text-sm text-zinc-600 dark:text-zinc-300">
-                                    {{ $user->created_at->format('M d, Y') }}
-                                </span>
+                                @if($permission->roles->count() > 2)
+                                    <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs rounded-full">
+                                        +{{ $permission->roles->count() - 2 }}
+                                    </span>
+                                @endif
                             </div>
                         </td>
                         <!-- Actions Column -->
                         <td class="px-4 py-3 text-right">
                             <div class="flex items-center justify-end gap-1">
                                 <!-- Edit Button -->
-                                @can('edit users')
+                                @can('edit permissions')
                                 <flux:button 
-                                    wire:click="edit({{ $user->id }})" 
-                                    x-on:click="$dispatch('open-modal', 'user-form-modal')"
+                                    wire:click="edit({{ $permission->id }})" 
+                                    x-on:click="$dispatch('open-modal', 'permission-form-modal')"
                                     size="sm"
                                     icon="pencil-square"
                                     class="!p-2 text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-950/50"
-                                    title="Edit user"
+                                    title="Edit permission"
                                 />
                                 @endcan
 
                                 <!-- Delete Button -->
-                                @can('delete users')
-                                    @if(!$user->hasRole('super-admin')) <!-- Ini tetap perlu karena proteksi data, bukan akses -->
+                                @can('delete permissions')
+                                    @if($permission->roles->count() == 0)
                                         <flux:button 
-                                            wire:click="confirmDelete({{ $user->id }})" 
-                                            x-on:click="$dispatch('open-modal', 'delete-user-modal')"
+                                            wire:click="confirmDelete({{ $permission->id }})" 
+                                            x-on:click="$dispatch('open-modal', 'delete-permission-modal')"
                                             size="sm"
                                             icon="trash"
                                             class="!p-2 text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/50"
-                                            title="Delete user"
+                                            title="Delete permission"
                                         />
                                     @endif
                                 @endcan
@@ -149,17 +134,17 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="px-4 py-12 text-center">
+                        <td colspan="4" class="px-4 py-12 text-center">
                             <div class="flex flex-col items-center gap-3">
                                 <div class="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-                                    <flux:icon name="users" class="w-10 h-10 text-zinc-400 dark:text-zinc-500" />
+                                    <flux:icon name="key" class="w-10 h-10 text-zinc-400 dark:text-zinc-500" />
                                 </div>
                                 <div>
                                     <h3 class="text-lg font-medium text-zinc-900 dark:text-white mb-1">
-                                        No users found
+                                        No permissions found
                                     </h3>
                                     <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-4">
-                                        {{ $search ? 'Try adjusting your search query' : 'Get started by creating a new user' }}
+                                        {{ $search ? 'Try adjusting your search query' : 'Get started by creating a new permission' }}
                                     </p>
                                 </div>
                                 @if($search)
@@ -171,9 +156,9 @@
                                         variant="primary" 
                                         size="sm"
                                         wire:click="resetForm"
-                                        x-on:click="$dispatch('open-modal', 'user-form-modal')"
+                                        x-on:click="$dispatch('open-modal', 'permission-form-modal')"
                                     >
-                                        Add Your First User
+                                        Add Your First Permission
                                     </flux:button>
                                 @endif
                             </div>
@@ -185,18 +170,18 @@
         </div>
 
         <!-- Pagination -->
-        @if($users->hasPages())
+        @if($permissions->hasPages())
         <div class="p-4 border-t border-zinc-200 dark:border-zinc-700">
-            {{ $users->links() }}
+            {{ $permissions->links() }}
         </div>
         @endif
     </flux:card>
 
-    <!-- MODAL FORM USER -->
+    <!-- MODAL FORM PERMISSION -->
     <div x-data="{ open: false }" 
          x-show="open" 
-         @open-modal.window="if ($event.detail === 'user-form-modal') open = true"
-         @close-modal.window="if ($event.detail === 'user-form-modal') open = false"
+         @open-modal.window="if ($event.detail === 'permission-form-modal') open = true"
+         @close-modal.window="if ($event.detail === 'permission-form-modal') open = false"
          x-cloak>
         
         <!-- Backdrop -->
@@ -209,46 +194,19 @@
                     <h2 class="text-xl font-bold mb-4">{{ $modalTitle }}</h2>
 
                     <form wire:submit="save">
-                        <!-- Name -->
+                        <!-- Permission Name -->
                         <div class="mb-4">
-                            <label class="block text-sm font-medium mb-1">Full Name</label>
+                            <label class="block text-sm font-medium mb-1">Permission Name</label>
                             <input type="text" 
                                    wire:model="name"
+                                   placeholder="e.g., view users"
                                    class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
                             @error('name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                         </div>
 
-                        <!-- Email -->
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium mb-1">Email Address</label>
-                            <input type="email" 
-                                   wire:model="email"
-                                   class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                            @error('email') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                        </div>
-
-                        <!-- Password -->
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium mb-1">
-                                {{ $user_id ? 'New Password (optional)' : 'Password' }}
-                            </label>
-                            <input type="password" 
-                                   wire:model="password"
-                                   class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                            @error('password') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                        </div>
-
-                        <!-- Confirm Password -->
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium mb-1">Confirm Password</label>
-                            <input type="password" 
-                                   wire:model="password_confirmation"
-                                   class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                        </div>
-
-                        <!-- Roles -->
+                        <!-- Assign to Roles -->
                         <div class="mb-6">
-                            <label class="block text-sm font-medium mb-2">Assign Roles</label>
+                            <label class="block text-sm font-medium mb-2">Assign to Roles (Optional)</label>
                             <div class="space-y-2 max-h-48 overflow-y-auto border rounded-lg p-3">
                                 @foreach($roles as $role)
                                     <label class="flex items-center gap-2">
@@ -257,9 +215,6 @@
                                                value="{{ $role->name }}"
                                                class="rounded">
                                         <span>{{ $role->name }}</span>
-                                        @if($role->name === 'super-admin')
-                                            <span class="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">Full Access</span>
-                                        @endif
                                     </label>
                                 @endforeach
                             </div>
@@ -274,7 +229,7 @@
                             </button>
                             <button type="submit" 
                                     class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                                {{ $user_id ? 'Update' : 'Create' }}
+                                {{ $permission_id ? 'Update' : 'Create' }}
                             </button>
                         </div>
                     </form>
@@ -283,11 +238,11 @@
         </div>
     </div>
 
-    <!-- MODAL DELETE -->
+    <!-- MODAL DELETE PERMISSION -->
     <div x-data="{ open: false }" 
          x-show="open" 
-         @open-modal.window="if ($event.detail === 'delete-user-modal') open = true"
-         @close-modal.window="if ($event.detail === 'delete-user-modal') open = false"
+         @open-modal.window="if ($event.detail === 'delete-permission-modal') open = true"
+         @close-modal.window="if ($event.detail === 'delete-permission-modal') open = false"
          x-cloak>
         
         <!-- Backdrop -->
@@ -302,9 +257,9 @@
                     </svg>
                 </div>
                 
-                <h3 class="text-lg font-bold mb-2">Delete User</h3>
+                <h3 class="text-lg font-bold mb-2">Delete Permission</h3>
                 <p class="text-gray-600 dark:text-gray-400 mb-6">
-                    Are you sure you want to delete user "{{ $userToDelete?->name }}"? This action cannot be undone.
+                    Are you sure you want to delete permission "{{ $permissionToDelete?->name }}"? This action cannot be undone.
                 </p>
 
                 <div class="flex justify-center gap-3">

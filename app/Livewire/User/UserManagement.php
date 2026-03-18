@@ -3,29 +3,42 @@
 namespace App\Livewire\User;
 
 use Livewire\Component;
+use Livewire\WithPagination;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Spatie\Permission\Models\Role;
 
 class UserManagement extends Component
 {
-    public $users;
+    use WithPagination;
+
     public $user_id;
     public $name;
     public $email;
     public $password;
     public $password_confirmation;
+    public $selectedRoles = [];
 
     public $search = '';
     public $modalTitle = 'Add New User';
-    public $userIdToDelete = null;
-    public $showDeleteModal = false;
     public $userToDelete = null;
 
-    protected $rules = [
-        'name' => 'required|min:3|max:255',
-        'email' => 'required|email|unique:users,email',
-        'password' => 'required|min:8|confirmed',
-    ];
+    protected function rules()
+    {
+        $rules = [
+            'name' => 'required|min:3|max:255',
+            'email' => 'required|email|unique:users,email,' . $this->user_id,
+            'selectedRoles' => 'array',
+        ];
+
+        if ($this->user_id) {
+            $rules['password'] = 'nullable|min:8|confirmed';
+        } else {
+            $rules['password'] = 'required|min:8|confirmed';
+        }
+
+        return $rules;
+    }
 
     protected $messages = [
         'name.required' => 'The name field is required.',
@@ -38,40 +51,36 @@ class UserManagement extends Component
         'password.confirmed' => 'The password confirmation does not match.',
     ];
 
-    public function mount()
+    public function resetForm()
     {
-        $this->loadUsers();
-    }
-
-    public function loadUsers()
-    {
-        $query = User::query();
-
-        if ($this->search) {
-            $query->where(function ($q) {
-                $q->where('name', 'like', '%' . $this->search . '%')
-                  ->orWhere('email', 'like', '%' . $this->search . '%');
-            });
-        }
-
-        $this->users = $query->latest()->get();
+        $this->reset(['user_id', 'name', 'email', 'password', 'password_confirmation', 'selectedRoles']);
+        $this->modalTitle = 'Add New User';
+        $this->resetValidation();
     }
 
     public function updatedSearch()
     {
-        $this->loadUsers();
+        $this->resetPage();
     }
 
     public function save()
     {
+        // CEK AKSES
         if ($this->user_id) {
-            // Update mode
-            $this->validate([
-                'name' => 'required|min:3|max:255',
-                'email' => 'required|email|unique:users,email,' . $this->user_id,
-                'password' => 'nullable|min:8|confirmed',
-            ]);
+            if (!auth()->user()->can('edit users')) {
+                $this->dispatch('notify', message: 'You do not have permission to edit users!', type: 'error');
+                return;
+            }
+        } else {
+            if (!auth()->user()->can('create users')) {
+                $this->dispatch('notify', message: 'You do not have permission to create users!', type: 'error');
+                return;
+            }
+        }
 
+        $this->validate();
+
+        if ($this->user_id) {
             $user = User::findOrFail($this->user_id);
             
             $data = [
@@ -84,76 +93,107 @@ class UserManagement extends Component
             }
 
             $user->update($data);
+            $user->syncRoles($this->selectedRoles);
             
             $message = 'User updated successfully!';
         } else {
-            // Create mode
-            $this->validate();
-
-            User::create([
+            $user = User::create([
                 'name' => $this->name,
                 'email' => $this->email,
                 'password' => Hash::make($this->password),
             ]);
             
+            if (!empty($this->selectedRoles)) {
+                $user->assignRole($this->selectedRoles);
+            }
+            
             $message = 'User created successfully!';
         }
 
-        // Reset form
-        $this->reset(['user_id', 'name', 'email', 'password', 'password_confirmation']);
-        
-        // Load ulang users
-        $this->loadUsers();
-        
-        // Dispatch event untuk notifikasi
+        $this->resetForm();
         $this->dispatch('notify', message: $message);
     }
 
     public function edit($id)
     {
-        $user = User::findOrFail($id);
+        // CEK AKSES
+        if (!auth()->user()->can('edit users')) {
+            $this->dispatch('notify', message: 'You do not have permission to edit users!', type: 'error');
+            return;
+        }
+
+        $user = User::with('roles')->findOrFail($id);
 
         $this->user_id = $user->id;
         $this->name = $user->name;
         $this->email = $user->email;
         $this->password = '';
         $this->password_confirmation = '';
+        $this->selectedRoles = $user->roles->pluck('name')->toArray();
         $this->modalTitle = 'Edit User';
     }
 
     public function confirmDelete($id)
     {
+        // CEK AKSES
+        if (!auth()->user()->can('delete users')) {
+            $this->dispatch('notify', message: 'You do not have permission to delete users!', type: 'error');
+            return;
+        }
+
         $user = User::findOrFail($id);
+        
+        if ($user->hasRole('super-admin')) {
+            $this->dispatch('notify', message: 'Cannot delete super admin user!', type: 'error');
+            return;
+        }
+
         $this->userToDelete = $user;
-        $this->userIdToDelete = $id;
-        $this->showDeleteModal = true;
     }
 
     public function delete()
     {
-        $user = User::findOrFail($this->userIdToDelete);
+        if (!auth()->user()->can('delete users')) {
+            $this->dispatch('notify', message: 'You do not have permission to delete users!', type: 'error');
+            return;
+        }
+
+        $user = User::findOrFail($this->userToDelete->id);
         $userName = $user->name;
         $user->delete();
 
-        $this->userIdToDelete = null;
         $this->userToDelete = null;
-        $this->showDeleteModal = false;
-        
-        // Load ulang users
-        $this->loadUsers();
         
         $this->dispatch('notify', message: "User '{$userName}' has been deleted successfully!");
     }
 
     public function cancelDelete()
     {
-        $this->userIdToDelete = null;
         $this->userToDelete = null;
-        $this->showDeleteModal = false;
     }
 
     public function render()
     {
-        return view('livewire.user.user-management');
+        // CEK AKSES VIEW
+        if (!auth()->user()->can('view users')) {
+            abort(403, 'Unauthorized access.');
+        }
+
+        $users = User::with('roles')
+            ->when($this->search, function ($query) {
+                $query->where(function ($q) {
+                    $q->where('name', 'like', '%' . $this->search . '%')
+                      ->orWhere('email', 'like', '%' . $this->search . '%');
+                });
+            })
+            ->latest()
+            ->paginate(10);
+
+        $roles = Role::orderBy('name')->get();
+
+        return view('livewire.user.user-management', [
+            'users' => $users,
+            'roles' => $roles,
+        ]);
     }
 }
