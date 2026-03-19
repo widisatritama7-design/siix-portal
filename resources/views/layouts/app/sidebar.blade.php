@@ -29,8 +29,19 @@
                     :current="request()->routeIs('dashboard')"
                     class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-zinc-400"
                 >
-                    Dashboard
+                    Main Dashboard
                 </flux:sidebar.item>
+                @can('view dcc-dashboard')
+                <flux:sidebar.item 
+                    icon="home"
+                    href="{{ route('dcc-dashboard') }}" 
+                    wire:navigate
+                    :current="request()->routeIs('dcc-dashboard')"
+                    class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-zinc-400"
+                >
+                    DCC Dashboard
+                </flux:sidebar.item>
+                @endcan
                 <flux:sidebar.item 
                     icon="inbox-arrow-down"
                     href="{{ route('inbox') }}" 
@@ -41,6 +52,37 @@
                     Inbox
                 </flux:sidebar.item>
             </flux:sidebar.group>
+
+            <!-- GROUP: DCC (EXPANDABLE) -->
+            @canany(['view departments', 'view submissions'])
+            <flux:sidebar.group icon="folder" expandable heading="DCC" class="grid">
+                
+                @can('view departments')
+                <flux:sidebar.item 
+                    icon="building-office" 
+                    href="{{ route('dcc.departments') }}"
+                    wire:navigate
+                    :current="request()->routeIs('dcc.departments')"
+                    class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-zinc-400"
+                >
+                    Departments
+                </flux:sidebar.item>
+                @endcan
+
+                @can('view submissions')
+                <flux:sidebar.item 
+                    icon="document-text" 
+                    href="{{ route('dcc.submissions') }}"
+                    wire:navigate
+                    :current="request()->routeIs('dcc.submissions')"
+                    class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-zinc-400"
+                >
+                    Submissions
+                </flux:sidebar.item>
+                @endcan
+
+            </flux:sidebar.group>
+            @endcanany
 
             <!-- GROUP: SETTINGS (EXPANDABLE) - TAMPIL HANYA JIKA USER PUNYA AKSES KE SALAH SATU MENU -->
             @canany(['view users', 'view roles', 'view permissions'])
@@ -82,37 +124,6 @@
                     class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-zinc-400"
                 >
                     Permissions
-                </flux:sidebar.item>
-                @endcan
-
-            </flux:sidebar.group>
-            @endcanany
-
-            <!-- GROUP: DCC (EXPANDABLE) -->
-            @canany(['view departments', 'view submissions'])
-            <flux:sidebar.group icon="folder" expandable heading="DCC" class="grid">
-                
-                @can('view departments')
-                <flux:sidebar.item 
-                    icon="building-office" 
-                    href="{{ route('dcc.departments') }}"
-                    wire:navigate
-                    :current="request()->routeIs('dcc.departments')"
-                    class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-zinc-400"
-                >
-                    Departments
-                </flux:sidebar.item>
-                @endcan
-
-                @can('view submissions')
-                <flux:sidebar.item 
-                    icon="document-text" 
-                    href="{{ route('dcc.submissions') }}"
-                    wire:navigate
-                    :current="request()->routeIs('dcc.submissions')"
-                    class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-zinc-400"
-                >
-                    Submissions
                 </flux:sidebar.item>
                 @endcan
 

@@ -12,8 +12,11 @@ Route::get('/', function () {
 })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::view('dashboard', 'dashboard')->name('dashboard');
-    Route::view('inbox', 'inbox')->name('inbox');
+    // Dashboard
+    Route::view('main-dashboard', 'home.dashboard')->name('dashboard');
+    Route::view('dcc-dashboard', 'home.dcc_dashboard')->name('dcc-dashboard');
+    // Inbox
+    Route::view('inbox', 'home.inbox')->name('inbox');
     // User And Role
     Route::get('/users', UserManagement::class)->name('users');
     Route::get('/roles', RoleManagement::class)->name('role.management');
