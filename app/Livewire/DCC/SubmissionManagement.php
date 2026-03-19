@@ -10,7 +10,7 @@ use App\Models\DCC\Department;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Log;
 
 class SubmissionManagement extends Component
 {
@@ -32,6 +32,7 @@ class SubmissionManagement extends Component
     public $received_by;
     public $reason;
     public $reason_to_delete;
+    public $distributingSubmissionId;
 
     // For file upload
     public $documentation_file;
@@ -46,19 +47,23 @@ class SubmissionManagement extends Component
     public $filterMonth = '';
     public $filterDateFrom = '';
     public $filterDateUntil = '';
+    public $filterDistributed = '';
     public $showFilters = false;
 
     // For bulk actions
     public $selectedSubmissions = [];
     public $selectAll = false;
 
-    // For modals
-    public $modalTitle = 'Add New Submission';
+    // Page management
+    public $currentPage = 'index'; // index, create, edit, show, receive, delete
     public $submissionToDelete = null;
     public $receivingSubmission = null;
     public $distributingSubmission = null;
     public $receiveStatus = '';
     public $receiveReason = '';
+
+    // Loading state
+    public $isLoading = false;
 
     // Category options
     public $categoryOptions = [
@@ -105,14 +110,19 @@ class SubmissionManagement extends Component
         'documentation_file.max' => 'File size must not exceed 10MB.',
     ];
 
+    public function mount()
+    {
+        $this->resetForm();
+    }
+
     public function resetForm()
     {
         $this->reset([
             'submission_id', 'category_document', 'description', 'revision', 'dept',
             'emails', 'pic', 'due_date', 'remarks', 'documentation_file',
-            'existing_documentation', 'status', 'status_distribute', 'reason'
+            'existing_documentation', 'status', 'status_distribute', 'reason',
+            'receiveStatus', 'receiveReason', 'reason_to_delete'
         ]);
-        $this->modalTitle = 'Add New Submission';
         $this->resetValidation();
     }
 
@@ -190,6 +200,7 @@ class SubmissionManagement extends Component
                 });
             })
             ->when($this->filterStatus, fn($q) => $q->where('status', $this->filterStatus))
+            ->when($this->filterDistributed, fn($q) => $q->where('status_distribute', $this->filterDistributed))
             ->when($this->filterDept, fn($q) => $q->where('dept', $this->filterDept))
             ->when($this->filterCategory, fn($q) => $q->where('category_document', $this->filterCategory))
             ->when($this->filterYear, fn($q) => $q->whereYear('created_at', $this->filterYear))
@@ -228,100 +239,13 @@ class SubmissionManagement extends Component
         $this->emails = [];
     }
 
-    public function save()
+    public function goToCreate()
     {
-        if ($this->submission_id) {
-            if (!auth()->user()->can('edit submissions')) {
-                $this->dispatch('notify', message: 'You do not have permission!', type: 'error');
-                return;
-            }
-        } else {
-            if (!auth()->user()->can('create submissions')) {
-                $this->dispatch('notify', message: 'You do not have permission!', type: 'error');
-                return;
-            }
-        }
-
-        $this->validate();
-
-        // Handle file upload
-        $documentationPath = $this->existing_documentation;
-        if ($this->documentation_file) {
-            if ($this->existing_documentation) {
-                Storage::disk('public')->delete($this->existing_documentation);
-            }
-
-            $documentationPath = $this->documentation_file->store('submissions', 'public');
-
-            // Compress image if it's an image file
-            if (in_array($this->documentation_file->getMimeType(), ['image/jpeg', 'image/png', 'image/jpg'])) {
-                $this->compressImage($documentationPath);
-            }
-        }
-
-        $data = [
-            'category_document' => $this->category_document,
-            'description' => strtoupper($this->description),
-            'revision' => $this->revision,
-            'dept' => $this->dept,
-            'emails' => $this->formatEmailsForStorage($this->emails),
-            'pic' => strtoupper($this->pic),
-            'due_date' => Carbon::parse($this->due_date),
-            'documentation' => $documentationPath,
-            'remarks' => $this->remarks,
-            'status' => $this->status,
-            'status_distribute' => $this->status_distribute,
-        ];
-
-        if ($this->submission_id) {
-            $submission = Submission::find($this->submission_id);
-            if (!$submission) {
-                $this->dispatch('notify', message: 'Submission not found!', type: 'error');
-                return;
-            }
-
-            $submission->update($data);
-            $message = 'Submission updated successfully!';
-        } else {
-            Submission::create($data);
-            $message = 'Submission created successfully!';
-        }
-
         $this->resetForm();
-        $this->dispatch('notify', message: $message);
-        $this->dispatch('close-modal', 'submission-form-modal');
+        $this->currentPage = 'create';
     }
 
-    private function compressImage($path)
-    {
-        $fullPath = Storage::disk('public')->path($path);
-        
-        // Get image info
-        $imageInfo = getimagesize($fullPath);
-        $mimeType = $imageInfo['mime'];
-        
-        // Load image based on mime type
-        switch ($mimeType) {
-            case 'image/jpeg':
-                $image = imagecreatefromjpeg($fullPath);
-                imagejpeg($image, $fullPath, 75); // 75% quality
-                break;
-            case 'image/png':
-                $image = imagecreatefrompng($fullPath);
-                imagepng($image, $fullPath, 6); // Compression level 6 (0-9)
-                break;
-            case 'image/gif':
-                $image = imagecreatefromgif($fullPath);
-                imagegif($image, $fullPath);
-                break;
-        }
-        
-        if (isset($image)) {
-            imagedestroy($image);
-        }
-    }
-
-    public function edit($id)
+    public function goToEdit($id)
     {
         if (!auth()->user()->can('edit submissions')) {
             $this->dispatch('notify', message: 'You do not have permission!', type: 'error');
@@ -352,10 +276,23 @@ class SubmissionManagement extends Component
         $this->status_distribute = $submission->status_distribute;
         $this->reason = $submission->reason;
 
-        $this->modalTitle = 'Edit Submission';
+        $this->currentPage = 'edit';
     }
 
-    public function openReceiveModal($id)
+    public function goToShow($id)
+    {
+        $submission = Submission::find($id);
+        
+        if (!$submission) {
+            $this->dispatch('notify', message: 'Submission not found!', type: 'error');
+            return;
+        }
+
+        $this->receivingSubmission = $submission;
+        $this->currentPage = 'show';
+    }
+
+    public function goToReceive($id)
     {
         if (!auth()->user()->can('receive submissions')) {
             $this->dispatch('notify', message: 'You do not have permission!', type: 'error');
@@ -363,85 +300,44 @@ class SubmissionManagement extends Component
         }
 
         $submission = Submission::find($id);
-        if ($submission && $submission->canReceive()) {
-            $this->receivingSubmission = $submission;
-            $this->receiveStatus = '';
-            $this->receiveReason = '';
-            $this->dispatch('open-modal', 'receive-modal');
-        }
-    }
-
-    public function processReceive()
-    {
-        $this->validate([
-            'receiveStatus' => 'required|in:Received,Rejected',
-            'receiveReason' => 'required_if:receiveStatus,Rejected',
-        ]);
-
-        $submission = Submission::find($this->receivingSubmission->id);
-
+        
         if (!$submission) {
             $this->dispatch('notify', message: 'Submission not found!', type: 'error');
-            $this->dispatch('close-modal', 'receive-modal');
             return;
         }
 
-        $submission->status = $this->receiveStatus;
-        $submission->received_by = auth()->user()->name;
-
-        if ($this->receiveStatus === 'Rejected') {
-            $submission->reason = $this->receiveReason;
-            $submission->status_distribute = null;
-        } else {
-            $submission->reason = null;
+        if (!$submission->canReceive()) {
+            $this->dispatch('notify', message: 'Cannot receive this submission!', type: 'error');
+            return;
         }
 
-        $submission->save();
-
-        // Send emails
-        if ($submission->emails && is_array($submission->emails)) {
-            foreach ($submission->emails as $email) {
-                try {
-                    // Mail::to($email)->send(new SubmissionStatusMail($submission));
-                } catch (\Exception $e) {
-                    // Log error but continue
-                }
-            }
-        }
-
-        $this->dispatch('notify', message: 'Submission status updated successfully!');
-        $this->dispatch('close-modal', 'receive-modal');
-        $this->reset(['receiveStatus', 'receiveReason', 'receivingSubmission']);
+        $this->receivingSubmission = $submission;
+        $this->receiveStatus = '';
+        $this->receiveReason = '';
+        $this->currentPage = 'receive';
     }
 
-    public function openDistributeModal($id)
+    public function goToDistribute($id)
     {
         $submission = Submission::find($id);
-        if ($submission && $submission->canMarkDistributed()) {
-            $this->distributingSubmission = $submission;
-            $this->dispatch('open-modal', 'distribute-modal');
-        }
-    }
-
-    public function processDistribute()
-    {
-        $submission = Submission::find($this->distributingSubmission->id);
-
+    
         if (!$submission) {
             $this->dispatch('notify', message: 'Submission not found!', type: 'error');
-            $this->dispatch('close-modal', 'distribute-modal');
             return;
         }
-
-        $submission->status_distribute = 'Distributed';
-        $submission->save();
-
-        $this->dispatch('notify', message: 'Submission marked as distributed!');
-        $this->dispatch('close-modal', 'distribute-modal');
-        $this->reset(['distributingSubmission']);
+    
+        if (!$submission->canMarkDistributed()) {
+            $this->dispatch('notify', message: 'Cannot mark this submission as distributed!', type: 'error');
+            return;
+        }
+    
+        $this->distributingSubmission = $submission; // 🔥 INI YANG KURANG
+        $this->distributingSubmissionId = $submission->id;
+    
+        $this->currentPage = 'distribute';
     }
 
-    public function confirmDelete($id)
+    public function goToDelete($id)
     {
         if (!auth()->user()->can('delete submissions')) {
             $this->dispatch('notify', message: 'You do not have permission!', type: 'error');
@@ -462,46 +358,198 @@ class SubmissionManagement extends Component
 
         $this->submissionToDelete = $submission;
         $this->reason_to_delete = '';
-        $this->dispatch('open-modal', 'delete-reason-modal');
+        $this->currentPage = 'delete';
     }
 
-    public function deleteWithReason()
+    public function backToIndex()
     {
-        if (!auth()->user()->can('delete submissions')) {
-            $this->dispatch('notify', message: 'You do not have permission!', type: 'error');
-            return;
-        }
-
-        $this->validate([
-            'reason_to_delete' => 'required',
-        ]);
-
-        $submission = Submission::find($this->submissionToDelete->id);
-
-        if (!$submission) {
-            $this->dispatch('notify', message: 'Submission not found!', type: 'error');
-            $this->dispatch('close-modal', 'delete-reason-modal');
-            return;
-        }
-
-        if ($submission->documentation) {
-            Storage::disk('public')->delete($submission->documentation);
-        }
-
-        $submission->reason_to_delete = $this->reason_to_delete;
-        $submission->save();
-        $submission->delete();
-
-        $this->reset(['reason_to_delete', 'submissionToDelete']);
-        $this->dispatch('notify', message: 'Submission deleted successfully!');
-        $this->dispatch('close-modal', 'delete-reason-modal');
+        $this->resetForm();
+        $this->currentPage = 'index';
     }
 
-    public function cancelDelete()
+    public function save()
     {
-        $this->submissionToDelete = null;
-        $this->reason_to_delete = '';
-        $this->dispatch('close-modal', 'delete-reason-modal');
+        $this->isLoading = true;
+        
+        try {
+            if ($this->submission_id) {
+                if (!auth()->user()->can('edit submissions')) {
+                    $this->dispatch('notify', message: 'You do not have permission!', type: 'error');
+                    return;
+                }
+            } else {
+                if (!auth()->user()->can('create submissions')) {
+                    $this->dispatch('notify', message: 'You do not have permission!', type: 'error');
+                    return;
+                }
+            }
+
+            $this->validate();
+
+            // Handle file upload
+            $documentationPath = $this->existing_documentation;
+            if ($this->documentation_file) {
+                if ($this->existing_documentation) {
+                    Storage::disk('public')->delete($this->existing_documentation);
+                }
+
+                $documentationPath = $this->documentation_file->store('submissions', 'public');
+            }
+
+            $data = [
+                'category_document' => $this->category_document,
+                'description' => strtoupper($this->description),
+                'revision' => $this->revision,
+                'dept' => $this->dept,
+                'emails' => $this->formatEmailsForStorage($this->emails),
+                'pic' => strtoupper($this->pic),
+                'due_date' => Carbon::parse($this->due_date),
+                'documentation' => $documentationPath,
+                'remarks' => $this->remarks,
+                'status' => $this->status,
+                'status_distribute' => $this->status_distribute,
+            ];
+
+            if ($this->submission_id) {
+                $submission = Submission::find($this->submission_id);
+                if (!$submission) {
+                    throw new \Exception('Submission not found!');
+                }
+
+                $submission->update($data);
+                $message = 'Submission updated successfully!';
+            } else {
+                Submission::create($data);
+                $message = 'Submission created successfully!';
+            }
+
+            $this->dispatch('notify', message: $message, type: 'success');
+            $this->backToIndex();
+            
+        } catch (\Exception $e) {
+            Log::error('Save submission error: ' . $e->getMessage());
+            $this->dispatch('notify', message: 'Error: ' . $e->getMessage(), type: 'error');
+        } finally {
+            $this->isLoading = false;
+        }
+    }
+
+    public function processReceive()
+    {
+        $this->isLoading = true;
+        
+        try {
+            $this->validate([
+                'receiveStatus' => 'required|in:Received,Rejected',
+                'receiveReason' => 'required_if:receiveStatus,Rejected',
+            ]);
+
+            $submission = Submission::find($this->receivingSubmission->id);
+
+            if (!$submission) {
+                throw new \Exception('Submission not found!');
+            }
+
+            $submission->status = $this->receiveStatus;
+            $submission->received_by = auth()->user()->name;
+            $submission->received_at = now();
+
+            if ($this->receiveStatus === 'Rejected') {
+                $submission->reason = $this->receiveReason;
+                $submission->status_distribute = null;
+            } else {
+                $submission->reason = null;
+                $submission->status_distribute = 'Waiting Distribute';
+            }
+
+            $submission->save();
+
+            $this->dispatch('notify', message: 'Submission status updated successfully!', type: 'success');
+            $this->backToIndex();
+            
+        } catch (\Exception $e) {
+            Log::error('Process receive error: ' . $e->getMessage());
+            $this->dispatch('notify', message: 'Error: ' . $e->getMessage(), type: 'error');
+        } finally {
+            $this->isLoading = false;
+        }
+    }
+
+    public function processDistribute()
+    {
+        $this->isLoading = true;
+    
+        try {
+    
+            $submission = Submission::find($this->distributingSubmissionId);
+    
+            if (!$submission) {
+                throw new \Exception('Submission not found!');
+            }
+    
+            $submission->status_distribute = 'Distributed';
+            $submission->distributed_at = now();
+            $submission->distributed_by = auth()->user()->name;
+            $submission->save();
+    
+            $this->dispatch('notify', message: 'Submission marked as distributed!', type: 'success');
+            $this->backToIndex();
+    
+        } catch (\Exception $e) {
+    
+            Log::error('Process distribute error: ' . $e->getMessage());
+    
+            $this->dispatch('notify', message: 'Error: ' . $e->getMessage(), type: 'error');
+    
+        } finally {
+    
+            $this->isLoading = false;
+    
+        }
+    }
+
+    public function processDelete()
+    {
+        $this->isLoading = true;
+        
+        try {
+            if (!auth()->user()->can('delete submissions')) {
+                throw new \Exception('You do not have permission!');
+            }
+
+            $this->validate([
+                'reason_to_delete' => 'required',
+            ]);
+
+            $submission = Submission::find($this->submissionToDelete->id);
+
+            if (!$submission) {
+                throw new \Exception('Submission not found!');
+            }
+
+            // Hapus file jika ada
+            if ($submission->documentation) {
+                Storage::disk('public')->delete($submission->documentation);
+            }
+
+            // Simpan reason sebelum delete
+            $submission->reason_to_delete = $this->reason_to_delete;
+            $submission->deleted_by = auth()->user()->name;
+            $submission->deleted_at = now();
+            $submission->save();
+            
+            // Soft delete
+            $submission->delete();
+
+            $this->dispatch('notify', message: 'Submission deleted successfully!', type: 'success');
+            $this->backToIndex();
+            
+        } catch (\Exception $e) {
+            Log::error('Delete submission error: ' . $e->getMessage());
+            $this->dispatch('notify', message: 'Error: ' . $e->getMessage(), type: 'error');
+        } finally {
+            $this->isLoading = false;
+        }
     }
 
     public function bulkReceive()
@@ -516,21 +564,33 @@ class SubmissionManagement extends Component
             return;
         }
 
-        $count = 0;
-        foreach ($this->selectedSubmissions as $id) {
-            $submission = Submission::find($id);
-            if ($submission && $submission->canReceive()) {
-                $submission->received_by = auth()->user()->name;
-                $submission->status = 'Received';
-                $submission->save();
-                $count++;
+        $this->isLoading = true;
+        
+        try {
+            $count = 0;
+            foreach ($this->selectedSubmissions as $id) {
+                $submission = Submission::find($id);
+                if ($submission && $submission->canReceive()) {
+                    $submission->received_by = auth()->user()->name;
+                    $submission->received_at = now();
+                    $submission->status = 'Received';
+                    $submission->status_distribute = 'Waiting Distribute';
+                    $submission->save();
+                    $count++;
+                }
             }
+
+            $this->selectedSubmissions = [];
+            $this->selectAll = false;
+
+            $this->dispatch('notify', message: "{$count} submissions marked as received!", type: 'success');
+            
+        } catch (\Exception $e) {
+            Log::error('Bulk receive error: ' . $e->getMessage());
+            $this->dispatch('notify', message: 'Error: ' . $e->getMessage(), type: 'error');
+        } finally {
+            $this->isLoading = false;
         }
-
-        $this->selectedSubmissions = [];
-        $this->selectAll = false;
-
-        $this->dispatch('notify', message: "{$count} submissions marked as received!");
     }
 
     public function bulkMarkDistributed()
@@ -540,20 +600,32 @@ class SubmissionManagement extends Component
             return;
         }
 
-        $count = 0;
-        foreach ($this->selectedSubmissions as $id) {
-            $submission = Submission::find($id);
-            if ($submission && $submission->canMarkDistributed()) {
-                $submission->status_distribute = 'Distributed';
-                $submission->save();
-                $count++;
+        $this->isLoading = true;
+        
+        try {
+            $count = 0;
+            foreach ($this->selectedSubmissions as $id) {
+                $submission = Submission::find($id);
+                if ($submission && $submission->canMarkDistributed()) {
+                    $submission->status_distribute = 'Distributed';
+                    $submission->distributed_at = now();
+                    $submission->distributed_by = auth()->user()->name;
+                    $submission->save();
+                    $count++;
+                }
             }
+
+            $this->selectedSubmissions = [];
+            $this->selectAll = false;
+
+            $this->dispatch('notify', message: "{$count} submissions marked as distributed!", type: 'success');
+            
+        } catch (\Exception $e) {
+            Log::error('Bulk distribute error: ' . $e->getMessage());
+            $this->dispatch('notify', message: 'Error: ' . $e->getMessage(), type: 'error');
+        } finally {
+            $this->isLoading = false;
         }
-
-        $this->selectedSubmissions = [];
-        $this->selectAll = false;
-
-        $this->dispatch('notify', message: "{$count} submissions marked as distributed!");
     }
 
     public function downloadDocumentation($id)
@@ -586,45 +658,45 @@ class SubmissionManagement extends Component
         if (!auth()->user()->can('view submissions')) {
             abort(403, 'Unauthorized access.');
         }
-
+    
         $submissions = $this->getFilteredQuery()
             ->latest()
             ->paginate(10);
-
-        $departments = Department::with('creator')
-            ->when($this->search, function ($query) {
-                $query->where('dept_name', 'like', '%' . $this->search . '%');
-            })
-            ->orderBy('id', 'desc') // UBAH INI - berdasarkan ID terbaru
-            ->paginate(10);
+    
+        $allDepartments = Department::with('creator')
+            ->latest('id')
+            ->get();
+    
         $users = User::orderBy('name')->get();
-
-        // Get filter options
+    
         $years = Submission::selectRaw('YEAR(created_at) as year')
             ->distinct()
             ->orderByDesc('year')
             ->pluck('year')
             ->toArray();
-
+    
         $months = [
-            '01' => 'January', '02' => 'February', '03' => 'March',
-            '04' => 'April', '05' => 'May', '06' => 'June',
-            '07' => 'July', '08' => 'August', '09' => 'September',
-            '10' => 'October', '11' => 'November', '12' => 'December',
+            '01' => 'January','02' => 'February','03' => 'March',
+            '04' => 'April','05' => 'May','06' => 'June',
+            '07' => 'July','08' => 'August','09' => 'September',
+            '10' => 'October','11' => 'November','12' => 'December',
         ];
-
+    
         $categories = Submission::distinct()
             ->whereNotNull('category_document')
             ->pluck('category_document')
             ->toArray();
-
+    
         return view('livewire.dcc.submission-management', [
             'submissions' => $submissions,
-            'departments' => $departments,
+            'allDepartments' => $allDepartments,
             'users' => $users,
             'years' => $years,
             'months' => $months,
             'categories' => $categories,
+    
+            // 🔥 TAMBAHKAN INI
+            'distributingSubmission' => $this->distributingSubmission,
         ]);
     }
 }

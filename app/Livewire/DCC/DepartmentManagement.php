@@ -183,7 +183,7 @@ class DepartmentManagement extends Component
             ->when($this->search, function ($query) {
                 $query->where('dept_name', 'like', '%' . $this->search . '%');
             })
-            ->orderBy('dept_name')
+            ->orderByDesc('id')
             ->paginate(10);
 
         return view('livewire.dcc.department-management', [

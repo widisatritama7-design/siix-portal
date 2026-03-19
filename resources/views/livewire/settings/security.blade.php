@@ -4,83 +4,94 @@
     <flux:heading class="sr-only">{{ __('Security settings') }}</flux:heading>
 
     <x-settings.layout :heading="__('Update password')" :subheading="__('Ensure your account is using a long, random password to stay secure')">
-        <form method="POST" wire:submit="updatePassword" class="mt-6 space-y-6">
-            <flux:input
-                wire:model="current_password"
-                :label="__('Current password')"
-                type="password"
-                required
-                autocomplete="current-password"
-                viewable
-            />
-            <flux:input
-                wire:model="password"
-                :label="__('New password')"
-                type="password"
-                required
-                autocomplete="new-password"
-                viewable
-            />
-            <flux:input
-                wire:model="password_confirmation"
-                :label="__('Confirm password')"
-                type="password"
-                required
-                autocomplete="new-password"
-                viewable
-            />
+        <flux:card class="!p-0 space-y-0 overflow-hidden">
+            <!-- Password Form -->
+            <form method="POST" wire:submit="updatePassword" class="p-6 space-y-6">
+                <flux:input
+                    wire:model="current_password"
+                    :label="__('Current password')"
+                    type="password"
+                    required
+                    autocomplete="current-password"
+                    viewable
+                />
+                <flux:input
+                    wire:model="password"
+                    :label="__('New password')"
+                    type="password"
+                    required
+                    autocomplete="new-password"
+                    viewable
+                />
+                <flux:input
+                    wire:model="password_confirmation"
+                    :label="__('Confirm password')"
+                    type="password"
+                    required
+                    autocomplete="new-password"
+                    viewable
+                />
 
-            <div class="flex items-center gap-4">
-                <div class="flex items-center justify-end">
-                    <flux:button variant="primary" type="submit" class="w-full" data-test="update-password-button">{{ __('Save') }}</flux:button>
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center justify-end">
+                        <flux:button variant="primary" type="submit" class="w-full" data-test="update-password-button">{{ __('Save') }}</flux:button>
+                    </div>
+
+                    <x-action-message class="me-3" on="password-updated">
+                        {{ __('Saved.') }}
+                    </x-action-message>
                 </div>
+            </form>
 
-                <x-action-message class="me-3" on="password-updated">
-                    {{ __('Saved.') }}
-                </x-action-message>
-            </div>
-        </form>
+            <!-- Two-Factor Authentication Section -->
+            @if ($canManageTwoFactor)
+                <div class="border-t border-zinc-200 dark:border-zinc-700 p-6 bg-zinc-50 dark:bg-zinc-800/50">
+                    <section class="space-y-6">
+                        <div class="space-y-1">
+                            <flux:heading>{{ __('Two-factor authentication') }}</flux:heading>
+                            <flux:subheading>{{ __('Manage your two-factor authentication settings') }}</flux:subheading>
+                        </div>
 
+                        <div class="flex flex-col w-full mx-auto space-y-6 text-sm" wire:cloak>
+                            @if ($twoFactorEnabled)
+                                <div class="space-y-4">
+                                    <flux:text>
+                                        {{ __('You will be prompted for a secure, random pin during login, which you can retrieve from the TOTP-supported application on your phone.') }}
+                                    </flux:text>
+
+                                    <div class="flex justify-start">
+                                        <flux:button
+                                            variant="danger"
+                                            wire:click="disable"
+                                        >
+                                            {{ __('Disable 2FA') }}
+                                        </flux:button>
+                                    </div>
+
+                                    <livewire:settings.two-factor.recovery-codes :$requiresConfirmation/>
+                                </div>
+                            @else
+                                <div class="space-y-4">
+                                    <flux:text variant="subtle">
+                                        {{ __('When you enable two-factor authentication, you will be prompted for a secure pin during login. This pin can be retrieved from a TOTP-supported application on your phone.') }}
+                                    </flux:text>
+
+                                    <flux:button
+                                        variant="primary"
+                                        wire:click="enable"
+                                    >
+                                        {{ __('Enable 2FA') }}
+                                    </flux:button>
+                                </div>
+                            @endif
+                        </div>
+                    </section>
+                </div>
+            @endif
+        </flux:card>
+
+        <!-- Modal (tetap di luar card) -->
         @if ($canManageTwoFactor)
-            <section class="mt-12">
-                <flux:heading>{{ __('Two-factor authentication') }}</flux:heading>
-                <flux:subheading>{{ __('Manage your two-factor authentication settings') }}</flux:subheading>
-
-                <div class="flex flex-col w-full mx-auto space-y-6 text-sm" wire:cloak>
-                    @if ($twoFactorEnabled)
-                        <div class="space-y-4">
-                            <flux:text>
-                                {{ __('You will be prompted for a secure, random pin during login, which you can retrieve from the TOTP-supported application on your phone.') }}
-                            </flux:text>
-
-                            <div class="flex justify-start">
-                                <flux:button
-                                    variant="danger"
-                                    wire:click="disable"
-                                >
-                                    {{ __('Disable 2FA') }}
-                                </flux:button>
-                            </div>
-
-                            <livewire:settings.two-factor.recovery-codes :$requiresConfirmation/>
-                        </div>
-                    @else
-                        <div class="space-y-4">
-                            <flux:text variant="subtle">
-                                {{ __('When you enable two-factor authentication, you will be prompted for a secure pin during login. This pin can be retrieved from a TOTP-supported application on your phone.') }}
-                            </flux:text>
-
-                            <flux:button
-                                variant="primary"
-                                wire:click="enable"
-                            >
-                                {{ __('Enable 2FA') }}
-                            </flux:button>
-                        </div>
-                    @endif
-                </div>
-            </section>
-
             <flux:modal
                 name="two-factor-setup-modal"
                 class="max-w-md md:min-w-md"

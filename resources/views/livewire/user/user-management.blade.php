@@ -5,7 +5,10 @@
             Dashboard
         </flux:breadcrumbs.item>
         <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
-            User Management
+            Settings
+        </flux:breadcrumbs.item>
+        <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
+            User
         </flux:breadcrumbs.item>
     </flux:breadcrumbs>
 

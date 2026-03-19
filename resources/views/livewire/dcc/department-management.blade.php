@@ -8,7 +8,7 @@
             DCC
         </flux:breadcrumbs.item>
         <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
-            Department Management
+            Department
         </flux:breadcrumbs.item>
     </flux:breadcrumbs>
 
@@ -88,22 +88,89 @@
                             <div class="flex flex-wrap gap-1 max-w-xs">
                                 @php
                                     $emailList = [];
-                                    if (is_string($department->emails)) {
-                                        $emailList = array_map('trim', explode(',', $department->emails));
-                                    } elseif (is_array($department->emails)) {
-                                        $emailList = $department->emails;
+                                    $rawEmails = $department->emails ?? '';
+                                    
+                                    if (!empty($rawEmails)) {
+                                        // Jika berupa string JSON
+                                        if (is_string($rawEmails)) {
+                                            $trimmed = trim($rawEmails);
+                                            // Cek apakah string dimulai dengan [ atau { (JSON)
+                                            if (str_starts_with($trimmed, '[') || str_starts_with($trimmed, '{')) {
+                                                try {
+                                                    $decoded = json_decode($rawEmails, true);
+                                                    if (is_array($decoded)) {
+                                                        $emailList = $decoded;
+                                                    } else {
+                                                        $emailList = array_map('trim', explode(',', $rawEmails));
+                                                    }
+                                                } catch (\Exception $e) {
+                                                    // Jika gagal decode JSON, treat as regular string
+                                                    $emailList = array_map('trim', explode(',', $rawEmails));
+                                                }
+                                            } else {
+                                                // Regular string with commas
+                                                $emailList = array_map('trim', explode(',', $rawEmails));
+                                            }
+                                        } elseif (is_array($rawEmails)) {
+                                            // Jika sudah array
+                                            $emailList = $rawEmails;
+                                        } elseif (is_object($rawEmails) && method_exists($rawEmails, 'toArray')) {
+                                            // Jika collection atau object lain
+                                            $emailList = $rawEmails->toArray();
+                                        }
                                     }
+                                    
+                                    // Bersihkan array: hapus nilai kosong dan reset index
+                                    $emailList = array_values(array_filter($emailList, function($item) {
+                                        return !empty($item) && is_string($item);
+                                    }));
+                                    
+                                    // Jika masih ada string yang merupakan representasi array, parse lagi
+                                    $tempList = [];
+                                    foreach ($emailList as $item) {
+                                        $trimmedItem = trim($item);
+                                        if (str_starts_with($trimmedItem, '[') || str_starts_with($trimmedItem, '{')) {
+                                            try {
+                                                $decoded = json_decode($item, true);
+                                                if (is_array($decoded)) {
+                                                    foreach ($decoded as $subItem) {
+                                                        if (!empty($subItem) && is_string($subItem)) {
+                                                            $tempList[] = trim($subItem, '[]"\' ');
+                                                        }
+                                                    }
+                                                } else {
+                                                    $tempList[] = trim($item, '[]"\' ');
+                                                }
+                                            } catch (\Exception $e) {
+                                                $tempList[] = trim($item, '[]"\' ');
+                                            }
+                                        } else {
+                                            $tempList[] = trim($item, '[]"\' ');
+                                        }
+                                    }
+                                    
+                                    $emailList = array_values(array_filter($tempList));
+                                    
+                                    // Filter email valid
+                                    $validEmails = array_filter($emailList, function($email) {
+                                        return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
+                                    });
+                                    
+                                    // Jika tidak ada email valid, gunakan semua yang ada
+                                    $displayEmails = !empty($validEmails) ? $validEmails : $emailList;
                                 @endphp
 
-                                @forelse($emailList as $email)
-                                    @if(!empty($email))
-                                    <flux:badge size="sm" color="blue" class="text-xs">
-                                        {{ $email }}
-                                    </flux:badge>
-                                    @endif
-                                @empty
+                                @if(!empty($displayEmails))
+                                    @foreach($displayEmails as $email)
+                                        @if(!empty($email))
+                                            <flux:badge size="sm" color="blue" class="text-xs">
+                                                {{ $email }}
+                                            </flux:badge>
+                                        @endif
+                                    @endforeach
+                                @else
                                     <span class="text-sm text-zinc-400">No emails</span>
-                                @endforelse
+                                @endif
                             </div>
                         </td>
                         <td class="px-4 py-3">
@@ -224,14 +291,18 @@
                             @if(count($emails) > 0)
                                 <div class="mb-2 flex flex-wrap gap-1">
                                     @foreach($emails as $index => $email)
-                                        <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full flex items-center gap-1">
-                                            {{ $email }}
-                                            <button type="button" wire:click="removeEmail({{ $index }})" class="text-red-600 hover:text-red-800">
-                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                                </svg>
-                                            </button>
-                                        </span>
+                                        @if(!empty($email))
+                                            <span class="inline-flex items-center gap-1 px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 text-xs rounded-full">
+                                                {{ $email }}
+                                                <button type="button" 
+                                                        wire:click="removeEmail({{ $index }})" 
+                                                        class="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 ml-1">
+                                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                    </svg>
+                                                </button>
+                                            </span>
+                                        @endif
                                     @endforeach
                                 </div>
                             @endif
@@ -241,26 +312,30 @@
                                 <input type="email" 
                                        wire:model="email_input"
                                        wire:keydown.enter.prevent="addEmail"
-                                       placeholder="Enter email"
-                                       class="flex-1 px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
+                                       placeholder="Enter email address"
+                                       class="flex-1 px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
                                 <button type="button" 
                                         wire:click="addEmail"
-                                        class="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                                     Add
                                 </button>
                             </div>
-                            <p class="text-xs text-zinc-500 mt-1">Add multiple emails as needed</p>
+                            <p class="text-xs text-zinc-500 mt-1">Press Enter or click Add to add multiple emails</p>
+                            
+                            @error('email_input') 
+                                <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span> 
+                            @enderror
                         </div>
 
                         <!-- Buttons -->
-                        <div class="flex justify-end gap-2">
+                        <div class="flex justify-end gap-2 mt-6">
                             <button type="button" 
                                     @click="open = false"
-                                    class="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800">
+                                    class="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
                                 Cancel
                             </button>
                             <button type="submit" 
-                                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
                                 {{ $department_id ? 'Update' : 'Create' }}
                             </button>
                         </div>

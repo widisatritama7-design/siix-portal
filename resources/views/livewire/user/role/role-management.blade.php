@@ -4,11 +4,11 @@
         <flux:breadcrumbs.item href="{{ route('dashboard') }}" wire:navigate separator="slash">
             Dashboard
         </flux:breadcrumbs.item>
-        <flux:breadcrumbs.item href="{{ route('users') }}" wire:navigate separator="slash">
-            User
+        <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
+            Settings
         </flux:breadcrumbs.item>
         <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
-            Role Management
+            Role
         </flux:breadcrumbs.item>
     </flux:breadcrumbs>
 

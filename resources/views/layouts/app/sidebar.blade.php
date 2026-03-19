@@ -14,10 +14,8 @@
     >
 
         <flux:sidebar.header>
-            <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
-
-            <!-- tombol collapse mobile -->
-            <flux:sidebar.collapse class="in-data-flux-sidebar-on-desktop:not-in-data-flux-sidebar-collapsed-desktop:-mr-2" />
+            <x-app-logo :sidebar="true" />
+            <flux:sidebar.collapse />
         </flux:sidebar.header>
 
         <flux:sidebar.nav>
@@ -57,7 +55,7 @@
                     :current="request()->routeIs('users')"
                     class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-zinc-400"
                 >
-                    User Management
+                    Users
                 </flux:sidebar.item>
                 @endcan
 

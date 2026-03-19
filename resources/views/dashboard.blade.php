@@ -1,4 +1,5 @@
 <x-layouts::app :title="__('Dashboard')">
+    
     <div class="flex h-full w-full flex-1 flex-col gap-4 sm:gap-6 rounded-xl p-4 sm:p-6">
 
         <!-- Heading, Welcome Back, dan Jam Realtime -->
