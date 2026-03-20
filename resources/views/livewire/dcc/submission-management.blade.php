@@ -1,4 +1,4 @@
-<div class="p-6 space-y-6" 
+<div class="p-2 space-y-2"
      x-data="{ showLoading: @entangle('isLoading') }"
      x-init="$watch('showLoading', value => {
          if (value) {

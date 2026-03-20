@@ -3,6 +3,7 @@
     <div class="flex items-center gap-4 mb-6">
         <button 
             wire:click="backToIndex"
+            wire:loading.attr="disabled"
             class="p-2 hover:bg-zinc-100 rounded-lg transition-colors dark:hover:bg-zinc-700"
         >
             <svg class="w-6 h-6 text-zinc-600 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -68,6 +69,9 @@
                             <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
                                 {{ $distributingSubmission->status }}
                             </span>
+                            <span class="inline-flex items-center px-2 py-1 ml-2 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                {{ $distributingSubmission->status_distribute }}
+                            </span>
                         </p>
                     </div>
 
@@ -102,7 +106,7 @@
                             </p>
 
                             <p class="mt-1">
-                                This action cannot be undone.
+                                This action will send email notifications to all recipients.
                             </p>
                         </div>
 
@@ -159,6 +163,7 @@
                 <button
                     type="button"
                     wire:click="backToIndex"
+                    wire:loading.attr="disabled"
                     class="px-4 py-2 text-sm font-medium text-zinc-700 bg-white border border-zinc-300 rounded-lg hover:bg-zinc-50 dark:bg-zinc-800 dark:text-zinc-400 dark:border-zinc-600 dark:hover:bg-zinc-700"
                 >
                     Cancel
@@ -166,9 +171,25 @@
 
                 <button
                     type="submit"
-                    class="px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900"
+                    wire:loading.attr="disabled"
+                    wire:target="processDistribute"
+                    class="px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900 flex items-center gap-2"
                 >
-                    Yes, Mark as Distributed
+                    <!-- Loading Spinner -->
+                    <span wire:loading wire:target="processDistribute" class="inline-block">
+                        <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </span>
+                    
+                    <span wire:loading.remove wire:target="processDistribute">
+                        Yes, Mark as Distributed
+                    </span>
+                    
+                    <span wire:loading wire:target="processDistribute">
+                        Processing...
+                    </span>
                 </button>
 
             </div>

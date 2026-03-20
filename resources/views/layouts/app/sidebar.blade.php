@@ -42,15 +42,6 @@
                     DCC Dashboard
                 </flux:sidebar.item>
                 @endcan
-                <flux:sidebar.item 
-                    icon="inbox-arrow-down"
-                    href="{{ route('inbox') }}" 
-                    wire:navigate
-                    :current="request()->routeIs('inbox')"
-                    class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-zinc-400"
-                >
-                    Inbox
-                </flux:sidebar.item>
             </flux:sidebar.group>
 
             <!-- GROUP: DCC (EXPANDABLE) -->
@@ -84,11 +75,10 @@
             </flux:sidebar.group>
             @endcanany
 
-            <!-- GROUP: SETTINGS (EXPANDABLE) - TAMPIL HANYA JIKA USER PUNYA AKSES KE SALAH SATU MENU -->
             @canany(['view users', 'view roles', 'view permissions'])
             <flux:sidebar.group icon="cog-6-tooth" expandable heading="Settings" class="grid">
-                
-                <!-- User Management - hanya jika user punya akses view users -->
+
+                {{-- Users --}}
                 @can('view users')
                 <flux:sidebar.item 
                     icon="users" 
@@ -101,31 +91,37 @@
                 </flux:sidebar.item>
                 @endcan
 
-                <!-- Roles - hanya jika user punya akses view roles -->
-                @can('view roles')
-                <flux:sidebar.item 
-                    icon="shield-check" 
-                    href="{{ route('role.management') }}"
-                    wire:navigate
-                    :current="request()->routeIs('role.management')"
-                    class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-zinc-400"
-                >
-                    Roles
-                </flux:sidebar.item>
-                @endcan
 
-                <!-- Permissions - hanya jika user punya akses view permissions -->
-                @can('view permissions')
-                <flux:sidebar.item 
-                    icon="key" 
-                    href="{{ route('permission.management') }}"
-                    wire:navigate
-                    :current="request()->routeIs('permission.management')"
-                    class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-zinc-400"
-                >
-                    Permissions
-                </flux:sidebar.item>
-                @endcan
+                {{-- Authorization --}}
+                @canany(['view roles', 'view permissions'])
+                <flux:sidebar.group icon="shield-check" expandable heading="Authorization" class="grid">
+
+                    @can('view roles')
+                    <flux:sidebar.item 
+                        icon="shield-check" 
+                        href="{{ route('role.management') }}"
+                        wire:navigate
+                        :current="request()->routeIs('role.management')"
+                        class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-zinc-400"
+                    >
+                        Roles
+                    </flux:sidebar.item>
+                    @endcan
+
+                    @can('view permissions')
+                    <flux:sidebar.item 
+                        icon="key" 
+                        href="{{ route('permission.management') }}"
+                        wire:navigate
+                        :current="request()->routeIs('permission.management')"
+                        class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-zinc-400"
+                    >
+                        Permissions
+                    </flux:sidebar.item>
+                    @endcan
+
+                </flux:sidebar.group>
+                @endcanany
 
             </flux:sidebar.group>
             @endcanany

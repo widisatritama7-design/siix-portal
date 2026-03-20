@@ -1,5 +1,5 @@
 <x-layouts::app :title="__('DCC Dashboard')">
-    <div class="flex h-full w-full flex-1 flex-col gap-4 sm:gap-6 rounded-xl p-4 sm:p-6">
+    <div class="flex h-full w-full flex-1 flex-col gap-4 rounded-xl p-4">
         <!-- Header dengan Welcome Back -->
         <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-2">
             <div class="w-full lg:w-auto">

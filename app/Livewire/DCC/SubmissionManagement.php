@@ -2,15 +2,18 @@
 
 namespace App\Livewire\DCC;
 
-use Livewire\Component;
-use Livewire\WithPagination;
-use Livewire\WithFileUploads;
-use App\Models\DCC\Submission;
+use App\Mail\DCC\SubmissionDistributedMail;
+use App\Mail\DCC\SubmissionStatusMail;
 use App\Models\DCC\Department;
+use App\Models\DCC\Submission;
 use App\Models\User;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Livewire\Component;
+use Livewire\WithFileUploads;
+use Livewire\WithPagination;
+use Mail;
 
 class SubmissionManagement extends Component
 {
@@ -443,32 +446,56 @@ class SubmissionManagement extends Component
                 'receiveStatus' => 'required|in:Received,Rejected',
                 'receiveReason' => 'required_if:receiveStatus,Rejected',
             ]);
-
+    
             $submission = Submission::find($this->receivingSubmission->id);
-
+    
             if (!$submission) {
                 throw new \Exception('Submission not found!');
             }
-
+    
+            $user = auth()->user();
+    
+            // Update status
             $submission->status = $this->receiveStatus;
-            $submission->received_by = auth()->user()->name;
+            $submission->received_by = $user->name;
             $submission->received_at = now();
-
+    
             if ($this->receiveStatus === 'Rejected') {
                 $submission->reason = $this->receiveReason;
-                $submission->status_distribute = null;
+                $submission->status_distribute = null; // reset status_distribute jika Rejected
             } else {
                 $submission->reason = null;
                 $submission->status_distribute = 'Waiting Distribute';
             }
-
+    
             $submission->save();
-
+    
+            // KIRIM EMAIL KE SEMUA EMAILS TERKAIT
+            if ($submission->emails) {
+                // Parse emails dari JSON/string ke array
+                $emails = $this->parseEmails($submission->emails);
+                
+                if (is_array($emails) && count($emails) > 0) {
+                    foreach ($emails as $email) {
+                        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                            Mail::to($email)->send(new SubmissionStatusMail($submission));
+                        }
+                    }
+                    
+                    // Log untuk debugging
+                    \Log::info('Status email sent', [
+                        'submission_id' => $submission->id,
+                        'status' => $this->receiveStatus,
+                        'emails' => $emails
+                    ]);
+                }
+            }
+    
             $this->dispatch('notify', message: 'Submission status updated successfully!', type: 'success');
             $this->backToIndex();
             
         } catch (\Exception $e) {
-            Log::error('Process receive error: ' . $e->getMessage());
+            \Log::error('Process receive error: ' . $e->getMessage());
             $this->dispatch('notify', message: 'Error: ' . $e->getMessage(), type: 'error');
         } finally {
             $this->isLoading = false;
@@ -480,31 +507,49 @@ class SubmissionManagement extends Component
         $this->isLoading = true;
     
         try {
-    
             $submission = Submission::find($this->distributingSubmissionId);
     
             if (!$submission) {
                 throw new \Exception('Submission not found!');
             }
     
+            $user = auth()->user();
+    
+            // Update status distribute
             $submission->status_distribute = 'Distributed';
             $submission->distributed_at = now();
-            $submission->distributed_by = auth()->user()->name;
+            $submission->distributed_by = $user->name;
             $submission->save();
+    
+            // KIRIM EMAIL KE SEMUA EMAILS TERKAIT
+            if ($submission->emails) {
+                // Parse emails dari JSON/string ke array
+                $emails = $this->parseEmails($submission->emails);
+                
+                if (is_array($emails) && count($emails) > 0) {
+                    foreach ($emails as $email) {
+                        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                            Mail::to($email)->send(new SubmissionDistributedMail($submission));
+                        }
+                    }
+                    
+                    // Log untuk debugging
+                    \Log::info('Distribution email sent', [
+                        'submission_id' => $submission->id,
+                        'distributed_by' => $user->name,
+                        'emails' => $emails
+                    ]);
+                }
+            }
     
             $this->dispatch('notify', message: 'Submission marked as distributed!', type: 'success');
             $this->backToIndex();
     
         } catch (\Exception $e) {
-    
-            Log::error('Process distribute error: ' . $e->getMessage());
-    
+            \Log::error('Process distribute error: ' . $e->getMessage());
             $this->dispatch('notify', message: 'Error: ' . $e->getMessage(), type: 'error');
-    
         } finally {
-    
             $this->isLoading = false;
-    
         }
     }
 
