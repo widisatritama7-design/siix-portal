@@ -4,8 +4,10 @@ namespace App\Providers;
 
 use App\Actions\Fortify\CreateNewUser;
 use App\Actions\Fortify\ResetUserPassword;
+use App\Models\User;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
@@ -26,6 +28,18 @@ class FortifyServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Fortify::username('nik');
+        Fortify::authenticateUsing(function ($request) {
+    
+            $user = User::where('nik', $request->nik)->first();
+    
+            if ($user && Hash::check($request->password, $user->password)) {
+                return $user;
+            }
+    
+            return null;
+        });
+    
         $this->configureActions();
         $this->configureViews();
         $this->configureRateLimiting();

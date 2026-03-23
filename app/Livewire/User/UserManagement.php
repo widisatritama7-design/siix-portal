@@ -7,11 +7,13 @@ use Livewire\WithPagination;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
+use Illuminate\Validation\Rule;
 
 class UserManagement extends Component
 {
     use WithPagination;
 
+    public $nik;
     public $user_id;
     public $name;
     public $email;
@@ -26,36 +28,52 @@ class UserManagement extends Component
     protected function rules()
     {
         $rules = [
+            'nik' => [
+                'required',
+                'numeric',
+                Rule::unique('users', 'nik')->ignore($this->user_id),
+            ],
             'name' => 'required|min:3|max:255',
-            'email' => 'required|email|unique:users,email,' . $this->user_id,
-            'selectedRoles' => 'array',
+            'email' => 'nullable|email|max:255',
+            'selectedRoles' => 'array|nullable',
         ];
-
+    
         if ($this->user_id) {
             $rules['password'] = 'nullable|min:8|confirmed';
+            // Untuk edit, email harus unique kecuali dirinya sendiri
+            $rules['email'] = 'nullable|email|max:255|unique:users,email,' . $this->user_id;
         } else {
             $rules['password'] = 'required|min:8|confirmed';
+            // Untuk create, email harus unique jika diisi
+            $rules['email'] = 'nullable|email|max:255|unique:users,email';
         }
-
+    
         return $rules;
     }
 
     protected $messages = [
-        'name.required' => 'The name field is required.',
-        'name.min' => 'The name must be at least 3 characters.',
-        'email.required' => 'The email field is required.',
-        'email.email' => 'Please enter a valid email address.',
-        'email.unique' => 'This email is already registered.',
-        'password.required' => 'The password field is required.',
-        'password.min' => 'The password must be at least 8 characters.',
-        'password.confirmed' => 'The password confirmation does not match.',
+        'nik.required' => 'NIK wajib diisi.',
+        'nik.numeric' => 'NIK harus berupa angka.',
+        'nik.unique' => 'NIK ini sudah terdaftar.',
+        'name.required' => 'Nama wajib diisi.',
+        'name.min' => 'Nama minimal 3 karakter.',
+        'name.max' => 'Nama maksimal 255 karakter.',
+        'email.email' => 'Format email tidak valid.',
+        'email.unique' => 'Email ini sudah terdaftar.',
+        'email.max' => 'Email maksimal 255 karakter.',
+        'password.required' => 'Password wajib diisi.',
+        'password.min' => 'Password minimal 8 karakter.',
+        'password.confirmed' => 'Konfirmasi password tidak cocok.',
+        'selectedRoles.array' => 'Format roles tidak valid.',
     ];
 
     public function resetForm()
     {
-        $this->reset(['user_id', 'name', 'email', 'password', 'password_confirmation', 'selectedRoles']);
+        $this->reset(['user_id', 'nik', 'name', 'email', 'password', 'password_confirmation', 'selectedRoles']);
         $this->modalTitle = 'Add New User';
         $this->resetValidation();
+    
+        $this->dispatch('open-modal', modal: 'user-form-modal');
     }
 
     public function updatedSearch()
@@ -78,40 +96,65 @@ class UserManagement extends Component
             }
         }
 
-        $this->validate();
+        // Validasi NIK secara manual untuk double check
+        $existingUser = User::where('nik', trim($this->nik))
+            ->when($this->user_id, function($query) {
+                $query->where('id', '!=', $this->user_id);
+            })
+            ->first();
 
-        if ($this->user_id) {
-            $user = User::findOrFail($this->user_id);
-            
-            $data = [
-                'name' => $this->name,
-                'email' => $this->email,
-            ];
-
-            if ($this->password) {
-                $data['password'] = Hash::make($this->password);
-            }
-
-            $user->update($data);
-            $user->syncRoles($this->selectedRoles);
-            
-            $message = 'User updated successfully!';
-        } else {
-            $user = User::create([
-                'name' => $this->name,
-                'email' => $this->email,
-                'password' => Hash::make($this->password),
-            ]);
-            
-            if (!empty($this->selectedRoles)) {
-                $user->assignRole($this->selectedRoles);
-            }
-            
-            $message = 'User created successfully!';
+        if ($existingUser) {
+            $this->addError('nik', 'NIK ini sudah terdaftar.');
+            return;
         }
 
-        $this->resetForm();
-        $this->dispatch('notify', message: $message);
+        // Validasi data
+        $this->validate();
+
+        try {
+            if ($this->user_id) {
+                // UPDATE USER
+                $user = User::findOrFail($this->user_id);
+                
+                $data = [
+                    'nik' => trim($this->nik),
+                    'name' => trim($this->name),
+                    'email' => $this->email ? trim($this->email) : null,
+                ];
+
+                if ($this->password) {
+                    $data['password'] = Hash::make($this->password);
+                }
+
+                $user->update($data);
+                $user->syncRoles($this->selectedRoles ?? []);
+                
+                $message = 'User berhasil diupdate!';
+                $type = 'success';
+            } else {
+                // CREATE USER
+                $user = User::create([
+                    'nik' => trim($this->nik),
+                    'name' => trim($this->name),
+                    'email' => $this->email ? trim($this->email) : null,
+                    'password' => Hash::make($this->password),
+                ]);
+                
+                if (!empty($this->selectedRoles)) {
+                    $user->assignRole($this->selectedRoles);
+                }
+                
+                $message = 'User berhasil dibuat!';
+                $type = 'success';
+            }
+
+            $this->resetForm();
+            $this->dispatch('notify', message: $message, type: $type);
+            
+        } catch (\Exception $e) {
+            \Log::error('User save error: ' . $e->getMessage());
+            $this->dispatch('notify', message: 'Terjadi kesalahan: ' . $e->getMessage(), type: 'error');
+        }
     }
 
     public function edit($id)
@@ -125,12 +168,16 @@ class UserManagement extends Component
         $user = User::with('roles')->findOrFail($id);
 
         $this->user_id = $user->id;
+        $this->nik = $user->nik;
         $this->name = $user->name;
         $this->email = $user->email;
         $this->password = '';
         $this->password_confirmation = '';
         $this->selectedRoles = $user->roles->pluck('name')->toArray();
         $this->modalTitle = 'Edit User';
+        $this->resetValidation();
+        
+        $this->dispatch('open-modal', modal: 'user-form-modal');
     }
 
     public function confirmDelete($id)
@@ -149,6 +196,7 @@ class UserManagement extends Component
         }
 
         $this->userToDelete = $user;
+        $this->dispatch('open-modal', modal: 'delete-user-modal');
     }
 
     public function delete()
@@ -158,18 +206,26 @@ class UserManagement extends Component
             return;
         }
 
-        $user = User::findOrFail($this->userToDelete->id);
-        $userName = $user->name;
-        $user->delete();
+        try {
+            $user = User::findOrFail($this->userToDelete->id);
+            $userName = $user->name;
+            $user->delete();
 
-        $this->userToDelete = null;
-        
-        $this->dispatch('notify', message: "User '{$userName}' has been deleted successfully!");
+            $this->userToDelete = null;
+            
+            $this->dispatch('notify', message: "User '{$userName}' has been deleted successfully!", type: 'success');
+            $this->dispatch('close-modal', modal: 'delete-user-modal');
+            
+        } catch (\Exception $e) {
+            \Log::error('User delete error: ' . $e->getMessage());
+            $this->dispatch('notify', message: 'Terjadi kesalahan saat menghapus user!', type: 'error');
+        }
     }
 
     public function cancelDelete()
     {
         $this->userToDelete = null;
+        $this->dispatch('close-modal', modal: 'delete-user-modal');
     }
 
     public function render()
@@ -181,9 +237,11 @@ class UserManagement extends Component
 
         $users = User::with('roles')
             ->when($this->search, function ($query) {
-                $query->where(function ($q) {
-                    $q->where('name', 'like', '%' . $this->search . '%')
-                      ->orWhere('email', 'like', '%' . $this->search . '%');
+                $searchTerm = '%' . trim($this->search) . '%';
+                $query->where(function ($q) use ($searchTerm) {
+                    $q->where('name', 'like', $searchTerm)
+                      ->orWhere('nik', 'like', $searchTerm)
+                      ->orWhere('email', 'like', $searchTerm);
                 });
             })
             ->latest()

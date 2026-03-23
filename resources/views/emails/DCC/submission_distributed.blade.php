@@ -40,7 +40,7 @@
                                     <td>: {{ $submission->distributed_by }}</td>
                                 </tr>
                                 <tr>
-                                    <td style="font-weight: bold;">Distributed Date</td>
+                                    <td style="font-weight: bold;">Distributed </td>
                                     <td>: {{ $submission->distributed_at->format('d-m-Y H:i') }}</td>
                                 </tr>
                                 <tr style="background-color: #f9f9f9;">

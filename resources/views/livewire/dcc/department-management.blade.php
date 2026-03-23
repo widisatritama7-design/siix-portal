@@ -198,7 +198,6 @@
                                 @endcan
 
                                 @can('delete departments')
-                                    @if($department->submissions()->count() == 0)
                                     <flux:button 
                                         wire:click="confirmDelete({{ $department->id }})" 
                                         x-on:click="$dispatch('open-modal', 'delete-department-modal')"
@@ -207,7 +206,6 @@
                                         class="!p-2 text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/50"
                                         title="Delete department"
                                     />
-                                    @endif
                                 @endcan
                             </div>
                         </td>

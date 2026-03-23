@@ -42,6 +42,15 @@
                     DCC Dashboard
                 </flux:sidebar.item>
                 @endcan
+                <flux:sidebar.item 
+                    icon="inbox"
+                    href="{{ route('inbox') }}" 
+                    wire:navigate
+                    :current="request()->routeIs('inbox')"
+                    class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-zinc-400"
+                >
+                    Inbox
+                </flux:sidebar.item>
             </flux:sidebar.group>
 
             <!-- GROUP: DCC (EXPANDABLE) -->
@@ -74,6 +83,47 @@
 
             </flux:sidebar.group>
             @endcanany
+
+            <!-- GROUP: HR (EXPANDABLE) -->
+            <flux:sidebar.group icon="user-group" expandable heading="Human Resource" class="grid">
+                
+                <flux:sidebar.item 
+                    icon="users" 
+                    href="#"
+                    wire:navigate
+                    class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-zinc-400"
+                >
+                    Master Employee
+                </flux:sidebar.item>
+
+                <flux:sidebar.item 
+                    icon="phone-arrow-up-right" 
+                    href="#"
+                    wire:navigate
+                    class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-zinc-400"
+                >
+                    Employee Call
+                </flux:sidebar.item>
+
+                <flux:sidebar.item 
+                    icon="arrow-left-end-on-rectangle" 
+                    href="#"
+                    wire:navigate
+                    class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-zinc-400"
+                >
+                    Comelate Employee
+                </flux:sidebar.item>
+
+                <flux:sidebar.item 
+                    icon="exclamation-triangle" 
+                    href="#"
+                    wire:navigate
+                    class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-zinc-400"
+                >
+                    Violation Employee
+                </flux:sidebar.item>
+
+            </flux:sidebar.group>
 
             @canany(['view users', 'view roles', 'view permissions'])
             <flux:sidebar.group icon="cog-6-tooth" expandable heading="Settings" class="grid">

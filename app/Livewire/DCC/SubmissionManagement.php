@@ -14,6 +14,7 @@ use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 use Mail;
+use Livewire\Attributes\Url;
 
 class SubmissionManagement extends Component
 {
@@ -42,20 +43,39 @@ class SubmissionManagement extends Component
     public $existing_documentation;
 
     // For filters
+    #[Url(as: 'search', history: true)]
     public $search = '';
+
+    #[Url(as: 'status', history: true)]
     public $filterStatus = '';
+
+    #[Url(as: 'dept', history: true)]
     public $filterDept = '';
+
+    #[Url(as: 'category', history: true)]
     public $filterCategory = '';
+
+    #[Url(as: 'year', history: true)]
     public $filterYear = '';
+
+    #[Url(as: 'month', history: true)]
     public $filterMonth = '';
+
+    #[Url(as: 'date_from', history: true)]
     public $filterDateFrom = '';
+
+    #[Url(as: 'date_until', history: true)]
     public $filterDateUntil = '';
+
+    #[Url(as: 'distributed', history: true)]
     public $filterDistributed = '';
+
     public $showFilters = false;
 
     // For bulk actions
     public $selectedSubmissions = [];
     public $selectAll = false;
+    public $perPage = 10;
 
     // Page management
     public $currentPage = 'index'; // index, create, edit, show, receive, delete
@@ -185,7 +205,14 @@ class SubmissionManagement extends Component
     public function updatedSelectAll($value)
     {
         if ($value) {
-            $this->selectedSubmissions = $this->getFilteredQuery()->pluck('id')->toArray();
+            // Get only the submissions on the current page
+            $currentPageSubmissions = $this->getFilteredQuery()
+                ->latest()
+                ->paginate(10) // Must match the pagination count in render()
+                ->pluck('id')
+                ->toArray();
+            
+            $this->selectedSubmissions = $currentPageSubmissions;
         } else {
             $this->selectedSubmissions = [];
         }
@@ -193,7 +220,15 @@ class SubmissionManagement extends Component
 
     protected function getFilteredQuery()
     {
-        $query = Submission::with(['department', 'creator'])
+        $query = Submission::with(['department', 'creator']);
+    
+        $user = auth()->user();
+    
+        if ($user->can('view submissions one user')) {
+            $query->where('created_by', $user->id);
+        }
+    
+        $query
             ->when($this->search, function ($q) {
                 $q->where(function ($query) {
                     $query->where('description', 'like', '%' . $this->search . '%')
@@ -210,7 +245,7 @@ class SubmissionManagement extends Component
             ->when($this->filterMonth, fn($q) => $q->whereMonth('created_at', $this->filterMonth))
             ->when($this->filterDateFrom, fn($q) => $q->whereDate('created_at', '>=', $this->filterDateFrom))
             ->when($this->filterDateUntil, fn($q) => $q->whereDate('created_at', '<=', $this->filterDateUntil));
-
+    
         return $query;
     }
 
@@ -422,6 +457,7 @@ class SubmissionManagement extends Component
                 $submission->update($data);
                 $message = 'Submission updated successfully!';
             } else {
+                $data['created_by'] = auth()->id();
                 Submission::create($data);
                 $message = 'Submission created successfully!';
             }
@@ -700,13 +736,16 @@ class SubmissionManagement extends Component
 
     public function render()
     {
-        if (!auth()->user()->can('view submissions')) {
+        if (
+            !auth()->user()->can('view submissions') &&
+            !auth()->user()->can('view submissions one user')
+        ) {
             abort(403, 'Unauthorized access.');
         }
     
         $submissions = $this->getFilteredQuery()
             ->latest()
-            ->paginate(10);
+            ->paginate($this->perPage);
     
         $allDepartments = Department::with('creator')
             ->latest('id')
