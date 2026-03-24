@@ -79,23 +79,6 @@
                     </span>
                 </flux:navlist.item>
 
-                <!-- Appearance -->
-                <flux:navlist.item 
-                    :href="route('appearance.edit')" 
-                    wire:navigate
-                    :active="request()->routeIs('appearance.edit')"
-                    title="Appearance"
-                    class="w-full"
-                >
-                    <x-slot name="icon">
-                        <x-heroicon-o-swatch class="w-5 h-5" />
-                    </x-slot>
-
-                    <span x-show="sidebarOpen" class="truncate">
-                        Appearance
-                    </span>
-                </flux:navlist.item>
-
             </flux:navlist>
 
         </div>

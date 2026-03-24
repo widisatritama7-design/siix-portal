@@ -1,6 +1,6 @@
 <x-layouts::app :title="__('Main Dashboard')">
     
-    <div class="flex h-full w-full flex-1 flex-col gap-1 sm:gap-2 rounded-xl p-1 sm:p-2">
+    <div class="flex h-full w-full flex-1 flex-col gap-0 sm:gap-1 rounded-xl p-1 sm:p-2 pt-0 sm:pt-0">
 
         <!-- Heading, Welcome Back, dan Jam Realtime -->
         <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-2">

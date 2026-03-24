@@ -3,6 +3,13 @@
 use App\Http\Controllers\InboxController;
 use App\Livewire\DCC\DepartmentManagement;
 use App\Livewire\DCC\SubmissionManagement;
+use App\Livewire\HR\ComelateEmployee\ComelateEmployeeCreate;
+use App\Livewire\HR\ComelateEmployee\ComelateEmployeeEdit;
+use App\Livewire\HR\ComelateEmployee\ComelateEmployeeManagement;
+use App\Livewire\HR\EmployeeManagement;
+use App\Livewire\HR\Violation\ViolationEmployeeCreate;
+use App\Livewire\HR\Violation\ViolationEmployeeEdit;
+use App\Livewire\HR\Violation\ViolationEmployeeManagement;
 use App\Livewire\User\Permission\PermissionManagement;
 use App\Livewire\User\Role\RoleManagement;
 use App\Livewire\User\UserManagement;
@@ -33,6 +40,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // DCC
     Route::get('/dcc/departments', DepartmentManagement::class)->name('dcc.departments');
     Route::get('/dcc/submissions', SubmissionManagement::class)->name('dcc.submissions');
+
+    // HR
+    Route::get('/hr/employees', EmployeeManagement::class)->name('hr.employee');
+    Route::get('/hr/comelate', ComelateEmployeeManagement::class)->name('hr.comelate.index');
+    Route::get('/hr/comelate/create', ComelateEmployeeCreate::class)->name('hr.comelate.create');
+    Route::get('/hr/comelate/{id}/edit', ComelateEmployeeEdit::class)->name('hr.comelate.edit');
+    Route::get('/hr/violation', ViolationEmployeeManagement::class)->name('hr.violation.index');
+    Route::get('/hr/violation/create', ViolationEmployeeCreate::class)->name('hr.violation.create');
+    Route::get('/hr/violation/{id}/edit', ViolationEmployeeEdit::class)->name('hr.violation.edit');
 });
 
 require __DIR__.'/settings.php';

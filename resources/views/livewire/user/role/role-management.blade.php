@@ -1,4 +1,4 @@
-<div class="p-2 space-y-2">
+<div class="p-1 space-y-2">
     <!-- Breadcrumbs -->
     <flux:breadcrumbs>
         <flux:breadcrumbs.item href="{{ route('dashboard') }}" wire:navigate separator="slash">
