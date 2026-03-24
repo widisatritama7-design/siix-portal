@@ -6,6 +6,7 @@ use App\Livewire\DCC\SubmissionManagement;
 use App\Livewire\HR\ComelateEmployee\ComelateEmployeeCreate;
 use App\Livewire\HR\ComelateEmployee\ComelateEmployeeEdit;
 use App\Livewire\HR\ComelateEmployee\ComelateEmployeeManagement;
+use App\Livewire\HR\EmployeeCallManagement;
 use App\Livewire\HR\EmployeeManagement;
 use App\Livewire\HR\Violation\ViolationEmployeeCreate;
 use App\Livewire\HR\Violation\ViolationEmployeeEdit;
@@ -49,6 +50,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/hr/violation', ViolationEmployeeManagement::class)->name('hr.violation.index');
     Route::get('/hr/violation/create', ViolationEmployeeCreate::class)->name('hr.violation.create');
     Route::get('/hr/violation/{id}/edit', ViolationEmployeeEdit::class)->name('hr.violation.edit');
+    Route::get('/hr/employee-call', EmployeeCallManagement::class)->name('hr.employee-call.index');
 });
 
 require __DIR__.'/settings.php';

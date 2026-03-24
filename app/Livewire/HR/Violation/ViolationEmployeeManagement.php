@@ -205,6 +205,12 @@ class ViolationEmployeeManagement extends Component
     
     public function viewSubCategories($subCategories)
     {
+        // CEK AKSES
+        if (!auth()->user()->can('view violation employee')) {
+            $this->dispatch('notify', message: 'You do not have permission to view violation employee!', type: 'error');
+            return;
+        }
+        
         // If it's a string, decode it
         if (is_string($subCategories)) {
             $this->selectedSubCategoriesModal = json_decode($subCategories, true) ?? [];
@@ -224,17 +230,35 @@ class ViolationEmployeeManagement extends Component
     
     public function view($id)
     {
+        // CEK AKSES
+        if (!auth()->user()->can('view violation employee')) {
+            $this->dispatch('notify', message: 'You do not have permission to view violation employee!', type: 'error');
+            return;
+        }
+        
         $this->selectedViolation = ViolationEmployee::with(['employee', 'creator', 'updater'])->findOrFail($id);
         $this->showViewModal = true;
     }
     
     public function create()
     {
+        // CEK AKSES
+        if (!auth()->user()->can('create violation employee')) {
+            $this->dispatch('notify', message: 'You do not have permission to create violation employee!', type: 'error');
+            return;
+        }
+        
         return redirect()->route('hr.violation.create');
     }
     
     public function edit($id)
     {
+        // CEK AKSES
+        if (!auth()->user()->can('edit violation employee')) {
+            $this->dispatch('notify', message: 'You do not have permission to edit violation employee!', type: 'error');
+            return;
+        }
+        
         return redirect()->route('hr.violation.edit', $id);
     }
     
@@ -246,6 +270,11 @@ class ViolationEmployeeManagement extends Component
     
     public function render()
     {
+        // CEK AKSES VIEW
+        if (!auth()->user()->can('view violation employee')) {
+            abort(403, 'Unauthorized access.');
+        }
+        
         $violations = ViolationEmployee::query()
             ->with(['employee', 'creator', 'updater'])
             ->when($this->search, function ($query) {

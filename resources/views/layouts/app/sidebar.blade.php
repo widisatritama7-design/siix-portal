@@ -13,9 +13,16 @@
         class="bg-zinc-50 dark:bg-zinc-900 border-r border-zinc-300 dark:border-zinc-600 lg:shadow-[10px_0_15px_-5px_rgba(0,0,0,0.1)] lg:dark:shadow-[10px_0_15px_-5px_rgba(0,0,0,0.3)]"
     >
 
-    <flux:sidebar.header class="relative flex justify-center items-center py-0">
-        <img src="{{ asset('images/siix-portal.png') }}" alt="SIIX Portal" class="h-12 w-auto object-contain" />
-    </flux:sidebar.header>
+            <flux:sidebar.header>
+                <flux:sidebar.brand href="/" class="flex justify-center items-center w-full">
+                    <x-slot name="logo" class="size-6 rounded-full bg-cyan-500 text-white text-xs font-bold flex items-center justify-center hidden flux-sidebar-collapsed:flex">
+                        SP
+                    </x-slot>
+                    <x-slot name="name" class="w-full flex justify-center">
+                        <img src="{{ asset('images/siix-portal.png') }}" alt="SIIX Portal" class="h-12 w-auto object-contain block group-data-collapsed:hidden" />
+                    </x-slot>
+                </flux:sidebar.brand>
+            </flux:sidebar.header>
 
             <flux:sidebar.nav>
 
@@ -41,15 +48,19 @@
                         DCC Dashboard
                     </flux:sidebar.item>
                     @endcan
+                    @can('view inbox')
                     <flux:sidebar.item 
                         icon="inbox"
                         href="{{ route('inbox') }}" 
                         wire:navigate
                         :current="request()->routeIs('inbox')"
+                        :badge="App\Helpers\InboxHelper::getTotalInboxCount() > 0 ? App\Helpers\InboxHelper::getTotalInboxCount() : null"
+                        badge-color="blue"
                         class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-black dark:data-[current]:border-white"
                     >
                         Inbox
                     </flux:sidebar.item>
+                    @endcan
                 </flux:sidebar.group>
 
                 <!-- GROUP: DCC (EXPANDABLE) -->
@@ -83,9 +94,11 @@
                 </flux:sidebar.group>
                 @endcanany
 
+                @canany(['view employee', 'view comelate employee', 'view violation employee', 'view employee call'])
                 <!-- GROUP: HR (EXPANDABLE) -->
-                <flux:sidebar.group icon="user-group" expandable heading="Human Resource" class="grid">
-                    
+                <flux:sidebar.group icon="user-group" expandable heading="HR" class="grid">
+
+                    @can('view employee')
                     <flux:sidebar.item 
                         icon="users" 
                         href="{{ route('hr.employee') }}" 
@@ -95,7 +108,9 @@
                     >
                         Master Employee
                     </flux:sidebar.item>
+                    @endcan
 
+                    @can('view comelate employee')
                     <flux:sidebar.item 
                         icon="arrow-left-end-on-rectangle" 
                         href="{{ route('hr.comelate.index') }}" 
@@ -105,7 +120,9 @@
                     >
                         Comelate Employee
                     </flux:sidebar.item>
+                    @endcan
 
+                    @can('view violation employee')
                     <flux:sidebar.item 
                         icon="exclamation-triangle" 
                         href="{{ route('hr.violation.index') }}" 
@@ -115,17 +132,22 @@
                     >
                         Violation Employee
                     </flux:sidebar.item>
+                    @endcan
 
+                    @can('view employee call')
                     <flux:sidebar.item 
                         icon="phone-arrow-up-right" 
-                        href="#"
+                        href="{{ route('hr.employee-call.index') }}" 
                         wire:navigate
+                        :current="request()->routeIs('hr.employee-call.index')"
                         class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-black dark:data-[current]:border-white"
                     >
                         Employee Call
                     </flux:sidebar.item>
+                    @endcan
 
                 </flux:sidebar.group>
+                @endcanany
 
                 @canany(['view users', 'view roles', 'view permissions'])
                 <flux:sidebar.group icon="cog-6-tooth" expandable heading="Settings" class="grid">
@@ -207,39 +229,32 @@
                     </span>
                 </a>
                 
-                <!-- Appearance Dropdown - Icon only (no text) -->
-                <flux:dropdown x-data>
-                    <flux:button variant="ghost" 
-                        class="cursor-pointer !p-2 lg:!p-2.5 rounded-lg 
-                            hover:bg-zinc-200 dark:hover:bg-zinc-700 
-                            focus:bg-zinc-200 dark:focus:bg-zinc-700
-                            transition-all duration-200">
-                        <div class="flex items-center">
-                            <!-- Dynamic icon based on current theme -->
-                            <template x-if="$flux.appearance === 'light'">
-                                <flux:icon.sun class="w-5 h-5 text-zinc-700 dark:text-zinc-200" />
-                            </template>
-                            <template x-if="$flux.appearance === 'dark'">
-                                <flux:icon.moon class="w-5 h-5 text-zinc-700 dark:text-zinc-200" />
-                            </template>
-                            <template x-if="$flux.appearance === 'system'">
-                                <flux:icon.computer-desktop class="w-5 h-5 text-zinc-700 dark:text-zinc-200" />
-                            </template>
-                        </div>
-                    </flux:button>
+                <button 
+                    x-data
+                    @click="$flux.dark = ! $flux.dark"
+                    class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                    :aria-label="$flux.dark ? 'Switch to light mode' : 'Switch to dark mode'"
+                >
+                    <svg 
+                        x-show="!$flux.dark" 
+                        class="w-5 h-5"
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                    >
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
                     
-                    <flux:menu>
-                        <flux:menu.item x-on:click="$flux.appearance = 'light'" icon="sun">
-                            {{ __('Light') }}
-                        </flux:menu.item>
-                        <flux:menu.item x-on:click="$flux.appearance = 'dark'" icon="moon">
-                            {{ __('Dark') }}
-                        </flux:menu.item>
-                        <flux:menu.item x-on:click="$flux.appearance = 'system'" icon="computer-desktop">
-                            {{ __('System') }}
-                        </flux:menu.item>
-                    </flux:menu>
-                </flux:dropdown>
+                    <svg 
+                        x-show="$flux.dark" 
+                        class="w-5 h-5"
+                        fill="none" 
+                        stroke="currentColor" 
+                        viewBox="0 0 24 24"
+                    >
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                </button>
                 
                 <!-- Logout Button - Icon with text on desktop -->
                 <form method="POST" action="{{ route('logout') }}">

@@ -67,7 +67,7 @@ class ComelateEmployeeCreate extends Component
     public function formatMinutes($minutes)
     {
         if (!$minutes || $minutes == 0) {
-            return 'Tidak terlambat';
+            return '-';
         }
         
         return $minutes . ' Menit';

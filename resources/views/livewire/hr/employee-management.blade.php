@@ -5,7 +5,7 @@
             Dashboard
         </flux:breadcrumbs.item>
         <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
-            Human Resource
+            HR
         </flux:breadcrumbs.item>
         <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
             Employee
@@ -60,7 +60,7 @@
     </div>
 
     <!-- Employees Table -->
-    <flux:card class="overflow-hidden">
+    <flux:card class="p-6 h-full shadow-lg hover:shadow-xl transition-shadow duration-300">
         <div class="overflow-x-auto">
             <table class="w-full whitespace-nowrap">
                 <thead>
@@ -76,6 +76,7 @@
                         <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Last Route</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider text-center">Comelate</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider text-center">Violation</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider text-center">Employee Call</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider w-20">Actions</th>
                     </tr>
                 </thead>
@@ -84,10 +85,11 @@
                     @php
                         $comelateCount = $employee->comelateEmployees->count();
                         $violationCount = $employee->violationEmployees->count();
+                        $employeeCallCount = $employee->employeeCalls->count();
                     @endphp
                     <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors" wire:key="employee-{{ $employee->id }}">
                         <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400 whitespace-nowrap">
-                            {{ $employee->id }}
+                            {{ $employees->firstItem() + $index }}
                         </td>
                         <td class="px-4 py-3 whitespace-nowrap">
                             <span class="font-mono text-sm text-zinc-700 dark:text-zinc-300">
@@ -159,6 +161,17 @@
                                 </span>
                             @endif
                         </td>
+                        <td class="px-4 py-3 text-center whitespace-nowrap">
+                            @if($employeeCallCount > 0)
+                                <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-semibold rounded-full {{ $employeeCallCount >= 5 ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' : 'bg-teal-100 text-teal-800 dark:bg-teal-900/30 dark:text-teal-400' }}">
+                                    {{ $employeeCallCount }}
+                                </span>
+                            @else
+                                <span class="inline-flex items-center justify-center px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                                    0
+                                </span>
+                            @endif
+                        </td>
                         <td class="px-4 py-3 whitespace-nowrap">
                             <flux:button 
                                 wire:click="view({{ $employee->id }})" 
@@ -173,7 +186,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="12" class="px-4 py-12 text-center">
+                        <td colspan="13" class="px-4 py-12 text-center">
                             <div class="flex flex-col items-center gap-3">
                                 <div class="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
                                     <flux:icon name="users" class="w-10 h-10 text-zinc-400 dark:text-zinc-500" />
@@ -271,27 +284,36 @@
                     </div>
 
                     <!-- Tabs Navigation -->
-                    <div class="border-b border-zinc-200 dark:border-zinc-700">
-                        <nav class="flex gap-6">
-                            <button 
-                                wire:click="setActiveTab('comelate')"
-                                class="pb-3 text-sm font-medium transition-colors {{ $activeTab === 'comelate' ? 'text-blue-600 border-b-2 border-blue-600 dark:text-blue-400' : 'text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300' }}"
-                            >
-                                Comelate Records 
-                                <span class="ml-1 px-1.5 py-0.5 text-xs bg-zinc-100 dark:bg-zinc-700 rounded-full">
-                                    {{ $selectedEmployee->comelateEmployees->count() }}
-                                </span>
-                            </button>
-                            <button 
-                                wire:click="setActiveTab('violation')"
-                                class="pb-3 text-sm font-medium transition-colors {{ $activeTab === 'violation' ? 'text-blue-600 border-b-2 border-blue-600 dark:text-blue-400' : 'text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300' }}"
-                            >
-                                Violation Records 
-                                <span class="ml-1 px-1.5 py-0.5 text-xs bg-zinc-100 dark:bg-zinc-700 rounded-full">
-                                    {{ $selectedEmployee->violationEmployees->count() }}
-                                </span>
-                            </button>
-                        </nav>
+                    <div class="flex gap-2 mb-4">
+                        <button 
+                            wire:click="setActiveTab('comelate')"
+                            class="px-4 py-2 text-sm font-medium rounded-full transition-colors {{ $activeTab === 'comelate' ? 'bg-blue-600 text-white' : 'bg-zinc-100 text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700' }}"
+                        >
+                            Comelate Records 
+                            <span class="ml-1 px-1.5 py-0.5 text-xs {{ $activeTab === 'comelate' ? 'bg-blue-500 text-white' : 'bg-zinc-200 text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300' }} rounded-full">
+                                {{ $selectedEmployee->comelateEmployees->count() }}
+                            </span>
+                        </button>
+                        
+                        <button 
+                            wire:click="setActiveTab('violation')"
+                            class="px-4 py-2 text-sm font-medium rounded-full transition-colors {{ $activeTab === 'violation' ? 'bg-blue-600 text-white' : 'bg-zinc-100 text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700' }}"
+                        >
+                            Violation Records 
+                            <span class="ml-1 px-1.5 py-0.5 text-xs {{ $activeTab === 'violation' ? 'bg-blue-500 text-white' : 'bg-zinc-200 text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300' }} rounded-full">
+                                {{ $selectedEmployee->violationEmployees->count() }}
+                            </span>
+                        </button>
+                        
+                        <button 
+                            wire:click="setActiveTab('employeecall')"
+                            class="px-4 py-2 text-sm font-medium rounded-full transition-colors {{ $activeTab === 'employeecall' ? 'bg-blue-600 text-white' : 'bg-zinc-100 text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700' }}"
+                        >
+                            Employee Call Records 
+                            <span class="ml-1 px-1.5 py-0.5 text-xs {{ $activeTab === 'employeecall' ? 'bg-blue-500 text-white' : 'bg-zinc-200 text-zinc-600 dark:bg-zinc-700 dark:text-zinc-300' }} rounded-full">
+                                {{ $selectedEmployee->employeeCalls->count() }}
+                            </span>
+                        </button>
                     </div>
 
                     <!-- Comelate Records Tab -->
@@ -520,6 +542,100 @@
                         <div class="text-center py-8 bg-zinc-50 dark:bg-zinc-800/30 rounded-lg">
                             <flux:icon name="document-text" class="w-12 h-12 text-zinc-400 dark:text-zinc-500 mx-auto mb-2" />
                             <p class="text-sm text-zinc-500 dark:text-zinc-400">No violation records found for this employee</p>
+                        </div>
+                        @endif
+                    </div>
+                    @endif
+
+                    <!-- Employee Call Records Tab -->
+                    @if($activeTab === 'employeecall')
+                    <div class="space-y-3">
+                        @php
+                            $allCalls = $selectedEmployee->employeeCalls->sortByDesc('date_call');
+                            $totalCalls = $allCalls->count();
+                            $currentCallPage = $employeeCallPage ?? 1;
+                            $perPageCall = 5;
+                            $lastCallPage = ceil($totalCalls / $perPageCall);
+                            $calls = $allCalls->slice(($currentCallPage - 1) * $perPageCall, $perPageCall);
+                        @endphp
+                        
+                        @if($totalCalls > 0)
+                        <div class="border border-zinc-200 dark:border-zinc-700 rounded-lg overflow-hidden">
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-sm">
+                                    <thead class="bg-zinc-50 dark:bg-zinc-800/50">
+                                        <tr>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Category</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Date Call</th>
+                                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Time Call</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
+                                        @foreach($calls as $call)
+                                        <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
+                                            <td class="px-4 py-3 whitespace-nowrap">
+                                                @if($call->category == 'Violation')
+                                                    <span class="inline-block px-3 py-1 text-sm font-medium text-white bg-red-600 rounded-full cursor-default">Violation</span>
+                                                @elseif($call->category == 'Comelate')
+                                                    <span class="inline-block px-3 py-1 text-sm font-medium text-black bg-yellow-400 rounded-full cursor-default">Comelate</span>
+                                                @else
+                                                    <span class="inline-block px-3 py-1 text-sm font-medium text-gray-800 bg-gray-200 rounded-full cursor-default">{{ $call->category }}</span>
+                                                @endif
+                                            </td>
+                                            <td class="px-4 py-3 text-sm text-zinc-500 whitespace-nowrap">
+                                                {{ \Carbon\Carbon::parse($call->date_call)->format('d M Y') }}
+                                            </td>
+                                            <td class="px-4 py-3 text-sm text-zinc-500 whitespace-nowrap">
+                                                {{ \Carbon\Carbon::parse($call->time_call)->format('H:i') }}
+                                            </td>
+                                            </td>
+                                        </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            @if($lastCallPage > 1)
+                            <div class="flex justify-between items-center px-4 py-3 border-t border-zinc-200 dark:border-zinc-700">
+                                <div class="text-sm text-zinc-500 dark:text-zinc-400">
+                                    Showing {{ ($currentCallPage - 1) * $perPageCall + 1 }} to {{ min($currentCallPage * $perPageCall, $totalCalls) }} of {{ $totalCalls }} records
+                                </div>
+                                <div class="flex gap-2">
+                                    <flux:button 
+                                        wire:click="setEmployeeCallPage({{ $currentCallPage - 1 }})"
+                                        size="sm"
+                                        variant="outline"
+                                        :disabled="$currentCallPage <= 1"
+                                        class="!px-3"
+                                    >
+                                        Previous
+                                    </flux:button>
+                                    @for($i = 1; $i <= $lastCallPage; $i++)
+                                        @if($i == $currentCallPage)
+                                            <flux:button size="sm" variant="primary" class="!px-3">{{ $i }}</flux:button>
+                                        @elseif($i == 1 || $i == $lastCallPage || ($i >= $currentCallPage - 1 && $i <= $currentCallPage + 1))
+                                            <flux:button wire:click="setEmployeeCallPage({{ $i }})" size="sm" variant="outline" class="!px-3">{{ $i }}</flux:button>
+                                        @elseif($i == $currentCallPage - 2 || $i == $currentCallPage + 2)
+                                            <span class="px-2 py-1 text-sm text-zinc-500 dark:text-zinc-400">...</span>
+                                        @endif
+                                    @endfor
+                                    <flux:button 
+                                        wire:click="setEmployeeCallPage({{ $currentCallPage + 1 }})"
+                                        size="sm"
+                                        variant="outline"
+                                        :disabled="$currentCallPage >= $lastCallPage"
+                                        class="!px-3"
+                                    >
+                                        Next
+                                    </flux:button>
+                                </div>
+                            </div>
+                            @endif
+                        </div>
+                        @else
+                        <div class="text-center py-8 bg-zinc-50 dark:bg-zinc-800/30 rounded-lg">
+                            <flux:icon name="phone" class="w-12 h-12 text-zinc-400 dark:text-zinc-500 mx-auto mb-2" />
+                            <p class="text-sm text-zinc-500 dark:text-zinc-400">No employee call records found for this employee</p>
                         </div>
                         @endif
                     </div>

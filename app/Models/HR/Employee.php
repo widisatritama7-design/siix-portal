@@ -44,7 +44,7 @@ class Employee extends Model
         return $this->hasMany(ViolationEmployee::class, 'nik', 'id');
     }
 
-    public function employeeCall()
+    public function employeeCalls()
     {
         return $this->hasMany(EmployeeCall::class, 'nik', 'id');
     }

@@ -23,9 +23,12 @@
             </p>
         </div>
         <div class="flex gap-2">
+        
+            @can('create violation employee')
             <flux:button wire:click="create" variant="primary" icon="plus">
                 Add Violation
             </flux:button>
+            @endcan
         </div>
     </div>
 
@@ -299,7 +302,7 @@
     </flux:modal>
 
     <!-- Violations Table -->
-    <flux:card class="overflow-hidden">
+    <flux:card class="p-6 h-full shadow-lg hover:shadow-xl transition-shadow duration-300">
         <div class="overflow-x-auto">
             <table class="w-full whitespace-nowrap">
                 <thead>
@@ -379,6 +382,7 @@
                         </td>
                         <td class="px-4 py-3 whitespace-nowrap">
                             <div class="flex items-center gap-1">
+                                @can('view violation employee')
                                 <flux:button 
                                     wire:click="view({{ $violation->id }})" 
                                     size="sm" 
@@ -387,7 +391,8 @@
                                     class="!p-1.5"
                                     title="View details"
                                 />
-                                @if($canEdit)
+                                @endcan
+                                @can('edit violation employee')
                                 <flux:button 
                                     wire:click="edit({{ $violation->id }})" 
                                     size="sm" 
@@ -396,7 +401,7 @@
                                     class="!p-1.5"
                                     title="Edit record"
                                 />
-                                @endif
+                                @endcan
                             </div>
                         </td>
                     </tr>

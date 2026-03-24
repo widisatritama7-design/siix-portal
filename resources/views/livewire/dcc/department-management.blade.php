@@ -50,7 +50,7 @@
     </div>
 
     <!-- Departments Table -->
-    <flux:card class="overflow-hidden">
+    <flux:card class="p-6 h-full shadow-lg hover:shadow-xl transition-shadow duration-300">
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead>

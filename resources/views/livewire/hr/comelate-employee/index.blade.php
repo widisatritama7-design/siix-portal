@@ -24,6 +24,7 @@
         </div>
 
         <div class="flex gap-2">
+            @can('create comelate employee')
             <flux:button 
                 variant="primary" 
                 icon="plus" 
@@ -32,6 +33,7 @@
             >
                 Add New Record
             </flux:button>
+            @endcan
         </div>
     </div>
 
@@ -151,7 +153,7 @@
     </div>
 
     <!-- Table -->
-    <flux:card class="overflow-hidden">
+    <flux:card class="p-6 h-full shadow-lg hover:shadow-xl transition-shadow duration-300">
         <div class="overflow-x-auto">
             <table class="w-full whitespace-nowrap">
                 <thead>
@@ -221,7 +223,7 @@
                         </td>
                         <td class="px-4 py-3 text-right whitespace-nowrap">
                             <div class="flex items-center justify-end gap-1">
-                                @if($canEdit)
+                                @can('edit comelate employee')
                                 <flux:button 
                                     wire:click="checkEdit({{ $item->id }})"
                                     size="sm"
@@ -229,7 +231,8 @@
                                     class="!p-2 text-yellow-600 hover:bg-yellow-50 dark:text-yellow-400 dark:hover:bg-yellow-950/50"
                                     title="Edit record"
                                 />
-                                @endif
+                                @endcan
+                                @can('delete comelate employee')
                                 <flux:button 
                                     wire:click="confirmDelete({{ $item->id }})"
                                     size="sm"
@@ -237,6 +240,7 @@
                                     class="!p-2 text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/50"
                                     title="Delete record"
                                 />
+                                @endcan
                             </div>
                         </td>
                     </tr>

@@ -173,6 +173,12 @@ class ComelateEmployeeManagement extends Component
     // Open view modal
     public function view($id)
     {
+        // CEK AKSES
+        if (!auth()->user()->can('view comelate employee')) {
+            $this->dispatch('notify', message: 'You do not have permission to view comelate employee!', type: 'error');
+            return;
+        }
+        
         $this->selectedComelate = ComelateEmployee::with(['employee', 'creator', 'updater'])->findOrFail($id);
         $this->showViewModal = true;
     }
@@ -180,6 +186,12 @@ class ComelateEmployeeManagement extends Component
     // Confirm delete - open modal with reason
     public function confirmDelete($id)
     {
+        // CEK AKSES
+        if (!auth()->user()->can('delete comelate employee')) {
+            $this->dispatch('notify', message: 'You do not have permission to delete comelate employee!', type: 'error');
+            return;
+        }
+        
         $this->deleteId = $id;
         $this->reason_to_delete = '';
         $this->dispatch('open-delete-modal', ['id' => $id]);
@@ -188,6 +200,12 @@ class ComelateEmployeeManagement extends Component
     // Delete data with reason
     public function delete()
     {
+        // CEK AKSES
+        if (!auth()->user()->can('delete comelate employee')) {
+            $this->dispatch('notify', message: 'You do not have permission to delete comelate employee!', type: 'error');
+            return;
+        }
+        
         $this->validate([
             'reason_to_delete' => 'required|min:5|max:500',
         ]);
@@ -220,6 +238,12 @@ class ComelateEmployeeManagement extends Component
     // Check if record can be edited before redirecting
     public function checkEdit($id)
     {
+        // CEK AKSES
+        if (!auth()->user()->can('edit comelate employee')) {
+            $this->dispatch('notify', message: 'You do not have permission to edit comelate employee!', type: 'error');
+            return;
+        }
+        
         $record = ComelateEmployee::find($id);
         
         if (!$record) {
@@ -251,6 +275,11 @@ class ComelateEmployeeManagement extends Component
     
     public function render()
     {
+        // CEK AKSES VIEW
+        if (!auth()->user()->can('view comelate employee')) {
+            abort(403, 'Unauthorized access.');
+        }
+        
         $comelateEmployees = ComelateEmployee::query()
             ->with(['employee', 'creator', 'updater'])
             ->when($this->search, function ($query) {

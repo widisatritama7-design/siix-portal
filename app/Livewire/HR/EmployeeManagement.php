@@ -17,9 +17,11 @@ class EmployeeManagement extends Component
     public $perPage = 10;
     public $comelatePage = 1;
     public $violationPage = 1;
+    public $employeeCallPage = 1;
     public $perPageComelate = 5;
     public $perPageViolation = 5;
-    public $activeTab = 'comelate'; // 'comelate' or 'violation'
+    public $perPageEmployeeCall = 5;
+    public $activeTab = 'comelate'; // 'comelate', 'violation', or 'employeecall'
     
     // Properties untuk view modal
     public $showViewModal = false;
@@ -63,6 +65,11 @@ class EmployeeManagement extends Component
         $this->violationPage = $page;
     }
     
+    public function setEmployeeCallPage($page)
+    {
+        $this->employeeCallPage = $page;
+    }
+    
     public function setActiveTab($tab)
     {
         $this->activeTab = $tab;
@@ -78,14 +85,24 @@ class EmployeeManagement extends Component
     
     public function view($id)
     {
+        // CEK AKSES
+        if (!auth()->user()->can('view employee')) {
+            $this->dispatch('notify', message: 'You do not have permission to view employee!', type: 'error');
+            return;
+        }
+
         $this->comelatePage = 1;
         $this->violationPage = 1;
+        $this->employeeCallPage = 1;
         $this->activeTab = 'comelate';
         $this->selectedEmployee = Employee::with(['comelateEmployees' => function($query) {
             $query->orderBy('tanggal', 'desc')
                   ->orderBy('jam', 'desc');
         }, 'violationEmployees' => function($query) {
             $query->orderBy('date', 'desc')
+                  ->orderBy('created_at', 'desc');
+        }, 'employeeCalls' => function($query) {
+            $query->orderBy('date_call', 'desc')
                   ->orderBy('created_at', 'desc');
         }])->findOrFail($id);
         
@@ -148,8 +165,13 @@ class EmployeeManagement extends Component
     
     public function render()
     {
+        // CEK AKSES VIEW
+        if (!auth()->user()->can('view employee')) {
+            abort(403, 'Unauthorized access.');
+        }
+
         $employees = Employee::query()
-            ->with(['comelateEmployees', 'violationEmployees'])
+            ->with(['comelateEmployees', 'violationEmployees', 'employeeCalls'])
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('nik', 'like', '%' . $this->search . '%')
