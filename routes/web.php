@@ -6,11 +6,14 @@ use App\Livewire\DCC\SubmissionManagement;
 use App\Livewire\HR\ComelateEmployee\ComelateEmployeeCreate;
 use App\Livewire\HR\ComelateEmployee\ComelateEmployeeEdit;
 use App\Livewire\HR\ComelateEmployee\ComelateEmployeeManagement;
+use App\Livewire\HR\ComelateEmployee\ComelateReport;
 use App\Livewire\HR\EmployeeCallManagement;
 use App\Livewire\HR\EmployeeManagement;
 use App\Livewire\HR\Violation\ViolationEmployeeCreate;
 use App\Livewire\HR\Violation\ViolationEmployeeEdit;
 use App\Livewire\HR\Violation\ViolationEmployeeManagement;
+use App\Livewire\HR\Violation\ViolationReport;
+use App\Livewire\NotificationManager;
 use App\Livewire\User\Permission\PermissionManagement;
 use App\Livewire\User\Role\RoleManagement;
 use App\Livewire\User\UserManagement;
@@ -24,6 +27,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard
     Route::view('main-dashboard', 'home.dashboard')->name('dashboard');
     Route::view('dcc-dashboard', 'home.dcc_dashboard')->name('dcc-dashboard');
+    Route::view('hr-dashboard', 'home.hr_dashboard')->name('hr-dashboard');
+
+    // Notification
+    Route::get('/notifications', NotificationManager::class)->name('notifications.manager');
     
     // Inbox - Changed from Route::view to use controller
     Route::get('/inbox', [InboxController::class, 'index'])->name('inbox');
@@ -47,10 +54,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/hr/comelate', ComelateEmployeeManagement::class)->name('hr.comelate.index');
     Route::get('/hr/comelate/create', ComelateEmployeeCreate::class)->name('hr.comelate.create');
     Route::get('/hr/comelate/{id}/edit', ComelateEmployeeEdit::class)->name('hr.comelate.edit');
+    Route::get('/hr/comelate/report', ComelateReport::class)->name('hr.comelate.report');
     Route::get('/hr/violation', ViolationEmployeeManagement::class)->name('hr.violation.index');
     Route::get('/hr/violation/create', ViolationEmployeeCreate::class)->name('hr.violation.create');
     Route::get('/hr/violation/{id}/edit', ViolationEmployeeEdit::class)->name('hr.violation.edit');
+    Route::get('/hr/violation/report', ViolationReport::class)->name('hr.violation.report');
     Route::get('/hr/employee-call', EmployeeCallManagement::class)->name('hr.employee-call.index');
 });
 
 require __DIR__.'/settings.php';
+require __DIR__.'/esd.php';

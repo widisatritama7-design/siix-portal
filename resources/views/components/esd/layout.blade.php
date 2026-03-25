@@ -43,7 +43,7 @@
             class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-sm w-full"
         >
 
-            <flux:navlist aria-label="Settings" class="w-full" class="p-6 h-full shadow-lg hover:shadow-xl transition-shadow duration-300">
+            <flux:navlist aria-label="Settings" class="w-full">
 
                 <!-- Profile -->
                 <flux:navlist.item 

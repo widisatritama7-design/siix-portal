@@ -6,6 +6,7 @@ use App\Models\HR\ViolationEmployee;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Response;
 
 class ViolationEmployeeManagement extends Component
 {
@@ -20,6 +21,14 @@ class ViolationEmployeeManagement extends Component
     public $yearFilter = '';
     public $monthFilter = '';
     public $perPage = 10;
+    public $showFilters = false;
+    public $deleteId = null;
+    public $showDeleteModal = false;
+    
+    // Export date range
+    public $exportDateFrom = '';
+    public $exportDateUntil = '';
+    public $showExportModal = false;
     
     // Properties untuk sub category filter
     public $selectedSubCategories = [];
@@ -59,7 +68,6 @@ class ViolationEmployeeManagement extends Component
     public function updatingCategoryFilter()
     {
         $this->resetPage();
-        // Reset sub categories when category changes
         if ($this->categoryFilter !== 'Kendaraan') {
             $this->selectedSubCategories = [];
         }
@@ -98,6 +106,213 @@ class ViolationEmployeeManagement extends Component
     public function updatingSelectedSubCategories()
     {
         $this->resetPage();
+    }
+    
+    protected function getQuery()
+    {
+        return ViolationEmployee::query()
+            ->with(['employee', 'creator', 'updater'])
+            ->when($this->search, function ($query) {
+                $query->where(function ($q) {
+                    $q->where('nik', 'like', '%' . $this->search . '%')
+                      ->orWhere('name', 'like', '%' . $this->search . '%')
+                      ->orWhere('dept', 'like', '%' . $this->search . '%')
+                      ->orWhere('plat_motor', 'like', '%' . $this->search . '%')
+                      ->orWhere('security_name', 'like', '%' . $this->search . '%')
+                      ->orWhereHas('employee', function ($subQuery) {
+                          $subQuery->where('name', 'like', '%' . $this->search . '%')
+                                   ->orWhere('nik', 'like', '%' . $this->search . '%');
+                      });
+                });
+            })
+            ->when($this->categoryFilter, function ($query) {
+                $query->where('category', $this->categoryFilter);
+            })
+            ->when(!empty($this->selectedSubCategories), function ($query) {
+                $query->where(function ($q) {
+                    foreach ($this->selectedSubCategories as $subCat) {
+                        $q->orWhereJsonContains('sub_category', $subCat);
+                    }
+                });
+            })
+            ->when($this->shiftFilter, function ($query) {
+                $query->where('shift', $this->shiftFilter);
+            })
+            ->when($this->dateFrom, function ($query) {
+                $query->whereDate('date', '>=', $this->dateFrom);
+            })
+            ->when($this->dateUntil, function ($query) {
+                $query->whereDate('date', '<=', $this->dateUntil);
+            })
+            ->when($this->yearFilter, function ($query) {
+                $query->whereYear('date', $this->yearFilter);
+            })
+            ->when($this->monthFilter, function ($query) {
+                $query->whereMonth('date', $this->monthFilter);
+            });
+    }
+    
+    // Export with date range
+    public function exportWithDateRange()
+    {
+        if (!auth()->user()->can('export violation employee')) {
+            $this->dispatch('notify', message: 'You do not have permission to export violation employee!', type: 'error');
+            return;
+        }
+        
+        $this->validate([
+            'exportDateFrom' => 'required|date',
+            'exportDateUntil' => 'required|date|after_or_equal:exportDateFrom',
+        ]);
+        
+        $records = ViolationEmployee::with(['employee', 'creator'])
+            ->whereDate('date', '>=', $this->exportDateFrom)
+            ->whereDate('date', '<=', $this->exportDateUntil)
+            ->orderBy('date', 'asc')
+            ->get();
+        
+        if ($records->isEmpty()) {
+            $this->dispatch('notify', message: 'No data available for the selected date range.', type: 'warning');
+            $this->showExportModal = false;
+            return;
+        }
+        
+        $this->showExportModal = false;
+        
+        $fileName = 'violation_' . $this->exportDateFrom . '_to_' . $this->exportDateUntil . '_' . date('Y-m-d') . '.csv';
+        
+        return response()->streamDownload(function() use ($records) {
+            $this->generateCSVContent($records);
+        }, $fileName, [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+        ]);
+    }
+    
+    // Export all filtered data
+    public function exportCurrentFiltered()
+    {
+        if (!auth()->user()->can('export violation employee')) {
+            $this->dispatch('notify', message: 'You do not have permission to export violation employee!', type: 'error');
+            return;
+        }
+        
+        $records = $this->getQuery()->get();
+        
+        if ($records->isEmpty()) {
+            $this->dispatch('notify', message: 'No data available to export.', type: 'warning');
+            return;
+        }
+        
+        $fileName = 'violation_export_' . date('Y-m-d_H-i-s') . '.csv';
+        
+        return response()->streamDownload(function() use ($records) {
+            $this->generateCSVContent($records);
+        }, $fileName, [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+        ]);
+    }
+    
+    // Generate CSV content
+    protected function generateCSVContent($records)
+    {
+        $output = fopen('php://output', 'w');
+        
+        // Add UTF-8 BOM for Excel
+        fwrite($output, "\xEF\xBB\xBF");
+        
+        // Headers
+        fputcsv($output, [
+            'No', 'NIK', 'Name', 'Department', 'Status', 'Shift', 'Category',
+            'Tidak Ada Stiker', 'Tidak membawa STNK', 'STNK Expired',
+            'Tidak membawa SIM', 'SIM Expired', 'Plat Kendaraan Mati',
+            'Kendaraan Tidak Sesuai', 'Plat Motor', 'Nama Security',
+            'Alasan', 'Remarks', 'Tanggal Kejadian', 'Created At', 'Created By'
+        ]);
+        
+        $index = 0;
+        foreach ($records as $record) {
+            $index++;
+            
+            // Status mapping
+            $statusCode = $record->employee->status ?? $record->status ?? null;
+            $status = match((int)$statusCode) {
+                1 => 'Permanent',
+                2 => 'Contract',
+                3 => 'Magang',
+                default => 'Unknown',
+            };
+            
+            // Shift mapping
+            $shiftText = match($record->shift) {
+                'NS' => 'Non Shift',
+                '1' => 'Shift 1',
+                '2' => 'Shift 2',
+                '3' => 'Shift 3',
+                default => $record->shift ?? '-',
+            };
+            
+            // Parse sub categories
+            $subCategories = $this->parseSubCategories($record->sub_category);
+            
+            // Check sub categories
+            $hasNoStiker = in_array('Tidak Ada Stiker (SIM & STNK Lengkap)', $subCategories) ? '✓' : '';
+            $hasNoStnk = in_array('Tidak membawa STNK/Tidak ada STNK', $subCategories) ? '✓' : '';
+            $hasStnkExpired = in_array('STNK Expired', $subCategories) ? '✓' : '';
+            $hasNoSim = in_array('Tidak membawa SIM/Tidak ada SIM', $subCategories) ? '✓' : '';
+            $hasSimExpired = in_array('SIM Expired', $subCategories) ? '✓' : '';
+            $hasPlatMati = in_array('Plat Kendaraan Mati', $subCategories) ? '✓' : '';
+            $hasKendaraanTidakSesuai = in_array('Kendaraan tidak sesuai standar (cth. Tidak ada spion,tidak ada plat No dll)', $subCategories) ? '✓' : '';
+            
+            // Format date
+            $tanggalKejadian = $record->date ? Carbon::parse($record->date)->format('d/m/Y') : '-';
+            $createdAt = $record->created_at ? Carbon::parse($record->created_at)->format('d-m-Y H:i') : '-';
+            
+            fputcsv($output, [
+                $index,
+                $record->employee->nik ?? $record->nik,
+                $record->employee->name ?? $record->name,
+                $record->employee->department ?? $record->dept,
+                $status,
+                $shiftText,
+                $record->category ?? '-',
+                $hasNoStiker,
+                $hasNoStnk,
+                $hasStnkExpired,
+                $hasNoSim,
+                $hasSimExpired,
+                $hasPlatMati,
+                $hasKendaraanTidakSesuai,
+                $record->plat_motor ?? '-',
+                $record->security_name ?? '-',
+                $record->alasan ?? '-',
+                $record->remarks ?? '-',
+                $tanggalKejadian,
+                $createdAt,
+                $record->creator->name ?? '-',
+            ]);
+        }
+        
+        fclose($output);
+    }
+    
+    protected function parseSubCategories($subCategory)
+    {
+        if (empty($subCategory)) {
+            return [];
+        }
+        
+        if (is_array($subCategory)) {
+            return $subCategory;
+        }
+        
+        $decoded = json_decode($subCategory, true);
+        if (is_array($decoded)) {
+            return $decoded;
+        }
+        
+        return [];
     }
     
     public function getCategoriesProperty()
@@ -147,30 +362,6 @@ class ViolationEmployeeManagement extends Component
         ];
     }
     
-    public function getHasActiveFiltersProperty()
-    {
-        return !empty($this->categoryFilter) || 
-               !empty($this->selectedSubCategories) || 
-               !empty($this->shiftFilter) || 
-               !empty($this->dateFrom) || 
-               !empty($this->dateUntil) || 
-               !empty($this->yearFilter) || 
-               !empty($this->monthFilter);
-    }
-    
-    public function getActiveFiltersCountProperty()
-    {
-        $count = 0;
-        if (!empty($this->categoryFilter)) $count++;
-        if (!empty($this->selectedSubCategories)) $count += count($this->selectedSubCategories);
-        if (!empty($this->shiftFilter)) $count++;
-        if (!empty($this->dateFrom)) $count++;
-        if (!empty($this->dateUntil)) $count++;
-        if (!empty($this->yearFilter)) $count++;
-        if (!empty($this->monthFilter)) $count++;
-        return $count;
-    }
-    
     public function formatShift($shift)
     {
         return match($shift) {
@@ -205,13 +396,11 @@ class ViolationEmployeeManagement extends Component
     
     public function viewSubCategories($subCategories)
     {
-        // CEK AKSES
         if (!auth()->user()->can('view violation employee')) {
             $this->dispatch('notify', message: 'You do not have permission to view violation employee!', type: 'error');
             return;
         }
         
-        // If it's a string, decode it
         if (is_string($subCategories)) {
             $this->selectedSubCategoriesModal = json_decode($subCategories, true) ?? [];
         } else {
@@ -220,17 +409,8 @@ class ViolationEmployeeManagement extends Component
         $this->showSubCategoryModal = true;
     }
     
-    public function removeSubCategory($subCategory)
-    {
-        $this->selectedSubCategories = array_values(array_filter($this->selectedSubCategories, function($item) use ($subCategory) {
-            return $item !== $subCategory;
-        }));
-        $this->resetPage();
-    }
-    
     public function view($id)
     {
-        // CEK AKSES
         if (!auth()->user()->can('view violation employee')) {
             $this->dispatch('notify', message: 'You do not have permission to view violation employee!', type: 'error');
             return;
@@ -242,7 +422,6 @@ class ViolationEmployeeManagement extends Component
     
     public function create()
     {
-        // CEK AKSES
         if (!auth()->user()->can('create violation employee')) {
             $this->dispatch('notify', message: 'You do not have permission to create violation employee!', type: 'error');
             return;
@@ -253,7 +432,6 @@ class ViolationEmployeeManagement extends Component
     
     public function edit($id)
     {
-        // CEK AKSES
         if (!auth()->user()->can('edit violation employee')) {
             $this->dispatch('notify', message: 'You do not have permission to edit violation employee!', type: 'error');
             return;
@@ -268,53 +446,70 @@ class ViolationEmployeeManagement extends Component
         $this->resetPage();
     }
     
+    public function toggleFilters()
+    {
+        $this->showFilters = !$this->showFilters;
+    }
+    
+    public function openExportModal()
+    {
+        $this->exportDateFrom = '';
+        $this->exportDateUntil = '';
+        $this->showExportModal = true;
+    }
+    
+    public function closeExportModal()
+    {
+        $this->showExportModal = false;
+    }
+
+    public function confirmDelete($id)
+    {
+        if (!auth()->user()->can('delete violation employee')) {
+            $this->dispatch('notify', message: 'You do not have permission to delete violation employee!', type: 'error');
+            return;
+        }
+        
+        $this->deleteId = $id;
+        $this->showDeleteModal = true;
+    }
+
+    public function delete()
+    {
+        if (!auth()->user()->can('delete violation employee')) {
+            $this->dispatch('notify', message: 'You do not have permission to delete violation employee!', type: 'error');
+            return;
+        }
+        
+        if (!$this->deleteId) {
+            $this->dispatch('notify', message: 'No record selected for deletion.', type: 'error');
+            return;
+        }
+        
+        $violation = ViolationEmployee::findOrFail($this->deleteId);
+        
+        // Delete photo if exists
+        if ($violation->photo) {
+            \Storage::disk('public')->delete($violation->photo);
+        }
+        
+        $violation->delete();
+        
+        session()->flash('message', 'Data deleted successfully.');
+        $this->dispatch('notify', message: 'Data deleted successfully.', type: 'success');
+        
+        $this->showDeleteModal = false;
+        $this->reset(['deleteId']);
+        $this->resetPage();
+    }
+    
     public function render()
     {
-        // CEK AKSES VIEW
         if (!auth()->user()->can('view violation employee')) {
             abort(403, 'Unauthorized access.');
         }
         
-        $violations = ViolationEmployee::query()
-            ->with(['employee', 'creator', 'updater'])
-            ->when($this->search, function ($query) {
-                $query->where(function ($q) {
-                    $q->where('nik', 'like', '%' . $this->search . '%')
-                      ->orWhere('name', 'like', '%' . $this->search . '%')
-                      ->orWhere('dept', 'like', '%' . $this->search . '%')
-                      ->orWhere('plat_motor', 'like', '%' . $this->search . '%')
-                      ->orWhere('security_name', 'like', '%' . $this->search . '%')
-                      ->orWhereHas('employee', function ($subQuery) {
-                          $subQuery->where('name', 'like', '%' . $this->search . '%')
-                                   ->orWhere('nik', 'like', '%' . $this->search . '%');
-                      });
-                });
-            })
-            ->when($this->categoryFilter, function ($query) {
-                $query->where('category', $this->categoryFilter);
-            })
-            ->when(!empty($this->selectedSubCategories), function ($query) {
-                $query->where(function ($q) {
-                    foreach ($this->selectedSubCategories as $subCat) {
-                        $q->orWhereJsonContains('sub_category', $subCat);
-                    }
-                });
-            })
-            ->when($this->shiftFilter, function ($query) {
-                $query->where('shift', $this->shiftFilter);
-            })
-            ->when($this->dateFrom, function ($query) {
-                $query->whereDate('date', '>=', $this->dateFrom);
-            })
-            ->when($this->dateUntil, function ($query) {
-                $query->whereDate('date', '<=', $this->dateUntil);
-            })
-            ->when($this->yearFilter, function ($query) {
-                $query->whereYear('date', $this->yearFilter);
-            })
-            ->when($this->monthFilter, function ($query) {
-                $query->whereMonth('date', $this->monthFilter);
-            })
+        $violations = $this->getQuery()
             ->orderBy('date', 'desc')
             ->orderBy('created_at', 'desc')
             ->paginate($this->perPage);

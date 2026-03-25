@@ -98,9 +98,6 @@
                                     <span class="text-sm font-semibold text-zinc-800 dark:text-white block">
                                         {{ $user->name }}
                                     </span>
-                                    <span class="text-xs text-zinc-500 dark:text-zinc-400">
-                                        ID: #{{ $user->id }}
-                                    </span>
                                 </div>
                             </div>
                         </td>

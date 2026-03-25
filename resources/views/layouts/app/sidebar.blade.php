@@ -3,6 +3,74 @@
 <head>
     @include('partials.head')
     @fluxAppearance
+    <style>
+        /* Target semua kemungkinan elemen sidebar yang bisa memiliki scrollbar */
+        flux-sidebar,
+        [data-flux-sidebar],
+        .flux-sidebar,
+        .sidebar,
+        [role="navigation"]:has(flux-sidebar),
+        .overflow-y-auto,
+        .overflow-auto {
+            overflow-y: auto !important;
+            scrollbar-width: none !important; /* Firefox */
+            -ms-overflow-style: none !important; /* IE/Edge */
+        }
+        
+        /* Chrome, Safari, Opera */
+        flux-sidebar::-webkit-scrollbar,
+        [data-flux-sidebar]::-webkit-scrollbar,
+        .flux-sidebar::-webkit-scrollbar,
+        .sidebar::-webkit-scrollbar,
+        [role="navigation"]:has(flux-sidebar)::-webkit-scrollbar,
+        .overflow-y-auto::-webkit-scrollbar,
+        .overflow-auto::-webkit-scrollbar {
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
+            background: transparent !important;
+        }
+        
+        /* Target semua anak elemen yang mungkin memiliki scroll */
+        flux-sidebar *,
+        [data-flux-sidebar] *,
+        .flux-sidebar *,
+        .sidebar * {
+            scrollbar-width: none !important;
+            -ms-overflow-style: none !important;
+        }
+        
+        flux-sidebar *::-webkit-scrollbar,
+        [data-flux-sidebar] *::-webkit-scrollbar,
+        .flux-sidebar *::-webkit-scrollbar,
+        .sidebar *::-webkit-scrollbar {
+            display: none !important;
+        }
+        
+        /* Target khusus untuk sidebar container */
+        .min-h-screen > flux-sidebar,
+        body > flux-sidebar {
+            overflow-y: auto !important;
+            scrollbar-width: none !important;
+        }
+        
+        /* Jika ada class yang ditambahkan oleh Flux */
+        [class*="sidebar"] {
+            scrollbar-width: none !important;
+        }
+        
+        [class*="sidebar"]::-webkit-scrollbar {
+            display: none !important;
+        }
+        
+        /* Smooth scrolling untuk pengalaman yang lebih baik */
+        flux-sidebar,
+        [data-flux-sidebar],
+        .flux-sidebar {
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+    </style>
 </head>
 
 <body class="min-h-screen bg-white dark:bg-zinc-800">
@@ -11,6 +79,7 @@
         sticky 
         collapsible 
         class="bg-zinc-50 dark:bg-zinc-900 border-r border-zinc-300 dark:border-zinc-600 lg:shadow-[10px_0_15px_-5px_rgba(0,0,0,0.1)] lg:dark:shadow-[10px_0_15px_-5px_rgba(0,0,0,0.3)]"
+        style="overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none;"
     >
 
             <flux:sidebar.header>
@@ -24,7 +93,7 @@
                 </flux:sidebar.brand>
             </flux:sidebar.header>
 
-            <flux:sidebar.nav>
+            <flux:sidebar.nav style="overflow-y: visible;">
 
                 <!-- GROUP: MAIN (EXPANDABLE) - SEMUA USER BISA LIHAT DASHBOARD -->
                 <flux:sidebar.group icon="bars-arrow-down" expandable heading="Home" class="grid">
@@ -46,6 +115,17 @@
                         class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-black dark:data-[current]:border-white"
                     >
                         DCC Dashboard
+                    </flux:sidebar.item>
+                    @endcan
+                    @can('view hr-dashboard')
+                    <flux:sidebar.item 
+                        icon="home"
+                        href="{{ route('hr-dashboard') }}" 
+                        wire:navigate
+                        :current="request()->routeIs('hr-dashboard')"
+                        class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-black dark:data-[current]:border-white"
+                    >
+                        HR Dashboard
                     </flux:sidebar.item>
                     @endcan
                     @can('view inbox')
@@ -146,6 +226,34 @@
                     </flux:sidebar.item>
                     @endcan
 
+                    <flux:sidebar.group icon="printer" expandable heading="Reporting" class="grid">
+
+                        @can('view comelate employee')
+                        <flux:sidebar.item 
+                            icon="arrow-turn-down-right" 
+                            href="{{ route('hr.comelate.report') }}"
+                            wire:navigate
+                            :current="request()->routeIs('hr.comelate.report')"
+                            class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-black dark:data-[current]:border-white"
+                        >
+                            Comelate Report
+                        </flux:sidebar.item>
+                        @endcan
+
+                        @can('view violation employee')
+                        <flux:sidebar.item 
+                            icon="arrow-turn-down-right" 
+                            href="{{ route('hr.violation.report') }}"
+                            wire:navigate
+                            :current="request()->routeIs('hr.violation.report')"
+                            class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-black dark:data-[current]:border-white"
+                        >
+                            Violation Report
+                        </flux:sidebar.item>
+                        @endcan
+
+                    </flux:sidebar.group>
+
                 </flux:sidebar.group>
                 @endcanany
 
@@ -165,6 +273,18 @@
                     </flux:sidebar.item>
                     @endcan
 
+                    @can('view notification')
+                    <flux:sidebar.item 
+                        icon="bell-alert" 
+                        href="{{ route('notifications.manager') }}"
+                        wire:navigate
+                        :current="request()->routeIs('notifications.manager')"
+                        class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-black dark:data-[current]:border-white"
+                    >
+                        Notification
+                    </flux:sidebar.item>
+                    @endcan
+
 
                     {{-- Authorization --}}
                     @canany(['view roles', 'view permissions'])
@@ -172,7 +292,7 @@
 
                         @can('view roles')
                         <flux:sidebar.item 
-                            icon="shield-check" 
+                            icon="arrow-turn-down-right" 
                             href="{{ route('role.management') }}"
                             wire:navigate
                             :current="request()->routeIs('role.management')"
@@ -184,7 +304,7 @@
 
                         @can('view permissions')
                         <flux:sidebar.item 
-                            icon="key" 
+                            icon="arrow-turn-down-right" 
                             href="{{ route('permission.management') }}"
                             wire:navigate
                             :current="request()->routeIs('permission.management')"
@@ -208,9 +328,12 @@
 
     <flux:header class="sticky top-0 z-10 block! bg-white lg:bg-zinc-100 dark:bg-zinc-800 border-b border-zinc-200 dark:border-zinc-600 p-0! m-0! w-full shadow-sm">
         <flux:navbar class="flex items-center justify-between px-4 lg:px-6 mx-0!">
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-3">
                 <!-- Sidebar Toggle - Left Side -->
                 <flux:sidebar.toggle icon="bars-3" inset="left" />
+                
+                <!-- Livewire Header Badge Component -->
+                <livewire:header-badge />
             </div>
             
             <div class="flex items-center gap-1 sm:gap-2">
@@ -256,21 +379,17 @@
                     </svg>
                 </button>
                 
-                <!-- Logout Button - Icon with text on desktop -->
+                <!-- Logout Button -->
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" 
-                        class="inline-flex items-center gap-2 rounded-lg px-2 py-1.5 lg:px-3 lg:py-2
-                            text-white 
-                            dark:text-white 
-                            transition-all duration-200
-                            bg-red-400 hover:bg-red-700 
-                            dark:bg-red-600 dark:hover:bg-red-700
-                            focus:bg-red-700 dark:focus:bg-red-700
-                            focus:outline-none focus:ring-2 focus:ring-red-400/30">
-                        <flux:icon.arrow-right class="w-5 h-5" />
-                        <span class="hidden lg:inline text-sm font-medium">{{ __('Logout') }}</span>
-                    </button>
+                    <flux:button 
+                        type="submit" 
+                        variant="danger" 
+                        icon="arrow-right"
+                        size="sm"
+                    >
+                        <span class="hidden lg:inline">{{ __('Logout') }}</span>
+                    </flux:button>
                 </form>
             </div>
         </flux:navbar>
@@ -279,6 +398,20 @@
     {{ $slot }}
 
     @fluxScripts
+
+    <script>
+        // JavaScript fallback untuk memastikan scrollbar benar-benar tersembunyi
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebars = document.querySelectorAll('flux-sidebar, [data-flux-sidebar], .flux-sidebar');
+            sidebars.forEach(sidebar => {
+                if (sidebar) {
+                    sidebar.style.overflowY = 'auto';
+                    sidebar.style.scrollbarWidth = 'none';
+                    sidebar.style.msOverflowStyle = 'none';
+                }
+            });
+        });
+    </script>
 
 </body>
 </html>

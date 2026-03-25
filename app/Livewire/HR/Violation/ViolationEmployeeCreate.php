@@ -5,9 +5,13 @@ namespace App\Livewire\HR\Violation;
 use App\Models\HR\ViolationEmployee;
 use App\Models\HR\Employee;
 use App\Models\HR\EmployeeCall;
+use App\Models\HR\Hod;
+use App\Mail\HR\ViolationCreated;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class ViolationEmployeeCreate extends Component
 {
@@ -52,7 +56,7 @@ class ViolationEmployeeCreate extends Component
             $this->status_display = match($employee->status) {
                 1 => 'Permanent',
                 2 => 'Contract',
-                3 => 'Internship',
+                3 => 'Magang',
                 default => 'Unknown',
             };
             
@@ -70,6 +74,7 @@ class ViolationEmployeeCreate extends Component
                 ->get();
             
             $subCategoryCounts = [];
+            $subCategoryLastDates = [];
             
             foreach ($recentViolations as $violation) {
                 if ($violation->sub_category) {
@@ -80,6 +85,11 @@ class ViolationEmployeeCreate extends Component
                     foreach ($subCategories as $subCat) {
                         if (!isset($subCategoryCounts[$subCat])) {
                             $subCategoryCounts[$subCat] = 0;
+                            $subCategoryLastDates[$subCat] = $violation->created_at;
+                        } else {
+                            if ($violation->created_at > $subCategoryLastDates[$subCat]) {
+                                $subCategoryLastDates[$subCat] = $violation->created_at;
+                            }
                         }
                         $subCategoryCounts[$subCat]++;
                     }
@@ -136,7 +146,7 @@ class ViolationEmployeeCreate extends Component
             $photoPath = $this->photo->store('violations', 'public');
         }
         
-        ViolationEmployee::create([
+        $violation = ViolationEmployee::create([
             'nik' => $this->nik,
             'name' => $this->name,
             'dept' => $this->dept,
@@ -151,8 +161,52 @@ class ViolationEmployeeCreate extends Component
             'photo' => $photoPath,
         ]);
         
+        // Load employee relation
+        $violation->load('employee');
+        
+        // Send email notifications
+        $this->sendEmailNotifications($violation);
+        
         session()->flash('message', 'Violation record created successfully.');
         return redirect()->route('hr.violation.index');
+    }
+    
+    protected function sendEmailNotifications($violation)
+    {
+        try {
+            Log::info('=== SENDING VIOLATION EMAIL ===');
+            Log::info('Department: ' . $violation->dept);
+            Log::info('Employee NIK: ' . ($violation->employee?->nik ?? 'Not found'));
+            Log::info('Employee Name: ' . ($violation->employee?->name ?? 'Not found'));
+            
+            // Mencari data HOD berdasarkan department
+            $hod = Hod::where('department_name', $violation->dept)->first();
+            
+            Log::info('HOD found: ' . ($hod ? 'Yes' : 'No'));
+            
+            if ($hod) {
+                Log::info('HOD Name: ' . $hod->hod_name);
+                Log::info('HOD Email: ' . $hod->hod_email);
+            }
+            
+            $hodEmail = $hod?->hod_email;
+            $hodName = $hod?->hod_name ?? 'HOD';
+            
+            // Kirim email ke HOD jika ditemukan
+            if ($hodEmail) {
+                Log::info('Sending email to: ' . $hodEmail);
+                
+                Mail::to($hodEmail)->send(new ViolationCreated($violation, $hodName));
+                
+                Log::info('Email sent successfully to: ' . $hodEmail);
+            } else {
+                Log::warning('No HOD email found for department: ' . $violation->dept);
+            }
+            
+        } catch (\Exception $e) {
+            Log::error('Failed to send violation email: ' . $e->getMessage());
+            Log::error($e->getTraceAsString());
+        }
     }
     
     public function cancel()

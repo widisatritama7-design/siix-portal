@@ -4,8 +4,11 @@ namespace App\Livewire\HR\ComelateEmployee;
 
 use App\Models\HR\ComelateEmployee;
 use App\Models\HR\Employee;
+use App\Models\HR\Hod;
+use App\Mail\HR\ComelateCreated;
 use Livewire\Component;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Mail;
 
 class ComelateEmployeeCreate extends Component
 {
@@ -206,7 +209,7 @@ class ComelateEmployeeCreate extends Component
             'remarks' => 'nullable|string',
         ]);
         
-        ComelateEmployee::create([
+        $comelate = ComelateEmployee::create([
             'nik' => $this->nik,
             'name' => $this->name,
             'department' => $this->department,
@@ -220,8 +223,47 @@ class ComelateEmployeeCreate extends Component
             'remarks' => $this->remarks,
         ]);
         
+        // Send email notifications
+        $this->sendEmailNotifications($comelate);
+        
         session()->flash('message', 'Record created successfully.');
         return redirect()->route('hr.comelate.index');
+    }
+    
+    protected function sendEmailNotifications($comelate)
+    {
+        try {
+            \Log::info('=== SENDING COMELATE EMAIL ===');
+            \Log::info('Department: ' . $comelate->department);
+            
+            // Mencari data HOD berdasarkan department - menggunakan field yang benar
+            $hod = Hod::where('department_name', $comelate->department)->first();
+            
+            \Log::info('HOD found: ' . ($hod ? 'Yes' : 'No'));
+            
+            if ($hod) {
+                \Log::info('HOD Name: ' . $hod->hod_name);
+                \Log::info('HOD Email: ' . $hod->hod_email);
+            }
+            
+            $hodEmail = $hod?->hod_email;
+            $hodName = $hod?->hod_name ?? 'HOD';
+            
+            // Kirim email ke HOD jika ditemukan
+            if ($hodEmail) {
+                \Log::info('Sending email to: ' . $hodEmail);
+                
+                Mail::to($hodEmail)->send(new ComelateCreated($comelate, $hodName));
+                
+                \Log::info('Email sent successfully to: ' . $hodEmail);
+            } else {
+                \Log::warning('No HOD email found for department: ' . $comelate->department);
+            }
+            
+        } catch (\Exception $e) {
+            \Log::error('Failed to send comelate email: ' . $e->getMessage());
+            \Log::error($e->getTraceAsString());
+        }
     }
     
     // Format jam dengan periode (Pagi, Siang, Sore, Malam)

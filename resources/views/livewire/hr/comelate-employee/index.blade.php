@@ -58,18 +58,20 @@
                 </span>
             </button>
             
-            @if($search || $departmentFilter || $shiftFilter || $dateFrom || $dateUntil || $yearFilter || $monthFilter)
-            <flux:button wire:click="clearFilters" variant="ghost" size="sm">
-                Clear All Filters
-            </flux:button>
-            @endif
+            <div class="flex gap-2">
+                @if($search || $departmentFilter || $shiftFilter || $dateFrom || $dateUntil || $yearFilter || $monthFilter)
+                <flux:button wire:click="clearFilters" variant="ghost" size="sm">
+                    Clear All Filters
+                </flux:button>
+                @endif
+            </div>
         </div>
         
         <!-- Advanced Filters Card (Collapsible) -->
         <div x-show="showFilters" 
             x-transition.duration.300ms
             x-cloak
-            class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 p-6">
+            class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 p-6 mb-4">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <!-- Search -->
                 <div>
@@ -152,7 +154,7 @@
         </div>
     </div>
 
-    <!-- Table -->
+    <!-- Comelate Table -->
     <flux:card class="p-6 h-full shadow-lg hover:shadow-xl transition-shadow duration-300">
         <div class="overflow-x-auto">
             <table class="w-full whitespace-nowrap">
@@ -169,13 +171,10 @@
                         <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Security</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Tanggal</th>
                         <th class="px-4 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Actions</th>
-                    </tr>
+                     </tr>
                 </thead>
                 <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
-                    @forelse($comelateEmployees as $index => $item)
-                    @php
-                        $canEdit = \Carbon\Carbon::parse($item->created_at)->diffInHours(now()) <= 24;
-                    @endphp
+                    @forelse($comelateEmployees as $item)
                     <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors" wire:key="comelate-{{ $item->id }}">
                         <td class="px-4 py-3 whitespace-nowrap">
                             <span class="font-mono text-sm text-zinc-700 dark:text-zinc-300">
@@ -184,12 +183,12 @@
                         </td>
                         <td class="px-4 py-3 whitespace-nowrap">
                             <span class="text-sm font-semibold text-zinc-800 dark:text-white">
-                                {{ $item->employee->name ?? $item->name }}
+                                {{ $item->employee->Display_Name ?? $item->name }}
                             </span>
                         </td>
                         <td class="px-4 py-3 whitespace-nowrap">
                             <flux:badge size="sm" color="gray" variant="subtle">
-                                {{ $item->department }}
+                                {{ $item->employee->Departement ?? $item->department }}
                             </flux:badge>
                         </td>
                         <td class="px-4 py-3 whitespace-nowrap">
@@ -212,8 +211,8 @@
                                 {{ $delayText }}
                             </flux:badge>
                         </td>
-                        <td class="px-4 py-3 text-sm text-zinc-500 whitespace-nowrap">
-                            {{ $item->alasan_terlambat }}
+                        <td class="px-4 py-3 text-sm text-zinc-500 whitespace-nowrap max-w-xs truncate" title="{{ $item->alasan_terlambat }}">
+                            {{ Str::limit($item->alasan_terlambat, 30) }}
                         </td>
                         <td class="px-4 py-3 text-sm text-zinc-500 whitespace-nowrap">
                             {{ $item->nama_security }}
@@ -224,20 +223,27 @@
                         <td class="px-4 py-3 text-right whitespace-nowrap">
                             <div class="flex items-center justify-end gap-1">
                                 @can('edit comelate employee')
-                                <flux:button 
-                                    wire:click="checkEdit({{ $item->id }})"
-                                    size="sm"
-                                    icon="pencil-square"
-                                    class="!p-2 text-yellow-600 hover:bg-yellow-50 dark:text-yellow-400 dark:hover:bg-yellow-950/50"
-                                    title="Edit record"
-                                />
+                                    @php
+                                        $canEdit = \Carbon\Carbon::parse($item->created_at)->diffInHours(now()) <= 24;
+                                    @endphp
+                                    @if($canEdit)
+                                    <flux:button 
+                                        wire:click="checkEdit({{ $item->id }})" 
+                                        size="sm" 
+                                        variant="outline"
+                                        icon="pencil-square"
+                                        class="!p-1.5"
+                                        title="Edit record"
+                                    />
+                                    @endif
                                 @endcan
                                 @can('delete comelate employee')
                                 <flux:button 
-                                    wire:click="confirmDelete({{ $item->id }})"
-                                    size="sm"
+                                    wire:click="confirmDelete({{ $item->id }})" 
+                                    size="sm" 
+                                    variant="outline"
                                     icon="trash"
-                                    class="!p-2 text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/50"
+                                    class="!p-1.5 text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/50"
                                     title="Delete record"
                                 />
                                 @endcan
@@ -246,7 +252,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="12" class="px-4 py-12 text-center">
+                        <td colspan="11" class="px-4 py-12 text-center">
                             <div class="flex flex-col items-center gap-3">
                                 <div class="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
                                     <flux:icon name="document-text" class="w-10 h-10 text-zinc-400 dark:text-zinc-500" />
@@ -290,181 +296,206 @@
     </flux:card>
 
     <!-- View Modal -->
-    @if($showViewModal && $selectedComelate)
-    <div x-data="{ open: true }" 
-         x-show="open" 
-         @click.away="open = false; $wire.set('showViewModal', false)"
-         x-cloak>
-        
-        <div class="fixed inset-0 bg-black/50 z-40" @click="open = false; $wire.set('showViewModal', false)"></div>
-        
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-                <div class="sticky top-0 bg-white dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-700 px-6 py-4 flex justify-between items-center">
-                    <h2 class="text-xl font-bold">Comelate Employee Details</h2>
-                    <flux:button 
-                        icon="x-mark" 
-                        size="sm" 
-                        variant="ghost"
-                        @click="open = false; $wire.set('showViewModal', false)"
-                        class="!p-1"
-                    />
+    <flux:modal wire:model="showViewModal" class="w-full max-w-4xl">
+        <div class="flex flex-col max-h-[85vh]">
+            <div class="flex justify-between items-center px-6 py-4 border-b border-zinc-200 dark:border-zinc-700">
+                <h2 class="text-xl font-bold text-zinc-800 dark:text-white">
+                    Comelate Employee Details
+                </h2>
+                <flux:button 
+                    icon="x-mark" 
+                    size="sm" 
+                    variant="ghost"
+                    wire:click="$set('showViewModal', false)"
+                    class="!p-1"
+                />
+            </div>
+
+            @if($selectedComelate)
+            <div class="flex-1 overflow-y-auto p-6 space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="space-y-3">
+                        <h3 class="text-md font-semibold text-zinc-800 dark:text-white border-l-3 border-blue-500 pl-3">
+                            Personal Information
+                        </h3>
+                        <div class="space-y-2 bg-zinc-50 dark:bg-zinc-800/30 rounded-lg p-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-zinc-500 dark:text-zinc-400">NIK</span>
+                                <span class="font-mono text-sm text-zinc-800 dark:text-white">{{ $selectedComelate->employee->nik ?? $selectedComelate->nik }}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-zinc-500 dark:text-zinc-400">Name</span>
+                                <span class="text-sm font-semibold text-zinc-800 dark:text-white">{{ $selectedComelate->employee->name ?? $selectedComelate->name }}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-zinc-500 dark:text-zinc-400">Department</span>
+                                <span class="text-sm text-zinc-800 dark:text-white">{{ $selectedComelate->employee->department ?? $selectedComelate->department }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3">
+                        <h3 class="text-md font-semibold text-zinc-800 dark:text-white border-l-3 border-yellow-500 pl-3">
+                            Attendance Information
+                        </h3>
+                        <div class="space-y-2 bg-zinc-50 dark:bg-zinc-800/30 rounded-lg p-4">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-zinc-500 dark:text-zinc-400">Shift</span>
+                                <flux:badge size="sm" color="blue">{{ $this->formatShift($selectedComelate->shift) }}</flux:badge>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-zinc-500 dark:text-zinc-400">Jam Masuk</span>
+                                <span class="text-sm text-zinc-800 dark:text-white">{{ $selectedComelate->jam_masuk ?? '-' }}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-zinc-500 dark:text-zinc-400">Jam Datang</span>
+                                <span class="text-sm text-zinc-800 dark:text-white">{{ $selectedComelate->jam ? \Carbon\Carbon::parse($selectedComelate->jam)->format('H:i') : '-' }}</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-zinc-500 dark:text-zinc-400">Terlambat</span>
+                                <flux:badge size="sm" color="yellow">{{ $this->formatCountJam($selectedComelate->count_jam) }}</flux:badge>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-zinc-500 dark:text-zinc-400">Tanggal</span>
+                                <span class="text-sm text-zinc-800 dark:text-white">{{ \Carbon\Carbon::parse($selectedComelate->tanggal)->format('d F Y') }}</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                
-                <div class="p-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <div class="space-y-3">
+                    <h3 class="text-md font-semibold text-zinc-800 dark:text-white border-l-3 border-green-500 pl-3">
+                        Details
+                    </h3>
+                    <div class="space-y-3 bg-zinc-50 dark:bg-zinc-800/30 rounded-lg p-4">
                         <div>
-                            <flux:label class="text-xs text-zinc-500">NIK</flux:label>
-                            <p class="text-sm font-medium">{{ $selectedComelate->employee->nik ?? $selectedComelate->nik }}</p>
+                            <div class="text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-1">Alasan Terlambat</div>
+                            <div class="text-sm text-zinc-800 dark:text-white bg-white dark:bg-zinc-700/50 p-3 rounded-lg border border-zinc-200 dark:border-zinc-600">
+                                {{ $selectedComelate->alasan_terlambat }}
+                            </div>
                         </div>
                         <div>
-                            <flux:label class="text-xs text-zinc-500">Name</flux:label>
-                            <p class="text-sm font-medium">{{ $selectedComelate->employee->name ?? $selectedComelate->name }}</p>
+                            <div class="text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-1">Nama Security</div>
+                            <div class="text-sm text-zinc-800 dark:text-white bg-white dark:bg-zinc-700/50 p-3 rounded-lg border border-zinc-200 dark:border-zinc-600">
+                                {{ $selectedComelate->nama_security }}
+                            </div>
                         </div>
+                        @if($selectedComelate->remarks)
                         <div>
-                            <flux:label class="text-xs text-zinc-500">Department</flux:label>
-                            <p class="text-sm font-medium">{{ $selectedComelate->department }}</p>
-                        </div>
-                        <div>
-                            <flux:label class="text-xs text-zinc-500">Shift</flux:label>
-                            <p class="text-sm font-medium">{{ $this->formatShift($selectedComelate->shift) }}</p>
-                        </div>
-                        <div>
-                            <flux:label class="text-xs text-zinc-500">Jam Masuk</flux:label>
-                            <p class="text-sm font-medium">{{ $selectedComelate->jam_masuk ?? '-' }}</p>
-                        </div>
-                        <div>
-                            <flux:label class="text-xs text-zinc-500">Jam Datang</flux:label>
-                            <p class="text-sm font-medium">{{ $selectedComelate->jam ? \Carbon\Carbon::parse($selectedComelate->jam)->format('H:i') : '-' }}</p>
-                        </div>
-                        <div>
-                            <flux:label class="text-xs text-zinc-500">Terlambat</flux:label>
-                            <p class="text-sm font-medium">{{ $this->formatCountJam($selectedComelate->count_jam) }}</p>
-                        </div>
-                        <div>
-                            <flux:label class="text-xs text-zinc-500">Tanggal</flux:label>
-                            <p class="text-sm font-medium">{{ \Carbon\Carbon::parse($selectedComelate->tanggal)->format('d F Y') }}</p>
-                        </div>
-                        <div>
-                            <flux:label class="text-xs text-zinc-500">Alasan Terlambat</flux:label>
-                            <p class="text-sm font-medium">{{ $selectedComelate->alasan_terlambat }}</p>
-                        </div>
-                        <div>
-                            <flux:label class="text-xs text-zinc-500">Nama Security</flux:label>
-                            <p class="text-sm font-medium">{{ $selectedComelate->nama_security }}</p>
-                        </div>
-                        <div class="col-span-2">
-                            <flux:label class="text-xs text-zinc-500">Remarks</flux:label>
-                            <p class="text-sm font-medium">{{ $selectedComelate->remarks ?? '-' }}</p>
-                        </div>
-                        <div>
-                            <flux:label class="text-xs text-zinc-500">Created By</flux:label>
-                            <p class="text-sm font-medium">{{ $selectedComelate->creator->name ?? '-' }}</p>
-                        </div>
-                        <div>
-                            <flux:label class="text-xs text-zinc-500">Created At</flux:label>
-                            <p class="text-sm font-medium">{{ $selectedComelate->created_at ? $selectedComelate->created_at->format('d F Y H:i') : '-' }}</p>
-                        </div>
-                        @if($selectedComelate->updated_by)
-                        <div>
-                            <flux:label class="text-xs text-zinc-500">Updated By</flux:label>
-                            <p class="text-sm font-medium">{{ $selectedComelate->updater->name ?? '-' }}</p>
-                        </div>
-                        <div>
-                            <flux:label class="text-xs text-zinc-500">Updated At</flux:label>
-                            <p class="text-sm font-medium">{{ $selectedComelate->updated_at ? $selectedComelate->updated_at->format('d F Y H:i') : '-' }}</p>
+                            <div class="text-sm font-medium text-zinc-500 dark:text-zinc-400 mb-1">Remarks</div>
+                            <div class="text-sm text-zinc-800 dark:text-white bg-white dark:bg-zinc-700/50 p-3 rounded-lg border border-zinc-200 dark:border-zinc-600">
+                                {{ $selectedComelate->remarks }}
+                            </div>
                         </div>
                         @endif
                     </div>
                 </div>
-                
-                <div class="sticky bottom-0 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-700 px-6 py-4 flex justify-end gap-2">
-                    @php
-                        $canEditModal = \Carbon\Carbon::parse($selectedComelate->created_at)->diffInHours(now()) <= 24;
-                    @endphp
-                    @if($canEditModal)
-                    <flux:button 
-                        variant="primary"
-                        href="{{ route('hr.comelate.edit', $selectedComelate->id) }}"
-                        wire:navigate
-                        @click="open = false; $wire.set('showViewModal', false)"
-                    >
-                        Edit Record
-                    </flux:button>
+
+                <div class="text-xs text-zinc-400 dark:text-zinc-500 pt-2 border-t border-zinc-200 dark:border-zinc-700">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Created: {{ $selectedComelate->created_at ? \Carbon\Carbon::parse($selectedComelate->created_at)->format('d M Y H:i') : '-' }} by {{ $selectedComelate->creator->name ?? '-' }}
+                    </div>
+                    @if($selectedComelate->updated_at && $selectedComelate->updated_at != $selectedComelate->created_at)
+                    <div class="flex items-center gap-2 mt-1">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                        Updated: {{ $selectedComelate->updated_at ? \Carbon\Carbon::parse($selectedComelate->updated_at)->format('d M Y H:i') : '-' }} by {{ $selectedComelate->updater->name ?? '-' }}
+                    </div>
                     @endif
-                    <flux:button 
-                        variant="ghost"
-                        @click="open = false; $wire.set('showViewModal', false)"
-                    >
-                        Close
-                    </flux:button>
                 </div>
             </div>
+
+            <div class="flex justify-end gap-2 px-6 py-4 border-t border-zinc-200 dark:border-zinc-700">
+                @php
+                    $canEditModal = \Carbon\Carbon::parse($selectedComelate->created_at)->diffInHours(now()) <= 24;
+                @endphp
+                @if($canEditModal)
+                <flux:button 
+                    variant="primary"
+                    href="{{ route('hr.comelate.edit', $selectedComelate->id) }}"
+                    wire:navigate
+                >
+                    Edit Record
+                </flux:button>
+                @endif
+                <flux:button 
+                    variant="ghost" 
+                    wire:click="$set('showViewModal', false)"
+                >
+                    Close
+                </flux:button>
+            </div>
+            @endif
         </div>
-    </div>
-    @endif
+    </flux:modal>
 
     <!-- Delete Modal with Reason -->
-    <div x-data="{ showDeleteModal: false, deleteId: null }" 
-        x-show="showDeleteModal" 
-        @open-delete-modal.window="showDeleteModal = true; deleteId = $event.detail.id; $wire.set('deleteId', $event.detail.id)"
-        @close-delete-modal.window="showDeleteModal = false"
-        x-cloak>
-        
-        <div class="fixed inset-0 bg-black/50 z-40" @click="showDeleteModal = false"></div>
-        
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-xl w-full max-w-md">
-                <div class="p-6">
-                    <div class="flex items-center gap-3 mb-4">
-                        <div class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
-                            <flux:icon name="exclamation-triangle" class="w-6 h-6 text-red-600 dark:text-red-400" />
-                        </div>
-                        <div>
-                            <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">Delete Record</h3>
-                            <p class="text-sm text-zinc-500 dark:text-zinc-400">Please provide a reason for deletion</p>
-                        </div>
-                    </div>
+    <flux:modal wire:model="showDeleteModal" class="w-full max-w-md">
+        <div class="p-4 sm:p-5">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-lg font-semibold text-zinc-800 dark:text-white flex items-center gap-2">
+                    <flux:icon name="exclamation-triangle" class="w-5 h-5 text-red-500" />
+                    Delete Record
+                </h2>
+            </div>
 
-                    <div class="mb-4">
-                        <flux:label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-                            Reason to Delete <span class="text-red-500">*</span>
-                        </flux:label>
-                        <textarea 
-                            wire:model="reason_to_delete"
-                            wire:keydown.enter.prevent=""
-                            rows="3"
-                            class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 dark:bg-zinc-800 dark:border-zinc-600 dark:text-white @error('reason_to_delete') border-red-500 @enderror"
-                            placeholder="Enter reason for deleting this record..."
-                        ></textarea>
-                        @error('reason_to_delete') 
-                            <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span> 
-                        @enderror
-                    </div>
+            <div class="mb-4">
+                <flux:label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                    Reason to Delete <span class="text-red-500">*</span>
+                </flux:label>
+                <textarea 
+                    wire:model="reason_to_delete"
+                    rows="3"
+                    class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 dark:bg-zinc-800 dark:border-zinc-600 dark:text-white @error('reason_to_delete') border-red-500 @enderror"
+                    placeholder="Enter reason for deleting this record..."
+                ></textarea>
+                @error('reason_to_delete') 
+                    <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span> 
+                @enderror
+            </div>
 
-                    <div class="flex justify-end gap-2">
-                        <flux:button 
-                            variant="ghost" 
-                            @click="showDeleteModal = false; $wire.set('reason_to_delete', '')"
-                        >
-                            Cancel
-                        </flux:button>
-                        <flux:button 
-                            variant="danger" 
-                            wire:click="delete"
-                            class="bg-red-600 hover:bg-red-700"
-                            wire:loading.attr="disabled"
-                        >
-                            <span wire:loading.remove>Yes, Delete</span>
-                            <span wire:loading>Deleting...</span>
-                        </flux:button>
-                    </div>
-                </div>
+            <div class="flex justify-end gap-2">
+                <flux:button 
+                    variant="ghost" 
+                    wire:click="$set('showDeleteModal', false)"
+                >
+                    Cancel
+                </flux:button>
+                <flux:button 
+                    variant="danger" 
+                    wire:click="delete"
+                    wire:loading.attr="disabled"
+                >
+                    <span wire:loading.remove>Yes, Delete</span>
+                    <span wire:loading>Deleting...</span>
+                </flux:button>
             </div>
         </div>
-    </div>
+    </flux:modal>
 
     <style>
         [x-cloak] { display: none !important; }
     </style>
+    <script>
+        document.addEventListener('livewire:initialized', () => {
+            Livewire.on('download-csv', (data) => {
+                const blob = new Blob([data.content], { type: 'text/csv;charset=utf-8;' });
+                const link = document.createElement('a');
+                const url = URL.createObjectURL(blob);
+                
+                link.setAttribute('href', url);
+                link.setAttribute('download', data.fileName);
+                link.style.display = 'none';
+                
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            });
+        });
+    </script>
 </div>

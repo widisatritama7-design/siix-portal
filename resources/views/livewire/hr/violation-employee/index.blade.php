@@ -307,7 +307,6 @@
             <table class="w-full whitespace-nowrap">
                 <thead>
                     <tr class="bg-zinc-50 dark:bg-zinc-800/50">
-                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider w-16">#</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">NIK</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Name</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Department</th>
@@ -330,9 +329,6 @@
                         $canEdit = \Carbon\Carbon::parse($violation->created_at)->diffInHours(now()) <= 24;
                     @endphp
                     <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors" wire:key="violation-{{ $violation->id }}">
-                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400 whitespace-nowrap">
-                            {{ $violations->firstItem() + $index }}
-                        </td>
                         <td class="px-4 py-3 whitespace-nowrap">
                             <span class="font-mono text-sm text-zinc-700 dark:text-zinc-300">
                                 {{ $violation->employee->nik ?? $violation->nik }}
@@ -393,14 +389,34 @@
                                 />
                                 @endcan
                                 @can('edit violation employee')
-                                <flux:button 
-                                    wire:click="edit({{ $violation->id }})" 
-                                    size="sm" 
-                                    variant="outline"
-                                    icon="pencil-square"
-                                    class="!p-1.5"
-                                    title="Edit record"
-                                />
+                                    @php
+                                        $canEdit = \Carbon\Carbon::parse($violation->created_at)->diffInHours(now()) <= 24;
+                                    @endphp
+                                    @if($canEdit)
+                                    <flux:button 
+                                        wire:click="edit({{ $violation->id }})" 
+                                        size="sm" 
+                                        variant="outline"
+                                        icon="pencil-square"
+                                        class="!p-1.5"
+                                        title="Edit record"
+                                    />
+                                    @endif
+                                @endcan
+                                @can('delete violation employee')
+                                    @php
+                                        $canDelete = \Carbon\Carbon::parse($violation->created_at)->diffInHours(now()) <= 24;
+                                    @endphp
+                                    @if($canDelete)
+                                    <flux:button 
+                                        wire:click="confirmDelete({{ $violation->id }})" 
+                                        size="sm" 
+                                        variant="outline"
+                                        icon="trash"
+                                        class="!p-1.5 text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/50"
+                                        title="Delete record"
+                                    />
+                                    @endif
                                 @endcan
                             </div>
                         </td>
@@ -590,26 +606,137 @@
     </flux:modal>
 
     <!-- Sub Category Modal -->
-    <flux:modal wire:model="showSubCategoryModal" class="w-full max-w-lg">
-        <div class="p-6">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-bold text-zinc-800 dark:text-white">
+    <flux:modal wire:model="showSubCategoryModal" class="w-full max-w-md">
+        <div class="p-4 sm:p-5">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-lg font-semibold text-zinc-800 dark:text-white flex items-center gap-2">
+                    <flux:icon name="tag" class="w-5 h-5 text-purple-500" />
                     Sub Category Details
                 </h2>
             </div>
 
-            <div class="space-y-3">
+            <div class="space-y-2 max-h-96 overflow-y-auto">
                 @if(!empty($selectedSubCategoriesModal))
-                    @foreach($selectedSubCategoriesModal as $subCat)
-                        <div class="p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg">
-                            {{ $subCat }}
-                        </div>
-                    @endforeach
+                    <div class="flex flex-wrap gap-2">
+                        @foreach($selectedSubCategoriesModal as $subCat)
+                            <div class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 rounded-lg text-sm text-purple-700 dark:text-purple-300">
+                                <flux:icon name="check-circle" class="w-3.5 h-3.5 text-purple-500" />
+                                {{ $subCat }}
+                            </div>
+                        @endforeach
+                    </div>
                 @else
-                    <div class="text-center py-8 text-zinc-500 dark:text-zinc-400">
-                        No sub categories available
+                    <div class="flex flex-col items-center justify-center py-8 text-zinc-500 dark:text-zinc-400">
+                        <flux:icon name="document-text" class="w-10 h-10 mb-2 opacity-50" />
+                        <p class="text-sm">No sub categories available</p>
                     </div>
                 @endif
+            </div>
+        </div>
+    </flux:modal>
+
+    <!-- Export Modal - Date Range -->
+    <flux:modal wire:model="showExportModal" class="w-full max-w-md">
+        <div class="p-4 sm:p-5">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-lg font-semibold text-zinc-800 dark:text-white flex items-center gap-2">
+                    <flux:icon name="arrow-down-tray" class="w-5 h-5 text-blue-500" />
+                    Export Data by Date Range
+                </h2>
+                <flux:button 
+                    icon="x-mark" 
+                    size="sm" 
+                    variant="ghost"
+                    wire:click="$set('showExportModal', false)"
+                    class="!p-1"
+                />
+            </div>
+
+            <div class="space-y-4">
+                <div>
+                    <flux:label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                        Date From <span class="text-red-500">*</span>
+                    </flux:label>
+                    <input 
+                        type="date" 
+                        wire:model="exportDateFrom"
+                        class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-800 dark:border-zinc-600 dark:text-white"
+                    >
+                    @error('exportDateFrom') 
+                        <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span> 
+                    @enderror
+                </div>
+                
+                <div>
+                    <flux:label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                        Date Until <span class="text-red-500">*</span>
+                    </flux:label>
+                    <input 
+                        type="date" 
+                        wire:model="exportDateUntil"
+                        class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-800 dark:border-zinc-600 dark:text-white"
+                    >
+                    @error('exportDateUntil') 
+                        <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span> 
+                    @enderror
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-2 mt-6">
+                <flux:button 
+                    variant="ghost" 
+                    wire:click="$set('showExportModal', false)"
+                >
+                    Cancel
+                </flux:button>
+                <flux:button 
+                    variant="primary" 
+                    wire:click="exportWithDateRange"
+                    wire:loading.attr="disabled"
+                    class="!bg-emerald-600 hover:!bg-emerald-700"
+                >
+                    <span wire:loading.remove>Export</span>
+                    <span wire:loading>Exporting...</span>
+                </flux:button>
+            </div>
+        </div>
+    </flux:modal>
+
+    <!-- Delete Modal -->
+    <flux:modal wire:model="showDeleteModal" class="w-full max-w-md">
+        <div class="p-4 sm:p-5">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="text-lg font-semibold text-zinc-800 dark:text-white flex items-center gap-2">
+                    <flux:icon name="exclamation-triangle" class="w-5 h-5 text-red-500" />
+                    Delete Record
+                </h2>
+            </div>
+
+            <div class="mb-4">
+                <p class="text-sm text-zinc-600 dark:text-zinc-400">
+                    Are you sure you want to delete this violation record?
+                </p>
+                <p class="text-xs text-zinc-500 dark:text-zinc-500 mt-2">
+                    This action cannot be undone.
+                </p>
+            </div>
+
+            <div class="flex justify-end gap-2">
+                <flux:button 
+                    variant="ghost" 
+                    wire:click="$set('showDeleteModal', false)"
+                >
+                    Cancel
+                </flux:button>
+                <flux:button 
+                    variant="danger" 
+                    wire:click="delete"
+                    wire:loading.attr="disabled"
+                    class="bg-red-600 hover:bg-red-700"
+                >
+                    <span wire:loading.remove>Yes, Delete</span>
+                    <span wire:loading>Deleting...</span>
+                </flux:button>
             </div>
         </div>
     </flux:modal>

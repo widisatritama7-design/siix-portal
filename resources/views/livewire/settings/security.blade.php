@@ -4,7 +4,7 @@
     <flux:heading class="sr-only">{{ __('Security settings') }}</flux:heading>
 
     <x-settings.layout :heading="__('Update password')" :subheading="__('Ensure your account is using a long, random password to stay secure')">
-        <flux:card class="!p-0 space-y-0 overflow-hidden">
+        <flux:card class="!p-0 space-y-0 overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
             <!-- Password Form -->
             <form method="POST" wire:submit="updatePassword" class="p-6 space-y-6">
                 <flux:input

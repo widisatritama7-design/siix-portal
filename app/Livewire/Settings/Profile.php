@@ -17,7 +17,7 @@ class Profile extends Component
 
     public string $name = '';
 
-    public string $email = '';
+    public ?string $email = null;
 
     /**
      * Mount the component.
@@ -37,9 +37,14 @@ class Profile extends Component
 
         $validated = $this->validate($this->profileRules($user->id));
 
+        // Handle nullable email
+        if (empty($validated['email'])) {
+            $validated['email'] = null;
+        }
+
         $user->fill($validated);
 
-        if ($user->isDirty('email')) {
+        if ($user->isDirty('email') && !is_null($user->email)) {
             $user->email_verified_at = null;
         }
 
@@ -55,9 +60,9 @@ class Profile extends Component
     {
         $user = Auth::user();
 
-        if ($user->hasVerifiedEmail()) {
+        // Only resend if user has email and hasn't verified
+        if (is_null($user->email) || $user->hasVerifiedEmail()) {
             $this->redirectIntended(default: route('dashboard', absolute: false));
-
             return;
         }
 
@@ -69,13 +74,23 @@ class Profile extends Component
     #[Computed]
     public function hasUnverifiedEmail(): bool
     {
-        return Auth::user() instanceof MustVerifyEmail && ! Auth::user()->hasVerifiedEmail();
+        $user = Auth::user();
+        return $user instanceof MustVerifyEmail 
+            && !is_null($user->email) 
+            && !$user->hasVerifiedEmail();
     }
 
     #[Computed]
     public function showDeleteUser(): bool
     {
-        return ! Auth::user() instanceof MustVerifyEmail
-            || (Auth::user() instanceof MustVerifyEmail && Auth::user()->hasVerifiedEmail());
+        $user = Auth::user();
+        return !$user instanceof MustVerifyEmail
+            || ($user instanceof MustVerifyEmail && $user->hasVerifiedEmail());
+    }
+
+    #[Computed]
+    public function hasEmail(): bool
+    {
+        return !is_null(Auth::user()->email);
     }
 }

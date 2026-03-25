@@ -4,7 +4,7 @@
     <flux:heading class="sr-only">{{ __('Profile settings') }}</flux:heading>
 
     <x-settings.layout :heading="__('Profile')" :subheading="__('Update your name and email address')">
-        <flux:card class="!p-0 space-y-0 overflow-hidden">
+        <flux:card class="!p-0 space-y-0 overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">
             <!-- Profile Form -->
             <form wire:submit="updateProfileInformation" class="p-6 space-y-6">
                 <flux:input wire:model="name" :label="__('Name')" type="text" required autofocus autocomplete="name" />
