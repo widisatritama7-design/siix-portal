@@ -14,6 +14,8 @@ use App\Livewire\HR\Violation\ViolationEmployeeEdit;
 use App\Livewire\HR\Violation\ViolationEmployeeManagement;
 use App\Livewire\HR\Violation\ViolationReport;
 use App\Livewire\NotificationManager;
+use App\Livewire\Ticket\CategoryTicketManager;
+use App\Livewire\Ticket\TicketManager;
 use App\Livewire\User\Permission\PermissionManagement;
 use App\Livewire\User\Role\RoleManagement;
 use App\Livewire\User\UserManagement;
@@ -32,7 +34,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Notification
     Route::get('/notifications', NotificationManager::class)->name('notifications.manager');
     
-    // Inbox - Changed from Route::view to use controller
+    // Inbox
     Route::get('/inbox', [InboxController::class, 'index'])->name('inbox');
     Route::get('/inbox/waiting-receive', [InboxController::class, 'waitingReceive'])->name('inbox.waiting-receive');
     Route::post('/inbox/receive/{id}', [InboxController::class, 'receive'])->name('inbox.receive');
@@ -60,6 +62,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/hr/violation/{id}/edit', ViolationEmployeeEdit::class)->name('hr.violation.edit');
     Route::get('/hr/violation/report', ViolationReport::class)->name('hr.violation.report');
     Route::get('/hr/employee-call', EmployeeCallManagement::class)->name('hr.employee-call.index');
+
+    // Ticket
+    Route::get('/ticket/categories', CategoryTicketManager::class)->name('ticket.categories');
+    Route::get('/ticket/list', TicketManager::class)->name('ticket.list');
 });
 
 require __DIR__.'/settings.php';

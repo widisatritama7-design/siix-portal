@@ -77,7 +77,8 @@ class EmployeeManagement extends Component
     
     public function getDepartmentsProperty()
     {
-        return Employee::select('department')
+        return Employee::whereIn('status', [1, 2, 3]) // Add this to only show departments from active employees
+            ->select('department')
             ->distinct()
             ->whereNotNull('department')
             ->pluck('department');
@@ -162,7 +163,7 @@ class EmployeeManagement extends Component
         
         return $minutes . ' menit';
     }
-    
+
     public function render()
     {
         // CEK AKSES VIEW
@@ -172,12 +173,13 @@ class EmployeeManagement extends Component
 
         $employees = Employee::query()
             ->with(['comelateEmployees', 'violationEmployees', 'employeeCalls'])
+            ->whereIn('status', [1, 2, 3]) // Filter only status 1, 2, 3
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('nik', 'like', '%' . $this->search . '%')
-                      ->orWhere('name', 'like', '%' . $this->search . '%')
-                      ->orWhere('email', 'like', '%' . $this->search . '%')
-                      ->orWhere('department', 'like', '%' . $this->search . '%');
+                    ->orWhere('name', 'like', '%' . $this->search . '%')
+                    ->orWhere('email', 'like', '%' . $this->search . '%')
+                    ->orWhere('department', 'like', '%' . $this->search . '%');
                 });
             })
             ->when($this->statusFilter, function ($query) {
@@ -198,7 +200,7 @@ class EmployeeManagement extends Component
         
         return view('livewire.hr.employee-management', [
             'employees' => $employees,
-            'totalEmployees' => Employee::count(),
+            'totalEmployees' => Employee::whereIn('status', [1, 2, 3])->count(),
             'permanentEmployees' => Employee::where('status', 1)->count(),
             'contractEmployees' => Employee::where('status', 2)->count(),
             'internEmployees' => Employee::where('status', 3)->count(),

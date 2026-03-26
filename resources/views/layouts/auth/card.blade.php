@@ -7,8 +7,8 @@
     <link rel="icon" type="image/png" href="{{ asset('images/siix-portal.png') }}">
 </head>
 
-<body class="min-h-screen bg-neutral-100 antialiased dark:bg-linear-to-b dark:from-neutral-950 dark:to-neutral-900">
-    <div class="flex min-h-svh bg-white dark:bg-stone-950">
+<body class="h-screen overflow-hidden bg-neutral-100 antialiased dark:bg-linear-to-b dark:from-neutral-950 dark:to-neutral-900">
+    <div class="flex h-full bg-white dark:bg-stone-950">
         
         <!-- Left side - 60% with image and top left logo -->
         <div class="hidden lg:block w-full lg:w-[60%] relative overflow-hidden bg-white dark:bg-stone-950">
@@ -28,14 +28,14 @@
                 <img 
                     src="{{ asset('images/login-left.png') }}" 
                     alt="Login illustration"
-                    class="w-full h-full object-contain scale-80"
-                    style="transform: scale(0.9);"
+                    class="w-full h-full object-contain"
+                    style="transform: scale(0.8);"
                 >
             </div>
         </div>
 
         <!-- Right side - 40% with card and form -->
-        <div class="w-full lg:w-[40%] flex items-center justify-center p-6 md:p-10 bg-white dark:bg-stone-950">
+        <div class="w-full lg:w-[40%] flex items-center justify-center p-4 md:p-6 bg-white dark:bg-stone-950">
             <div class="w-full max-w-sm">
                 <!-- Card with form content -->
                 <div class="rounded-2xl border bg-white dark:bg-stone-800 dark:border-stone-700 text-stone-800 dark:text-stone-200 shadow-[0_20px_50px_rgba(0,0,0,0.2)] hover:shadow-[0_25px_60px_rgba(0,0,0,0.25)] transition-shadow duration-300">

@@ -15,10 +15,10 @@
 
         @php
             // Employee Statistics
-            $totalEmployees = \App\Models\HR\Employee::count();
-            $activeEmployees = \App\Models\HR\Employee::where('status', 'active')->count();
-            $onLeaveEmployees = \App\Models\HR\Employee::where('status', 'on_leave')->count();
-            $inactiveEmployees = \App\Models\HR\Employee::where('status', 'inactive')->count();
+            $totalEmployees = \App\Models\HR\Employee::whereIn('status', [1, 2, 3])->count();
+            $activeEmployees = \App\Models\HR\Employee::where('status', 1)->count(); // Permanent
+            $contractEmployees = \App\Models\HR\Employee::where('status', 2)->count(); // Contract
+            $internEmployees = \App\Models\HR\Employee::where('status', 3)->count(); // Magang
             
             // Comelate (Late attendance)
             $totalComelate = \App\Models\HR\ComelateEmployee::count();

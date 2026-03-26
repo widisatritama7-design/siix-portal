@@ -96,9 +96,10 @@
             <flux:sidebar.nav style="overflow-y: visible;">
 
                 <!-- GROUP: MAIN (EXPANDABLE) - SEMUA USER BISA LIHAT DASHBOARD -->
-                <flux:sidebar.group icon="bars-arrow-down" expandable heading="Home" class="grid">
+                <flux:sidebar.group icon="bars-arrow-down" icon-variant="solid" expandable heading="Home" class="grid">
                     <flux:sidebar.item 
                         icon="home"
+                        icon-variant="solid"
                         href="{{ route('dashboard') }}" 
                         wire:navigate
                         :current="request()->routeIs('dashboard')"
@@ -108,7 +109,8 @@
                     </flux:sidebar.item>
                     @can('view dcc-dashboard')
                     <flux:sidebar.item 
-                        icon="home"
+                        icon="chart-bar"
+                        icon-variant="solid"
                         href="{{ route('dcc-dashboard') }}" 
                         wire:navigate
                         :current="request()->routeIs('dcc-dashboard')"
@@ -119,7 +121,8 @@
                     @endcan
                     @can('view hr-dashboard')
                     <flux:sidebar.item 
-                        icon="home"
+                        icon="chart-bar"
+                        icon-variant="solid"
                         href="{{ route('hr-dashboard') }}" 
                         wire:navigate
                         :current="request()->routeIs('hr-dashboard')"
@@ -131,6 +134,7 @@
                     @can('view inbox')
                     <flux:sidebar.item 
                         icon="inbox"
+                        icon-variant="solid"
                         href="{{ route('inbox') }}" 
                         wire:navigate
                         :current="request()->routeIs('inbox')"
@@ -143,13 +147,40 @@
                     @endcan
                 </flux:sidebar.group>
 
+                <flux:sidebar.group icon="phone-arrow-down-left" icon-variant="solid" expandable heading="Ticketing Support" class="grid">
+                    
+                    <flux:sidebar.item 
+                        icon="tag" 
+                        icon-variant="solid"
+                        href="{{ route('ticket.categories') }}" 
+                        wire:navigate
+                        :current="request()->routeIs('ticket.categories')"
+                        class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-black dark:data-[current]:border-white"
+                    >
+                        Category
+                    </flux:sidebar.item>
+
+                    <flux:sidebar.item 
+                        icon="ticket" 
+                        icon-variant="solid"
+                        href="{{ route('ticket.list') }}" 
+                        wire:navigate
+                        :current="request()->routeIs('ticket.list')"
+                        class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-black dark:data-[current]:border-white"
+                    >
+                        Ticket
+                    </flux:sidebar.item>
+
+                </flux:sidebar.group>
+
                 <!-- GROUP: DCC (EXPANDABLE) -->
                 @canany(['view departments', 'view submissions'])
-                <flux:sidebar.group icon="folder" expandable heading="DCC" class="grid">
+                <flux:sidebar.group icon="folder" icon-variant="solid" expandable heading="DCC" class="grid">
                     
                     @can('view departments')
                     <flux:sidebar.item 
                         icon="building-office" 
+                        icon-variant="solid"
                         href="{{ route('dcc.departments') }}"
                         wire:navigate
                         :current="request()->routeIs('dcc.departments')"
@@ -162,6 +193,7 @@
                     @can('view submissions')
                     <flux:sidebar.item 
                         icon="document-text" 
+                        icon-variant="solid"
                         href="{{ route('dcc.submissions') }}"
                         wire:navigate
                         :current="request()->routeIs('dcc.submissions')"
@@ -176,11 +208,12 @@
 
                 @canany(['view employee', 'view comelate employee', 'view violation employee', 'view employee call'])
                 <!-- GROUP: HR (EXPANDABLE) -->
-                <flux:sidebar.group icon="user-group" expandable heading="HR" class="grid">
+                <flux:sidebar.group icon="user-group" icon-variant="solid" expandable heading="HR" class="grid">
 
                     @can('view employee')
                     <flux:sidebar.item 
                         icon="users" 
+                        icon-variant="solid"
                         href="{{ route('hr.employee') }}" 
                         wire:navigate
                         :current="request()->routeIs('hr.employee')"
@@ -193,6 +226,7 @@
                     @can('view comelate employee')
                     <flux:sidebar.item 
                         icon="arrow-left-end-on-rectangle" 
+                        icon-variant="solid"
                         href="{{ route('hr.comelate.index') }}" 
                         wire:navigate
                         :current="request()->routeIs('hr.comelate.index')"
@@ -205,6 +239,7 @@
                     @can('view violation employee')
                     <flux:sidebar.item 
                         icon="exclamation-triangle" 
+                        icon-variant="solid"
                         href="{{ route('hr.violation.index') }}" 
                         wire:navigate
                         :current="request()->routeIs('hr.violation.index')"
@@ -217,6 +252,7 @@
                     @can('view employee call')
                     <flux:sidebar.item 
                         icon="phone-arrow-up-right" 
+                        icon-variant="solid"
                         href="{{ route('hr.employee-call.index') }}" 
                         wire:navigate
                         :current="request()->routeIs('hr.employee-call.index')"
@@ -226,11 +262,12 @@
                     </flux:sidebar.item>
                     @endcan
 
-                    <flux:sidebar.group icon="printer" expandable heading="Reporting" class="grid">
+                    <flux:sidebar.group icon="printer" icon-variant="solid" expandable heading="Reporting" class="grid">
 
                         @can('view comelate employee')
                         <flux:sidebar.item 
                             icon="arrow-turn-down-right" 
+                            icon-variant="solid"
                             href="{{ route('hr.comelate.report') }}"
                             wire:navigate
                             :current="request()->routeIs('hr.comelate.report')"
@@ -243,6 +280,7 @@
                         @can('view violation employee')
                         <flux:sidebar.item 
                             icon="arrow-turn-down-right" 
+                            icon-variant="solid"
                             href="{{ route('hr.violation.report') }}"
                             wire:navigate
                             :current="request()->routeIs('hr.violation.report')"
@@ -258,12 +296,13 @@
                 @endcanany
 
                 @canany(['view users', 'view roles', 'view permissions'])
-                <flux:sidebar.group icon="cog-6-tooth" expandable heading="Settings" class="grid">
+                <flux:sidebar.group icon="cog-8-tooth" icon-variant="solid" expandable heading="Settings" class="grid">
 
                     {{-- Users --}}
                     @can('view users')
                     <flux:sidebar.item 
                         icon="users" 
+                        icon-variant="solid"
                         href="{{ route('users') }}"
                         wire:navigate
                         :current="request()->routeIs('users')"
@@ -276,6 +315,7 @@
                     @can('view notification')
                     <flux:sidebar.item 
                         icon="bell-alert" 
+                        icon-variant="solid"
                         href="{{ route('notifications.manager') }}"
                         wire:navigate
                         :current="request()->routeIs('notifications.manager')"
@@ -288,11 +328,12 @@
 
                     {{-- Authorization --}}
                     @canany(['view roles', 'view permissions'])
-                    <flux:sidebar.group icon="shield-check" expandable heading="Authorization" class="grid">
+                    <flux:sidebar.group icon="shield-check" icon-variant="solid" expandable heading="Authorization" class="grid">
 
                         @can('view roles')
                         <flux:sidebar.item 
                             icon="arrow-turn-down-right" 
+                            icon-variant="solid"
                             href="{{ route('role.management') }}"
                             wire:navigate
                             :current="request()->routeIs('role.management')"
@@ -305,6 +346,7 @@
                         @can('view permissions')
                         <flux:sidebar.item 
                             icon="arrow-turn-down-right" 
+                            icon-variant="solid"
                             href="{{ route('permission.management') }}"
                             wire:navigate
                             :current="request()->routeIs('permission.management')"
@@ -351,6 +393,8 @@
                         {{ auth()->user()->name }}
                     </span>
                 </a>
+
+                <flux:separator vertical class="my-2" />
                 
                 <button 
                     x-data
