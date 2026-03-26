@@ -4,6 +4,7 @@ namespace App\Models\Ticket;
 
 use App\Models\Ticket\Ticket;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -25,6 +26,7 @@ class Feedback extends Model
 
     protected $casts = [
         'photo' => 'array',
+        'file' => 'array'
     ];
 
     public function ticket()
@@ -42,7 +44,22 @@ class Feedback extends Model
         parent::boot();
 
         static::updating(function ($feedback) {
-            $feedback->ticket()->update(['status' => $feedback->status]);
+            // Update the ticket status when feedback status changes
+            if ($feedback->isDirty('status')) {
+                $ticket = $feedback->ticket; // Get the ticket through relationship
+                if ($ticket) {
+                    $ticket->status = $feedback->status;
+                    
+                    // Set closed_at if status is Closed
+                    if ($feedback->status === 'Closed') {
+                        $ticket->closed_at = Carbon::now('Asia/Jakarta');
+                    } elseif ($ticket->closed_at) {
+                        $ticket->closed_at = null;
+                    }
+                    
+                    $ticket->save(); // Save the ticket
+                }
+            }
         });
     }
 }

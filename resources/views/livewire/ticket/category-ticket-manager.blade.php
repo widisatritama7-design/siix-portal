@@ -95,7 +95,9 @@
                                     x-on:click="$dispatch('open-modal', 'category-form-modal')"
                                     size="sm"
                                     icon="pencil-square"
-                                    class="!p-2 text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-950/50"
+                                    variant="primary"
+                                    color="yellow"
+                                    class="!p-2"
                                     title="Edit category"
                                 />
                                 @endcan
@@ -106,7 +108,9 @@
                                         x-on:click="$dispatch('open-modal', 'delete-category-modal')"
                                         size="sm"
                                         icon="trash"
-                                        class="!p-2 text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-950/50"
+                                        variant="primary"
+                                        color="red"
+                                        class="!p-2"
                                         title="Delete category"
                                     />
                                 @endcan

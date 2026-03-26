@@ -147,8 +147,10 @@
                     @endcan
                 </flux:sidebar.group>
 
+                @canany(['view categories', 'view tickets'])
                 <flux:sidebar.group icon="phone-arrow-down-left" icon-variant="solid" expandable heading="Ticketing Support" class="grid">
                     
+                    @can('view categories')
                     <flux:sidebar.item 
                         icon="tag" 
                         icon-variant="solid"
@@ -159,7 +161,9 @@
                     >
                         Category
                     </flux:sidebar.item>
+                    @endcan
 
+                    @can('view tickets')
                     <flux:sidebar.item 
                         icon="ticket" 
                         icon-variant="solid"
@@ -170,8 +174,10 @@
                     >
                         Ticket
                     </flux:sidebar.item>
+                    @endcan
 
                 </flux:sidebar.group>
+                @endcanany
 
                 <!-- GROUP: DCC (EXPANDABLE) -->
                 @canany(['view departments', 'view submissions'])

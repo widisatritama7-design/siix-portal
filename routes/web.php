@@ -16,6 +16,7 @@ use App\Livewire\HR\Violation\ViolationReport;
 use App\Livewire\NotificationManager;
 use App\Livewire\Ticket\CategoryTicketManager;
 use App\Livewire\Ticket\TicketManager;
+use App\Livewire\Ticket\TicketView;
 use App\Livewire\User\Permission\PermissionManagement;
 use App\Livewire\User\Role\RoleManagement;
 use App\Livewire\User\UserManagement;
@@ -66,6 +67,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Ticket
     Route::get('/ticket/categories', CategoryTicketManager::class)->name('ticket.categories');
     Route::get('/ticket/list', TicketManager::class)->name('ticket.list');
+    Route::get('/ticket/list/{id}', TicketView::class)->name('ticket.show');
 });
 
 require __DIR__.'/settings.php';

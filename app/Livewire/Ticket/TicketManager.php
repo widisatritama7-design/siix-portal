@@ -10,8 +10,8 @@ use App\Models\Ticket\CategoryTicket;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
-use App\Mail\TicketCreated;
-use App\Mail\TicketCreatedForUser;
+use App\Mail\Ticket\TicketCreated;
+use App\Mail\Ticket\TicketCreatedForUser;
 use Carbon\Carbon;
 
 class TicketManager extends Component
@@ -56,6 +56,18 @@ class TicketManager extends Component
     public $showTimeline = false;
     public $timelineTicket = null;
 
+    // Add these properties at the top with your other properties
+    public $totalTicketsCount = 0;
+    public $statusCounts = [];
+
+    // Approval
+    public $showApprovalPicModal = false;
+    public $showApprovalUserModal = false;
+    public $approval_status = '';
+    public $approval_user_status = '';
+    public $comment_manager = '';
+    public $comment_user = '';
+
     protected function rules()
     {
         return [
@@ -66,7 +78,11 @@ class TicketManager extends Component
             'files.*' => 'nullable|image|max:10240', // 10MB max
             'priority' => 'required|in:Low,Medium,Urgent,Critical',
             'assigned_role' => 'required|string',
-            'category_id' => 'required|exists:category_tickets,id',
+            'category_id' => 'required|exists:tb_tc_category_tickets,id',
+            'approval_status' => 'required|in:Approved,Rejected',
+            'approval_user_status' => 'required|in:Approved,Rejected',
+            'comment_manager' => 'required|string|min:5',
+            'comment_user' => 'required|string|min:5',
         ];
     }
 
@@ -82,16 +98,196 @@ class TicketManager extends Component
         'priority.required' => 'Priority is required.',
         'category_id.required' => 'Category is required.',
         'category_id.exists' => 'Selected category is invalid.',
+        'approval_status.required' => 'Please select an approval status.',
+        'approval_status.in' => 'Invalid approval status selected.',
+        'comment_manager.required' => 'Comments are required for approval/rejection.',
+        'comment_manager.min' => 'Comments must be at least 5 characters.',
+        'approval_user_status.required' => 'Please select an approval status.',
+        'approval_user_status.in' => 'Invalid approval status selected.',
+        'comment_user.required' => 'Comments are required for approval/rejection.',
+        'comment_user.min' => 'Comments must be at least 5 characters.',
     ];
 
     public function mount()
     {
         $this->email_user = Auth::user()->email ?? '';
         $this->ticket_number = Ticket::generateTicketNumber();
+        $this->updateStatusCounts();
+    }
+
+    // Open PIC Approval Modal
+    public function openPicApprovalModal($id)
+    {
+        $this->selectedTicket = Ticket::findOrFail($id);
+        
+        // Check if user has permission to approve
+        if (!auth()->user()->can('approve tickets', $this->selectedTicket)) {
+            $this->dispatch('notify', message: 'You do not have permission to approve this ticket!', type: 'error');
+            return;
+        }
+        
+        // Check if already approved
+        if ($this->selectedTicket->approval !== 'Waiting Approval') {
+            $this->dispatch('notify', message: 'This ticket has already been processed!', type: 'warning');
+            return;
+        }
+        
+        $this->approval_status = '';
+        $this->comment_manager = '';
+        $this->showApprovalPicModal = true;
+    }
+
+    // Open User Approval Modal
+    public function openUserApprovalModal($id)
+    {
+        $this->selectedTicket = Ticket::findOrFail($id);
+        
+        // Check if user has permission to check (requester)
+        if (!auth()->user()->can('check tickets', $this->selectedTicket)) {
+            $this->dispatch('notify', message: 'You do not have permission to approve this ticket!', type: 'error');
+            return;
+        }
+        
+        // Check if already approved
+        if ($this->selectedTicket->approval_user !== 'Waiting Approval') {
+            $this->dispatch('notify', message: 'This ticket has already been processed!', type: 'warning');
+            return;
+        }
+        
+        $this->approval_user_status = '';
+        $this->comment_user = '';
+        $this->showApprovalUserModal = true;
+    }
+
+    // Submit PIC Approval - tanpa email
+    public function submitPicApproval()
+    {
+        $this->validate([
+            'approval_status' => 'required|in:Approved,Rejected',
+            'comment_manager' => 'required|string|min:5',
+        ]);
+        
+        $ticket = $this->selectedTicket;
+        
+        // Double-check permission
+        if (!auth()->user()->can('approve tickets', $ticket)) {
+            $this->dispatch('notify', message: 'You do not have permission to approve this ticket!', type: 'error');
+            $this->closeApprovalModal();
+            return;
+        }
+        
+        // Double-check status
+        if ($ticket->approval !== 'Waiting Approval') {
+            $this->dispatch('notify', message: 'This ticket has already been processed!', type: 'warning');
+            $this->closeApprovalModal();
+            return;
+        }
+        
+        // Update ticket
+        $ticket->approval = $this->approval_status;
+        $ticket->approval_at = now();
+        $ticket->comment_manager = $this->comment_manager;
+        
+        // If approved, update status to In Progress automatically
+        if ($this->approval_status === 'Approved') {
+            $ticket->status = 'In Progress';
+        }
+        
+        $ticket->save();
+        
+        $message = $this->approval_status === 'Approved' 
+            ? "Ticket #{$ticket->ticket_number} has been approved by PIC!" 
+            : "Ticket #{$ticket->ticket_number} has been rejected by PIC.";
+        
+        $this->dispatch('notify', message: $message, type: 'success');
+        $this->closeApprovalModal();
+        $this->updateStatusCounts();
+    }
+
+    // Submit User Approval - tanpa email
+    public function submitUserApproval()
+    {
+        $this->validate([
+            'approval_user_status' => 'required|in:Approved,Rejected',
+            'comment_user' => 'required|string|min:5',
+        ]);
+        
+        $ticket = $this->selectedTicket;
+        
+        // Double-check permission
+        if (!auth()->user()->can('check tickets', $ticket)) {
+            $this->dispatch('notify', message: 'You do not have permission to approve this ticket!', type: 'error');
+            $this->closeApprovalModal();
+            return;
+        }
+        
+        // Double-check status
+        if ($ticket->approval_user !== 'Waiting Approval') {
+            $this->dispatch('notify', message: 'This ticket has already been processed!', type: 'warning');
+            $this->closeApprovalModal();
+            return;
+        }
+        
+        // Update ticket
+        $ticket->approval_user = $this->approval_user_status;
+        $ticket->approval_user_at = now();
+        $ticket->comment_user = $this->comment_user;
+        
+        // If approved and PIC already approved, update status to Closed
+        if ($this->approval_user_status === 'Approved' && $ticket->approval === 'Approved') {
+            $ticket->status = 'Closed';
+            $ticket->closed_at = now();
+        }
+        
+        $ticket->save();
+        
+        $message = $this->approval_user_status === 'Approved' 
+            ? "Ticket #{$ticket->ticket_number} has been approved by user!" 
+            : "Ticket #{$ticket->ticket_number} has been rejected by user.";
+        
+        $this->dispatch('notify', message: $message, type: 'success');
+        $this->closeApprovalModal();
+        $this->updateStatusCounts();
+    }
+
+    // Hapus method sendApprovalEmail() karena tidak digunakan
+
+    // Close approval modal
+    public function closeApprovalModal()
+    {
+        $this->showApprovalPicModal = false;
+        $this->showApprovalUserModal = false;
+        $this->selectedTicket = null;
+        $this->approval_status = '';
+        $this->approval_user_status = '';
+        $this->comment_manager = '';
+        $this->comment_user = '';
+    }
+
+    // Add this method to your class
+    public function setStatusFilter($status)
+    {
+        $this->statusFilter = $status;
+        $this->updateStatusCounts();
+    }
+
+    // Add this method to update counts
+    private function updateStatusCounts()
+    {
+        $statusOptions = ['Open', 'In Progress', 'Pending', 'Closed'];
+        foreach ($statusOptions as $status) {
+            $this->statusCounts[$status] = Ticket::where('status', $status)->count();
+        }
+        $this->totalTicketsCount = Ticket::count();
     }
 
     public function render()
     {
+        // Check permission untuk view tickets
+        if (!auth()->user()->can('view tickets')) {
+            abort(403, 'You do not have permission to view tickets.');
+        }
+        
         $tickets = Ticket::with(['category', 'creator', 'updater'])
             ->withCount('feedbacks')
             ->when($this->search, function ($query) {
@@ -109,10 +305,10 @@ class TicketManager extends Component
             })
             ->orderBy('created_at', 'desc')
             ->paginate(10);
-
+    
         $categories = CategoryTicket::orderBy('name')->get();
         $statusOptions = ['Open', 'In Progress', 'Pending', 'Closed'];
-
+    
         return view('livewire.ticket.ticket-manager', [
             'tickets' => $tickets,
             'categories' => $categories,
@@ -202,7 +398,7 @@ class TicketManager extends Component
     {
         try {
             // Send to default email
-            Mail::to('bonizar@siix-global.com')->send(new TicketCreated($ticket));
+            Mail::to('sek.esd@siix-global.com')->send(new TicketCreated($ticket));
             
             // Send based on assigned role
             $emailToSend = null;
@@ -271,7 +467,7 @@ class TicketManager extends Component
             'title' => 'required|min:3|max:255',
             'description' => 'required|min:10',
             'priority' => 'required|in:Low,Medium,Urgent,Critical',
-            'category_id' => 'required|exists:category_tickets,id',
+            'category_id' => 'required|exists:tb_tc_category_tickets,id',
         ]);
         
         $ticket = Ticket::findOrFail($this->selectedTicket->id);
