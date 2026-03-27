@@ -29,7 +29,7 @@
                     src="{{ asset('images/login-left.png') }}" 
                     alt="Login illustration"
                     class="w-full h-full object-contain"
-                    style="transform: scale(0.8);"
+                    style="transform: scale(0.7);"
                 >
             </div>
         </div>

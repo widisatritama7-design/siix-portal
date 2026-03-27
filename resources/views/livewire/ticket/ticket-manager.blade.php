@@ -37,27 +37,64 @@
 
     <!-- Filters -->
     <div class="space-y-4">
-        <!-- Search and Date Filters - Full Width -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <flux:input
-                wire:model.live.debounce.300ms="search"
-                placeholder="Search by ticket number or title..."
-                icon="magnifying-glass"
-                clearable
-                class="md:col-span-2"
-            />
+        <!-- Search and Filters - Single Row with Labels -->
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+            <!-- Search -->
+            <div class="md:col-span-4">
+                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Search</label>
+                <flux:input
+                    wire:model.live.debounce.300ms="search"
+                    placeholder="Ticket # or title..."
+                    icon="magnifying-glass"
+                    clearable
+                />
+            </div>
             
-            <flux:input 
-                type="date" 
-                wire:model.live="dateFrom" 
-                placeholder="From Date"
-            />
+            <!-- Date From -->
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">From Date</label>
+                <flux:input 
+                    type="date" 
+                    wire:model.live="dateFrom" 
+                    placeholder="From Date"
+                />
+            </div>
             
-            <flux:input 
-                type="date" 
-                wire:model.live="dateTo" 
-                placeholder="To Date"
-            />
+            <!-- Date To -->
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">To Date</label>
+                <flux:input 
+                    type="date" 
+                    wire:model.live="dateTo" 
+                    placeholder="To Date"
+                />
+            </div>
+            
+            <!-- PIC Approval Filter -->
+            @can('approve tickets')
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">PIC Approval</label>
+                <select wire:model.live="picApprovalFilter" 
+                        class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                    <option value="">All</option>
+                    <option value="Waiting Approval">Waiting Approval</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Rejected">Rejected</option>
+                </select>
+            </div>
+            @endcan
+            
+            <!-- User Approval Filter -->
+            <div class="md:col-span-2">
+                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">User Approval</label>
+                <select wire:model.live="userApprovalFilter" 
+                        class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                    <option value="">All</option>
+                    <option value="Waiting Approval">Waiting Approval</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Rejected">Rejected</option>
+                </select>
+            </div>
         </div>
         
         <!-- Status Tabs - Bottom Border Style -->

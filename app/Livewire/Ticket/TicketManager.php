@@ -13,12 +13,13 @@ use Illuminate\Support\Facades\Storage;
 use App\Mail\Ticket\TicketCreated;
 use App\Mail\Ticket\TicketCreatedForUser;
 use Carbon\Carbon;
+use Livewire\Attributes\Url;
 
 class TicketManager extends Component
 {
     use WithFileUploads, WithPagination;
 
-    // Wizard steps
+// Wizard steps
     public $currentStep = 1;
     public $totalSteps = 3;
     
@@ -38,11 +39,28 @@ class TicketManager extends Component
     public $assigned_role = 'ADMINESD';
     public $category_id;
     
-    // Search & Filters
+    // Search & Filters - Add URL attributes
+    #[Url(as: 'q', history: true)]
     public $search = '';
+    
+    #[Url(history: true)]
     public $statusFilter = '';
+    
+    #[Url(history: true)]
     public $dateFrom = '';
+    
+    #[Url(history: true)]
     public $dateTo = '';
+    
+    #[Url(as: 'pic_approval', history: true)]
+    public $picApprovalFilter = '';
+    
+    #[Url(as: 'user_approval', history: true)]
+    public $userApprovalFilter = '';
+    
+    // Pagination - Keep page in URL
+    #[Url(history: true)]
+    public $page = 1;
     
     // Modal states
     public $showCreateModal = false;
@@ -113,6 +131,8 @@ class TicketManager extends Component
         $this->email_user = Auth::user()->email ?? '';
         $this->ticket_number = Ticket::generateTicketNumber();
         $this->updateStatusCounts();
+        $this->picApprovalFilter = request()->get('pic_approval', '');
+        $this->userApprovalFilter = request()->get('user_approval', '');
     }
 
     // Open PIC Approval Modal
@@ -271,14 +291,49 @@ class TicketManager extends Component
         $this->updateStatusCounts();
     }
 
-    // Add this method to update counts
     private function updateStatusCounts()
     {
         $statusOptions = ['Open', 'In Progress', 'Pending', 'Closed'];
+        $user = auth()->user();
+        
+        // Cek apakah user memiliki permission 'view tickets one user'
+        $hasViewOneUser = $user->can('view tickets one user');
+        
         foreach ($statusOptions as $status) {
-            $this->statusCounts[$status] = Ticket::where('status', $status)->count();
+            $query = Ticket::where('status', $status);
+            
+            // Jika memiliki view tickets one user, filter berdasarkan created_by
+            if ($hasViewOneUser) {
+                $query->where('created_by', $user->id);
+            }
+            
+            // Apply approval filters
+            if ($this->picApprovalFilter) {
+                $query->where('approval', $this->picApprovalFilter);
+            }
+            
+            if ($this->userApprovalFilter) {
+                $query->where('approval_user', $this->userApprovalFilter);
+            }
+            
+            $this->statusCounts[$status] = $query->count();
         }
-        $this->totalTicketsCount = Ticket::count();
+        
+        // Total count with filters applied
+        $totalQuery = Ticket::query();
+        
+        // Jika memiliki view tickets one user, filter berdasarkan created_by
+        if ($hasViewOneUser) {
+            $totalQuery->where('created_by', $user->id);
+        }
+        
+        if ($this->picApprovalFilter) {
+            $totalQuery->where('approval', $this->picApprovalFilter);
+        }
+        if ($this->userApprovalFilter) {
+            $totalQuery->where('approval_user', $this->userApprovalFilter);
+        }
+        $this->totalTicketsCount = $totalQuery->count();
     }
 
     public function render()
@@ -288,11 +343,22 @@ class TicketManager extends Component
             abort(403, 'You do not have permission to view tickets.');
         }
         
+        $user = auth()->user();
+        
+        // Cek apakah user memiliki permission 'view tickets one user'
+        $hasViewOneUser = $user->can('view tickets one user');
+        
         $tickets = Ticket::with(['category', 'creator', 'updater'])
             ->withCount('feedbacks')
+            // Jika memiliki view tickets one user, filter berdasarkan created_by
+            ->when($hasViewOneUser, function ($query) use ($user) {
+                $query->where('created_by', $user->id);
+            })
             ->when($this->search, function ($query) {
-                $query->where('ticket_number', 'like', '%' . $this->search . '%')
+                $query->where(function ($q) {
+                    $q->where('ticket_number', 'like', '%' . $this->search . '%')
                     ->orWhere('title', 'like', '%' . $this->search . '%');
+                });
             })
             ->when($this->statusFilter, function ($query) {
                 $query->where('status', $this->statusFilter);
@@ -303,12 +369,18 @@ class TicketManager extends Component
             ->when($this->dateTo, function ($query) {
                 $query->whereDate('created_at', '<=', $this->dateTo);
             })
+            ->when($this->picApprovalFilter, function ($query) {
+                $query->where('approval', $this->picApprovalFilter);
+            })
+            ->when($this->userApprovalFilter, function ($query) {
+                $query->where('approval_user', $this->userApprovalFilter);
+            })
             ->orderBy('created_at', 'desc')
             ->paginate(10);
-    
+
         $categories = CategoryTicket::orderBy('name')->get();
         $statusOptions = ['Open', 'In Progress', 'Pending', 'Closed'];
-    
+
         return view('livewire.ticket.ticket-manager', [
             'tickets' => $tickets,
             'categories' => $categories,
@@ -602,6 +674,19 @@ class TicketManager extends Component
         $this->assigned_role = 'ADMINESD';
         $this->resetValidation();
     }
+
+    // Add this method to your class
+    public function clearFilters()
+    {
+        $this->search = '';
+        $this->dateFrom = '';
+        $this->dateTo = '';
+        $this->statusFilter = '';
+        $this->picApprovalFilter = '';
+        $this->userApprovalFilter = '';
+        
+        $this->dispatch('notify', message: 'All filters cleared!', type: 'info');
+}
 
     public function closeModal()
     {

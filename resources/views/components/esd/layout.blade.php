@@ -19,13 +19,13 @@
         class="hidden md:flex flex-shrink-0 mt-1 mr-6 items-center justify-center w-10 h-10 bg-zinc-100 dark:bg-zinc-800 rounded-lg"
         type="button"
     >
-        <x-heroicon-o-chevron-left 
+        <x-heroicon-s-arrow-left-circle 
             x-show="sidebarOpen"
             class="w-5 h-5"
             x-cloak
         />
 
-        <x-heroicon-o-chevron-right 
+        <x-heroicon-s-arrow-right-circle
             x-show="!sidebarOpen"
             class="w-5 h-5"
             x-cloak
@@ -47,10 +47,10 @@
 
                 <!-- Profile -->
                 <flux:navlist.item 
-                    :href="route('profile.edit')" 
+                    :href="route('esd.test')" 
                     wire:navigate
-                    :active="request()->routeIs('profile.edit')"
-                    title="Profile"
+                    :active="request()->routeIs('esd.test')"
+                    title="ESD"
                     class="w-full"
                 >
                     <x-slot name="icon">
@@ -58,24 +58,7 @@
                     </x-slot>
 
                     <span x-show="sidebarOpen" class="truncate">
-                        Profile
-                    </span>
-                </flux:navlist.item>
-
-                <!-- Security -->
-                <flux:navlist.item 
-                    :href="route('security.edit')" 
-                    wire:navigate
-                    :active="request()->routeIs('security.edit')"
-                    title="Security"
-                    class="w-full"
-                >
-                    <x-slot name="icon">
-                        <x-heroicon-o-lock-closed class="w-5 h-5" />
-                    </x-slot>
-
-                    <span x-show="sidebarOpen" class="truncate">
-                        Security
+                        ESD
                     </span>
                 </flux:navlist.item>
 

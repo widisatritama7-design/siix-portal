@@ -31,6 +31,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('main-dashboard', 'home.dashboard')->name('dashboard');
     Route::view('dcc-dashboard', 'home.dcc_dashboard')->name('dcc-dashboard');
     Route::view('hr-dashboard', 'home.hr_dashboard')->name('hr-dashboard');
+    Route::view('ticket-dashboard', 'home.ticket_dashboard')->name('ticket-dashboard');
 
     // Notification
     Route::get('/notifications', NotificationManager::class)->name('notifications.manager');

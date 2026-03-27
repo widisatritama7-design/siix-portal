@@ -19,13 +19,13 @@
         class="hidden md:flex flex-shrink-0 mt-1 mr-6 items-center justify-center w-10 h-10 bg-zinc-100 dark:bg-zinc-800 rounded-lg"
         type="button"
     >
-        <x-heroicon-o-chevron-left 
+        <x-heroicon-s-arrow-left-circle 
             x-show="sidebarOpen"
             class="w-5 h-5"
             x-cloak
         />
 
-        <x-heroicon-o-chevron-right 
+        <x-heroicon-s-arrow-right-circle
             x-show="!sidebarOpen"
             class="w-5 h-5"
             x-cloak

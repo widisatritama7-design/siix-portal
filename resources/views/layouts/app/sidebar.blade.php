@@ -131,6 +131,18 @@
                         HR Dashboard
                     </flux:sidebar.item>
                     @endcan
+                    @can('view ticket-dashboard')
+                    <flux:sidebar.item 
+                        icon="chart-bar"
+                        icon-variant="solid"
+                        href="{{ route('ticket-dashboard') }}" 
+                        wire:navigate
+                        :current="request()->routeIs('ticket-dashboard')"
+                        class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-black dark:data-[current]:border-white"
+                    >
+                        Ticket Dashboard
+                    </flux:sidebar.item>
+                    @endcan
                     @can('view inbox')
                     <flux:sidebar.item 
                         icon="inbox"
@@ -147,37 +159,30 @@
                     @endcan
                 </flux:sidebar.group>
 
-                @canany(['view categories', 'view tickets'])
-                <flux:sidebar.group icon="phone-arrow-down-left" icon-variant="solid" expandable heading="Ticketing Support" class="grid">
+                <flux:sidebar.group icon="cog-6-tooth" icon-variant="solid" expandable heading="Maintenance" class="grid">
                     
-                    @can('view categories')
                     <flux:sidebar.item 
-                        icon="tag" 
+                        icon="bolt-slash" 
                         icon-variant="solid"
-                        href="{{ route('ticket.categories') }}" 
+                        href="{{ route('esd.test') }}" 
                         wire:navigate
-                        :current="request()->routeIs('ticket.categories')"
+                        :current="request()->routeIs('esd.test')"
                         class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-black dark:data-[current]:border-white"
                     >
-                        Category
+                        ESD Monitoring
                     </flux:sidebar.item>
-                    @endcan
 
-                    @can('view tickets')
                     <flux:sidebar.item 
-                        icon="ticket" 
+                        icon="wrench-screwdriver" 
                         icon-variant="solid"
-                        href="{{ route('ticket.list') }}" 
+                        href="#"
                         wire:navigate
-                        :current="request()->routeIs('ticket.list')"
                         class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-black dark:data-[current]:border-white"
                     >
-                        Ticket
+                        MTC Monitoring
                     </flux:sidebar.item>
-                    @endcan
 
                 </flux:sidebar.group>
-                @endcanany
 
                 <!-- GROUP: DCC (EXPANDABLE) -->
                 @canany(['view departments', 'view submissions'])
@@ -301,8 +306,40 @@
                 </flux:sidebar.group>
                 @endcanany
 
+                @canany(['view categories', 'view tickets'])
+                <flux:sidebar.group icon="phone-arrow-down-left" icon-variant="solid" expandable heading="Ticketing Support" class="grid">
+                    
+                    @can('view categories')
+                    <flux:sidebar.item 
+                        icon="tag" 
+                        icon-variant="solid"
+                        href="{{ route('ticket.categories') }}" 
+                        wire:navigate
+                        :current="request()->routeIs('ticket.categories')"
+                        class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-black dark:data-[current]:border-white"
+                    >
+                        Category
+                    </flux:sidebar.item>
+                    @endcan
+
+                    @can('view tickets')
+                    <flux:sidebar.item 
+                        icon="ticket" 
+                        icon-variant="solid"
+                        href="{{ route('ticket.list') }}" 
+                        wire:navigate
+                        :current="request()->routeIs('ticket.list')"
+                        class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-black dark:data-[current]:border-white"
+                    >
+                        Ticket
+                    </flux:sidebar.item>
+                    @endcan
+
+                </flux:sidebar.group>
+                @endcanany
+
                 @canany(['view users', 'view roles', 'view permissions'])
-                <flux:sidebar.group icon="cog-8-tooth" icon-variant="solid" expandable heading="Settings" class="grid">
+                <flux:sidebar.group icon="adjustments-horizontal" icon-variant="solid" expandable heading="Settings" class="grid">
 
                     {{-- Users --}}
                     @can('view users')
