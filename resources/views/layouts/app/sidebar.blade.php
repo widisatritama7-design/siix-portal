@@ -96,93 +96,87 @@
             <flux:sidebar.nav style="overflow-y: visible;">
 
                 <!-- GROUP: MAIN (EXPANDABLE) - SEMUA USER BISA LIHAT DASHBOARD -->
-                <flux:sidebar.group icon="bars-arrow-down" icon-variant="solid" expandable heading="Home" class="grid">
+                <flux:sidebar.group icon="home" icon-variant="solid" expandable heading="Home" class="grid">
                     <flux:sidebar.item 
-                        icon="home"
+                        icon="chart-pie"
                         icon-variant="solid"
                         href="{{ route('dashboard') }}" 
                         wire:navigate
                         :current="request()->routeIs('dashboard')"
-                        class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-black dark:data-[current]:border-white"
+                        class="data-[current]:bg-zinc-200 data-[current]:text-zinc-800 dark:data-[current]:bg-zinc-800 dark:data-[current]:text-zinc-200 rounded-lg transition-colors"
                     >
                         Main Dashboard
                     </flux:sidebar.item>
                     @can('view dcc-dashboard')
                     <flux:sidebar.item 
-                        icon="chart-bar"
+                        icon="chart-pie"
                         icon-variant="solid"
                         href="{{ route('dcc-dashboard') }}" 
                         wire:navigate
                         :current="request()->routeIs('dcc-dashboard')"
-                        class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-black dark:data-[current]:border-white"
+                        class="data-[current]:bg-zinc-200 data-[current]:text-zinc-800 dark:data-[current]:bg-zinc-800 dark:data-[current]:text-zinc-200 rounded-lg transition-colors"
                     >
                         DCC Dashboard
                     </flux:sidebar.item>
                     @endcan
                     @can('view hr-dashboard')
                     <flux:sidebar.item 
-                        icon="chart-bar"
+                        icon="chart-pie"
                         icon-variant="solid"
                         href="{{ route('hr-dashboard') }}" 
                         wire:navigate
                         :current="request()->routeIs('hr-dashboard')"
-                        class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-black dark:data-[current]:border-white"
+                        class="data-[current]:bg-zinc-200 data-[current]:text-zinc-800 dark:data-[current]:bg-zinc-800 dark:data-[current]:text-zinc-200 rounded-lg transition-colors"
                     >
                         HR Dashboard
                     </flux:sidebar.item>
                     @endcan
                     @can('view ticket-dashboard')
                     <flux:sidebar.item 
-                        icon="chart-bar"
+                        icon="chart-pie"
                         icon-variant="solid"
                         href="{{ route('ticket-dashboard') }}" 
                         wire:navigate
                         :current="request()->routeIs('ticket-dashboard')"
-                        class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-black dark:data-[current]:border-white"
+                        class="data-[current]:bg-zinc-200 data-[current]:text-zinc-800 dark:data-[current]:bg-zinc-800 dark:data-[current]:text-zinc-200 rounded-lg transition-colors"
                     >
                         Ticket Dashboard
                     </flux:sidebar.item>
                     @endcan
                     @can('view inbox')
                     <flux:sidebar.item 
-                        icon="inbox"
+                        icon="inbox-arrow-down"
                         icon-variant="solid"
                         href="{{ route('inbox') }}" 
                         wire:navigate
                         :current="request()->routeIs('inbox')"
                         :badge="App\Helpers\InboxHelper::getTotalInboxCount() > 0 ? App\Helpers\InboxHelper::getTotalInboxCount() : null"
                         badge-color="blue"
-                        class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-black dark:data-[current]:border-white"
+                        class="data-[current]:bg-zinc-200 data-[current]:text-zinc-800 dark:data-[current]:bg-zinc-800 dark:data-[current]:text-zinc-200 rounded-lg transition-colors"
                     >
                         Inbox
                     </flux:sidebar.item>
                     @endcan
                 </flux:sidebar.group>
 
+                @canany(['view maintenance'])
                 <flux:sidebar.group icon="cog-6-tooth" icon-variant="solid" expandable heading="Maintenance" class="grid">
                     
+                    @can('view equipment grounds')
                     <flux:sidebar.item 
                         icon="bolt-slash" 
                         icon-variant="solid"
-                        href="{{ route('esd.test') }}" 
+                        href="{{ route('esd.equipment-grounds') }}" 
                         wire:navigate
-                        :current="request()->routeIs('esd.test')"
-                        class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-black dark:data-[current]:border-white"
+                        :current="request()->routeIs('esd.equipment-grounds')"
+                        class="data-[current]:bg-zinc-200 data-[current]:text-zinc-800 dark:data-[current]:bg-zinc-800 dark:data-[current]:text-zinc-200 rounded-lg transition-colors"
                     >
                         ESD Monitoring
                     </flux:sidebar.item>
-
-                    <flux:sidebar.item 
-                        icon="wrench-screwdriver" 
-                        icon-variant="solid"
-                        href="#"
-                        wire:navigate
-                        class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-black dark:data-[current]:border-white"
-                    >
-                        MTC Monitoring
-                    </flux:sidebar.item>
+                    @endcan
 
                 </flux:sidebar.group>
+                @endcanany
 
                 <!-- GROUP: DCC (EXPANDABLE) -->
                 @canany(['view departments', 'view submissions'])
