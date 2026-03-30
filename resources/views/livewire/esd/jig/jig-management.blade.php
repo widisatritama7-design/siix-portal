@@ -44,7 +44,7 @@
             <!-- Header -->
             <div class="flex flex-col sm:flex-row gap-3 mt-2 mb-6">
                 <!-- Search 60% -->
-                <div class="w-full sm:w-[60%]">
+                <div class="w-full sm:w-[80%]">
                     <flux:input
                         wire:model.live.debounce.300ms="search"
                         placeholder="Search by register number, model, customer, or description..."
@@ -56,7 +56,7 @@
                 <!-- View All History 20% -->
                 <div class="w-full sm:w-[20%]">
                     <flux:button 
-                        href="#"
+                        href="{{ route('esd.jig-details')}}"
                         wire:navigate
                         icon="arrow-right"
                         variant="primary"
@@ -65,21 +65,6 @@
                     >
                         View All History
                     </flux:button>
-                </div>
-
-                <!-- Add New 20% -->
-                <div class="w-full sm:w-[20%]">
-                    @can('create jig')
-                    <flux:button 
-                        variant="primary" 
-                        icon="plus" 
-                        class="bg-blue-600 hover:bg-blue-700 whitespace-nowrap w-full justify-center"
-                        wire:click="resetForm"
-                        x-on:click="$dispatch('open-modal', 'jig-form-modal')"
-                    >
-                        Add New
-                    </flux:button>
-                    @endcan
                 </div>
             </div>
 
@@ -201,7 +186,7 @@
                                     <div class="flex items-center justify-end gap-1 whitespace-nowrap">
                                         @can('view jig')
                                         <flux:button 
-                                            href="#"
+                                            href="{{ route('esd.jigs.show', $jig->id) }}"
                                             wire:navigate
                                             size="sm"
                                             icon="eye"
@@ -210,31 +195,6 @@
                                             class="!p-2 flex-shrink-0"
                                             title="View jig details"
                                         />
-                                        @endcan
-                                        @can('edit jig')
-                                        <flux:button 
-                                            wire:click="edit({{ $jig->id }})" 
-                                            x-on:click="$dispatch('open-modal', 'jig-form-modal')"
-                                            size="sm"
-                                            icon="pencil-square"
-                                            variant="primary"
-                                            color="yellow"
-                                            class="!p-2 flex-shrink-0"
-                                            title="Edit jig"
-                                        />
-                                        @endcan
-
-                                        @can('delete jig')
-                                            <flux:button 
-                                                wire:click="confirmDelete({{ $jig->id }})" 
-                                                x-on:click="$dispatch('open-modal', 'delete-jig-modal')"
-                                                size="sm"
-                                                icon="trash"
-                                                variant="primary"
-                                                color="red"
-                                                class="!p-2 flex-shrink-0"
-                                                title="Delete jig"
-                                            />
                                         @endcan
                                     </div>
                                 </td>
@@ -285,238 +245,6 @@
                 </div>
                 @endif
             </flux:card>
-
-            <!-- MODAL FORM JIG -->
-            <div x-data="{ open: false }" 
-                 x-show="open" 
-                 @open-modal.window="if ($event.detail === 'jig-form-modal') open = true"
-                 @close-modal.window="if ($event.detail === 'jig-form-modal') open = false"
-                 x-cloak>
-
-                <div class="fixed inset-0 bg-black/50 z-40" @click="open = false"></div>
-
-                <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-                        <div class="p-6">
-                            <h2 class="text-xl font-bold mb-4">{{ $modalTitle }}</h2>
-
-                            <form wire:submit="save" enctype="multipart/form-data">
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <!-- Register No -->
-                                    <div class="mb-4">
-                                        <label class="block text-sm font-medium mb-1">Register No <span class="text-red-500">*</span></label>
-                                        <input type="text" wire:model="register_no" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                                        @error('register_no') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                    </div>
-
-                                    <!-- Received Date -->
-                                    <div class="mb-4">
-                                        <label class="block text-sm font-medium mb-1">Received Date</label>
-                                        <input type="date" wire:model="received_date" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                                        @error('received_date') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                    </div>
-
-                                    <!-- Registration Date -->
-                                    <div class="mb-4">
-                                        <label class="block text-sm font-medium mb-1">Registration Date</label>
-                                        <input type="date" wire:model="registration_date" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                                        @error('registration_date') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                    </div>
-
-                                    <!-- SEK/Cust ID -->
-                                    <div class="mb-4">
-                                        <label class="block text-sm font-medium mb-1">SEK/Cust ID</label>
-                                        <input type="text" wire:model="sek_cust_id" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                                        @error('sek_cust_id') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                    </div>
-
-                                    <!-- Fabricator -->
-                                    <div class="mb-4">
-                                        <label class="block text-sm font-medium mb-1">Fabricator</label>
-                                        <input type="text" wire:model="fabricator" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                                        @error('fabricator') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                    </div>
-
-                                    <!-- Model -->
-                                    <div class="mb-4">
-                                        <label class="block text-sm font-medium mb-1">Model</label>
-                                        <input type="text" wire:model="model" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                                        @error('model') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                    </div>
-
-                                    <!-- Description -->
-                                    <div class="mb-4 md:col-span-2">
-                                        <label class="block text-sm font-medium mb-1">Description</label>
-                                        <textarea wire:model="description" rows="2" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700"></textarea>
-                                        @error('description') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                    </div>
-
-                                    <!-- Application -->
-                                    <div class="mb-4">
-                                        <label class="block text-sm font-medium mb-1">Application</label>
-                                        <input type="text" wire:model="application" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                                        @error('application') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                    </div>
-
-                                    <!-- Pin Qty -->
-                                    <div class="mb-4">
-                                        <label class="block text-sm font-medium mb-1">Pin Quantity</label>
-                                        <input type="number" wire:model="pin_qty" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                                        @error('pin_qty') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                    </div>
-
-                                    <!-- Jig Qty -->
-                                    <div class="mb-4">
-                                        <label class="block text-sm font-medium mb-1">Jig Quantity</label>
-                                        <input type="number" wire:model="jig_qty" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                                        @error('jig_qty') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                    </div>
-
-                                    <!-- Customer -->
-                                    <div class="mb-4">
-                                        <label class="block text-sm font-medium mb-1">Customer</label>
-                                        <input type="text" wire:model="customer" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                                        @error('customer') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                    </div>
-
-                                    <!-- Tooling Type -->
-                                    <div class="mb-4">
-                                        <label class="block text-sm font-medium mb-1">Tooling Type</label>
-                                        <input type="text" wire:model="tooling_type" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                                        @error('tooling_type') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                    </div>
-
-                                    <!-- Category -->
-                                    <div class="mb-4">
-                                        <label class="block text-sm font-medium mb-1">Category</label>
-                                        <input type="text" wire:model="category" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                                        @error('category') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                    </div>
-
-                                    <!-- Location -->
-                                    <div class="mb-4">
-                                        <label class="block text-sm font-medium mb-1">Location</label>
-                                        <input type="text" wire:model="location" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                                        @error('location') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                    </div>
-
-                                    <!-- Bit Size -->
-                                    <div class="mb-4">
-                                        <label class="block text-sm font-medium mb-1">Bit Size</label>
-                                        <input type="text" wire:model="bit_size" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                                        @error('bit_size') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                    </div>
-
-                                    <!-- Rack -->
-                                    <div class="mb-4">
-                                        <label class="block text-sm font-medium mb-1">Rack</label>
-                                        <input type="text" wire:model="rack" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                                        @error('rack') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                    </div>
-
-                                    <!-- Rack Number -->
-                                    <div class="mb-4">
-                                        <label class="block text-sm font-medium mb-1">Rack Number</label>
-                                        <input type="text" wire:model="rack_number" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                                        @error('rack_number') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                    </div>
-
-                                    <!-- Line Name -->
-                                    <div class="mb-4">
-                                        <label class="block text-sm font-medium mb-1">Line Name</label>
-                                        <input type="text" wire:model="line_name" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                                        @error('line_name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                    </div>
-
-                                    <!-- Count Stencil -->
-                                    <div class="mb-4">
-                                        <label class="block text-sm font-medium mb-1">Count Stencil</label>
-                                        <input type="text" wire:model="count_stencil" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                                        @error('count_stencil') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                    </div>
-
-                                    <!-- Amount Solder -->
-                                    <div class="mb-4">
-                                        <label class="block text-sm font-medium mb-1">Amount Solder</label>
-                                        <input type="text" wire:model="amount_solder" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                                        @error('amount_solder') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                    </div>
-
-                                    <!-- NIK -->
-                                    <div class="mb-4">
-                                        <label class="block text-sm font-medium mb-1">NIK</label>
-                                        <input type="text" wire:model="nik" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                                        @error('nik') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                    </div>
-
-                                    <!-- Design By -->
-                                    <div class="mb-4">
-                                        <label class="block text-sm font-medium mb-1">Design By</label>
-                                        <input type="text" wire:model="design_by" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                                        @error('design_by') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                    </div>
-
-                                    <!-- Qualified Date -->
-                                    <div class="mb-4">
-                                        <label class="block text-sm font-medium mb-1">Qualified Date</label>
-                                        <input type="date" wire:model="qualified_date" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                                        @error('qualified_date') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                    </div>
-
-                                    <!-- Results -->
-                                    <div class="mb-4">
-                                        <label class="block text-sm font-medium mb-1">Results</label>
-                                        <input type="text" wire:model="results" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                                        @error('results') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                    </div>
-
-                                    <!-- Status -->
-                                    <div class="mb-4">
-                                        <label class="block text-sm font-medium mb-1">Status <span class="text-red-500">*</span></label>
-                                        <select wire:model="status" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                                            <option value="Active">Active</option>
-                                            <option value="Inactive">Inactive</option>
-                                            <option value="Under Repair">Under Repair</option>
-                                            <option value="Damage">Damage</option>
-                                            <option value="Disposed">Disposed</option>
-                                        </select>
-                                        @error('status') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                    </div>
-
-                                    <!-- Photo -->
-                                    <div class="mb-4 md:col-span-2">
-                                        <label class="block text-sm font-medium mb-1">Photo</label>
-                                        <input type="file" wire:model="photo" accept="image/*" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                                        @if($existingPhoto && is_array($existingPhoto))
-                                            <div class="mt-2">
-                                                <img src="{{ Storage::url($existingPhoto[0]) }}" class="h-20 w-20 object-cover rounded-lg">
-                                            </div>
-                                        @endif
-                                        @error('photo') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                    </div>
-
-                                    <!-- Remarks -->
-                                    <div class="mb-4 md:col-span-2">
-                                        <label class="block text-sm font-medium mb-1">Remarks</label>
-                                        <textarea wire:model="remarks" rows="3" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700"></textarea>
-                                        @error('remarks') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                    </div>
-                                </div>
-
-                                <!-- Buttons -->
-                                <div class="flex justify-end gap-2 mt-6">
-                                    <button type="button" @click="open = false" class="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800">
-                                        Cancel
-                                    </button>
-                                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                                        {{ $jig_id ? 'Update' : 'Create' }}
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             <!-- MODAL DELETE -->
             <div x-data="{ open: false }" 

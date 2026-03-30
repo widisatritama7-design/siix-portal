@@ -18,7 +18,9 @@ use App\Livewire\ESD\Glove\GloveShow;
 use App\Livewire\ESD\Ionizer\IonizerDetailManagement;
 use App\Livewire\ESD\Ionizer\IonizerManagement;
 use App\Livewire\ESD\Ionizer\IonizerShow;
+use App\Livewire\ESD\Jig\JigDetailManagement;
 use App\Livewire\ESD\Jig\JigManagement;
+use App\Livewire\ESD\Jig\JigShow;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -55,5 +57,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Jig
     Route::livewire('esd/jigs', JigManagement::class)->name('esd.jigs');
+    Route::livewire('/esd/jigs/{id}', JigShow::class)->name('esd.jigs.show');
+    Route::livewire('esd/jig-details', JigDetailManagement::class)->name('esd.jig-details');
 
 });

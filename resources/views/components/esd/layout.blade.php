@@ -237,9 +237,9 @@
                             <a 
                                 href="{{ route('esd.equipment-grounds') }}"
                                 wire:navigate
-                                class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors mx-auto"
+                                class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors mx-auto text-zinc-600 dark:text-zinc-400"
                                 :class="{
-                                    'bg-zinc-100 dark:bg-zinc-800': '{{ request()->routeIs('esd.equipment-grounds') }}' === '1'
+                                    'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200': '{{ request()->routeIs('esd.equipment-grounds') }}' === '1'
                                 }"
                                 title="Equipment Ground"
                             >
@@ -250,9 +250,9 @@
                             <a 
                                 href="{{ route('esd.floorings') }}"
                                 wire:navigate
-                                class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors mx-auto"
+                                class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors mx-auto text-zinc-600 dark:text-zinc-400"
                                 :class="{
-                                    'bg-zinc-100 dark:bg-zinc-800': '{{ request()->routeIs('esd.floorings') }}' === '1'
+                                    'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200': '{{ request()->routeIs('esd.floorings') }}' === '1'
                                 }"
                                 title="Flooring"
                             >
@@ -263,9 +263,9 @@
                             <a 
                                 href="{{ route('esd.garments') }}"
                                 wire:navigate
-                                class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors mx-auto"
+                                class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors mx-auto text-zinc-600 dark:text-zinc-400"
                                 :class="{
-                                    'bg-zinc-100 dark:bg-zinc-800': '{{ request()->routeIs('esd.garments') }}' === '1'
+                                    'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200': '{{ request()->routeIs('esd.garments') }}' === '1'
                                 }"
                                 title="Garment"
                             >
@@ -276,9 +276,9 @@
                             <a 
                                 href="{{ route('esd.gloves') }}"
                                 wire:navigate
-                                class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors mx-auto"
+                                class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors mx-auto text-zinc-600 dark:text-zinc-400"
                                 :class="{
-                                    'bg-zinc-100 dark:bg-zinc-800': '{{ request()->routeIs('esd.gloves') }}' === '1'
+                                    'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200': '{{ request()->routeIs('esd.gloves') }}' === '1'
                                 }"
                                 title="Glove"
                             >
@@ -289,9 +289,9 @@
                             <a 
                                 href="{{ route('esd.ground-monitor-boxs') }}"
                                 wire:navigate
-                                class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors mx-auto"
+                                class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors mx-auto text-zinc-600 dark:text-zinc-400"
                                 :class="{
-                                    'bg-zinc-100 dark:bg-zinc-800': '{{ request()->routeIs('esd.ground-monitor-boxs') }}' === '1'
+                                    'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200': '{{ request()->routeIs('esd.ground-monitor-boxs') }}' === '1'
                                 }"
                                 title="Ground Monitor Box"
                             >
@@ -302,9 +302,9 @@
                             <a 
                                 href="{{ route('esd.ionizers') }}"
                                 wire:navigate
-                                class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors mx-auto"
+                                class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors mx-auto text-zinc-600 dark:text-zinc-400"
                                 :class="{
-                                    'bg-zinc-100 dark:bg-zinc-800': '{{ request()->routeIs('esd.ionizers') }}' === '1'
+                                    'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200': '{{ request()->routeIs('esd.ionizers') }}' === '1'
                                 }"
                                 title="Ionizer"
                             >
@@ -315,9 +315,9 @@
                             <a 
                                 href="{{ route('esd.jigs') }}"
                                 wire:navigate
-                                class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors mx-auto"
+                                class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors mx-auto text-zinc-600 dark:text-zinc-400"
                                 :class="{
-                                    'bg-zinc-100 dark:bg-zinc-800': '{{ request()->routeIs('esd.jigs') }}' === '1'
+                                    'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200': '{{ request()->routeIs('esd.jigs') }}' === '1'
                                 }"
                                 title="Jig"
                             >
