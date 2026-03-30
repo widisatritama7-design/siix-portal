@@ -492,14 +492,6 @@
                                         class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
                                     @error('email_user') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                 </div>
-                                
-                                <div>
-                                    <label class="block text-sm font-medium mb-1">Registration Number</label>
-                                    <input type="text" 
-                                        wire:model="registration_no"
-                                        class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                        placeholder="Enter registration number (optional)">
-                                </div>
                             </div>
                         @endif
 

@@ -27,7 +27,7 @@
             class="flex items-center justify-center gap-2 px-3 py-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg w-full"
             type="button"
         >
-            <x-heroicon-o-bars-3 class="w-5 h-5" />
+            <x-heroicon-o-bars-3 class="w-4 h-4" />
             <span class="text-sm font-medium">Menu</span>
         </button>
     </div>
@@ -111,6 +111,66 @@
                             </x-slot>
                             <span class="truncate">Garment</span>
                         </flux:navlist.item>
+
+                         <!-- Glove -->
+                        <flux:navlist.item 
+                            :href="route('esd.gloves')" 
+                            wire:navigate
+                            :active="request()->routeIs('esd.gloves')"
+                            title="Glove"
+                            class="w-full"
+                            @click="mobileMenuOpen = false"
+                        >
+                            <x-slot name="icon">
+                                <x-heroicon-s-hand-raised class="w-4 h-4" />
+                            </x-slot>
+                            <span class="truncate">Glove</span>
+                        </flux:navlist.item>
+
+                        <!-- Grounding Box -->
+                        <flux:navlist.item 
+                            :href="route('esd.ground-monitor-boxs')" 
+                            wire:navigate
+                            :active="request()->routeIs('esd.ground-monitor-boxs')"
+                            title="Ground Monitor Box"
+                            class="w-full"
+                            @click="mobileMenuOpen = false"
+                        >
+                            <x-slot name="icon">
+                                <x-heroicon-s-inbox-stack class="w-4 h-4" />
+                            </x-slot>
+                            <span class="truncate">Ground Monitor Box</span>
+                        </flux:navlist.item>
+
+                        <!-- Ionizer -->
+                        <flux:navlist.item 
+                            :href="route('esd.ionizers')" 
+                            wire:navigate
+                            :active="request()->routeIs('esd.ionizers')"
+                            title="Ionizer"
+                            class="w-full"
+                            @click="mobileMenuOpen = false"
+                        >
+                            <x-slot name="icon">
+                                <x-heroicon-s-arrow-path-rounded-square class="w-4 h-4" />
+                            </x-slot>
+                            <span class="truncate">Ionizer</span>
+                        </flux:navlist.item>
+
+                        <!-- Jig -->
+                        <flux:navlist.item 
+                            :href="route('esd.jigs')" 
+                            wire:navigate
+                            :active="request()->routeIs('esd.jigs')"
+                            title="Jig"
+                            class="w-full"
+                            @click="mobileMenuOpen = false"
+                        >
+                            <x-slot name="icon">
+                                <x-heroicon-s-puzzle-piece class="w-4 h-4" />
+                            </x-slot>
+                            <span class="truncate">Jig</span>
+                        </flux:navlist.item>
                     </div>
                 </div>
             </flux:navlist>
@@ -151,6 +211,7 @@
                 <flux:navlist aria-label="Settings" class="w-full">
                     <!-- Master Group -->
                     <div class="mb-1">
+                        <!-- Title when sidebar open -->
                         <button 
                             x-show="sidebarOpen"
                             @click="masterMeasurementOpen = !masterMeasurementOpen"
@@ -170,12 +231,102 @@
                             </svg>
                         </button>
                         
-                        <!-- Icon only when sidebar closed -->
-                        <div x-show="!sidebarOpen" class="flex justify-center py-2">
-                            <x-heroicon-s-cog-6-tooth class="w-4 h-4 text-zinc-500" />
+                        <!-- Icon items when sidebar closed - Using plain links for full control -->
+                        <div x-show="!sidebarOpen" class="flex flex-col items-center space-y-1">
+                            <!-- Equipment Ground Icon -->
+                            <a 
+                                href="{{ route('esd.equipment-grounds') }}"
+                                wire:navigate
+                                class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors mx-auto"
+                                :class="{
+                                    'bg-zinc-100 dark:bg-zinc-800': '{{ request()->routeIs('esd.equipment-grounds') }}' === '1'
+                                }"
+                                title="Equipment Ground"
+                            >
+                                <x-heroicon-s-server-stack class="w-4 h-4" />
+                            </a>
+
+                            <!-- Flooring Icon -->
+                            <a 
+                                href="{{ route('esd.floorings') }}"
+                                wire:navigate
+                                class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors mx-auto"
+                                :class="{
+                                    'bg-zinc-100 dark:bg-zinc-800': '{{ request()->routeIs('esd.floorings') }}' === '1'
+                                }"
+                                title="Flooring"
+                            >
+                                <x-heroicon-s-square-3-stack-3d class="w-4 h-4" />
+                            </a>
+
+                            <!-- Garment Icon -->
+                            <a 
+                                href="{{ route('esd.garments') }}"
+                                wire:navigate
+                                class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors mx-auto"
+                                :class="{
+                                    'bg-zinc-100 dark:bg-zinc-800': '{{ request()->routeIs('esd.garments') }}' === '1'
+                                }"
+                                title="Garment"
+                            >
+                                <x-heroicon-s-users class="w-4 h-4" />
+                            </a>
+
+                            <!-- Glove Icon -->
+                            <a 
+                                href="{{ route('esd.gloves') }}"
+                                wire:navigate
+                                class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors mx-auto"
+                                :class="{
+                                    'bg-zinc-100 dark:bg-zinc-800': '{{ request()->routeIs('esd.gloves') }}' === '1'
+                                }"
+                                title="Glove"
+                            >
+                                <x-heroicon-s-hand-raised class="w-4 h-4" />
+                            </a>
+
+                            <!-- GB Icon -->
+                            <a 
+                                href="{{ route('esd.ground-monitor-boxs') }}"
+                                wire:navigate
+                                class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors mx-auto"
+                                :class="{
+                                    'bg-zinc-100 dark:bg-zinc-800': '{{ request()->routeIs('esd.ground-monitor-boxs') }}' === '1'
+                                }"
+                                title="Ground Monitor Box"
+                            >
+                                <x-heroicon-s-inbox-stack class="w-4 h-4" />
+                            </a>
+
+                            <!-- Ionizer Icon -->
+                            <a 
+                                href="{{ route('esd.ionizers') }}"
+                                wire:navigate
+                                class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors mx-auto"
+                                :class="{
+                                    'bg-zinc-100 dark:bg-zinc-800': '{{ request()->routeIs('esd.ionizers') }}' === '1'
+                                }"
+                                title="Ionizer"
+                            >
+                                <x-heroicon-s-arrow-path-rounded-square class="w-4 h-4" />
+                            </a>
+
+                            <!-- Jig -->
+                            <a 
+                                href="{{ route('esd.jigs') }}"
+                                wire:navigate
+                                class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors mx-auto"
+                                :class="{
+                                    'bg-zinc-100 dark:bg-zinc-800': '{{ request()->routeIs('esd.jigs') }}' === '1'
+                                }"
+                                title="Jig"
+                            >
+                                <x-heroicon-s-puzzle-piece class="w-4 h-4" />
+                            </a>
                         </div>
                         
-                        <div x-show="sidebarOpen && masterMeasurementOpen" x-collapse class="mt-1 space-y-1">
+                        <!-- Expanded items when sidebar open -->
+                        <div x-show="sidebarOpen && masterMeasurementOpen" x-collapse class="mt-1 space-y-4">
                             <!-- Equipment Ground -->
                             <flux:navlist.item 
                                 :href="route('esd.equipment-grounds')" 
@@ -213,6 +364,58 @@
                                     <x-heroicon-s-users class="w-4 h-4" />
                                 </x-slot>
                                 <span class="truncate">Garment</span>
+                            </flux:navlist.item>
+
+                            <!-- Glove -->
+                            <flux:navlist.item 
+                                :href="route('esd.gloves')" 
+                                wire:navigate
+                                :active="request()->routeIs('esd.gloves')"
+                                class="w-full"
+                            >
+                                <x-slot name="icon">
+                                    <x-heroicon-s-hand-raised class="w-4 h-4" />
+                                </x-slot>
+                                <span class="truncate">Glove</span>
+                            </flux:navlist.item>
+
+                            <!-- Ground Monitor Box -->
+                            <flux:navlist.item 
+                                :href="route('esd.ground-monitor-boxs')" 
+                                wire:navigate
+                                :active="request()->routeIs('esd.ground-monitor-boxs')"
+                                class="w-full"
+                            >
+                                <x-slot name="icon">
+                                    <x-heroicon-s-inbox-stack class="w-4 h-4" />
+                                </x-slot>
+                                <span class="truncate">Ground Monitor Box</span>
+                            </flux:navlist.item>
+
+                            <!-- Ionizer -->
+                            <flux:navlist.item 
+                                :href="route('esd.ionizers')" 
+                                wire:navigate
+                                :active="request()->routeIs('esd.ionizers')"
+                                class="w-full"
+                            >
+                                <x-slot name="icon">
+                                    <x-heroicon-s-arrow-path-rounded-square class="w-4 h-4" />
+                                </x-slot>
+                                <span class="truncate">Ionizer</span>
+                            </flux:navlist.item>
+
+                            <!-- Jig -->
+                            <flux:navlist.item 
+                                :href="route('esd.jigs')" 
+                                wire:navigate
+                                :active="request()->routeIs('esd.jigs')"
+                                class="w-full"
+                            >
+                                <x-slot name="icon">
+                                    <x-heroicon-s-puzzle-piece class="w-4 h-4" />
+                                </x-slot>
+                                <span class="truncate">Jig</span>
                             </flux:navlist.item>
                         </div>
                     </div>

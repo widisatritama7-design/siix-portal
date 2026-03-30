@@ -9,6 +9,16 @@ use App\Livewire\ESD\Flooring\FlooringShow;
 use App\Livewire\ESD\Garment\GarmentDetailManagement;
 use App\Livewire\ESD\Garment\GarmentManagement;
 use App\Livewire\ESD\Garment\GarmentShow;
+use App\Livewire\ESD\GB\GroundMonitorBoxDetailManagement;
+use App\Livewire\ESD\GB\GroundMonitorBoxManagement;
+use App\Livewire\ESD\GB\GroundMonitorBoxShow;
+use App\Livewire\ESD\Glove\GloveDetailManagement;
+use App\Livewire\ESD\Glove\GloveManagement;
+use App\Livewire\ESD\Glove\GloveShow;
+use App\Livewire\ESD\Ionizer\IonizerDetailManagement;
+use App\Livewire\ESD\Ionizer\IonizerManagement;
+use App\Livewire\ESD\Ionizer\IonizerShow;
+use App\Livewire\ESD\Jig\JigManagement;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -27,6 +37,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::livewire('esd/garments', GarmentManagement::class)->name('esd.garments');
     Route::livewire('/esd/garments/{id}', GarmentShow::class)->name('esd.garments.show');
     Route::livewire('esd/garment-details', GarmentDetailManagement::class)->name('esd.garment-details');
+
+    // Ground Monitor Box
+    Route::livewire('esd/ground-monitor-boxs', GroundMonitorBoxManagement::class)->name('esd.ground-monitor-boxs');
+    Route::livewire('/esd/ground-monitor-boxs/{id}', GroundMonitorBoxShow::class)->name('esd.ground-monitor-boxs.show');
+    Route::livewire('esd/ground-monitor-box-details', GroundMonitorBoxDetailManagement::class)->name('esd.ground-monitor-box-details');
     
-    
+    // Glove
+    Route::livewire('esd/gloves', GloveManagement::class)->name('esd.gloves');
+    Route::livewire('/esd/gloves/{id}', GloveShow::class)->name('esd.gloves.show');
+    Route::livewire('esd/glove-details', GloveDetailManagement::class)->name('esd.glove-details');
+
+    // Ionizer
+    Route::livewire('esd/ionizers', IonizerManagement::class)->name('esd.ionizers');
+    Route::livewire('/esd/ionizers/{id}', IonizerShow::class)->name('esd.ionizers.show');
+    Route::livewire('esd/ionizer-details', IonizerDetailManagement::class)->name('esd.ionizer-details');
+
+    // Jig
+    Route::livewire('esd/jigs', JigManagement::class)->name('esd.jigs');
+
 });

@@ -1,27 +1,21 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\ESD\GB;
 
+use App\Models\ESD\GB\GroundMonitorBox;
 use App\Models\User;
-
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\Model;
-
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class GroundMonitorBoxDetail extends Model 
 {
     use HasFactory;
 
-    protected $connection = 'mysql_esd';
+    protected $table = 'tb_esd_ground_monitor_box_details';
 
     protected $fillable = [
         'ground_monitor_box_id',
-        'area',
-        'location',
-        'g1',
-        'g2',
         'g_3',
         'g_4',
         'remarks',
@@ -38,17 +32,11 @@ class GroundMonitorBoxDetail extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    /**
-     * Get the user who last updated the transaction.
-     */
     public function updater()
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
 
-    /**
-     * Boot method to attach model events.
-     */
     protected static function boot()
     {
         parent::boot();
@@ -59,7 +47,6 @@ class GroundMonitorBoxDetail extends Model
             }
         });
 
-        // Set the updater on updating event
         static::updating(function ($model) {
             $model->updated_by = Auth::id();
         });
