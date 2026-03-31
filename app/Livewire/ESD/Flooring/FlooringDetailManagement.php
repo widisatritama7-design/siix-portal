@@ -64,7 +64,7 @@ class FlooringDetailManagement extends Component
     {
         if ($this->b1 !== null && $this->b1 !== '') {
             // Standard: < 1.00E+9 Ohm (1,000,000,000 Ohm)
-            $this->judgement = floatval($this->b1) > 1000000000 ? 'NG' : 'OK';
+            $this->judgement = floatval($this->b1) >= 1000000000 ? 'NG' : 'OK';
             // Convert to scientific notation with 2 decimal places
             $this->b1_scientific = sprintf('%.2E', floatval($this->b1));
         }

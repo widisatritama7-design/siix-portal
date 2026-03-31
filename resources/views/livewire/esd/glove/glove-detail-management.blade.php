@@ -105,37 +105,11 @@
                     x-cloak
                     class="bg-white dark:bg-zinc-800 rounded-xl shadow-lg border border-zinc-200 dark:border-zinc-700 p-6 mb-4">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <!-- SAP Code Filter -->
-                        <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">SAP Code</label>
-                            <select wire:model.live="filterGlove" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                                <option value="">All SAP Code</option>
-                                @foreach($gloves as $glove)
-                                    <option value="{{ $glove->id }}">{{ $glove->sap_code }} - {{ $glove->description }}</option>
-                                @endforeach
-                            </select>
-                        </div>
 
-                        <!-- Description Filter -->
+                        <!-- Search -->
                         <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Description</label>
-                            <input type="text" wire:model.live.debounce="filterDescription" placeholder="Search description..." class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                        </div>
-
-                        <!-- Delivery Filter -->
-                        <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Delivery</label>
-                            <input type="text" wire:model.live.debounce="filterDelivery" placeholder="Search delivery..." class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                        </div>
-
-                        <!-- Judgement Filter -->
-                        <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Judgement</label>
-                            <select wire:model.live="filterJudgement" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                                <option value="">All</option>
-                                <option value="OK">OK</option>
-                                <option value="NG">NG</option>
-                            </select>
+                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Search</label>
+                            <input type="text" wire:model.live.debounce.300ms="search" placeholder="Search by SAP code, description, delivery..." class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
                         </div>
 
                         <!-- Date From -->
@@ -162,11 +136,6 @@
                             <input type="date" wire:model.live="filterNextDateUntil" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
                         </div>
 
-                        <!-- Search -->
-                        <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Search</label>
-                            <input type="text" wire:model.live.debounce.300ms="search" placeholder="Search by SAP code, description, delivery..." class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                        </div>
                     </div>
                 </div>
             </div>

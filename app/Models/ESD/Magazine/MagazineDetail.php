@@ -1,19 +1,18 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\ESD\Magazine;
 
+use App\Models\ESD\Magazine\Magazine;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
-use App\Models\User;
-use App\Models\Magazine;
 
 class MagazineDetail extends Model
 {
     use HasFactory;
 
-    protected $connection = 'mysql_esd'; // Koneksi database yang digunakan
-    protected $table = 'magazine_details'; // Nama tabel
+    protected $table = 'tb_esd_magazine_details';
 
     protected $fillable = [
         'magazines_id',
@@ -26,9 +25,6 @@ class MagazineDetail extends Model
         'next_date'
     ];
 
-    /**
-     * Relasi dengan model Magazines
-     */
     public function magazine()
     {
         return $this->belongsTo(Magazine::class, 'magazines_id');
@@ -39,33 +35,23 @@ class MagazineDetail extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    /**
-     * Get the user who last updated the transaction.
-     */
     public function updater()
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
 
-    /**
-     * Boot method to attach model events.
-     */
     protected static function boot()
     {
         parent::boot();
 
-        // Set the creator on creating event
         static::creating(function ($model) {
             if (empty($model->created_by)) {
                 $model->created_by = Auth::id();
             }
         });
 
-        // Set the updater on updating event
         static::updating(function ($model) {
             $model->updated_by = Auth::id();
         });
     }
-
-    // Anda dapat menambahkan relasi lain jika diperlukan
 }

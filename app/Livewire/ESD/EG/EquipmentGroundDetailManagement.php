@@ -67,11 +67,11 @@ class EquipmentGroundDetailManagement extends Component
     public function resetJudgement()
     {
         if ($this->measure_results_ohm !== null) {
-            $this->judgement_ohm = floatval($this->measure_results_ohm) > 1.00 ? 'NG' : 'OK';
+            $this->judgement_ohm = floatval($this->measure_results_ohm) >= 1.00 ? 'NG' : 'OK';
         }
         
         if ($this->measure_results_volts !== null) {
-            $this->judgement_volts = floatval($this->measure_results_volts) > 2.00 ? 'NG' : 'OK';
+            $this->judgement_volts = floatval($this->measure_results_volts) >= 2.00 ? 'NG' : 'OK';
         }
     }
 

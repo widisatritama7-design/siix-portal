@@ -23,13 +23,13 @@
                 </a>
             </div>
             
-            <!-- Centered image -->
+            <!-- Centered image shifted slightly to the right -->
             <div class="flex items-center justify-center h-full">
                 <img 
                     src="{{ asset('images/login-left.png') }}" 
                     alt="Login illustration"
                     class="w-full h-full object-contain"
-                    style="transform: scale(0.7);"
+                    style="transform: scale(0.7) translateX(5%);"
                 >
             </div>
         </div>

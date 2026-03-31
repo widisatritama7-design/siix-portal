@@ -171,6 +171,36 @@
                             </x-slot>
                             <span class="truncate">Jig</span>
                         </flux:navlist.item>
+
+                        <!-- Magazine -->
+                        <flux:navlist.item 
+                            :href="route('esd.magazines')" 
+                            wire:navigate
+                            :active="request()->routeIs('esd.magazines')"
+                            title="Magazine"
+                            class="w-full"
+                            @click="mobileMenuOpen = false"
+                        >
+                            <x-slot name="icon">
+                                <x-heroicon-s-inbox-arrow-down class="w-4 h-4" />
+                            </x-slot>
+                            <span class="truncate">Magazine</span>
+                        </flux:navlist.item>
+
+                        <!-- Packaging -->
+                        <flux:navlist.item 
+                            :href="route('esd.packagings')" 
+                            wire:navigate
+                            :active="request()->routeIs('esd.packagings')"
+                            title="Packaging"
+                            class="w-full"
+                            @click="mobileMenuOpen = false"
+                        >
+                            <x-slot name="icon">
+                                <x-heroicon-s-cube class="w-4 h-4" />
+                            </x-slot>
+                            <span class="truncate">Packaging</span>
+                        </flux:navlist.item>
                     </div>
                 </div>
             </flux:navlist>
@@ -323,6 +353,32 @@
                             >
                                 <x-heroicon-s-puzzle-piece class="w-4 h-4" />
                             </a>
+
+                            <!-- Magazine -->
+                            <a 
+                                href="{{ route('esd.magazines') }}"
+                                wire:navigate
+                                class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors mx-auto text-zinc-600 dark:text-zinc-400"
+                                :class="{
+                                    'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200': '{{ request()->routeIs('esd.magazines') }}' === '1'
+                                }"
+                                title="Magazine"
+                            >
+                                <x-heroicon-s-inbox-arrow-down class="w-4 h-4" />
+                            </a>
+
+                            <!-- Packaging -->
+                            <a 
+                                href="{{ route('esd.packagings') }}"
+                                wire:navigate
+                                class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors mx-auto text-zinc-600 dark:text-zinc-400"
+                                :class="{
+                                    'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200': '{{ request()->routeIs('esd.packagings') }}' === '1'
+                                }"
+                                title="Packaging"
+                            >
+                                <x-heroicon-s-cube class="w-4 h-4" />
+                            </a>
                         </div>
                         
                         <!-- Expanded items when sidebar open -->
@@ -416,6 +472,32 @@
                                     <x-heroicon-s-puzzle-piece class="w-4 h-4" />
                                 </x-slot>
                                 <span class="truncate">Jig</span>
+                            </flux:navlist.item>
+
+                            <!-- Magazine -->
+                            <flux:navlist.item 
+                                :href="route('esd.magazines')" 
+                                wire:navigate
+                                :active="request()->routeIs('esd.magazines')"
+                                class="w-full"
+                            >
+                                <x-slot name="icon">
+                                    <x-heroicon-s-inbox-arrow-down class="w-4 h-4" />
+                                </x-slot>
+                                <span class="truncate">Magazine</span>
+                            </flux:navlist.item>
+
+                            <!-- Packaging -->
+                            <flux:navlist.item 
+                                :href="route('esd.packagings')" 
+                                wire:navigate
+                                :active="request()->routeIs('esd.packagings')"
+                                class="w-full"
+                            >
+                                <x-slot name="icon">
+                                    <x-heroicon-s-cube class="w-4 h-4" />
+                                </x-slot>
+                                <span class="truncate">Packaging</span>
                             </flux:navlist.item>
                         </div>
                     </div>

@@ -1,18 +1,18 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\ESD\Soldering;
 
-use App\Models\Soldering;
+use App\Models\ESD\Soldering\Soldering;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class SolderingDetail extends Model
 {
     use HasFactory;
 
-    protected $connection = 'mysql_esd';
+    protected $table = 'tb_esd_soldering_details';
 
     protected $fillable = [
         'soldering_id',
@@ -63,45 +63,12 @@ class SolderingDetail extends Model
 
         static::creating(function ($model) {
             if (empty($model->created_by)) {
-                $model->created_by = Auth::id() ?? 267;
+                $model->created_by = Auth::id();
             }
         });
 
         static::updating(function ($model) {
-            $model->updated_by = Auth::id() ?? 267;  // Default to 267 if no user is logged in
-        });
-
-        static::saved(function ($detail) {
-            $soldering = $detail->soldering;
-
-            if ($soldering) {
-                $updates = [];
-
-                if (!empty($detail->spec)) {
-                    $updates['spec'] = $detail->spec;
-                }
-
-                if (!empty($detail->line)) {
-                    $updates['line'] = $detail->line;
-                }
-
-                if (!empty($detail->running_customer)) {
-                    $updates['running_customer'] = $detail->running_customer;
-                }
-
-                if (!empty($updates)) {
-                    $soldering->update($updates);
-                }
-
-                // Update the `last_measured` field to the latest `created_at` of the `SolderingDetail`
-                $latestMeasured = $soldering->solderingDetails()
-                    ->latest('created_at')
-                    ->value('created_at');
-
-                $soldering->update([
-                    'last_measured' => $latestMeasured
-                ]);
-            }
+            $model->updated_by = Auth::id();
         });
     }
 }

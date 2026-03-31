@@ -21,6 +21,12 @@ use App\Livewire\ESD\Ionizer\IonizerShow;
 use App\Livewire\ESD\Jig\JigDetailManagement;
 use App\Livewire\ESD\Jig\JigManagement;
 use App\Livewire\ESD\Jig\JigShow;
+use App\Livewire\ESD\Magazine\MagazineDetailManagement;
+use App\Livewire\ESD\Magazine\MagazineManagement;
+use App\Livewire\ESD\Magazine\MagazineShow;
+use App\Livewire\ESD\Packaging\PackagingDetailManagement;
+use App\Livewire\ESD\Packaging\PackagingManagement;
+use App\Livewire\ESD\Packaging\PackagingShow;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -59,5 +65,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::livewire('esd/jigs', JigManagement::class)->name('esd.jigs');
     Route::livewire('/esd/jigs/{id}', JigShow::class)->name('esd.jigs.show');
     Route::livewire('esd/jig-details', JigDetailManagement::class)->name('esd.jig-details');
+
+    // Magazine
+    Route::livewire('esd/magazines', MagazineManagement::class)->name('esd.magazines');
+    Route::livewire('/esd/magazines/{id}', MagazineShow::class)->name('esd.magazines.show');
+    Route::livewire('esd/magazine-details', MagazineDetailManagement::class)->name('esd.magazine-details');
+
+    // Packaging
+    Route::livewire('esd/packagings', PackagingManagement::class)->name('esd.packagings');
+    Route::livewire('/esd/packagings/{id}', PackagingShow::class)->name('esd.packagings.show');
+    Route::livewire('esd/packaging-details', PackagingDetailManagement::class)->name('esd.packaging-details');
 
 });

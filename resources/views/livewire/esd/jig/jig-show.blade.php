@@ -159,9 +159,9 @@
                                     </div>
                                     <div class="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-3">
                                         <p class="text-2xl font-bold text-blue-700 dark:text-blue-400">
-                                            > 1.00 = NG
+                                            < 1.0 Ohm
                                         </p>
-                                        <p class="text-xs text-zinc-500 mt-1">(Resistance Value)</p>
+                                        <p class="text-xs text-zinc-500 mt-1">(Resistance Point To Ground)</p>
                                     </div>
                                 </div>
                                 
@@ -175,9 +175,9 @@
                                     </div>
                                     <div class="bg-green-50 dark:bg-green-950/30 rounded-lg p-3">
                                         <p class="text-2xl font-bold text-green-700 dark:text-green-400">
-                                            > 100 = NG
+                                            < 100 Volt
                                         </p>
-                                        <p class="text-xs text-zinc-500 mt-1">(Resistance Value)</p>
+                                        <p class="text-xs text-zinc-500 mt-1">(Static Voltage)</p>
                                     </div>
                                 </div>
                             </div>
@@ -423,7 +423,7 @@
 
                                 <!-- J1 Measurement -->
                                 <div class="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                                    <div class="text-sm font-semibold text-blue-800 dark:text-blue-400 mb-2">Standard J1: > 1.00 = NG</div>
+                                    <div class="text-sm font-semibold text-blue-800 dark:text-blue-400 mb-2">Standard J1: < 1.0 Ohm</div>
                                     <div class="mb-3">
                                         <label class="block text-sm font-medium mb-1">J1 Measurement</label>
                                         <input type="number" step="0.01" wire:model="j1" wire:keyup="resetJudgementJ1"
@@ -442,7 +442,7 @@
 
                                 <!-- J2 Measurement -->
                                 <div class="mb-4 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-                                    <div class="text-sm font-semibold text-green-800 dark:text-green-400 mb-2">Standard J2: > 100 = NG <span class="text-red-500">*</span></div>
+                                    <div class="text-sm font-semibold text-green-800 dark:text-green-400 mb-2">Standard J2: < 100 Volt <span class="text-red-500">*</span></div>
                                     <div class="mb-3">
                                         <label class="block text-sm font-medium mb-1">J2 Measurement <span class="text-red-500">*</span></label>
                                         <input type="number" step="0.01" wire:model="j2" wire:keyup="resetJudgementJ2"

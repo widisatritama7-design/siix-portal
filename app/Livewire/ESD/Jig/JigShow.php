@@ -92,7 +92,7 @@ class JigShow extends Component
     {
         if ($this->j1 !== null && $this->j1 !== '') {
             // Standard: > 1.00 is NG
-            $this->judgement_j1 = floatval($this->j1) > 1.00 ? 'NG' : 'OK';
+            $this->judgement_j1 = floatval($this->j1) >= 1.00 ? 'NG' : 'OK';
         }
     }
 
@@ -100,7 +100,7 @@ class JigShow extends Component
     {
         if ($this->j2 !== null && $this->j2 !== '') {
             // Standard: > 100 is NG
-            $this->judgement_j2 = floatval($this->j2) > 100 ? 'NG' : 'OK';
+            $this->judgement_j2 = floatval($this->j2) >= 100 ? 'NG' : 'OK';
         }
     }
 

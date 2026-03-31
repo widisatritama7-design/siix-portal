@@ -103,7 +103,7 @@
                         href="{{ route('dashboard') }}" 
                         wire:navigate
                         :current="request()->routeIs('dashboard')"
-                        class="data-[current]:bg-zinc-200 data-[current]:text-zinc-800 dark:data-[current]:bg-zinc-800 dark:data-[current]:text-zinc-200 rounded-lg transition-colors"
+                       class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-black dark:data-[current]:border-white"
                     >
                         Main Dashboard
                     </flux:sidebar.item>
@@ -114,8 +114,8 @@
                         href="{{ route('dcc-dashboard') }}" 
                         wire:navigate
                         :current="request()->routeIs('dcc-dashboard')"
-                        class="data-[current]:bg-zinc-200 data-[current]:text-zinc-800 dark:data-[current]:bg-zinc-800 dark:data-[current]:text-zinc-200 rounded-lg transition-colors"
-                    >
+                        class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-black dark:data-[current]:border-white"
+                    >    
                         DCC Dashboard
                     </flux:sidebar.item>
                     @endcan
@@ -126,7 +126,7 @@
                         href="{{ route('hr-dashboard') }}" 
                         wire:navigate
                         :current="request()->routeIs('hr-dashboard')"
-                        class="data-[current]:bg-zinc-200 data-[current]:text-zinc-800 dark:data-[current]:bg-zinc-800 dark:data-[current]:text-zinc-200 rounded-lg transition-colors"
+                        class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-black dark:data-[current]:border-white"
                     >
                         HR Dashboard
                     </flux:sidebar.item>
@@ -138,7 +138,7 @@
                         href="{{ route('ticket-dashboard') }}" 
                         wire:navigate
                         :current="request()->routeIs('ticket-dashboard')"
-                        class="data-[current]:bg-zinc-200 data-[current]:text-zinc-800 dark:data-[current]:bg-zinc-800 dark:data-[current]:text-zinc-200 rounded-lg transition-colors"
+                        class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-black dark:data-[current]:border-white"
                     >
                         Ticket Dashboard
                     </flux:sidebar.item>
@@ -152,7 +152,7 @@
                         :current="request()->routeIs('inbox')"
                         :badge="App\Helpers\InboxHelper::getTotalInboxCount() > 0 ? App\Helpers\InboxHelper::getTotalInboxCount() : null"
                         badge-color="blue"
-                        class="data-[current]:bg-zinc-200 data-[current]:text-zinc-800 dark:data-[current]:bg-zinc-800 dark:data-[current]:text-zinc-200 rounded-lg transition-colors"
+                        class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-black dark:data-[current]:border-white"
                     >
                         Inbox
                     </flux:sidebar.item>
@@ -169,7 +169,7 @@
                         href="{{ route('esd.equipment-grounds') }}" 
                         wire:navigate
                         :current="request()->routeIs('esd.equipment-grounds')"
-                        class="data-[current]:bg-zinc-200 data-[current]:text-zinc-800 dark:data-[current]:bg-zinc-800 dark:data-[current]:text-zinc-200 rounded-lg transition-colors"
+                        class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-black dark:data-[current]:border-white"
                     >
                         ESD Monitoring
                     </flux:sidebar.item>

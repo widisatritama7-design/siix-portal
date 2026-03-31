@@ -105,41 +105,11 @@
                     x-cloak
                     class="bg-white dark:bg-zinc-800 rounded-xl shadow-lg border border-zinc-200 dark:border-zinc-700 p-6 mb-4">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <!-- Register No Filter -->
-                        <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Register No</label>
-                            <select wire:model.live="filterJig" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                                <option value="">All Register</option>
-                                @foreach($jigs as $jig)
-                                    <option value="{{ $jig->id }}">{{ $jig->register_no }}</option>
-                                @endforeach
-                            </select>
-                        </div>
 
-                        <!-- Location Filter -->
+                        <!-- Search -->
                         <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Location</label>
-                            <input type="text" wire:model.live.debounce="filterLocation" placeholder="Search location..." class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                        </div>
-
-                        <!-- Judgement J1 Filter -->
-                        <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Judgement J1</label>
-                            <select wire:model.live="filterJudgementJ1" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                                <option value="">All</option>
-                                <option value="OK">OK</option>
-                                <option value="NG">NG</option>
-                            </select>
-                        </div>
-
-                        <!-- Judgement J2 Filter -->
-                        <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Judgement J2</label>
-                            <select wire:model.live="filterJudgementJ2" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                                <option value="">All</option>
-                                <option value="OK">OK</option>
-                                <option value="NG">NG</option>
-                            </select>
+                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Search</label>
+                            <input type="text" wire:model.live.debounce.300ms="search" placeholder="Search by register, location..." class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
                         </div>
 
                         <!-- Date From -->
@@ -166,11 +136,6 @@
                             <input type="date" wire:model.live="filterNextDateUntil" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
                         </div>
 
-                        <!-- Search -->
-                        <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Search</label>
-                            <input type="text" wire:model.live.debounce.300ms="search" placeholder="Search by register, location..." class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                        </div>
                     </div>
                 </div>
             </div>
@@ -365,7 +330,7 @@
 
                                 <!-- J1 Measurement -->
                                 <div class="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
-                                    <div class="text-sm font-semibold text-yellow-800 dark:text-yellow-400 mb-2">Standard J1: > 1.00 = NG</div>
+                                    <div class="text-sm font-semibold text-yellow-800 dark:text-yellow-400 mb-2">Standard J1: < 1.0 Ohm</div>
                                     <div class="mb-3">
                                         <label class="block text-sm font-medium mb-1">J1 Measurement</label>
                                         <input type="number" step="0.01" wire:model="j1" wire:keyup="resetJudgementJ1"
@@ -384,7 +349,7 @@
 
                                 <!-- J2 Measurement -->
                                 <div class="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                                    <div class="text-sm font-semibold text-blue-800 dark:text-blue-400 mb-2">Standard J2: > 100 = NG <span class="text-red-500">*</span></div>
+                                    <div class="text-sm font-semibold text-blue-800 dark:text-blue-400 mb-2">Standard J2: < 100 Volt <span class="text-red-500">*</span></div>
                                     <div class="mb-3">
                                         <label class="block text-sm font-medium mb-1">J2 Measurement <span class="text-red-500">*</span></label>
                                         <input type="number" step="0.01" wire:model="j2" wire:keyup="resetJudgementJ2"
