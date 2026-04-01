@@ -1,23 +1,19 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\ESD\Worksurface;
 
+use App\Models\ESD\Worksurface\Worksurface;
 use App\Models\User;
-
-use Spatie\Activitylog\LogOptions;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\Model;
-use Spatie\Activitylog\Traits\LogsActivity;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
 class WorksurfaceDetail extends Model 
 {
     use HasFactory;
-    use LogsActivity;
 
-    protected $connection = 'mysql_esd';
+    protected $table = 'tb_esd_worksurface_details';
 
-    // Tentukan atribut yang bisa diisi secara massal
     protected $fillable = [
         'worksurface_id',
         'area',
@@ -33,25 +29,6 @@ class WorksurfaceDetail extends Model
         'next_date'
     ];
 
-    public function getActivitylogOptions(): LogOptions
-    {
-        return LogOptions::defaults()
-        ->logOnly([
-            'worksurface_id',
-            'area',
-            'location',
-            'item',
-            'a1',
-            'a1_scientific',
-            'judgement_a1',
-            'a2',
-            'judgement_a2',
-            'remarks',
-            'next_date'
-        ]);
-    }
-
-    // Relasi many-to-one dengan Worksurface
     public function worksurface()
     {
         return $this->belongsTo(Worksurface::class);
@@ -62,27 +39,19 @@ class WorksurfaceDetail extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    /**
-     * Get the user who last updated the transaction.
-     */
     public function updater()
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
 
-    /**
-     * Boot method to attach model events.
-     */
     protected static function boot()
     {
         parent::boot();
 
-        // Set the creator on creating event
         static::creating(function ($model) {
             $model->created_by = Auth::id();
         });
 
-        // Set the updater on updating event
         static::updating(function ($model) {
             $model->updated_by = Auth::id();
         });

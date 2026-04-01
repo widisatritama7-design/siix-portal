@@ -15,6 +15,7 @@ use App\Livewire\ESD\GB\GroundMonitorBoxShow;
 use App\Livewire\ESD\Glove\GloveDetailManagement;
 use App\Livewire\ESD\Glove\GloveManagement;
 use App\Livewire\ESD\Glove\GloveShow;
+use App\Livewire\ESD\Insulatif\InsulatifCheckManagement;
 use App\Livewire\ESD\Ionizer\IonizerDetailManagement;
 use App\Livewire\ESD\Ionizer\IonizerManagement;
 use App\Livewire\ESD\Ionizer\IonizerShow;
@@ -27,6 +28,13 @@ use App\Livewire\ESD\Magazine\MagazineShow;
 use App\Livewire\ESD\Packaging\PackagingDetailManagement;
 use App\Livewire\ESD\Packaging\PackagingManagement;
 use App\Livewire\ESD\Packaging\PackagingShow;
+use App\Livewire\ESD\Soldering\SolderingDetailManagement;
+use App\Livewire\ESD\Soldering\SolderingManagement;
+use App\Livewire\ESD\Soldering\SolderingShow;
+use App\Livewire\ESD\Worksurface\WorksurfaceDetailManagement;
+use App\Livewire\ESD\Worksurface\WorksurfaceManagement;
+use App\Livewire\ESD\Worksurface\WorksurfaceShow;
+use App\Livewire\ESD\WS\WristStrapManagement;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -75,5 +83,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::livewire('esd/packagings', PackagingManagement::class)->name('esd.packagings');
     Route::livewire('/esd/packagings/{id}', PackagingShow::class)->name('esd.packagings.show');
     Route::livewire('esd/packaging-details', PackagingDetailManagement::class)->name('esd.packaging-details');
+
+    // Soldering
+    Route::livewire('esd/solderings', SolderingManagement::class)->name('esd.solderings');
+    Route::livewire('/esd/solderings/{id}', SolderingShow::class)->name('esd.solderings.show');
+    Route::livewire('esd/soldering-details', SolderingDetailManagement::class)->name('esd.soldering-details');
+
+    // Worksurface
+    Route::livewire('esd/worksurfaces', WorksurfaceManagement::class)->name('esd.worksurfaces');
+    Route::livewire('/esd/worksurfaces/{id}', WorksurfaceShow::class)->name('esd.worksurfaces.show');
+    Route::livewire('esd/worksurface-details', WorksurfaceDetailManagement::class)->name('esd.worksurface-details');
+
+    // Insulatif Check
+    Route::livewire('esd/insulatif-checks', InsulatifCheckManagement::class)->name('esd.insulatif-checks');
+
+    // Wrist Strap
+    Route::livewire('esd/wrist-straps', WristStrapManagement::class)->name('esd.wrist-straps');
 
 });

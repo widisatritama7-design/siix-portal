@@ -103,43 +103,12 @@
                     x-transition.duration.300ms
                     x-cloak
                     class="bg-white dark:bg-zinc-800 rounded-xl shadow-lg border border-zinc-200 dark:border-zinc-700 p-6 mb-4">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
 
                         <!-- Search -->
                         <div>
                             <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Search</label>
                             <input type="text" wire:model.live.debounce.300ms="search" placeholder="Search by material, category..." class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                        </div>
-
-                        <!-- Packaging Filter -->
-                        <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Material</label>
-                            <select wire:model.live="filterPackaging" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                                <option value="">All Materials</option>
-                                @foreach($packagings as $packaging)
-                                    <option value="{{ $packaging->id }}">{{ $packaging->material }} ({{ $packaging->category }})</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-                        <!-- F1 Judgement Filter -->
-                        <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">F1 Judgement</label>
-                            <select wire:model.live="filterJudgementF1" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                                <option value="">All</option>
-                                <option value="OK">OK</option>
-                                <option value="NG">NG</option>
-                            </select>
-                        </div>
-
-                        <!-- F2 Judgement Filter -->
-                        <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">F2 Judgement</label>
-                            <select wire:model.live="filterJudgementF2" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                                <option value="">All</option>
-                                <option value="OK">OK</option>
-                                <option value="NG">NG</option>
-                            </select>
                         </div>
 
                         <!-- Date From -->

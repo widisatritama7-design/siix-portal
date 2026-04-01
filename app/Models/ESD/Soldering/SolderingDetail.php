@@ -16,28 +16,9 @@ class SolderingDetail extends Model
 
     protected $fillable = [
         'soldering_id',
-        'area',
-        'location',
-        'actual_setting',
-        'actual_temp',
         'e1',
-        'e2',
-        'tip_condition',
-        'stand_condition',
         'judgement',
-        'judgement_e2',
-        'remarks',
-        'problem',
-        'action',
-        'result',
         'next_date',
-        'spec',
-        'line',
-        'running_customer',
-        'shift',
-        'judgement_temp',
-        'running_status',
-        'overall_judgement',
         'created_by',
         'updated_by'
     ];

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\ESD\Insulatif;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -11,9 +11,7 @@ class InsulatifCheck extends Model
 {
     use HasFactory;
 
-    protected $connection = 'mysql_esd'; // Gunakan koneksi khusus
-
-    protected $table = 'insulatif_checks'; // Nama tabel
+    protected $table = 'tb_esd_insulatif_checks';
 
     protected $fillable = [
         'register_no',
@@ -28,27 +26,19 @@ class InsulatifCheck extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    /**
-     * Get the user who last updated the transaction.
-     */
     public function updater()
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
 
-    /**
-     * Boot method to attach model events.
-     */
     protected static function boot()
     {
         parent::boot();
 
-        // Set the creator on creating event
         static::creating(function ($model) {
             $model->created_by = Auth::id();
         });
 
-        // Set the updater on updating event
         static::updating(function ($model) {
             $model->updated_by = Auth::id();
         });
