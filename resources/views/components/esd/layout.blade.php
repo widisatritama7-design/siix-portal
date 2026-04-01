@@ -1,6 +1,6 @@
 <div 
     x-data="{
-        sidebarOpen: JSON.parse(localStorage.getItem('sidebarOpen') ?? 'true'),
+        sidebarOpen: true,
         mobileMenuOpen: false,
         yearlyOpen: true,
         monthlyOpen: true,
@@ -9,25 +9,55 @@
         dailyOpen: true,
         newAdmissionOpen: true,
         init() {
-            this.$nextTick(() => {
-                this.sidebarOpen = JSON.parse(localStorage.getItem('sidebarOpen') ?? 'true');
-                // Load saved states for groups
-                let savedYearlyState = localStorage.getItem('yearlyOpen');
-                if (savedYearlyState !== null) this.yearlyOpen = JSON.parse(savedYearlyState);
-                let savedMonthlyState = localStorage.getItem('monthlyOpen');
-                if (savedMonthlyState !== null) this.monthlyOpen = JSON.parse(savedMonthlyState);
-                let savedThreeMonthState = localStorage.getItem('threeMonthOpen');
-                if (savedThreeMonthState !== null) this.threeMonthOpen = JSON.parse(savedThreeMonthState);
-                let savedWeeklyState = localStorage.getItem('weeklyOpen');
-                if (savedWeeklyState !== null) this.weeklyOpen = JSON.parse(savedWeeklyState);
-                let savedDailyState = localStorage.getItem('dailyOpen');
-                if (savedDailyState !== null) this.dailyOpen = JSON.parse(savedDailyState);
-                let savedNewAdmissionState = localStorage.getItem('newAdmissionOpen');
-                if (savedNewAdmissionState !== null) this.newAdmissionOpen = JSON.parse(savedNewAdmissionState);
-            });
+            // Load all saved states from localStorage
+            const savedSidebarOpen = localStorage.getItem('sidebarOpen');
+            if (savedSidebarOpen !== null) {
+                this.sidebarOpen = JSON.parse(savedSidebarOpen);
+            }
+            
+            const savedYearlyState = localStorage.getItem('yearlyOpen');
+            if (savedYearlyState !== null) {
+                this.yearlyOpen = JSON.parse(savedYearlyState);
+            }
+            
+            const savedMonthlyState = localStorage.getItem('monthlyOpen');
+            if (savedMonthlyState !== null) {
+                this.monthlyOpen = JSON.parse(savedMonthlyState);
+            }
+            
+            const savedThreeMonthState = localStorage.getItem('threeMonthOpen');
+            if (savedThreeMonthState !== null) {
+                this.threeMonthOpen = JSON.parse(savedThreeMonthState);
+            }
+            
+            const savedWeeklyState = localStorage.getItem('weeklyOpen');
+            if (savedWeeklyState !== null) {
+                this.weeklyOpen = JSON.parse(savedWeeklyState);
+            }
+            
+            const savedDailyState = localStorage.getItem('dailyOpen');
+            if (savedDailyState !== null) {
+                this.dailyOpen = JSON.parse(savedDailyState);
+            }
+            
+            const savedNewAdmissionState = localStorage.getItem('newAdmissionOpen');
+            if (savedNewAdmissionState !== null) {
+                this.newAdmissionOpen = JSON.parse(savedNewAdmissionState);
+            }
+        },
+        saveToLocalStorage() {
+            localStorage.setItem('sidebarOpen', JSON.stringify(this.sidebarOpen));
+            localStorage.setItem('yearlyOpen', JSON.stringify(this.yearlyOpen));
+            localStorage.setItem('monthlyOpen', JSON.stringify(this.monthlyOpen));
+            localStorage.setItem('threeMonthOpen', JSON.stringify(this.threeMonthOpen));
+            localStorage.setItem('weeklyOpen', JSON.stringify(this.weeklyOpen));
+            localStorage.setItem('dailyOpen', JSON.stringify(this.dailyOpen));
+            localStorage.setItem('newAdmissionOpen', JSON.stringify(this.newAdmissionOpen));
         }
-    }" 
-    x-effect="localStorage.setItem('sidebarOpen', sidebarOpen); localStorage.setItem('yearlyOpen', yearlyOpen); localStorage.setItem('monthlyOpen', monthlyOpen); localStorage.setItem('threeMonthOpen', threeMonthOpen); localStorage.setItem('weeklyOpen', weeklyOpen); localStorage.setItem('dailyOpen', dailyOpen); localStorage.setItem('newAdmissionOpen', newAdmissionOpen)"
+    }"
+    x-init="init()"
+    @keyup.window="saveToLocalStorage()"
+    @click.window="saveToLocalStorage()"
     class="flex max-md:flex-col"
     x-cloak
 >

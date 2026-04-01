@@ -77,7 +77,7 @@
 
     <flux:sidebar 
         sticky 
-        collapsible 
+        collapsible persist="false" 
         class="bg-zinc-50 dark:bg-zinc-900 border-r border-zinc-300 dark:border-zinc-600 lg:shadow-[10px_0_15px_-5px_rgba(0,0,0,0.1)] lg:dark:shadow-[10px_0_15px_-5px_rgba(0,0,0,0.3)]"
         style="overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none;"
     >
@@ -103,7 +103,7 @@
                         href="{{ route('dashboard') }}" 
                         wire:navigate
                         :current="request()->routeIs('dashboard')"
-                       class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-black dark:data-[current]:border-white"
+                        class="data-[current]:bg-zinc-200 data-[current]:text-zinc-700 dark:data-[current]:bg-zinc-700 dark:data-[current]:text-zinc-200 data-[current]:border-r-2 data-[current]:border-black dark:data-[current]:border-white"
                     >
                         Main Dashboard
                     </flux:sidebar.item>
@@ -180,7 +180,31 @@
 
                 <!-- GROUP: DCC (EXPANDABLE) -->
                 @canany(['view departments', 'view submissions'])
-                <flux:sidebar.group icon="folder" icon-variant="solid" expandable heading="DCC" class="grid">
+                <flux:sidebar.group 
+                    x-data="{
+                        key: 'sidebar-dcc',
+                        init() {
+                            const saved = localStorage.getItem(this.key)
+
+                            if (saved === 'open') {
+                                this.$nextTick(() => {
+                                    const btn = this.$el.querySelector('[data-flux-sidebar-group-trigger]')
+                                    if (btn && this.$el.hasAttribute('data-collapsed')) {
+                                        btn.click()
+                                    }
+                                })
+                            }
+                        }
+                    }"
+                    @click="
+                        const collapsed = $el.hasAttribute('data-collapsed')
+                        localStorage.setItem('sidebar-dcc', collapsed ? 'open' : 'closed')
+                    "
+                    icon="folder" 
+                    expandable 
+                    heading="DCC"
+                    class="grid"
+                >
                     
                     @can('view departments')
                     <flux:sidebar.item 
