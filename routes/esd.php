@@ -28,6 +28,10 @@ use App\Livewire\ESD\Magazine\MagazineShow;
 use App\Livewire\ESD\Packaging\PackagingDetailManagement;
 use App\Livewire\ESD\Packaging\PackagingManagement;
 use App\Livewire\ESD\Packaging\PackagingShow;
+use App\Livewire\ESD\Patrol\PatrolManagement;
+use App\Livewire\ESD\Shower\ShowerDetailManagement;
+use App\Livewire\ESD\Shower\ShowerManagement;
+use App\Livewire\ESD\Shower\ShowerShow;
 use App\Livewire\ESD\Soldering\SolderingDetailManagement;
 use App\Livewire\ESD\Soldering\SolderingManagement;
 use App\Livewire\ESD\Soldering\SolderingShow;
@@ -94,10 +98,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::livewire('/esd/worksurfaces/{id}', WorksurfaceShow::class)->name('esd.worksurfaces.show');
     Route::livewire('esd/worksurface-details', WorksurfaceDetailManagement::class)->name('esd.worksurface-details');
 
+    // Shower
+    Route::livewire('esd/showers', ShowerManagement::class)->name('esd.showers');
+    Route::livewire('/esd/showers/{id}', ShowerShow::class)->name('esd.showers.show');
+    Route::livewire('esd/shower-details', ShowerDetailManagement::class)->name('esd.shower-details');
+
     // Insulatif Check
     Route::livewire('esd/insulatif-checks', InsulatifCheckManagement::class)->name('esd.insulatif-checks');
 
     // Wrist Strap
     Route::livewire('esd/wrist-straps', WristStrapManagement::class)->name('esd.wrist-straps');
+
+    // Patrol
+    Route::livewire('esd/patrols', PatrolManagement::class)->name('esd.patrols');
 
 });

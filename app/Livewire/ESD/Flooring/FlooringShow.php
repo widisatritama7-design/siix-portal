@@ -42,7 +42,7 @@ class FlooringShow extends Component
     {
         return [
             'flooring_id' => 'required|exists:tb_esd_floorings,id',
-            'b1' => 'required|numeric|min:0',
+            'b1' => 'nullable|numeric|min:0', // Diubah jadi nullable
             'remarks' => 'nullable|string',
             'next_date' => 'nullable|date',
         ];
@@ -53,7 +53,6 @@ class FlooringShow extends Component
         return [
             'flooring_id.required' => 'Register number is required.',
             'flooring_id.exists' => 'Selected flooring does not exist.',
-            'b1.required' => 'B1 measurement is required.',
             'b1.numeric' => 'B1 measurement must be a number.',
             'b1.min' => 'B1 measurement must be at least 0.',
             'next_date.date' => 'Next date must be a valid date.',
@@ -76,18 +75,27 @@ class FlooringShow extends Component
         $this->floorings = Flooring::orderBy('register_no')->get();
     }
 
-    public function updatedB1()
+    // Fungsi baru untuk handle input kosong
+    public function updatedB1($value)
     {
+        // Jika kosong, set ke null
+        if ($value === '' || $value === null) {
+            $this->b1 = null;
+        }
         $this->resetJudgement();
     }
 
     public function resetJudgement()
     {
+        // Handle jika b1 kosong
         if ($this->b1 !== null && $this->b1 !== '') {
             // Standard: < 1.00E+9 Ohm (1,000,000,000 Ohm)
             $this->judgement = floatval($this->b1) >= 1000000000 ? 'NG' : 'OK';
             // Convert to scientific notation with 2 decimal places
             $this->b1_scientific = sprintf('%.2E', floatval($this->b1));
+        } else {
+            $this->judgement = null;
+            $this->b1_scientific = null;
         }
     }
 
@@ -139,11 +147,12 @@ class FlooringShow extends Component
         $this->flooring_id = $this->flooring->id;
     
         $this->validate([
-            'b1' => 'required|numeric|min:0',
+            'b1' => 'nullable|numeric|min:0', // Diubah jadi nullable
             'remarks' => 'nullable|string',
             'next_date' => 'nullable|date',
         ]);
     
+        // Reset judgement sebelum save
         $this->resetJudgement();
     
         $data = [
@@ -239,6 +248,12 @@ class FlooringShow extends Component
 
         $this->detailToDelete = null;
         $this->dispatch('notify', message: "Measurement for '{$registerNo}' has been deleted successfully!");
+        $this->dispatch('close-modal', 'delete-detail-modal');
+    }
+
+    public function cancelDelete()
+    {
+        $this->detailToDelete = null;
         $this->dispatch('close-modal', 'delete-detail-modal');
     }
 

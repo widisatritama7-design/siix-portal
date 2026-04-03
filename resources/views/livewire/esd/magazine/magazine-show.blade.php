@@ -104,7 +104,7 @@
                 </div>
             </flux:card>
 
-            <!-- Standard ESD Magazine Card -->
+            <!-- Standard ESD Packaging Card -->
             <flux:card class="p-0 shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden mb-6">
                 <!-- Header with Solid Color -->
                 <div class="bg-purple-600 dark:bg-purple-500 px-6 py-4">
@@ -123,7 +123,7 @@
                         class="w-full flex items-center justify-between p-3 bg-gray-50 dark:bg-zinc-800/50 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors mb-4"
                     >
                         <div class="flex items-center gap-2">
-                            <flux:icon name="beaker" class="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                            <flux:icon name="beaker" class="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
                             <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">View Standard Details</span>
                         </div>
                         <flux:icon x-show="!open" name="chevron-down" class="w-5 h-5 text-zinc-500" />
@@ -133,35 +133,35 @@
                     <div x-show="open" x-collapse x-cloak>
                         <div class="pt-2">
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
-                                <!-- Standard Value M1 -->
+                                <!-- Standard Value F1 -->
                                 <div class="text-center">
                                     <div class="flex items-center justify-center gap-2 mb-2">
-                                        <flux:icon name="beaker" class="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                                        <flux:icon name="beaker" class="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
                                         <label class="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
-                                            Standard Value M1
+                                            (M1) Resistance Spec
                                         </label>
                                     </div>
-                                    <div class="bg-purple-50 dark:bg-purple-950/30 rounded-lg p-3">
-                                        <p class="text-2xl font-bold text-purple-700 dark:text-purple-400">
-                                            ≥ 1.00E+4 Ω and < 1.00E+11 Ω
+                                    <div class="bg-indigo-50 dark:bg-indigo-950/30 rounded-lg p-3">
+                                        <p class="text-2xl font-bold text-indigo-700 dark:text-indigo-400">
+                                            ≥ 1.00E+4 Ω - < 1.00E+11 Ω
                                         </p>
-                                        <p class="text-xs text-zinc-500 mt-1">(Resistance Point To Ground)</p>
+                                        <p class="text-xs text-zinc-500 mt-1">(Resistance Point To Point)</p>
                                     </div>
                                 </div>
                                 
-                                <!-- Standard Value M2 -->
+                                <!-- Standard Value F2 -->
                                 <div class="text-center">
                                     <div class="flex items-center justify-center gap-2 mb-2">
                                         <flux:icon name="bolt" class="w-4 h-4 text-blue-600 dark:text-blue-400" />
                                         <label class="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
-                                            Standard Value M2
+                                            (M2) Surface static field voltage
                                         </label>
                                     </div>
                                     <div class="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-3">
                                         <p class="text-2xl font-bold text-blue-700 dark:text-blue-400">
-                                            &lt; 100 Volt
+                                            < +/- 100 Volts
                                         </p>
-                                        <p class="text-xs text-zinc-500 mt-1">(Voltage Measurement)</p>
+                                        <p class="text-xs text-zinc-500 mt-1">(Static Voltage)</p>
                                     </div>
                                 </div>
                             </div>
@@ -169,25 +169,28 @@
                             <!-- Frequency -->
                             <div class="text-center mb-6">
                                 <div class="flex items-center justify-center gap-2 mb-2">
-                                    <flux:icon name="calendar" class="w-4 h-4 text-green-600 dark:text-green-400" />
+                                    <flux:icon name="calendar" class="w-4 h-4 text-blue-600 dark:text-blue-400" />
                                     <label class="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
                                         Frequency
                                     </label>
                                 </div>
                                 <div class="bg-green-50 dark:bg-green-950/30 rounded-lg p-3 inline-block px-8">
                                     <p class="text-2xl font-bold text-green-700 dark:text-green-400">
-                                        Monthly
+                                        3 Months (At The Time Production Inventory ) Sampling 50 Pcs
                                     </p>
                                 </div>
                             </div>
                             
+                            <!-- Document Reference -->
                             <div class="mt-6 pt-4 border-t border-zinc-200 dark:border-zinc-700">
-                                <div class="flex items-center justify-center">
-                                    <div class="bg-zinc-100 dark:bg-zinc-800 rounded-lg px-6 py-3">
-                                        <code class="text-lg font-mono font-bold text-zinc-800 dark:text-white">
-                                            QR-ADM-22-K025
-                                        </code>
+                                <div class="flex flex-col sm:flex-row items-center justify-between gap-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-3">
+                                    <div class="flex items-center gap-2">
+                                        <flux:icon name="document-text" class="w-4 h-4 text-zinc-500" />
+                                        <span class="text-xs text-zinc-500 dark:text-zinc-400">Document Reference</span>
                                     </div>
+                                    <code class="text-sm font-mono font-bold text-zinc-800 dark:text-white bg-white dark:bg-zinc-900 px-3 py-1 rounded">
+                                        QR-ADM-24-K043
+                                    </code>
                                 </div>
                             </div>
                         </div>

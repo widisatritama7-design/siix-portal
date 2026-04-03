@@ -41,7 +41,7 @@ class GloveDetailManagement extends Component
     {
         return [
             'glove_id' => 'required|exists:tb_esd_gloves,id',
-            'c1' => 'required|numeric|min:0',
+            'c1' => 'nullable|numeric', // hapus required, min
             'remarks' => 'nullable|string|max:255',
             'next_date' => 'nullable|date',
         ];
@@ -50,9 +50,7 @@ class GloveDetailManagement extends Component
     protected $messages = [
         'glove_id.required' => 'SAP Code is required.',
         'glove_id.exists' => 'Selected glove does not exist.',
-        'c1.required' => 'C1 measurement result is required.',
         'c1.numeric' => 'C1 measurement result must be a number.',
-        'c1.min' => 'C1 measurement result must be at least 0.',
         'remarks.max' => 'Remarks cannot exceed 255 characters.',
         'next_date.date' => 'Next date must be a valid date.',
     ];

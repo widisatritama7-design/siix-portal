@@ -40,7 +40,7 @@ class FlooringDetailManagement extends Component
     {
         return [
             'flooring_id' => 'required|exists:tb_esd_floorings,id',
-            'b1' => 'required|numeric|min:0',
+            'b1' => 'nullable|numeric|min:0', // Diubah jadi nullable
             'remarks' => 'nullable|string|max:500',
             'next_date' => 'nullable|date',
         ];
@@ -49,7 +49,6 @@ class FlooringDetailManagement extends Component
     protected $messages = [
         'flooring_id.required' => 'Register number is required.',
         'flooring_id.exists' => 'Selected flooring does not exist.',
-        'b1.required' => 'B1 measurement result is required.',
         'b1.numeric' => 'B1 measurement result must be a number.',
         'b1.min' => 'B1 measurement result must be at least 0.',
         'next_date.date' => 'Next date must be a valid date.',
@@ -62,16 +61,25 @@ class FlooringDetailManagement extends Component
 
     public function resetJudgement()
     {
+        // Handle jika b1 kosong
         if ($this->b1 !== null && $this->b1 !== '') {
             // Standard: < 1.00E+9 Ohm (1,000,000,000 Ohm)
             $this->judgement = floatval($this->b1) >= 1000000000 ? 'NG' : 'OK';
             // Convert to scientific notation with 2 decimal places
             $this->b1_scientific = sprintf('%.2E', floatval($this->b1));
+        } else {
+            $this->judgement = null;
+            $this->b1_scientific = null;
         }
     }
 
-    public function updatedB1()
+    // Fungsi baru untuk handle input kosong
+    public function updatedB1($value)
     {
+        // Jika kosong, set ke null
+        if ($value === '' || $value === null) {
+            $this->b1 = null;
+        }
         $this->resetJudgement();
     }
 
@@ -131,6 +139,9 @@ class FlooringDetailManagement extends Component
         }
 
         $this->validate();
+
+        // Reset judgement sebelum save
+        $this->resetJudgement();
 
         $data = [
             'flooring_id' => $this->flooring_id,

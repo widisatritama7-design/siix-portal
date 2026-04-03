@@ -1,9 +1,9 @@
-{{-- resources/views/livewire/esd/flooring/flooring-detail-management.blade.php --}}
+{{-- resources/views/livewire/esd/shower/shower-detail-management.blade.php --}}
 <section class="w-full">
     @include('partials.esd-heading')
 
     <flux:heading class="sr-only">
-        {{ __('Electrostatic Discharge - Flooring Measurement') }}
+        {{ __('Electrostatic Discharge - Shower Measurement') }}
     </flux:heading>
 
     <x-esd.layout 
@@ -23,7 +23,7 @@
                         ESD
                     </flux:breadcrumbs.item>
                     <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
-                        Flooring Measurement
+                        Shower Measurement
                     </flux:breadcrumbs.item>
                 </flux:breadcrumbs>
             </div>
@@ -34,20 +34,20 @@
                 <div class="flex justify-between items-start">
                     <div>
                         <h1 class="text-3xl font-bold text-zinc-800 dark:text-white">
-                            Flooring Measurement
+                            Shower Measurement
                         </h1>
                         <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-                            Manage measurement records for ESD flooring
+                            Manage measurement records for ESD shower
                         </p>
                     </div>
                     <flux:button 
-                        href="{{ route('esd.floorings') }}"
+                        href="{{ route('esd.showers') }}"
                         wire:navigate
                         icon="arrow-left"
                         variant="primary"
                         color="green"
                     >
-                        Back to Flooring
+                        Back to Shower
                     </flux:button>
                 </div>
             </div>
@@ -70,7 +70,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
                             </svg>
                             <span x-text="showFilters ? 'Hide Filters' : 'Show Filters'"></span>
-                            <span x-show="filterFlooring || filterArea || filterLocation || filterJudgement || filterDateFrom || filterDateUntil || filterNextDateFrom || filterNextDateUntil || search" 
+                            <span x-show="filterShower || filterCheckBody || filterJudgement || filterDateFrom || filterDateUntil || filterNextDateFrom || filterNextDateUntil || search" 
                                 class="ml-1 px-1.5 py-0.5 text-xs bg-blue-100 text-blue-800 rounded-full dark:bg-blue-900 dark:text-blue-300">
                                 Active
                             </span>
@@ -79,13 +79,7 @@
                     
                     <!-- Create Button and Clear Filters -->
                     <div class="flex gap-2">
-                        @if($filterFlooring || $filterArea || $filterLocation || $filterJudgement || $filterDateFrom || $filterDateUntil || $filterNextDateFrom || $filterNextDateUntil || $search)
-                        <button wire:click="resetFilters" class="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400">
-                            Clear All Filters
-                        </button>
-                        @endif
-                        
-                        @can('create flooring details')
+                        @can('create shower details')
                         <flux:button 
                             variant="primary" 
                             icon="plus" 
@@ -105,11 +99,10 @@
                     x-cloak
                     class="bg-white dark:bg-zinc-800 rounded-xl shadow-lg border border-zinc-200 dark:border-zinc-700 p-6 mb-4">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-
                         <!-- Search -->
                         <div>
                             <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Search</label>
-                            <input type="text" wire:model.live.debounce.300ms="search" placeholder="Search by register, area, location..." class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                            <input type="text" wire:model.live.debounce.300ms="search" placeholder="Search by register, area, location, remarks..." class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
                         </div>
 
                         <!-- Date From -->
@@ -135,8 +128,12 @@
                             <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Next Date Until</label>
                             <input type="date" wire:model.live="filterNextDateUntil" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
                         </div>
-
                     </div>
+                    @if($filterShower || $filterCheckBody || $filterJudgement || $filterDateFrom || $filterDateUntil || $filterNextDateFrom || $filterNextDateUntil || $search)
+                    <div class="mt-3 text-right">
+                        <button wire:click="resetFilters" class="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400">Clear All Filters</button>
+                    </div>
+                    @endif
                 </div>
             </div>
 
@@ -154,50 +151,98 @@
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[150px]">Register No</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[120px]">Area</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[120px]">Location</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[120px]">B1 Result</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider w-20">Judgement</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[150px]">Remarks</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Check Body</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider w-24">Velocity</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider w-28">Judgement</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[200px]">Remarks</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Date</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Next Date</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[120px]">Checked By</th>
                                 <th class="px-4 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider w-24">Actions</th>
-                            </tr>
+
                         </thead>
                         <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
                             @forelse($details as $index => $detail)
-                            <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors" wire:key="detail-{{ $detail->id }}">
+                            @php
+                                $isOutOfSpec = ($detail->velocity < 80 || $detail->velocity > 100);
+                                $rowClass = $isOutOfSpec ? 'bg-red-50 dark:bg-red-950/20' : '';
+                                $velocityColor = $isOutOfSpec ? 'text-red-600 dark:text-red-400 font-bold' : 'text-green-600 dark:text-green-400';
+                            @endphp
+                            <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors {{ $rowClass }}" wire:key="detail-{{ $detail->id }}">
                                 <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400">
                                     {{ $details->firstItem() + $index }}
                                 </td>
                                 <td class="px-4 py-3">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-white font-medium shadow-lg flex-shrink-0 text-xs">
-                                            {{ strtoupper(substr($detail->flooring->register_no ?? '', 0, 1)) }}
+                                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-medium shadow-lg flex-shrink-0 text-xs">
+                                            {{ strtoupper(substr($detail->shower->register_no ?? '', 0, 1)) }}
                                         </div>
-                                        <span class="text-sm font-semibold text-zinc-800 dark:text-white truncate max-w-[180px]" title="{{ $detail->flooring->register_no ?? '' }}">
-                                            {{ $detail->flooring->register_no ?? 'N/A' }}
+                                        <span class="text-sm font-semibold text-zinc-800 dark:text-white truncate max-w-[180px]" title="{{ $detail->shower->register_no ?? '' }}">
+                                            {{ $detail->shower->register_no ?? 'N/A' }}
                                         </span>
                                     </div>
                                 </td>
                                 <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
-                                    {{ $detail->flooring->area ?? 'N/A' }}
+                                    {{ $detail->shower->area ?? 'N/A' }}
                                 </td>
                                 <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
-                                    {{ $detail->flooring->location ?? 'N/A' }}
+                                    {{ $detail->shower->location ?? 'N/A' }}
                                 </td>
-                                <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300 font-mono">
-                                    {{ $detail->b1_scientific }}
+                                <td class="px-4 py-3">
+                                    @if($detail->check_body)
+                                        <span class="inline-flex items-center gap-1 text-green-600 dark:text-green-400">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                            <span class="text-sm">Yes</span>
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1 text-red-600 dark:text-red-400">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                            <span class="text-sm">No</span>
+                                        </span>
+                                    @endif
+                                </td>
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-sm font-mono {{ $velocityColor }}">
+                                            {{ $detail->velocity }} <span class="text-xs">m/s</span>
+                                        </span>
+                                        @if($isOutOfSpec)
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
+                                                Out of Spec
+                                            </span>
+                                        @endif
+                                    </div>
                                 </td>
                                 <td class="px-4 py-3">
                                     @php
-                                        $judgementColor = $detail->judgement == 'OK' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400';
+                                        $judgementClass = 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400';
+                                        if ($detail->judgement == 'OK') {
+                                            $judgementClass = 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400';
+                                        } elseif (str_contains($detail->judgement, 'NG')) {
+                                            $judgementClass = 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400';
+                                        }
                                     @endphp
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $judgementColor }}">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $judgementClass }}">
                                         {{ $detail->judgement }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300 truncate max-w-[150px]" title="{{ $detail->remarks }}">
-                                    {{ $detail->remarks ?? '-' }}
+                                <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
+                                    <div class="max-w-[250px] truncate" title="{{ $detail->remarks ?? '-' }}">
+                                        @if($detail->remarks)
+                                            @if(str_contains($detail->remarks, '⚠️'))
+                                                <span class="text-yellow-600 dark:text-yellow-400">⚠️</span>
+                                            @elseif(str_contains($detail->remarks, '✓'))
+                                                <span class="text-green-600 dark:text-green-400">✓</span>
+                                            @endif
+                                            {{ $detail->remarks }}
+                                        @else
+                                            -
+                                        @endif
+                                    </div>
                                 </td>
                                 <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
                                     {{ $detail->created_at ? $detail->created_at->format('d M Y') : '-' }}
@@ -210,7 +255,7 @@
                                 </td>
                                 <td class="px-4 py-3 text-right">
                                     <div class="flex items-center justify-end gap-1 whitespace-nowrap">
-                                        @can('edit flooring details')
+                                        @can('edit shower details')
                                         <flux:button 
                                             wire:click="edit({{ $detail->id }})" 
                                             x-on:click="$dispatch('open-modal', 'detail-form-modal')"
@@ -223,7 +268,7 @@
                                         />
                                         @endcan
 
-                                        @can('delete flooring details')
+                                        @can('delete shower details')
                                             <flux:button 
                                                 wire:click="confirmDelete({{ $detail->id }})" 
                                                 x-on:click="$dispatch('open-modal', 'delete-detail-modal')"
@@ -250,15 +295,15 @@
                                                 No measurement records found
                                             </h3>
                                             <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-4">
-                                                {{ $search || $filterFlooring || $filterArea || $filterLocation ? 'Try adjusting your filters' : 'Get started by adding a new measurement' }}
+                                                {{ $search || $filterShower || $filterCheckBody || $filterJudgement ? 'Try adjusting your filters' : 'Get started by adding a new measurement' }}
                                             </p>
                                         </div>
-                                        @if($search || $filterFlooring || $filterArea || $filterLocation)
+                                        @if($search || $filterShower || $filterCheckBody || $filterJudgement)
                                             <flux:button wire:click="resetFilters" size="sm">
                                                 Clear Filters
                                             </flux:button>
                                         @else
-                                            @can('create flooring details')
+                                            @can('create shower details')
                                             <flux:button 
                                                 variant="primary" 
                                                 size="sm"
@@ -303,14 +348,14 @@
                                 <!-- Register No -->
                                 <div class="mb-4">
                                     <label class="block text-sm font-medium mb-1">Register No <span class="text-red-500">*</span></label>
-                                    <select wire:model="flooring_id"
+                                    <select wire:model="shower_id"
                                             class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-blue-500">
                                         <option value="">Select Register No</option>
-                                        @foreach($floorings as $flooring)
-                                            <option value="{{ $flooring->id }}">{{ $flooring->register_no }} - {{ $flooring->area }} - {{ $flooring->location }}</option>
+                                        @foreach($showers as $shower)
+                                            <option value="{{ $shower->id }}">{{ $shower->register_no }} - {{ $shower->area }} - {{ $shower->location }}</option>
                                         @endforeach
                                     </select>
-                                    @error('flooring_id') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                    @error('shower_id') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                 </div>
 
                                 <!-- Area & Location (Readonly) -->
@@ -325,41 +370,76 @@
                                     </div>
                                 </div>
 
-                                <!-- B1 Measurement -->
+                                <!-- Check Body Toggle -->
+                                <div class="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                                    <label class="block text-sm font-medium mb-3">Check Body Status</label>
+                                    <div class="flex items-center gap-4">
+                                        <button type="button" 
+                                            wire:click="$set('check_body', true)"
+                                            class="flex items-center gap-2 px-4 py-2 rounded-lg transition-all {{ $check_body ? 'bg-green-600 text-white shadow-md' : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400' }}">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                            Yes (Check)
+                                        </button>
+                                        <button type="button"
+                                            wire:click="$set('check_body', false)"
+                                            class="flex items-center gap-2 px-4 py-2 rounded-lg transition-all {{ !$check_body ? 'bg-red-600 text-white shadow-md' : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400' }}">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                            No (Skip)
+                                        </button>
+                                    </div>
+                                    @error('check_body') <span class="text-red-500 text-sm block mt-2">{{ $message }}</span> @enderror
+                                </div>
+
+                                <!-- Velocity Measurement -->
                                 <div class="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
-                                    <div class="text-sm font-semibold text-yellow-800 dark:text-yellow-400 mb-2">Standard: &lt; 1.00E+9 Ohm</div>
-                                    <div class="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label class="block text-sm font-medium mb-1">B1 Measurement <span class="text-red-500">*</span></label>
-                                            <input type="number" step="0.01" wire:model="b1" wire:keyup="resetJudgement"
-                                                   class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                                            @error('b1') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-medium mb-1">B1 Scientific</label>
-                                            <div class="mt-2">
-                                                <input type="text" wire:model="b1_scientific" readonly 
-                                                       class="w-full px-3 py-2 border rounded-lg bg-gray-100 dark:bg-zinc-800 dark:border-zinc-700 font-mono">
+                                    <div class="text-sm font-semibold text-yellow-800 dark:text-yellow-400 mb-2">Standard: 80 - 100 m/s</div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">Velocity (m/s) <span class="text-red-500">*</span></label>
+                                        <input type="number" step="0.01" wire:model="velocity" wire:keyup="resetJudgement"
+                                               class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-blue-500">
+                                        @error('velocity') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                        @if($velocity && (floatval($velocity) < 80 || floatval($velocity) > 100))
+                                            <div class="mt-2 text-xs text-yellow-600 dark:text-yellow-400 flex items-center gap-1">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                                </svg>
+                                                <span>Warning: Value is outside the standard range (80-100 m/s)</span>
                                             </div>
-                                        </div>
+                                        @endif
                                     </div>
                                 </div>
 
                                 <!-- Judgement -->
                                 <div class="mb-4">
                                     <label class="block text-sm font-medium mb-1">Judgement</label>
-                                    <div class="mt-1">
-                                        <span class="inline-flex px-3 py-1 rounded-full text-sm font-medium {{ $judgement == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                            {{ $judgement ?: 'Auto' }}
+                                    <div class="flex gap-2">
+                                        <span class="inline-flex px-3 py-1 rounded-full text-sm font-medium {{ $judgement == 'OK' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400' }}">
+                                            OK
+                                        </span>
+                                        <span class="inline-flex px-3 py-1 rounded-full text-sm font-medium {{ str_contains($judgement, 'NG') ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400' }}">
+                                            {{ $judgement ?: 'NG' }}
                                         </span>
                                     </div>
+                                    <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+                                        * Auto-calculated based on velocity (80-100 = OK, below 80 = NG Below Standard, above 100 = NG Above Standard)
+                                    </p>
                                 </div>
 
                                 <!-- Remarks -->
                                 <div class="mb-4">
                                     <label class="block text-sm font-medium mb-1">Remarks</label>
-                                    <textarea wire:model="remarks" rows="3" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700"></textarea>
+                                    <textarea wire:model="remarks" 
+                                              rows="3"
+                                              placeholder="Enter any additional notes or comments..."
+                                              class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-blue-500 resize-y"></textarea>
                                     @error('remarks') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                    <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+                                        * Optional: Add notes about the measurement, corrective actions, or special conditions
+                                    </p>
                                 </div>
 
                                 <!-- Next Date -->
@@ -406,7 +486,7 @@
 
                         <h3 class="text-lg font-bold mb-2">Delete Measurement Record</h3>
                         <p class="text-gray-600 dark:text-gray-400 mb-6">
-                            Are you sure you want to delete measurement for "{{ $detailToDelete?->flooring?->register_no ?? 'this flooring' }}"? This action cannot be undone.
+                            Are you sure you want to delete measurement for "{{ $detailToDelete?->shower?->register_no ?? 'this shower' }}"? This action cannot be undone.
                         </p>
 
                         <div class="flex justify-center gap-3">
@@ -426,7 +506,7 @@
 
             <!-- Notifikasi -->
             <div x-data="{ show: false, message: '', type: 'success' }" 
-                 x-on:notify.window="show = true; message = $event.detail.message; type = $event.detail.type || 'success'; setTimeout(() => show = false, 3000)"
+                 x-on:notify.window="show = true; message = $event.detail.message; type = $event.detail.type || 'success'; setTimeout(() => show = false, 5000)"
                  x-show="show"
                  x-transition
                  class="fixed bottom-4 right-4 z-50"

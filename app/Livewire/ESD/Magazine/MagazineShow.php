@@ -42,8 +42,8 @@ class MagazineShow extends Component
     {
         return [
             'magazine_id' => 'required|exists:tb_esd_magazines,id',
-            'm1' => 'required|numeric|min:10000|max:99999999999',
-            'm2' => 'required|numeric|min:0|max:99',
+            'm1' => 'nullable|numeric', // hapus required, min, max
+            'm2' => 'nullable|numeric', // hapus required, min, max
             'remarks' => 'nullable|string',
             'next_date' => 'nullable|date',
         ];
@@ -54,14 +54,8 @@ class MagazineShow extends Component
         return [
             'magazine_id.required' => 'Register number is required.',
             'magazine_id.exists' => 'Selected magazine does not exist.',
-            'm1.required' => 'M1 measurement is required.',
             'm1.numeric' => 'M1 measurement must be a number.',
-            'm1.min' => 'M1 measurement must be at least 10,000 Ω.',
-            'm1.max' => 'M1 measurement must be less than 100,000,000,000 Ω.',
-            'm2.required' => 'M2 measurement is required.',
             'm2.numeric' => 'M2 measurement must be a number.',
-            'm2.min' => 'M2 measurement must be at least 0.',
-            'm2.max' => 'M2 measurement must be less than 100.',
             'next_date.date' => 'Next date must be a valid date.',
         ];
     }

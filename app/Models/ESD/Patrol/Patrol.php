@@ -1,23 +1,26 @@
 <?php
 
-namespace App\Models\ESD\Insulatif;
+namespace App\Models\ESD\Patrol;
 
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class InsulatifCheck extends Model
+class Patrol extends Model
 {
     use HasFactory;
 
-    protected $table = 'tb_esd_insulatif_checks';
+    protected $table = 'tb_esd_patrols';
 
     protected $fillable = [
-        'register_no',
-        'result',
-        'result_scientific',
-        'judgement',
+        'area',
+        'location',
+        'v_1',
+        'v_2',
+        'v_3',
+        'judgement_v3',
+        'v_4',
         'remarks',
         'next_date'
     ];
@@ -44,4 +47,5 @@ class InsulatifCheck extends Model
             $model->updated_by = Auth::id();
         });
     }
+
 }

@@ -1,26 +1,35 @@
 <?php
 
-namespace App\Models\ESD\Insulatif;
+namespace App\Models\ESD\Shower;
 
+use App\Models\ESD\Shower\Shower;
 use App\Models\User;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 
-class InsulatifCheck extends Model
+class ShowerDetail extends Model
 {
     use HasFactory;
 
-    protected $table = 'tb_esd_insulatif_checks';
+    protected $table = 'tb_esd_shower_details';
 
     protected $fillable = [
-        'register_no',
-        'result',
-        'result_scientific',
+        'shower_id',
+        'check_body',
+        'velocity',
         'judgement',
+        'created_by',
+        'updated_by',
+        'next_date',
         'remarks',
-        'next_date'
+
     ];
+
+    public function shower()
+    {
+        return $this->belongsTo(Shower::class);
+    }
 
     public function creator()
     {

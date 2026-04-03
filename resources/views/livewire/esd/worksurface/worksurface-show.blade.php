@@ -170,14 +170,13 @@
                                     <div class="flex items-center justify-center gap-2 mb-2">
                                         <flux:icon name="beaker" class="w-4 h-4 text-teal-600 dark:text-teal-400" />
                                         <label class="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
-                                            Standard Value A1
+                                            (A1) Mat Surface Point To Ground
                                         </label>
                                     </div>
                                     <div class="bg-teal-50 dark:bg-teal-950/30 rounded-lg p-3">
                                         <p class="text-2xl font-bold text-teal-700 dark:text-teal-400">
                                             &lt; 1.00E+9 Ohm
                                         </p>
-                                        <p class="text-xs text-zinc-500 mt-1">(Resistance Point To Ground)</p>
                                     </div>
                                 </div>
                                 
@@ -186,14 +185,13 @@
                                     <div class="flex items-center justify-center gap-2 mb-2">
                                         <flux:icon name="bolt" class="w-4 h-4 text-blue-600 dark:text-blue-400" />
                                         <label class="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
-                                            Standard Value A2
+                                            (A2) Mat Surface Static Field Voltage
                                         </label>
                                     </div>
                                     <div class="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-3">
                                         <p class="text-2xl font-bold text-blue-700 dark:text-blue-400">
-                                            &lt; 100
+                                            &lt; 100 Volt
                                         </p>
-                                        <p class="text-xs text-zinc-500 mt-1">(Resistance Point To Ground)</p>
                                     </div>
                                 </div>
                             </div>
@@ -208,18 +206,21 @@
                                 </div>
                                 <div class="bg-green-50 dark:bg-green-950/30 rounded-lg p-3 inline-block px-8">
                                     <p class="text-2xl font-bold text-green-700 dark:text-green-400">
-                                        Monthly
+                                        Yearly
                                     </p>
                                 </div>
                             </div>
                             
+                            <!-- Document Reference -->
                             <div class="mt-6 pt-4 border-t border-zinc-200 dark:border-zinc-700">
-                                <div class="flex items-center justify-center">
-                                    <div class="bg-zinc-100 dark:bg-zinc-800 rounded-lg px-6 py-3">
-                                        <code class="text-lg font-mono font-bold text-zinc-800 dark:text-white">
-                                            QR-ADM-22-K025
-                                        </code>
+                                <div class="flex flex-col sm:flex-row items-center justify-between gap-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-3">
+                                    <div class="flex items-center gap-2">
+                                        <flux:icon name="document-text" class="w-4 h-4 text-zinc-500" />
+                                        <span class="text-xs text-zinc-500 dark:text-zinc-400">Document Reference</span>
                                     </div>
+                                    <code class="text-sm font-mono font-bold text-zinc-800 dark:text-white bg-white dark:bg-zinc-900 px-3 py-1 rounded">
+                                        QR-ADM-22-K014
+                                    </code>
                                 </div>
                             </div>
                         </div>

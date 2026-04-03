@@ -17,11 +17,14 @@ class InsulatifCheckManagement extends Component
     public $result_scientific;
     public $judgement;
     public $remarks;
+    public $next_date;
 
     public $search = '';
     public $filterJudgement = '';
     public $filterDateFrom = '';
     public $filterDateUntil = '';
+    public $filterNextDateFrom = '';
+    public $filterNextDateUntil = '';
 
     public $modalTitle = 'Add New Insulatif Check';
     public $checkToDelete = null;
@@ -30,18 +33,17 @@ class InsulatifCheckManagement extends Component
     {
         return [
             'register_no' => 'required|min:3|max:100',
-            'result' => 'required|numeric|min:0|max:9999999999999',
+            'result' => 'nullable|numeric',
             'remarks' => 'nullable|string|max:500',
+            'next_date' => 'nullable|date',
         ];
     }
 
     protected $messages = [
         'register_no.required' => 'Register number is required.',
         'register_no.min' => 'Register number must be at least 3 characters.',
-        'result.required' => 'Result measurement is required.',
         'result.numeric' => 'Result measurement must be a number.',
-        'result.min' => 'Result measurement must be at least 0.',
-        'result.max' => 'Result measurement must be less than 10,000,000,000,000.',
+        'next_date.date' => 'Next date must be a valid date.',
     ];
 
     public function mount()
@@ -55,24 +57,32 @@ class InsulatifCheckManagement extends Component
         if ($this->result !== null && $this->result !== '') {
             $this->judgement = floatval($this->result) >= 1000000000000 ? 'OK' : 'NG';
             $this->result_scientific = sprintf('%.2E', floatval($this->result));
+        } else {
+            $this->judgement = null;
+            $this->result_scientific = null;
         }
     }
 
-    public function updatedResult()
+    public function updatedResult($value)
     {
+        if ($value === '' || $value === null) {
+            $this->result = null;
+        }
         $this->resetJudgement();
     }
 
     public function resetForm()
     {
-        $this->reset(['check_id', 'register_no', 'result', 'result_scientific', 'judgement', 'remarks']);
+        $this->reset(['check_id', 'register_no', 'result', 'result_scientific', 'judgement', 'remarks', 'next_date']);
+        $this->resetJudgement();
+        $this->register_no = 'ISP/2505-001';
         $this->modalTitle = 'Add New Insulatif Check';
         $this->resetValidation();
     }
 
     public function resetFilters()
     {
-        $this->reset(['search', 'filterJudgement', 'filterDateFrom', 'filterDateUntil']);
+        $this->reset(['search', 'filterJudgement', 'filterDateFrom', 'filterDateUntil', 'filterNextDateFrom', 'filterNextDateUntil']);
         $this->resetPage();
     }
 
@@ -92,6 +102,16 @@ class InsulatifCheckManagement extends Component
     }
 
     public function updatedFilterDateUntil()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedFilterNextDateFrom()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedFilterNextDateUntil()
     {
         $this->resetPage();
     }
@@ -120,6 +140,7 @@ class InsulatifCheckManagement extends Component
             'result_scientific' => $this->result_scientific,
             'judgement' => $this->judgement,
             'remarks' => $this->remarks,
+            'next_date' => $this->next_date,
         ];
 
         if ($this->check_id) {
@@ -161,6 +182,7 @@ class InsulatifCheckManagement extends Component
         $this->result_scientific = $check->result_scientific;
         $this->judgement = $check->judgement;
         $this->remarks = $check->remarks;
+        $this->next_date = $check->next_date ? Carbon::parse($check->next_date)->format('Y-m-d') : null;
         $this->modalTitle = 'Edit Insulatif Check';
     }
 
@@ -229,6 +251,12 @@ class InsulatifCheckManagement extends Component
             })
             ->when($this->filterDateUntil, function ($query) {
                 $query->whereDate('created_at', '<=', $this->filterDateUntil);
+            })
+            ->when($this->filterNextDateFrom, function ($query) {
+                $query->whereDate('next_date', '>=', $this->filterNextDateFrom);
+            })
+            ->when($this->filterNextDateUntil, function ($query) {
+                $query->whereDate('next_date', '<=', $this->filterNextDateUntil);
             })
             ->orderBy('id', 'desc')
             ->paginate(10);

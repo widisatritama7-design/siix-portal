@@ -158,13 +158,10 @@
                                 <div class="bg-purple-50 dark:bg-purple-950/30 rounded-lg p-4 text-center">
                                     <div class="flex items-center justify-center gap-2 mb-3">
                                         <flux:icon name="beaker" class="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                                        <span class="text-xs font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wider">Standard Value</span>
+                                        <span class="text-xs font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wider">Static Control Garment | Resistance Point to Point</span>
                                     </div>
                                     <p class="text-xl font-bold text-purple-700 dark:text-purple-400">
                                         ≥ 1.00E+4 Ohm - < 1.00E+11 Ohm
-                                    </p>
-                                    <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-2">
-                                        Resistance Point to Point
                                     </p>
                                     <p class="text-xs text-purple-600 dark:text-purple-400 mt-1 font-medium">
                                         Shirt (D1) • Pants (D2) • Cap (D3) • Hijab (D4)
@@ -178,10 +175,7 @@
                                         <span class="text-xs font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wider">Frequency</span>
                                     </div>
                                     <p class="text-3xl font-bold text-purple-700 dark:text-purple-400">
-                                        Monthly
-                                    </p>
-                                    <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-2">
-                                        Inspection Schedule
+                                        Yearly
                                     </p>
                                 </div>
                             </div>

@@ -1,6 +1,9 @@
 <div 
     x-data="{
         sidebarOpen: true,
+        sidebarPinned: true,
+        isHovering: false,
+        hoverTimeout: null,
         mobileMenuOpen: false,
         yearlyOpen: true,
         monthlyOpen: true,
@@ -13,6 +16,7 @@
             const savedSidebarOpen = localStorage.getItem('sidebarOpen');
             if (savedSidebarOpen !== null) {
                 this.sidebarOpen = JSON.parse(savedSidebarOpen);
+                this.sidebarPinned = this.sidebarOpen;
             }
             
             const savedYearlyState = localStorage.getItem('yearlyOpen');
@@ -46,13 +50,34 @@
             }
         },
         saveToLocalStorage() {
-            localStorage.setItem('sidebarOpen', JSON.stringify(this.sidebarOpen));
+            localStorage.setItem('sidebarOpen', JSON.stringify(this.sidebarPinned ? this.sidebarOpen : false));
             localStorage.setItem('yearlyOpen', JSON.stringify(this.yearlyOpen));
             localStorage.setItem('monthlyOpen', JSON.stringify(this.monthlyOpen));
             localStorage.setItem('threeMonthOpen', JSON.stringify(this.threeMonthOpen));
             localStorage.setItem('weeklyOpen', JSON.stringify(this.weeklyOpen));
             localStorage.setItem('dailyOpen', JSON.stringify(this.dailyOpen));
             localStorage.setItem('newAdmissionOpen', JSON.stringify(this.newAdmissionOpen));
+        },
+        toggleSidebar() {
+            this.sidebarPinned = !this.sidebarPinned;
+            this.sidebarOpen = this.sidebarPinned;
+            this.saveToLocalStorage();
+        },
+        handleMouseEnter() {
+            if (this.hoverTimeout) clearTimeout(this.hoverTimeout);
+            if (!this.sidebarPinned) {
+                this.isHovering = true;
+                this.sidebarOpen = true;
+            }
+        },
+        handleMouseLeave() {
+            if (this.hoverTimeout) clearTimeout(this.hoverTimeout);
+            if (!this.sidebarPinned) {
+                this.hoverTimeout = setTimeout(() => {
+                    this.isHovering = false;
+                    this.sidebarOpen = false;
+                }, 300);
+            }
         }
     }"
     x-init="init()"
@@ -88,13 +113,17 @@
     >
         <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-lg p-3">
             <flux:navlist aria-label="Settings" class="w-full">
-                <!-- Yearly Group -->
-                <div class="mb-1">
+                <!-- Yearly Group Mobile -->
+                <div class="mb-1 relative">
                     <button 
                         @click="yearlyOpen = !yearlyOpen"
                         class="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
                     >
                         <div class="flex items-center gap-2">
+                            <!-- Icon Yearly (Calendar - same as expanded mode) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                <path fill-rule="evenodd" d="M6.75 2.25A.75.75 0 0 1 7.5 3v1.5h9V3A.75.75 0 0 1 18 3v1.5h.75a3 3 0 0 1 3 3v11.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V7.5a3 3 0 0 1 3-3H6V3a.75.75 0 0 1 .75-.75Zm13.5 9a1.5 1.5 0 0 0-1.5-1.5H5.25a1.5 1.5 0 0 0-1.5 1.5v7.5a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5v-7.5Z" clip-rule="evenodd" />
+                            </svg>
                             <span>Yearly</span>
                         </div>
                         <svg 
@@ -108,114 +137,73 @@
                         </svg>
                     </button>
                     
-                    <div x-show="yearlyOpen" x-collapse class="mt-1 space-y-1">
-                        <flux:navlist.item 
-                            :href="route('esd.floorings')" 
-                            wire:navigate
-                            :active="request()->routeIs('esd.floorings')"
-                            title="Flooring"
-                            class="w-full"
-                            @click="mobileMenuOpen = false"
-                        >
-                            <x-slot name="icon">
-                                <x-heroicon-s-square-3-stack-3d class="w-4 h-4" />
-                            </x-slot>
-                            <span class="truncate">Flooring</span>
-                        </flux:navlist.item>
+                    <div x-show="yearlyOpen" x-collapse class="mt-1 relative">
+                        <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
+                        <div class="space-y-1 ml-[30px]">
+                            <a href="{{ route('esd.floorings') }}" wire:navigate
+                                class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.floorings') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}"
+                                @click="mobileMenuOpen = false">
+                                <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.floorings') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                <span class="truncate">Flooring</span>
+                            </a>
 
-                        <flux:navlist.item 
-                            :href="route('esd.garments')" 
-                            wire:navigate
-                            :active="request()->routeIs('esd.garments')"
-                            title="Garment"
-                            class="w-full"
-                            @click="mobileMenuOpen = false"
-                        >
-                            <x-slot name="icon">
-                                <x-heroicon-s-users class="w-4 h-4" />
-                            </x-slot>
-                            <span class="truncate">Garment</span>
-                        </flux:navlist.item>
+                            <a href="{{ route('esd.garments') }}" wire:navigate
+                                class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.garments') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}"
+                                @click="mobileMenuOpen = false">
+                                <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.garments') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                <span class="truncate">Garment</span>
+                            </a>
 
-                        <flux:navlist.item 
-                            :href="route('esd.ground-monitor-boxs')" 
-                            wire:navigate
-                            :active="request()->routeIs('esd.ground-monitor-boxs')"
-                            title="Ground Monitor Box"
-                            class="w-full"
-                            @click="mobileMenuOpen = false"
-                        >
-                            <x-slot name="icon">
-                                <x-heroicon-s-inbox-stack class="w-4 h-4" />
-                            </x-slot>
-                            <span class="truncate">Ground Monitor Box</span>
-                        </flux:navlist.item>
+                            <a href="{{ route('esd.ground-monitor-boxs') }}" wire:navigate
+                                class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.ground-monitor-boxs') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}"
+                                @click="mobileMenuOpen = false">
+                                <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.ground-monitor-boxs') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                <span class="truncate">Ground Monitor Box</span>
+                            </a>
 
-                        <flux:navlist.item 
-                            :href="route('esd.jigs')" 
-                            wire:navigate
-                            :active="request()->routeIs('esd.jigs')"
-                            title="Jig"
-                            class="w-full"
-                            @click="mobileMenuOpen = false"
-                        >
-                            <x-slot name="icon">
-                                <x-heroicon-s-puzzle-piece class="w-4 h-4" />
-                            </x-slot>
-                            <span class="truncate">Jig</span>
-                        </flux:navlist.item>
+                            <a href="{{ route('esd.jigs') }}" wire:navigate
+                                class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.jigs') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}"
+                                @click="mobileMenuOpen = false">
+                                <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.jigs') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                <span class="truncate">Jig</span>
+                            </a>
 
-                        <flux:navlist.item 
-                            :href="route('esd.packagings')" 
-                            wire:navigate
-                            :active="request()->routeIs('esd.packagings')"
-                            title="Packaging"
-                            class="w-full"
-                            @click="mobileMenuOpen = false"
-                        >
-                            <x-slot name="icon">
-                                <x-heroicon-s-cube class="w-4 h-4" />
-                            </x-slot>
-                            <span class="truncate">Packaging</span>
-                        </flux:navlist.item>
+                            <a href="{{ route('esd.packagings') }}" wire:navigate
+                                class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.packagings') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}"
+                                @click="mobileMenuOpen = false">
+                                <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.packagings') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                <span class="truncate">Packaging</span>
+                            </a>
 
-                        <flux:navlist.item 
-                            :href="route('esd.solderings')" 
-                            wire:navigate
-                            :active="request()->routeIs('esd.solderings')"
-                            title="Soldering"
-                            class="w-full"
-                            @click="mobileMenuOpen = false"
-                        >
-                            <x-slot name="icon">
-                                <x-heroicon-s-pencil class="w-4 h-4" />
-                            </x-slot>
-                            <span class="truncate">Soldering</span>
-                        </flux:navlist.item>
+                            <a href="{{ route('esd.solderings') }}" wire:navigate
+                                class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.solderings') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}"
+                                @click="mobileMenuOpen = false">
+                                <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.solderings') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                <span class="truncate">Soldering</span>
+                            </a>
 
-                        <flux:navlist.item 
-                            :href="route('esd.worksurfaces')" 
-                            wire:navigate
-                            :active="request()->routeIs('esd.worksurfaces')"
-                            title="Worksurface"
-                            class="w-full"
-                            @click="mobileMenuOpen = false"
-                        >
-                            <x-slot name="icon">
-                                <x-heroicon-s-wallet class="w-4 h-4" />
-                            </x-slot>
-                            <span class="truncate">Worksurface</span>
-                        </flux:navlist.item>
+                            <a href="{{ route('esd.worksurfaces') }}" wire:navigate
+                                class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.worksurfaces') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}"
+                                @click="mobileMenuOpen = false">
+                                <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.worksurfaces') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                <span class="truncate">Worksurface</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Monthly Group -->
-                <div class="mb-1">
+                <!-- Monthly Group Mobile -->
+                <div class="mb-1 relative">
                     <button 
                         @click="monthlyOpen = !monthlyOpen"
                         class="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
                     >
                         <div class="flex items-center gap-2">
+                            <!-- Icon Monthly (Calendar with dates - same as expanded mode) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                <path d="M12.75 12.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM7.5 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM8.25 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM9.75 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM10.5 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM12.75 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM14.25 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM15 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM16.5 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM15 12.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM16.5 13.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" />
+                                <path fill-rule="evenodd" d="M6.75 2.25A.75.75 0 0 1 7.5 3v1.5h9V3A.75.75 0 0 1 18 3v1.5h.75a3 3 0 0 1 3 3v11.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V7.5a3 3 0 0 1 3-3H6V3a.75.75 0 0 1 .75-.75Zm-3 9.75v7.5a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5v-7.5h-16.5Z" clip-rule="evenodd" />
+                            </svg>
                             <span>Monthly</span>
                         </div>
                         <svg 
@@ -229,58 +217,45 @@
                         </svg>
                     </button>
                     
-                    <div x-show="monthlyOpen" x-collapse class="mt-1 space-y-1">
-                        <flux:navlist.item 
-                            :href="route('esd.equipment-grounds')" 
-                            wire:navigate
-                            :active="request()->routeIs('esd.equipment-grounds')"
-                            title="Equipment Ground"
-                            class="w-full"
-                            @click="mobileMenuOpen = false"
-                        >
-                            <x-slot name="icon">
-                                <x-heroicon-s-server-stack class="w-4 h-4" />
-                            </x-slot>
-                            <span class="truncate">Equipment Ground</span>
-                        </flux:navlist.item>
+                    <div x-show="monthlyOpen" x-collapse class="mt-1 relative">
+                        <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
+                        <div class="space-y-1 ml-[30px]">
+                            <a href="{{ route('esd.equipment-grounds') }}" wire:navigate
+                                class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.equipment-grounds') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}"
+                                @click="mobileMenuOpen = false">
+                                <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.equipment-grounds') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                <span class="truncate">Equipment Ground</span>
+                            </a>
 
-                        <flux:navlist.item 
-                            :href="route('esd.ionizers')" 
-                            wire:navigate
-                            :active="request()->routeIs('esd.ionizers')"
-                            title="Ionizer"
-                            class="w-full"
-                            @click="mobileMenuOpen = false"
-                        >
-                            <x-slot name="icon">
-                                <x-heroicon-s-arrow-path-rounded-square class="w-4 h-4" />
-                            </x-slot>
-                            <span class="truncate">Ionizer</span>
-                        </flux:navlist.item>
+                            <a href="{{ route('esd.ionizers') }}" wire:navigate
+                                class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.ionizers') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}"
+                                @click="mobileMenuOpen = false">
+                                <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.ionizers') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                <span class="truncate">Ionizer</span>
+                            </a>
 
-                        <flux:navlist.item 
-                            :href="route('esd.wrist-straps')" 
-                            wire:navigate
-                            :active="request()->routeIs('esd.wrist-straps')"
-                            title="Wrist Strap"
-                            class="w-full"
-                            @click="mobileMenuOpen = false"
-                        >
-                            <x-slot name="icon">
-                                <x-heroicon-s-arrow-trending-down class="w-4 h-4" />
-                            </x-slot>
-                            <span class="truncate">Wrist Strap</span>
-                        </flux:navlist.item>
+                            <a href="{{ route('esd.wrist-straps') }}" wire:navigate
+                                class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.wrist-straps') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}"
+                                @click="mobileMenuOpen = false">
+                                <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.wrist-straps') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                <span class="truncate">Wrist Strap</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
 
-                <!-- 3 Month Group -->
-                <div class="mb-1">
+                <!-- 3 Month Group Mobile -->
+                <div class="mb-1 relative">
                     <button 
                         @click="threeMonthOpen = !threeMonthOpen"
                         class="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
                     >
                         <div class="flex items-center gap-2">
+                            <!-- Icon 3 Month (Clock with plus - same as expanded mode) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                <path d="M12 11.993a.75.75 0 0 0-.75.75v.006c0 .414.336.75.75.75h.006a.75.75 0 0 0 .75-.75v-.006a.75.75 0 0 0-.75-.75H12ZM12 16.494a.75.75 0 0 0-.75.75v.005c0 .414.335.75.75.75h.005a.75.75 0 0 0 .75-.75v-.005a.75.75 0 0 0-.75-.75H12ZM8.999 17.244a.75.75 0 0 1 .75-.75h.006a.75.75 0 0 1 .75.75v.006a.75.75 0 0 1-.75.75h-.006a.75.75 0 0 1-.75-.75v-.006ZM7.499 16.494a.75.75 0 0 0-.75.75v.005c0 .414.336.75.75.75h.005a.75.75 0 0 0 .75-.75v-.005a.75.75 0 0 0-.75-.75H7.5ZM13.499 14.997a.75.75 0 0 1 .75-.75h.006a.75.75 0 0 1 .75.75v.005a.75.75 0 0 1-.75.75h-.006a.75.75 0 0 1-.75-.75v-.005ZM14.25 16.494a.75.75 0 0 0-.75.75v.006c0 .414.335.75.75.75h.005a.75.75 0 0 0 .75-.75v-.006a.75.75 0 0 0-.75-.75h-.005ZM15.75 14.995a.75.75 0 0 1 .75-.75h.005a.75.75 0 0 1 .75.75v.006a.75.75 0 0 1-.75.75H16.5a.75.75 0 0 1-.75-.75v-.006ZM13.498 12.743a.75.75 0 0 1 .75-.75h2.25a.75.75 0 1 1 0 1.5h-2.25a.75.75 0 0 1-.75-.75ZM6.748 14.993a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Z" />
+                                <path fill-rule="evenodd" d="M18 2.993a.75.75 0 0 0-1.5 0v1.5h-9V2.994a.75.75 0 1 0-1.5 0v1.497h-.752a3 3 0 0 0-3 3v11.252a3 3 0 0 0 3 3h13.5a3 3 0 0 0 3-3V7.492a3 3 0 0 0-3-3H18V2.993ZM3.748 18.743v-7.5a1.5 1.5 0 0 1 1.5-1.5h13.5a1.5 1.5 0 0 1 1.5 1.5v7.5a1.5 1.5 0 0 1-1.5 1.5h-13.5a1.5 1.5 0 0 1-1.5-1.5Z" clip-rule="evenodd" />
+                            </svg>
                             <span>3 Month</span>
                         </div>
                         <svg 
@@ -294,30 +269,30 @@
                         </svg>
                     </button>
                     
-                    <div x-show="threeMonthOpen" x-collapse class="mt-1 space-y-1">
-                        <flux:navlist.item 
-                            :href="route('esd.magazines')" 
-                            wire:navigate
-                            :active="request()->routeIs('esd.magazines')"
-                            title="Magazine"
-                            class="w-full"
-                            @click="mobileMenuOpen = false"
-                        >
-                            <x-slot name="icon">
-                                <x-heroicon-s-inbox-arrow-down class="w-4 h-4" />
-                            </x-slot>
-                            <span class="truncate">Magazine</span>
-                        </flux:navlist.item>
+                    <div x-show="threeMonthOpen" x-collapse class="mt-1 relative">
+                        <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
+                        <div class="space-y-1 ml-[30px]">
+                            <a href="{{ route('esd.magazines') }}" wire:navigate
+                                class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.magazines') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}"
+                                @click="mobileMenuOpen = false">
+                                <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.magazines') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                <span class="truncate">Magazine</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Weekly Group (Empty) -->
-                <div class="mb-1">
+                <!-- Weekly Group Mobile -->
+                <div class="mb-1 relative">
                     <button 
                         @click="weeklyOpen = !weeklyOpen"
                         class="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
                     >
                         <div class="flex items-center gap-2">
+                            <!-- Icon Weekly (Document stack - same as expanded mode) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                <path fill-rule="evenodd" d="M1.5 5.625c0-1.036.84-1.875 1.875-1.875h17.25c1.035 0 1.875.84 1.875 1.875v12.75c0 1.035-.84 1.875-1.875 1.875H3.375A1.875 1.875 0 0 1 1.5 18.375V5.625ZM21 9.375A.375.375 0 0 0 20.625 9h-7.5a.375.375 0 0 0-.375.375v1.5c0 .207.168.375.375.375h7.5a.375.375 0 0 0 .375-.375v-1.5Zm0 3.75a.375.375 0 0 0-.375-.375h-7.5a.375.375 0 0 0-.375.375v1.5c0 .207.168.375.375.375h7.5a.375.375 0 0 0 .375-.375v-1.5Zm0 3.75a.375.375 0 0 0-.375-.375h-7.5a.375.375 0 0 0-.375.375v1.5c0 .207.168.375.375.375h7.5a.375.375 0 0 0 .375-.375v-1.5ZM10.875 18.75a.375.375 0 0 0 .375-.375v-1.5a.375.375 0 0 0-.375-.375h-7.5a.375.375 0 0 0-.375.375v1.5c0 .207.168.375.375.375h7.5ZM3.375 15h7.5a.375.375 0 0 0 .375-.375v-1.5a.375.375 0 0 0-.375-.375h-7.5a.375.375 0 0 0-.375.375v1.5c0 .207.168.375.375.375Zm0-3.75h7.5a.375.375 0 0 0 .375-.375v-1.5A.375.375 0 0 0 10.875 9h-7.5A.375.375 0 0 0 3 9.375v1.5c0 .207.168.375.375.375Z" clip-rule="evenodd" />
+                            </svg>
                             <span>Weekly</span>
                         </div>
                         <svg 
@@ -331,21 +306,30 @@
                         </svg>
                     </button>
                     
-                    <div x-show="weeklyOpen" x-collapse class="mt-1 space-y-1">
-                        <!-- Empty - No items -->
-                        <div class="px-3 py-2 text-sm text-zinc-500 dark:text-zinc-400 italic">
-                            No items
+                    <div x-show="weeklyOpen" x-collapse class="mt-1 relative">
+                        <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
+                        <div class="space-y-1 ml-[30px]">
+                            <a href="{{ route('esd.showers') }}" wire:navigate
+                                class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.showers') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}"
+                                @click="mobileMenuOpen = false">
+                                <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.showers') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                <span class="truncate">Shower</span>
+                            </a>
                         </div>
                     </div>
                 </div>
 
-                <!-- Daily Group -->
-                <div class="mb-1">
+                <!-- Daily Group Mobile -->
+                <div class="mb-1 relative">
                     <button 
                         @click="dailyOpen = !dailyOpen"
                         class="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
                     >
                         <div class="flex items-center gap-2">
+                            <!-- Icon Daily (Refresh/Update - same as expanded mode) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                <path fill-rule="evenodd" d="M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z" clip-rule="evenodd" />
+                            </svg>
                             <span>Daily</span>
                         </div>
                         <svg 
@@ -359,30 +343,43 @@
                         </svg>
                     </button>
                     
-                    <div x-show="dailyOpen" x-collapse class="mt-1 space-y-1">
-                        <flux:navlist.item 
-                            :href="route('esd.insulatif-checks')" 
-                            wire:navigate
-                            :active="request()->routeIs('esd.insulatif-checks')"
-                            title="Insulatif Check"
-                            class="w-full"
-                            @click="mobileMenuOpen = false"
-                        >
-                            <x-slot name="icon">
-                                <x-heroicon-s-archive-box-x-mark class="w-4 h-4" />
-                            </x-slot>
-                            <span class="truncate">Insulatif Check</span>
-                        </flux:navlist.item>
+                    <div x-show="dailyOpen" x-collapse class="mt-1 relative">
+                        <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
+                        <div class="space-y-1 ml-[30px]">
+                            <a href="{{ route('esd.insulatif-checks') }}" wire:navigate
+                                class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.insulatif-checks') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}"
+                                @click="mobileMenuOpen = false">
+                                <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.insulatif-checks') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                <span class="truncate">Insulatif Check</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div x-show="dailyOpen" x-collapse class="mt-1 relative">
+                        <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
+                        <div class="space-y-1 ml-[30px]">
+                            <a href="{{ route('esd.patrols') }}" wire:navigate
+                                class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.patrols') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}"
+                                @click="mobileMenuOpen = false">
+                                <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.patrols') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                <span class="truncate">Patrol</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
 
-                <!-- New Admission Group -->
-                <div class="mb-1">
+                <!-- New Admission Group Mobile -->
+                <div class="mb-1 relative">
                     <button 
                         @click="newAdmissionOpen = !newAdmissionOpen"
                         class="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
                     >
                         <div class="flex items-center gap-2">
+                            <!-- Icon New Admission (Download/Import - same as expanded mode) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                <path fill-rule="evenodd" d="M9.75 6.75h-3a3 3 0 0 0-3 3v7.5a3 3 0 0 0 3 3h7.5a3 3 0 0 0 3-3v-7.5a3 3 0 0 0-3-3h-3V1.5a.75.75 0 0 0-1.5 0v5.25Zm0 0h1.5v5.69l1.72-1.72a.75.75 0 1 1 1.06 1.06l-3 3a.75.75 0 0 1-1.06 0l-3-3a.75.75 0 1 1 1.06-1.06l1.72 1.72V6.75Z" clip-rule="evenodd" />
+                                <path d="M7.151 21.75a2.999 2.999 0 0 0 2.599 1.5h7.5a3 3 0 0 0 3-3v-7.5c0-1.11-.603-2.08-1.5-2.599v7.099a4.5 4.5 0 0 1-4.5 4.5H7.151Z" />
+                            </svg>
                             <span>New Admission</span>
                         </div>
                         <svg 
@@ -396,20 +393,16 @@
                         </svg>
                     </button>
                     
-                    <div x-show="newAdmissionOpen" x-collapse class="mt-1 space-y-1">
-                        <flux:navlist.item 
-                            :href="route('esd.gloves')" 
-                            wire:navigate
-                            :active="request()->routeIs('esd.gloves')"
-                            title="Glove"
-                            class="w-full"
-                            @click="mobileMenuOpen = false"
-                        >
-                            <x-slot name="icon">
-                                <x-heroicon-s-hand-raised class="w-4 h-4" />
-                            </x-slot>
-                            <span class="truncate">Glove</span>
-                        </flux:navlist.item>
+                    <div x-show="newAdmissionOpen" x-collapse class="mt-1 relative">
+                        <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
+                        <div class="space-y-1 ml-[30px]">
+                            <a href="{{ route('esd.gloves') }}" wire:navigate
+                                class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.gloves') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}"
+                                @click="mobileMenuOpen = false">
+                                <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.gloves') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                <span class="truncate">Glove</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
             </flux:navlist>
@@ -420,525 +413,400 @@
     <div class="hidden md:flex">
         <!-- Sidebar -->
         <div 
-            :class="sidebarOpen ? 'md:w-[220px]' : 'md:w-[61px]'"
-            class="w-full md:flex-shrink-0 transition-none md:transition-all md:duration-300"
+            :class="sidebarOpen ? 'md:w-[260px]' : 'md:w-[61px]'"
+            @mouseenter="handleMouseEnter()"
+            @mouseleave="handleMouseLeave()"
+            class="w-full md:flex-shrink-0 transition-all duration-300 ease-in-out"
         >
             <div 
                 :class="sidebarOpen ? 'p-3' : 'p-2'"
-                class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-sm w-full"
+                class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-sm w-full h-fit"
             >
-                <!-- Toggle Button inside sidebar - Full width with icon only -->
+                <!-- Toggle Button inside sidebar -->
                 <div class="mb-3">
                     <button 
-                        @click="sidebarOpen = !sidebarOpen"
+                        @click="toggleSidebar()"
                         class="w-full flex items-center justify-center py-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors"
                         type="button"
                     >
-                        <x-heroicon-s-arrow-left-circle 
-                            x-show="sidebarOpen"
-                            class="w-6 h-6"
-                            x-cloak
-                        />
-                        <x-heroicon-s-arrow-right-circle
-                            x-show="!sidebarOpen"
-                            class="w-6 h-6"
-                            x-cloak
-                        />
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                            <path fill-rule="evenodd" d="M3 6.75A.75.75 0 0 1 3.75 6h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 6.75ZM3 12a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 12Zm0 5.25a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
+                        </svg>
                     </button>
                 </div>
-
-                <flux:navlist aria-label="Settings" class="w-full">
-                    <!-- Yearly Group -->
-                    <div class="mb-1">
+                <div class="space-y-2">
+                    <!-- Yearly Group Desktop -->
+                    <div class="relative">
+                        <!-- Button untuk collapsed mode (hanya icon) -->
                         <button 
-                            x-show="sidebarOpen"
+                            x-show="!sidebarOpen"
                             @click="yearlyOpen = !yearlyOpen"
-                            class="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                            class="flex items-center justify-center w-full py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-zinc-600 dark:text-zinc-400"
+                            title="Yearly"
                         >
-                            <div class="flex items-center gap-2">
-                                <span>Yearly</span>
-                            </div>
-                            <svg 
-                                :class="{'rotate-180': yearlyOpen}"
-                                class="w-4 h-4 transition-transform duration-200"
-                                fill="none" 
-                                stroke="currentColor" 
-                                viewBox="0 0 24 24"
-                            >
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            <!-- Icon Yearly (Calendar - same as expanded mode) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                <path fill-rule="evenodd" d="M6.75 2.25A.75.75 0 0 1 7.5 3v1.5h9V3A.75.75 0 0 1 18 3v1.5h.75a3 3 0 0 1 3 3v11.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V7.5a3 3 0 0 1 3-3H6V3a.75.75 0 0 1 .75-.75Zm13.5 9a1.5 1.5 0 0 0-1.5-1.5H5.25a1.5 1.5 0 0 0-1.5 1.5v7.5a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5v-7.5Z" clip-rule="evenodd" />
                             </svg>
                         </button>
-                        
-                        <!-- Icon items when sidebar closed -->
-                        <div x-show="!sidebarOpen" class="flex flex-col items-center space-y-1">
-                            <a 
-                                href="{{ route('esd.floorings') }}"
-                                wire:navigate
-                                class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors mx-auto text-zinc-600 dark:text-zinc-400"
-                                :class="{
-                                    'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200': '{{ request()->routeIs('esd.floorings') }}' === '1'
-                                }"
-                                title="Flooring"
-                            >
-                                <x-heroicon-s-square-3-stack-3d class="w-4 h-4" />
-                            </a>
 
-                            <a 
-                                href="{{ route('esd.garments') }}"
-                                wire:navigate
-                                class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors mx-auto text-zinc-600 dark:text-zinc-400"
-                                :class="{
-                                    'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200': '{{ request()->routeIs('esd.garments') }}' === '1'
-                                }"
-                                title="Garment"
+                        <!-- Expanded mode -->
+                        <div x-show="sidebarOpen">
+                            <button 
+                                @click="yearlyOpen = !yearlyOpen"
+                                class="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
                             >
-                                <x-heroicon-s-users class="w-4 h-4" />
-                            </a>
+                                <div class="flex items-center gap-2">
+                                    <!-- Icon Yearly (Calendar - same as collapsed mode) -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                        <path fill-rule="evenodd" d="M6.75 2.25A.75.75 0 0 1 7.5 3v1.5h9V3A.75.75 0 0 1 18 3v1.5h.75a3 3 0 0 1 3 3v11.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V7.5a3 3 0 0 1 3-3H6V3a.75.75 0 0 1 .75-.75Zm13.5 9a1.5 1.5 0 0 0-1.5-1.5H5.25a1.5 1.5 0 0 0-1.5 1.5v7.5a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5v-7.5Z" clip-rule="evenodd" />
+                                    </svg>
+                                    <span>Yearly</span>
+                                </div>
+                                <svg 
+                                    :class="{'rotate-180': yearlyOpen}"
+                                    class="w-4 h-4 transition-transform duration-200"
+                                    fill="none" 
+                                    stroke="currentColor" 
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            
+                            <div x-show="yearlyOpen" x-collapse class="mt-1 relative">
+                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
+                                <div class="space-y-1 ml-[30px]">
+                                    <a href="{{ route('esd.floorings') }}" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.floorings') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
+                                        <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.floorings') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                        <span class="truncate">Flooring</span>
+                                    </a>
 
-                            <a 
-                                href="{{ route('esd.ground-monitor-boxs') }}"
-                                wire:navigate
-                                class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors mx-auto text-zinc-600 dark:text-zinc-400"
-                                :class="{
-                                    'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200': '{{ request()->routeIs('esd.ground-monitor-boxs') }}' === '1'
-                                }"
-                                title="Ground Monitor Box"
-                            >
-                                <x-heroicon-s-inbox-stack class="w-4 h-4" />
-                            </a>
+                                    <a href="{{ route('esd.garments') }}" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.garments') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
+                                        <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.garments') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                        <span class="truncate">Garment</span>
+                                    </a>
 
-                            <a 
-                                href="{{ route('esd.jigs') }}"
-                                wire:navigate
-                                class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors mx-auto text-zinc-600 dark:text-zinc-400"
-                                :class="{
-                                    'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200': '{{ request()->routeIs('esd.jigs') }}' === '1'
-                                }"
-                                title="Jig"
-                            >
-                                <x-heroicon-s-puzzle-piece class="w-4 h-4" />
-                            </a>
+                                    <a href="{{ route('esd.ground-monitor-boxs') }}" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.ground-monitor-boxs') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
+                                        <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.ground-monitor-boxs') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                        <span class="truncate">Ground Monitor Box</span>
+                                    </a>
 
-                            <a 
-                                href="{{ route('esd.packagings') }}"
-                                wire:navigate
-                                class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors mx-auto text-zinc-600 dark:text-zinc-400"
-                                :class="{
-                                    'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200': '{{ request()->routeIs('esd.packagings') }}' === '1'
-                                }"
-                                title="Packaging"
-                            >
-                                <x-heroicon-s-cube class="w-4 h-4" />
-                            </a>
+                                    <a href="{{ route('esd.jigs') }}" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.jigs') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
+                                        <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.jigs') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                        <span class="truncate">Jig</span>
+                                    </a>
 
-                            <a 
-                                href="{{ route('esd.solderings') }}"
-                                wire:navigate
-                                class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors mx-auto text-zinc-600 dark:text-zinc-400"
-                                :class="{
-                                    'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200': '{{ request()->routeIs('esd.solderings') }}' === '1'
-                                }"
-                                title="Soldering"
-                            >
-                                <x-heroicon-s-pencil class="w-4 h-4" />
-                            </a>
+                                    <a href="{{ route('esd.packagings') }}" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.packagings') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
+                                        <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.packagings') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                        <span class="truncate">Packaging</span>
+                                    </a>
 
-                            <a 
-                                href="{{ route('esd.worksurfaces') }}"
-                                wire:navigate
-                                class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors mx-auto text-zinc-600 dark:text-zinc-400"
-                                :class="{
-                                    'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200': '{{ request()->routeIs('esd.worksurfaces') }}' === '1'
-                                }"
-                                title="Worksurface"
-                            >
-                                <x-heroicon-s-wallet class="w-4 h-4" />
-                            </a>
-                        </div>
-                        
-                        <!-- Expanded items when sidebar open -->
-                        <div x-show="sidebarOpen && yearlyOpen" x-collapse class="mt-1 space-y-1">
-                            <flux:navlist.item 
-                                :href="route('esd.floorings')" 
-                                wire:navigate
-                                :active="request()->routeIs('esd.floorings')"
-                                class="w-full"
-                            >
-                                <x-slot name="icon">
-                                    <x-heroicon-s-square-3-stack-3d class="w-4 h-4" />
-                                </x-slot>
-                                <span class="truncate">Flooring</span>
-                            </flux:navlist.item>
+                                    <a href="{{ route('esd.solderings') }}" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.solderings') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
+                                        <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.solderings') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                        <span class="truncate">Soldering</span>
+                                    </a>
 
-                            <flux:navlist.item 
-                                :href="route('esd.garments')" 
-                                wire:navigate
-                                :active="request()->routeIs('esd.garments')"
-                                class="w-full"
-                            >
-                                <x-slot name="icon">
-                                    <x-heroicon-s-users class="w-4 h-4" />
-                                </x-slot>
-                                <span class="truncate">Garment</span>
-                            </flux:navlist.item>
-
-                            <flux:navlist.item 
-                                :href="route('esd.ground-monitor-boxs')" 
-                                wire:navigate
-                                :active="request()->routeIs('esd.ground-monitor-boxs')"
-                                class="w-full"
-                            >
-                                <x-slot name="icon">
-                                    <x-heroicon-s-inbox-stack class="w-4 h-4" />
-                                </x-slot>
-                                <span class="truncate">Ground Monitor Box</span>
-                            </flux:navlist.item>
-
-                            <flux:navlist.item 
-                                :href="route('esd.jigs')" 
-                                wire:navigate
-                                :active="request()->routeIs('esd.jigs')"
-                                class="w-full"
-                            >
-                                <x-slot name="icon">
-                                    <x-heroicon-s-puzzle-piece class="w-4 h-4" />
-                                </x-slot>
-                                <span class="truncate">Jig</span>
-                            </flux:navlist.item>
-
-                            <flux:navlist.item 
-                                :href="route('esd.packagings')" 
-                                wire:navigate
-                                :active="request()->routeIs('esd.packagings')"
-                                class="w-full"
-                            >
-                                <x-slot name="icon">
-                                    <x-heroicon-s-cube class="w-4 h-4" />
-                                </x-slot>
-                                <span class="truncate">Packaging</span>
-                            </flux:navlist.item>
-
-                            <flux:navlist.item 
-                                :href="route('esd.solderings')" 
-                                wire:navigate
-                                :active="request()->routeIs('esd.solderings')"
-                                class="w-full"
-                            >
-                                <x-slot name="icon">
-                                    <x-heroicon-s-pencil class="w-4 h-4" />
-                                </x-slot>
-                                <span class="truncate">Soldering</span>
-                            </flux:navlist.item>
-
-                            <flux:navlist.item 
-                                :href="route('esd.worksurfaces')" 
-                                wire:navigate
-                                :active="request()->routeIs('esd.worksurfaces')"
-                                class="w-full"
-                            >
-                                <x-slot name="icon">
-                                    <x-heroicon-s-wallet class="w-4 h-4" />
-                                </x-slot>
-                                <span class="truncate">Worksurface</span>
-                            </flux:navlist.item>
+                                    <a href="{{ route('esd.worksurfaces') }}" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.worksurfaces') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
+                                        <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.worksurfaces') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                        <span class="truncate">Worksurface</span>
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Monthly Group -->
-                    <div class="mb-1">
+                    <!-- Monthly Group Desktop -->
+                    <div class="relative">
                         <button 
-                            x-show="sidebarOpen"
+                            x-show="!sidebarOpen"
                             @click="monthlyOpen = !monthlyOpen"
-                            class="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                            class="flex items-center justify-center w-full py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-zinc-600 dark:text-zinc-400"
+                            title="Monthly"
                         >
-                            <div class="flex items-center gap-2">
-                                <span>Monthly</span>
-                            </div>
-                            <svg 
-                                :class="{'rotate-180': monthlyOpen}"
-                                class="w-4 h-4 transition-transform duration-200"
-                                fill="none" 
-                                stroke="currentColor" 
-                                viewBox="0 0 24 24"
-                            >
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            <!-- Icon Monthly (Calendar with dates - same as expanded mode) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                <path d="M12.75 12.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM7.5 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM8.25 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM9.75 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM10.5 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM12.75 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM14.25 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM15 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM16.5 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM15 12.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM16.5 13.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" />
+                                <path fill-rule="evenodd" d="M6.75 2.25A.75.75 0 0 1 7.5 3v1.5h9V3A.75.75 0 0 1 18 3v1.5h.75a3 3 0 0 1 3 3v11.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V7.5a3 3 0 0 1 3-3H6V3a.75.75 0 0 1 .75-.75Zm-3 9.75v7.5a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5v-7.5h-16.5Z" clip-rule="evenodd" />
                             </svg>
                         </button>
-                        
-                        <!-- Icon items when sidebar closed -->
-                        <div x-show="!sidebarOpen" class="flex flex-col items-center space-y-1">
-                            <a 
-                                href="{{ route('esd.equipment-grounds') }}"
-                                wire:navigate
-                                class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors mx-auto text-zinc-600 dark:text-zinc-400"
-                                :class="{
-                                    'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200': '{{ request()->routeIs('esd.equipment-grounds') }}' === '1'
-                                }"
-                                title="Equipment Ground"
-                            >
-                                <x-heroicon-s-server-stack class="w-4 h-4" />
-                            </a>
 
-                            <a 
-                                href="{{ route('esd.ionizers') }}"
-                                wire:navigate
-                                class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors mx-auto text-zinc-600 dark:text-zinc-400"
-                                :class="{
-                                    'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200': '{{ request()->routeIs('esd.ionizers') }}' === '1'
-                                }"
-                                title="Ionizer"
+                        <div x-show="sidebarOpen">
+                            <button 
+                                @click="monthlyOpen = !monthlyOpen"
+                                class="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
                             >
-                                <x-heroicon-s-arrow-path-rounded-square class="w-4 h-4" />
-                            </a>
+                                <div class="flex items-center gap-2">
+                                    <!-- Icon Monthly (Calendar with dates - same as collapsed mode) -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                        <path d="M12.75 12.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM7.5 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM8.25 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM9.75 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM10.5 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM12.75 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM14.25 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM15 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM16.5 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM15 12.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM16.5 13.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" />
+                                        <path fill-rule="evenodd" d="M6.75 2.25A.75.75 0 0 1 7.5 3v1.5h9V3A.75.75 0 0 1 18 3v1.5h.75a3 3 0 0 1 3 3v11.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V7.5a3 3 0 0 1 3-3H6V3a.75.75 0 0 1 .75-.75Zm-3 9.75v7.5a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5v-7.5h-16.5Z" clip-rule="evenodd" />
+                                    </svg>
+                                    <span>Monthly</span>
+                                </div>
+                                <svg 
+                                    :class="{'rotate-180': monthlyOpen}"
+                                    class="w-4 h-4 transition-transform duration-200"
+                                    fill="none" 
+                                    stroke="currentColor" 
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            
+                            <div x-show="monthlyOpen" x-collapse class="mt-1 relative">
+                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
+                                <div class="space-y-1 ml-[30px]">
+                                    <a href="{{ route('esd.equipment-grounds') }}" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.equipment-grounds') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
+                                        <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.equipment-grounds') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                        <span class="truncate">Equipment Ground</span>
+                                    </a>
 
-                            <a 
-                                href="{{ route('esd.wrist-straps') }}"
-                                wire:navigate
-                                class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors mx-auto text-zinc-600 dark:text-zinc-400"
-                                :class="{
-                                    'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200': '{{ request()->routeIs('esd.wrist-straps') }}' === '1'
-                                }"
-                                title="Wrist Strap"
-                            >
-                                <x-heroicon-s-arrow-trending-down class="w-4 h-4" />
-                            </a>
-                        </div>
-                        
-                        <!-- Expanded items when sidebar open -->
-                        <div x-show="sidebarOpen && monthlyOpen" x-collapse class="mt-1 space-y-1">
-                            <flux:navlist.item 
-                                :href="route('esd.equipment-grounds')" 
-                                wire:navigate
-                                :active="request()->routeIs('esd.equipment-grounds')"
-                                class="w-full"
-                            >
-                                <x-slot name="icon">
-                                    <x-heroicon-s-server-stack class="w-4 h-4" />
-                                </x-slot>
-                                <span class="truncate">Equipment Ground</span>
-                            </flux:navlist.item>
+                                    <a href="{{ route('esd.ionizers') }}" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.ionizers') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
+                                        <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.ionizers') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                        <span class="truncate">Ionizer</span>
+                                    </a>
 
-                            <flux:navlist.item 
-                                :href="route('esd.ionizers')" 
-                                wire:navigate
-                                :active="request()->routeIs('esd.ionizers')"
-                                class="w-full"
-                            >
-                                <x-slot name="icon">
-                                    <x-heroicon-s-arrow-path-rounded-square class="w-4 h-4" />
-                                </x-slot>
-                                <span class="truncate">Ionizer</span>
-                            </flux:navlist.item>
-
-                            <flux:navlist.item 
-                                :href="route('esd.wrist-straps')" 
-                                wire:navigate
-                                :active="request()->routeIs('esd.wrist-straps')"
-                                class="w-full"
-                            >
-                                <x-slot name="icon">
-                                    <x-heroicon-s-arrow-trending-down class="w-4 h-4" />
-                                </x-slot>
-                                <span class="truncate">Wrist Strap</span>
-                            </flux:navlist.item>
+                                    <a href="{{ route('esd.wrist-straps') }}" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.wrist-straps') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
+                                        <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.wrist-straps') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                        <span class="truncate">Wrist Strap</span>
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- 3 Month Group -->
-                    <div class="mb-1">
+                    <!-- 3 Month Group Desktop -->
+                    <div class="relative">
                         <button 
-                            x-show="sidebarOpen"
+                            x-show="!sidebarOpen"
                             @click="threeMonthOpen = !threeMonthOpen"
-                            class="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                            class="flex items-center justify-center w-full py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-zinc-600 dark:text-zinc-400"
+                            title="3 Month"
                         >
-                            <div class="flex items-center gap-2">
-                                <span>3 Month</span>
-                            </div>
-                            <svg 
-                                :class="{'rotate-180': threeMonthOpen}"
-                                class="w-4 h-4 transition-transform duration-200"
-                                fill="none" 
-                                stroke="currentColor" 
-                                viewBox="0 0 24 24"
-                            >
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            <!-- Icon 3 Month (Clock with plus - same as expanded mode) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                <path d="M12 11.993a.75.75 0 0 0-.75.75v.006c0 .414.336.75.75.75h.006a.75.75 0 0 0 .75-.75v-.006a.75.75 0 0 0-.75-.75H12ZM12 16.494a.75.75 0 0 0-.75.75v.005c0 .414.335.75.75.75h.005a.75.75 0 0 0 .75-.75v-.005a.75.75 0 0 0-.75-.75H12ZM8.999 17.244a.75.75 0 0 1 .75-.75h.006a.75.75 0 0 1 .75.75v.006a.75.75 0 0 1-.75.75h-.006a.75.75 0 0 1-.75-.75v-.006ZM7.499 16.494a.75.75 0 0 0-.75.75v.005c0 .414.336.75.75.75h.005a.75.75 0 0 0 .75-.75v-.005a.75.75 0 0 0-.75-.75H7.5ZM13.499 14.997a.75.75 0 0 1 .75-.75h.006a.75.75 0 0 1 .75.75v.005a.75.75 0 0 1-.75.75h-.006a.75.75 0 0 1-.75-.75v-.005ZM14.25 16.494a.75.75 0 0 0-.75.75v.006c0 .414.335.75.75.75h.005a.75.75 0 0 0 .75-.75v-.006a.75.75 0 0 0-.75-.75h-.005ZM15.75 14.995a.75.75 0 0 1 .75-.75h.005a.75.75 0 0 1 .75.75v.006a.75.75 0 0 1-.75.75H16.5a.75.75 0 0 1-.75-.75v-.006ZM13.498 12.743a.75.75 0 0 1 .75-.75h2.25a.75.75 0 1 1 0 1.5h-2.25a.75.75 0 0 1-.75-.75ZM6.748 14.993a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Z" />
+                                <path fill-rule="evenodd" d="M18 2.993a.75.75 0 0 0-1.5 0v1.5h-9V2.994a.75.75 0 1 0-1.5 0v1.497h-.752a3 3 0 0 0-3 3v11.252a3 3 0 0 0 3 3h13.5a3 3 0 0 0 3-3V7.492a3 3 0 0 0-3-3H18V2.993ZM3.748 18.743v-7.5a1.5 1.5 0 0 1 1.5-1.5h13.5a1.5 1.5 0 0 1 1.5 1.5v7.5a1.5 1.5 0 0 1-1.5 1.5h-13.5a1.5 1.5 0 0 1-1.5-1.5Z" clip-rule="evenodd" />
                             </svg>
                         </button>
-                        
-                        <!-- Icon items when sidebar closed -->
-                        <div x-show="!sidebarOpen" class="flex flex-col items-center space-y-1">
-                            <a 
-                                href="{{ route('esd.magazines') }}"
-                                wire:navigate
-                                class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors mx-auto text-zinc-600 dark:text-zinc-400"
-                                :class="{
-                                    'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200': '{{ request()->routeIs('esd.magazines') }}' === '1'
-                                }"
-                                title="Magazine"
+
+                        <div x-show="sidebarOpen">
+                            <button 
+                                @click="threeMonthOpen = !threeMonthOpen"
+                                class="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
                             >
-                                <x-heroicon-s-inbox-arrow-down class="w-4 h-4" />
-                            </a>
-                        </div>
-                        
-                        <!-- Expanded items when sidebar open -->
-                        <div x-show="sidebarOpen && threeMonthOpen" x-collapse class="mt-1 space-y-1">
-                            <flux:navlist.item 
-                                :href="route('esd.magazines')" 
-                                wire:navigate
-                                :active="request()->routeIs('esd.magazines')"
-                                class="w-full"
-                            >
-                                <x-slot name="icon">
-                                    <x-heroicon-s-inbox-arrow-down class="w-4 h-4" />
-                                </x-slot>
-                                <span class="truncate">Magazine</span>
-                            </flux:navlist.item>
+                                <div class="flex items-center gap-2">
+                                    <!-- Icon 3 Month (Clock with plus - same as collapsed mode) -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                        <path d="M12 11.993a.75.75 0 0 0-.75.75v.006c0 .414.336.75.75.75h.006a.75.75 0 0 0 .75-.75v-.006a.75.75 0 0 0-.75-.75H12ZM12 16.494a.75.75 0 0 0-.75.75v.005c0 .414.335.75.75.75h.005a.75.75 0 0 0 .75-.75v-.005a.75.75 0 0 0-.75-.75H12ZM8.999 17.244a.75.75 0 0 1 .75-.75h.006a.75.75 0 0 1 .75.75v.006a.75.75 0 0 1-.75.75h-.006a.75.75 0 0 1-.75-.75v-.006ZM7.499 16.494a.75.75 0 0 0-.75.75v.005c0 .414.336.75.75.75h.005a.75.75 0 0 0 .75-.75v-.005a.75.75 0 0 0-.75-.75H7.5ZM13.499 14.997a.75.75 0 0 1 .75-.75h.006a.75.75 0 0 1 .75.75v.005a.75.75 0 0 1-.75.75h-.006a.75.75 0 0 1-.75-.75v-.005ZM14.25 16.494a.75.75 0 0 0-.75.75v.006c0 .414.335.75.75.75h.005a.75.75 0 0 0 .75-.75v-.006a.75.75 0 0 0-.75-.75h-.005ZM15.75 14.995a.75.75 0 0 1 .75-.75h.005a.75.75 0 0 1 .75.75v.006a.75.75 0 0 1-.75.75H16.5a.75.75 0 0 1-.75-.75v-.006ZM13.498 12.743a.75.75 0 0 1 .75-.75h2.25a.75.75 0 1 1 0 1.5h-2.25a.75.75 0 0 1-.75-.75ZM6.748 14.993a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Z" />
+                                        <path fill-rule="evenodd" d="M18 2.993a.75.75 0 0 0-1.5 0v1.5h-9V2.994a.75.75 0 1 0-1.5 0v1.497h-.752a3 3 0 0 0-3 3v11.252a3 3 0 0 0 3 3h13.5a3 3 0 0 0 3-3V7.492a3 3 0 0 0-3-3H18V2.993ZM3.748 18.743v-7.5a1.5 1.5 0 0 1 1.5-1.5h13.5a1.5 1.5 0 0 1 1.5 1.5v7.5a1.5 1.5 0 0 1-1.5 1.5h-13.5a1.5 1.5 0 0 1-1.5-1.5Z" clip-rule="evenodd" />
+                                    </svg>
+                                    <span>3 Month</span>
+                                </div>
+                                <svg 
+                                    :class="{'rotate-180': threeMonthOpen}"
+                                    class="w-4 h-4 transition-transform duration-200"
+                                    fill="none" 
+                                    stroke="currentColor" 
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            
+                            <div x-show="threeMonthOpen" x-collapse class="mt-1 relative">
+                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
+                                <div class="space-y-1 ml-[30px]">
+                                    <a href="{{ route('esd.magazines') }}" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.magazines') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
+                                        <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.magazines') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                        <span class="truncate">Magazine</span>
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- Weekly Group (Empty) -->
-                    <div class="mb-1">
+                    <!-- Weekly Group Desktop -->
+                    <div class="relative">
                         <button 
-                            x-show="sidebarOpen"
+                            x-show="!sidebarOpen"
                             @click="weeklyOpen = !weeklyOpen"
-                            class="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                            class="flex items-center justify-center w-full py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-zinc-600 dark:text-zinc-400"
+                            title="Weekly"
                         >
-                            <div class="flex items-center gap-2">
-                                <span>Weekly</span>
-                            </div>
-                            <svg 
-                                :class="{'rotate-180': weeklyOpen}"
-                                class="w-4 h-4 transition-transform duration-200"
-                                fill="none" 
-                                stroke="currentColor" 
-                                viewBox="0 0 24 24"
-                            >
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            <!-- Icon Weekly (Document stack - same as expanded mode) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                <path fill-rule="evenodd" d="M1.5 5.625c0-1.036.84-1.875 1.875-1.875h17.25c1.035 0 1.875.84 1.875 1.875v12.75c0 1.035-.84 1.875-1.875 1.875H3.375A1.875 1.875 0 0 1 1.5 18.375V5.625ZM21 9.375A.375.375 0 0 0 20.625 9h-7.5a.375.375 0 0 0-.375.375v1.5c0 .207.168.375.375.375h7.5a.375.375 0 0 0 .375-.375v-1.5Zm0 3.75a.375.375 0 0 0-.375-.375h-7.5a.375.375 0 0 0-.375.375v1.5c0 .207.168.375.375.375h7.5a.375.375 0 0 0 .375-.375v-1.5Zm0 3.75a.375.375 0 0 0-.375-.375h-7.5a.375.375 0 0 0-.375.375v1.5c0 .207.168.375.375.375h7.5a.375.375 0 0 0 .375-.375v-1.5ZM10.875 18.75a.375.375 0 0 0 .375-.375v-1.5a.375.375 0 0 0-.375-.375h-7.5a.375.375 0 0 0-.375.375v1.5c0 .207.168.375.375.375h7.5ZM3.375 15h7.5a.375.375 0 0 0 .375-.375v-1.5a.375.375 0 0 0-.375-.375h-7.5a.375.375 0 0 0-.375.375v1.5c0 .207.168.375.375.375Zm0-3.75h7.5a.375.375 0 0 0 .375-.375v-1.5A.375.375 0 0 0 10.875 9h-7.5A.375.375 0 0 0 3 9.375v1.5c0 .207.168.375.375.375Z" clip-rule="evenodd" />
                             </svg>
                         </button>
-                        
-                        <!-- Icon items when sidebar closed -->
-                        <div x-show="!sidebarOpen" class="flex flex-col items-center space-y-1">
-                            <!-- No items -->
-                        </div>
-                        
-                        <!-- Expanded items when sidebar open -->
-                        <div x-show="sidebarOpen && weeklyOpen" x-collapse class="mt-1 space-y-1">
-                            <div class="px-3 py-2 text-sm text-zinc-500 dark:text-zinc-400 italic">
-                                No items
+
+                        <div x-show="sidebarOpen">
+                            <button 
+                                @click="weeklyOpen = !weeklyOpen"
+                                class="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                            >
+                                <div class="flex items-center gap-2">
+                                    <!-- Icon Weekly (Document stack - same as collapsed mode) -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                        <path fill-rule="evenodd" d="M1.5 5.625c0-1.036.84-1.875 1.875-1.875h17.25c1.035 0 1.875.84 1.875 1.875v12.75c0 1.035-.84 1.875-1.875 1.875H3.375A1.875 1.875 0 0 1 1.5 18.375V5.625ZM21 9.375A.375.375 0 0 0 20.625 9h-7.5a.375.375 0 0 0-.375.375v1.5c0 .207.168.375.375.375h7.5a.375.375 0 0 0 .375-.375v-1.5Zm0 3.75a.375.375 0 0 0-.375-.375h-7.5a.375.375 0 0 0-.375.375v1.5c0 .207.168.375.375.375h7.5a.375.375 0 0 0 .375-.375v-1.5Zm0 3.75a.375.375 0 0 0-.375-.375h-7.5a.375.375 0 0 0-.375.375v1.5c0 .207.168.375.375.375h7.5a.375.375 0 0 0 .375-.375v-1.5ZM10.875 18.75a.375.375 0 0 0 .375-.375v-1.5a.375.375 0 0 0-.375-.375h-7.5a.375.375 0 0 0-.375.375v1.5c0 .207.168.375.375.375h7.5ZM3.375 15h7.5a.375.375 0 0 0 .375-.375v-1.5a.375.375 0 0 0-.375-.375h-7.5a.375.375 0 0 0-.375.375v1.5c0 .207.168.375.375.375Zm0-3.75h7.5a.375.375 0 0 0 .375-.375v-1.5A.375.375 0 0 0 10.875 9h-7.5A.375.375 0 0 0 3 9.375v1.5c0 .207.168.375.375.375Z" clip-rule="evenodd" />
+                                    </svg>
+                                    <span>Weekly</span>
+                                </div>
+                                <svg 
+                                    :class="{'rotate-180': weeklyOpen}"
+                                    class="w-4 h-4 transition-transform duration-200"
+                                    fill="none" 
+                                    stroke="currentColor" 
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            
+                            <div x-show="weeklyOpen" x-collapse class="mt-1 relative">
+                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
+                                <div class="space-y-1 ml-[30px]">
+                                    <a href="{{ route('esd.showers') }}" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.showers') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
+                                        <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.showers') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                        <span class="truncate">Shower</span>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Daily Group -->
-                    <div class="mb-1">
+                    <!-- Daily Group Desktop -->
+                    <div class="relative">
                         <button 
-                            x-show="sidebarOpen"
+                            x-show="!sidebarOpen"
                             @click="dailyOpen = !dailyOpen"
-                            class="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                            class="flex items-center justify-center w-full py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-zinc-600 dark:text-zinc-400"
+                            title="Daily"
                         >
-                            <div class="flex items-center gap-2">
-                                <span>Daily</span>
-                            </div>
-                            <svg 
-                                :class="{'rotate-180': dailyOpen}"
-                                class="w-4 h-4 transition-transform duration-200"
-                                fill="none" 
-                                stroke="currentColor" 
-                                viewBox="0 0 24 24"
-                            >
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            <!-- Icon Daily (Refresh/Update - same as expanded mode) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                <path fill-rule="evenodd" d="M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z" clip-rule="evenodd" />
                             </svg>
                         </button>
-                        
-                        <!-- Icon items when sidebar closed -->
-                        <div x-show="!sidebarOpen" class="flex flex-col items-center space-y-1">
-                            <a 
-                                href="{{ route('esd.insulatif-checks') }}"
-                                wire:navigate
-                                class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors mx-auto text-zinc-600 dark:text-zinc-400"
-                                :class="{
-                                    'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200': '{{ request()->routeIs('esd.insulatif-checks') }}' === '1'
-                                }"
-                                title="Insulatif Check"
+
+                        <div x-show="sidebarOpen">
+                            <button 
+                                @click="dailyOpen = !dailyOpen"
+                                class="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
                             >
-                                <x-heroicon-s-archive-box-x-mark class="w-4 h-4" />
-                            </a>
-                        </div>
-                        
-                        <!-- Expanded items when sidebar open -->
-                        <div x-show="sidebarOpen && dailyOpen" x-collapse class="mt-1 space-y-1">
-                            <flux:navlist.item 
-                                :href="route('esd.insulatif-checks')" 
-                                wire:navigate
-                                :active="request()->routeIs('esd.insulatif-checks')"
-                                class="w-full"
-                            >
-                                <x-slot name="icon">
-                                    <x-heroicon-s-archive-box-x-mark class="w-4 h-4" />
-                                </x-slot>
-                                <span class="truncate">Insulatif Check</span>
-                            </flux:navlist.item>
+                                <div class="flex items-center gap-2">
+                                    <!-- Icon Daily (Refresh/Update - same as collapsed mode) -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                        <path fill-rule="evenodd" d="M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z" clip-rule="evenodd" />
+                                    </svg>
+                                    <span>Daily</span>
+                                </div>
+                                <svg 
+                                    :class="{'rotate-180': dailyOpen}"
+                                    class="w-4 h-4 transition-transform duration-200"
+                                    fill="none" 
+                                    stroke="currentColor" 
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            
+                            <div x-show="dailyOpen" x-collapse class="mt-1 relative">
+                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
+                                <div class="space-y-1 ml-[30px]">
+                                    <a href="{{ route('esd.insulatif-checks') }}" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.insulatif-checks') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
+                                        <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.insulatif-checks') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                        <span class="truncate">Insulatif Check</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div x-show="dailyOpen" x-collapse class="mt-1 relative">
+                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
+                                <div class="space-y-1 ml-[30px]">
+                                    <a href="{{ route('esd.patrols') }}" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.patrols') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
+                                        <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.patrols') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                        <span class="truncate">Patrol</span>
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <!-- New Admission Group -->
-                    <div class="mb-1">
+                    <!-- New Admission Group Desktop -->
+                    <div class="relative">
                         <button 
-                            x-show="sidebarOpen"
+                            x-show="!sidebarOpen"
                             @click="newAdmissionOpen = !newAdmissionOpen"
-                            class="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                            class="flex items-center justify-center w-full py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-zinc-600 dark:text-zinc-400"
+                            title="New Admission"
                         >
-                            <div class="flex items-center gap-2">
-                                <span>New Admission</span>
-                            </div>
-                            <svg 
-                                :class="{'rotate-180': newAdmissionOpen}"
-                                class="w-4 h-4 transition-transform duration-200"
-                                fill="none" 
-                                stroke="currentColor" 
-                                viewBox="0 0 24 24"
-                            >
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            <!-- Icon New Admission (Download/Import - same as expanded mode) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                <path fill-rule="evenodd" d="M9.75 6.75h-3a3 3 0 0 0-3 3v7.5a3 3 0 0 0 3 3h7.5a3 3 0 0 0 3-3v-7.5a3 3 0 0 0-3-3h-3V1.5a.75.75 0 0 0-1.5 0v5.25Zm0 0h1.5v5.69l1.72-1.72a.75.75 0 1 1 1.06 1.06l-3 3a.75.75 0 0 1-1.06 0l-3-3a.75.75 0 1 1 1.06-1.06l1.72 1.72V6.75Z" clip-rule="evenodd" />
+                                <path d="M7.151 21.75a2.999 2.999 0 0 0 2.599 1.5h7.5a3 3 0 0 0 3-3v-7.5c0-1.11-.603-2.08-1.5-2.599v7.099a4.5 4.5 0 0 1-4.5 4.5H7.151Z" />
                             </svg>
                         </button>
-                        
-                        <!-- Icon items when sidebar closed -->
-                        <div x-show="!sidebarOpen" class="flex flex-col items-center space-y-1">
-                            <a 
-                                href="{{ route('esd.gloves') }}"
-                                wire:navigate
-                                class="flex items-center justify-center w-10 h-10 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors mx-auto text-zinc-600 dark:text-zinc-400"
-                                :class="{
-                                    'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200': '{{ request()->routeIs('esd.gloves') }}' === '1'
-                                }"
-                                title="Glove"
+
+                        <div x-show="sidebarOpen">
+                            <button 
+                                @click="newAdmissionOpen = !newAdmissionOpen"
+                                class="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
                             >
-                                <x-heroicon-s-hand-raised class="w-4 h-4" />
-                            </a>
-                        </div>
-                        
-                        <!-- Expanded items when sidebar open -->
-                        <div x-show="sidebarOpen && newAdmissionOpen" x-collapse class="mt-1 space-y-1">
-                            <flux:navlist.item 
-                                :href="route('esd.gloves')" 
-                                wire:navigate
-                                :active="request()->routeIs('esd.gloves')"
-                                class="w-full"
-                            >
-                                <x-slot name="icon">
-                                    <x-heroicon-s-hand-raised class="w-4 h-4" />
-                                </x-slot>
-                                <span class="truncate">Glove</span>
-                            </flux:navlist.item>
+                                <div class="flex items-center gap-2">
+                                    <!-- Icon New Admission (Download/Import - same as collapsed mode) -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                        <path fill-rule="evenodd" d="M9.75 6.75h-3a3 3 0 0 0-3 3v7.5a3 3 0 0 0 3 3h7.5a3 3 0 0 0 3-3v-7.5a3 3 0 0 0-3-3h-3V1.5a.75.75 0 0 0-1.5 0v5.25Zm0 0h1.5v5.69l1.72-1.72a.75.75 0 1 1 1.06 1.06l-3 3a.75.75 0 0 1-1.06 0l-3-3a.75.75 0 1 1 1.06-1.06l1.72 1.72V6.75Z" clip-rule="evenodd" />
+                                        <path d="M7.151 21.75a2.999 2.999 0 0 0 2.599 1.5h7.5a3 3 0 0 0 3-3v-7.5c0-1.11-.603-2.08-1.5-2.599v7.099a4.5 4.5 0 0 1-4.5 4.5H7.151Z" />
+                                    </svg>
+                                    <span>New Admission</span>
+                                </div>
+                                <svg 
+                                    :class="{'rotate-180': newAdmissionOpen}"
+                                    class="w-4 h-4 transition-transform duration-200"
+                                    fill="none" 
+                                    stroke="currentColor" 
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            
+                            <div x-show="newAdmissionOpen" x-collapse class="mt-1 relative">
+                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
+                                <div class="space-y-1 ml-[30px]">
+                                    <a href="{{ route('esd.gloves') }}" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.gloves') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
+                                        <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.gloves') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                        <span class="truncate">Glove</span>
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </flux:navlist>
+                </div>
             </div>
         </div>
 
         <!-- Gap kanan -->
-        <div class="hidden md:block flex-shrink-0 w-6"></div>
+        <div class="flex-shrink-0 w-6"></div>
     </div>
 
     <flux:separator class="md:hidden my-4" />

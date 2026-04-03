@@ -39,7 +39,7 @@
 
     <!-- Advanced Filters -->
     @if($showFilters)
-    <div class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 p-6 mt-4">
+    <div class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 p-6 mt-4 mb-6">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <!-- Search -->
             <div>
@@ -177,7 +177,7 @@
     @endif
 
     <!-- Submissions Table -->
-    <flux:card class="p-6 h-full shadow-lg hover:shadow-xl transition-shadow duration-300">
+    <flux:card class="mt-6 p-6 h-full shadow-lg hover:shadow-xl transition-shadow duration-300">
         <div class="overflow-x-auto">
             <table class="w-full table-auto">
                 <thead>

@@ -84,8 +84,7 @@
                     x-transition.duration.300ms
                     x-cloak
                     class="bg-white dark:bg-zinc-800 rounded-xl shadow-lg border border-zinc-200 dark:border-zinc-700 p-6 mb-4">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                         <!-- Search -->
                         <div>
                             <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Search</label>
@@ -104,13 +103,106 @@
                             <input type="date" wire:model.live="filterDateUntil" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
                         </div>
 
+                        <!-- Next Date From -->
+                        <div>
+                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Next Date From</label>
+                            <input type="date" wire:model.live="filterNextDateFrom" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                        </div>
+
+                        <!-- Next Date Until -->
+                        <div>
+                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Next Date Until</label>
+                            <input type="date" wire:model.live="filterNextDateUntil" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                        </div>
                     </div>
+
+                    @if($filterDateFrom || $filterDateUntil || $filterNextDateFrom || $filterNextDateUntil || $search || $filterJudgement)
+                    <div class="mt-3 text-right">
+                        <button wire:click="resetFilters" class="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400">Clear All Filters</button>
+                    </div>
+                    @endif
                 </div>
             </div>
 
             <style>
                 [x-cloak] { display: none !important; }
             </style>
+
+            <flux:card class="p-0 shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden mb-6">
+                <!-- Header with Solid Color -->
+                <div class="bg-orange-600 dark:bg-orange-500 px-6 py-4">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                        <h3 class="font-semibold text-base text-white">Standard ESD Of Insulative Support Surface</h3>
+                    </div>
+                </div>
+                
+                <div class="p-6" x-data="{ open: false }">
+                    <!-- Toggle Button inside content -->
+                    <button 
+                        @click="open = !open"
+                        class="w-full flex items-center justify-between p-3 bg-gray-50 dark:bg-zinc-800/50 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors mb-4"
+                    >
+                        <div class="flex items-center gap-2">
+                            <flux:icon name="beaker" class="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">View Standard Details</span>
+                        </div>
+                        <flux:icon x-show="!open" name="chevron-down" class="w-5 h-5 text-zinc-500" />
+                        <flux:icon x-show="open" name="chevron-up" class="w-5 h-5 text-zinc-500" />
+                    </button>
+                    
+                    <div x-show="open" x-collapse x-cloak>
+                        <div class="pt-2">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+                                <!-- Standard Value E1 -->
+                                <div class="text-center">
+                                    <div class="flex items-center justify-center gap-2 mb-2">
+                                        <flux:icon name="beaker" class="w-4 h-4 text-orange-600 dark:text-orange-400" />
+                                        <label class="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
+                                            Resistance Point To Point 
+                                        </label>
+                                    </div>
+                                    <div class="bg-orange-50 dark:bg-orange-950/30 rounded-lg p-3">
+                                        <p class="text-2xl font-bold text-orange-700 dark:text-orange-400">
+                                            > 1.00E+12 Ω
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Frequency -->
+                                <div class="text-center">
+                                    <div class="flex items-center justify-center gap-2 mb-2">
+                                        <flux:icon name="calendar" class="w-4 h-4 text-green-600 dark:text-green-400" />
+                                        <label class="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
+                                            Frequency
+                                        </label>
+                                    </div>
+                                    <div class="bg-green-50 dark:bg-green-950/30 rounded-lg p-3">
+                                        <p class="text-2xl font-bold text-green-700 dark:text-green-400">
+                                            Daily
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Document Reference -->
+                            <div class="mt-6 pt-4 border-t border-zinc-200 dark:border-zinc-700">
+                                <div class="flex flex-col sm:flex-row items-center justify-between gap-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-3">
+                                    <div class="flex items-center gap-2">
+                                        <flux:icon name="document-text" class="w-4 h-4 text-zinc-500" />
+                                        <span class="text-xs text-zinc-500 dark:text-zinc-400">Document Reference</span>
+                                    </div>
+                                    <code class="text-sm font-mono font-bold text-zinc-800 dark:text-white bg-white dark:bg-zinc-900 px-3 py-1 rounded">
+                                        QR-ADM-25-K023
+                                    </code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </flux:card>
 
             <!-- Insulatif Checks Table -->
             <flux:card class="p-6 h-full shadow-lg hover:shadow-xl transition-shadow duration-300 w-full">
@@ -124,9 +216,10 @@
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider w-20">Judgement</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[150px]">Remarks</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Date</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Next Date</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[120px]">Created By</th>
                                 <th class="px-4 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider w-24">Actions</th>
-                              </tr>
+                            </tr>
                         </thead>
                         <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
                             @forelse($checks as $index => $check)
@@ -163,6 +256,9 @@
                                 <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
                                     {{ $check->created_at ? $check->created_at->format('d M Y') : '-' }}
                                   </td>
+                                <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
+                                    {{ $check->next_date ? \Carbon\Carbon::parse($check->next_date)->format('d M Y') : '-' }}
+                                </td>
                                 <td class="px-4 py-3">
                                     <div class="text-sm min-w-0">
                                         <div class="truncate max-w-[150px]" title="{{ $check->creator->name ?? 'N/A' }}">
@@ -265,7 +361,10 @@
                                 <!-- Register No -->
                                 <div class="mb-4">
                                     <label class="block text-sm font-medium mb-1">Register No <span class="text-red-500">*</span></label>
-                                    <input type="text" wire:model="register_no" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
+                                    <input type="text" 
+                                        wire:model="register_no" 
+                                        readonly 
+                                        class="w-full px-3 py-2 border rounded-lg bg-gray-100 dark:bg-zinc-800 dark:border-zinc-700 cursor-not-allowed">
                                     @error('register_no') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                 </div>
 
@@ -300,6 +399,13 @@
                                     <label class="block text-sm font-medium mb-1">Remarks</label>
                                     <textarea wire:model="remarks" rows="3" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700"></textarea>
                                     @error('remarks') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                </div>
+
+                                <!-- Next Date -->
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium mb-1">Next Date</label>
+                                    <input type="date" wire:model="next_date" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
+                                    @error('next_date') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                 </div>
 
                                 <!-- Buttons -->

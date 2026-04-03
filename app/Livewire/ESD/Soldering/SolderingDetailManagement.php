@@ -43,7 +43,7 @@ class SolderingDetailManagement extends Component
     {
         return [
             'soldering_id' => 'required|exists:tb_esd_solderings,id',
-            'e1' => 'required|numeric|min:0|max:9.99',
+            'e1' => 'nullable|numeric', // diubah dari required|numeric|min:0|max:9.99
             'next_date' => 'nullable|date',
         ];
     }
@@ -51,10 +51,7 @@ class SolderingDetailManagement extends Component
     protected $messages = [
         'soldering_id.required' => 'Soldering equipment is required.',
         'soldering_id.exists' => 'Selected soldering does not exist.',
-        'e1.required' => 'E1 measurement result is required.',
         'e1.numeric' => 'E1 measurement result must be a number.',
-        'e1.min' => 'E1 measurement result must be at least 0.',
-        'e1.max' => 'E1 measurement result must be less than 10.',
         'next_date.date' => 'Next date must be a valid date.',
     ];
 

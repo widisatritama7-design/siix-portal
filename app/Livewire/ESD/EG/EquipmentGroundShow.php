@@ -41,8 +41,8 @@ class EquipmentGroundShow extends Component
     {
         return [
             'equipment_ground_id' => 'required|exists:equipment_grounds,id',
-            'measure_results_ohm' => 'required|numeric|min:0|regex:/^\d+(\.\d{1,3})?$/',
-            'measure_results_volts' => 'required|numeric|min:0|regex:/^\d+(\.\d{1,3})?$/',
+            'measure_results_ohm' => 'nullable|numeric', // hapus required, min, regex
+            'measure_results_volts' => 'nullable|numeric', // hapus required, min, regex
             'remarks' => 'nullable|string',
             'next_date' => 'nullable|date',
         ];
@@ -53,12 +53,8 @@ class EquipmentGroundShow extends Component
         return [
             'equipment_ground_id.required' => 'Machine name is required.',
             'equipment_ground_id.exists' => 'Selected machine does not exist.',
-            'measure_results_ohm.required' => 'Ohm measurement is required.',
             'measure_results_ohm.numeric' => 'Ohm measurement must be a number.',
-            'measure_results_ohm.regex' => 'Ohm measurement can have up to 3 decimal places.',
-            'measure_results_volts.required' => 'Volts measurement is required.',
             'measure_results_volts.numeric' => 'Volts measurement must be a number.',
-            'measure_results_volts.regex' => 'Volts measurement can have up to 3 decimal places.',
             'next_date.date' => 'Next date must be a valid date.',
         ];
     }

@@ -130,6 +130,82 @@
                 [x-cloak] { display: none !important; }
             </style>
 
+            <flux:card class="p-0 shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden mb-6">
+                <!-- Header with Solid Color -->
+                <div class="bg-orange-600 dark:bg-orange-500 px-6 py-4">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                        <h3 class="font-semibold text-base text-white">Standard ESD Of Wrist Strap Master Sample</h3>
+                    </div>
+                </div>
+                
+                <div class="p-6" x-data="{ open: false }">
+                    <!-- Toggle Button inside content -->
+                    <button 
+                        @click="open = !open"
+                        class="w-full flex items-center justify-between p-3 bg-gray-50 dark:bg-zinc-800/50 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors mb-4"
+                    >
+                        <div class="flex items-center gap-2">
+                            <flux:icon name="beaker" class="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">View Standard Details</span>
+                        </div>
+                        <flux:icon x-show="!open" name="chevron-down" class="w-5 h-5 text-zinc-500" />
+                        <flux:icon x-show="open" name="chevron-up" class="w-5 h-5 text-zinc-500" />
+                    </button>
+                    
+                    <div x-show="open" x-collapse x-cloak>
+                        <div class="pt-2">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+                                <!-- Standard Value E1 -->
+                                <div class="text-center">
+                                    <div class="flex items-center justify-center gap-2 mb-2">
+                                        <flux:icon name="beaker" class="w-4 h-4 text-orange-600 dark:text-orange-400" />
+                                        <label class="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
+                                            Point To Resistance Test
+                                        </label>
+                                    </div>
+                                    <div class="bg-orange-50 dark:bg-orange-950/30 rounded-lg p-3">
+                                        <p class="text-2xl font-bold text-orange-700 dark:text-orange-400">
+                                            < 3.50E+07 Ω
+                                        </p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Frequency -->
+                                <div class="text-center">
+                                    <div class="flex items-center justify-center gap-2 mb-2">
+                                        <flux:icon name="calendar" class="w-4 h-4 text-green-600 dark:text-green-400" />
+                                        <label class="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
+                                            Frequency
+                                        </label>
+                                    </div>
+                                    <div class="bg-green-50 dark:bg-green-950/30 rounded-lg p-3">
+                                        <p class="text-2xl font-bold text-green-700 dark:text-green-400">
+                                            Monthly
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Document Reference -->
+                            <div class="mt-6 pt-4 border-t border-zinc-200 dark:border-zinc-700">
+                                <div class="flex flex-col sm:flex-row items-center justify-between gap-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-3">
+                                    <div class="flex items-center gap-2">
+                                        <flux:icon name="document-text" class="w-4 h-4 text-zinc-500" />
+                                        <span class="text-xs text-zinc-500 dark:text-zinc-400">Document Reference</span>
+                                    </div>
+                                    <code class="text-sm font-mono font-bold text-zinc-800 dark:text-white bg-white dark:bg-zinc-900 px-3 py-1 rounded">
+                                        QR-ADM-24-K002
+                                    </code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </flux:card>
+
             <!-- Wrist Straps Table -->
             <flux:card class="p-6 h-full shadow-lg hover:shadow-xl transition-shadow duration-300 w-full">
                 <div class="overflow-x-auto">

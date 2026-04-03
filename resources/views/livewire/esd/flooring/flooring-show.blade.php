@@ -154,14 +154,13 @@
                                     <div class="flex items-center justify-center gap-2 mb-2">
                                         <flux:icon name="beaker" class="w-4 h-4 text-green-600 dark:text-green-400" />
                                         <label class="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
-                                            Standard Value B1
+                                            (B1) Point To Ground
                                         </label>
                                     </div>
                                     <div class="bg-green-50 dark:bg-green-950/30 rounded-lg p-3">
                                         <p class="text-2xl font-bold text-green-700 dark:text-green-400">
                                             &lt; 1.00E+9 Ohm
                                         </p>
-                                        <p class="text-xs text-zinc-500 mt-1">(Resistance Point To Ground)</p>
                                     </div>
                                 </div>
                                 
@@ -175,19 +174,22 @@
                                     </div>
                                     <div class="bg-purple-50 dark:bg-purple-950/30 rounded-lg p-3">
                                         <p class="text-2xl font-bold text-purple-700 dark:text-purple-400">
-                                            Monthly
+                                            Yearly
                                         </p>
                                     </div>
                                 </div>
                             </div>
-                            
+
+                            <!-- Document Reference -->
                             <div class="mt-6 pt-4 border-t border-zinc-200 dark:border-zinc-700">
-                                <div class="flex items-center justify-center">
-                                    <div class="bg-zinc-100 dark:bg-zinc-800 rounded-lg px-6 py-3">
-                                        <code class="text-lg font-mono font-bold text-zinc-800 dark:text-white">
-                                            QR-ADM-22-K025
-                                        </code>
+                                <div class="flex flex-col sm:flex-row items-center justify-between gap-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-3">
+                                    <div class="flex items-center gap-2">
+                                        <flux:icon name="document-text" class="w-4 h-4 text-zinc-500" />
+                                        <span class="text-xs text-zinc-500 dark:text-zinc-400">Document Reference</span>
                                     </div>
+                                    <code class="text-sm font-mono font-bold text-zinc-800 dark:text-white bg-white dark:bg-zinc-900 px-3 py-1 rounded">
+                                        QR-ADM-22-K016
+                                    </code>
                                 </div>
                             </div>
                         </div>
@@ -394,7 +396,7 @@
 
                                 <!-- B1 Measurement -->
                                 <div class="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
-                                    <div class="text-sm font-semibold text-yellow-800 dark:text-yellow-400 mb-2">Standard: &lt; 1.00E+9 Ohm (1,000,000,000 Ohm)</div>
+                                    <div class="text-sm font-semibold text-yellow-800 dark:text-yellow-400 mb-2">Standard: &lt; 1.00E+9 Ohm</div>
                                     <div class="grid grid-cols-2 gap-4">
                                         <div>
                                             <label class="block text-sm font-medium mb-1">B1 Measurement <span class="text-red-500">*</span></label>

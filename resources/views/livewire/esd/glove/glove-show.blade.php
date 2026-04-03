@@ -184,13 +184,16 @@
                                 </div>
                             </div>
                             
+                            <!-- Document Reference -->
                             <div class="mt-6 pt-4 border-t border-zinc-200 dark:border-zinc-700">
-                                <div class="flex items-center justify-center">
-                                    <div class="bg-zinc-100 dark:bg-zinc-800 rounded-lg px-6 py-3">
-                                        <code class="text-lg font-mono font-bold text-zinc-800 dark:text-white">
-                                            QR-ADM-22-K028
-                                        </code>
+                                <div class="flex flex-col sm:flex-row items-center justify-between gap-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-3">
+                                    <div class="flex items-center gap-2">
+                                        <flux:icon name="document-text" class="w-4 h-4 text-zinc-500" />
+                                        <span class="text-xs text-zinc-500 dark:text-zinc-400">Document Reference</span>
                                     </div>
+                                    <code class="text-sm font-mono font-bold text-zinc-800 dark:text-white bg-white dark:bg-zinc-900 px-3 py-1 rounded">
+                                        QR-ADM-24-K013
+                                    </code>
                                 </div>
                             </div>
                         </div>

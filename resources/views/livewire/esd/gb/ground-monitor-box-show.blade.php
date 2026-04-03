@@ -149,7 +149,8 @@
                     
                     <div x-show="open" x-collapse x-cloak>
                         <div class="pt-2">
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
+                            <!-- G1 Standard & G2 Standard (atas-bawah) -->
+                            <div class="space-y-6 mb-6">
                                 <!-- G1 Standard -->
                                 <div class="text-left">
                                     <div class="flex items-center gap-2 mb-2">
@@ -159,13 +160,16 @@
                                         </label>
                                     </div>
                                     <div class="bg-green-50 dark:bg-green-950/30 rounded-lg p-4">
-                                        <p class="text-sm text-green-800 dark:text-green-400 font-medium mb-2">
-                                            Check with Decade Resistance Box with Selector 1MΩ
-                                        </p>
-                                        <p class="text-sm text-zinc-700 dark:text-zinc-300">
-                                            LED will light <span class="font-bold text-green-600">Green</span> on Constant Monitor (indicating <span class="font-bold">YES</span>)<br>
-                                            If not = <span class="font-bold text-red-600">NO</span>
-                                        </p>
+                                        <div class="flex flex-wrap items-baseline gap-x-3 gap-y-2">
+                                            <p class="text-sm text-green-800 dark:text-green-400 font-medium">
+                                                Check with Decade Resistance Box with Selector 1MΩ
+                                            </p>
+                                            <p class="text-sm text-zinc-700 dark:text-zinc-300">
+                                                LED will light <span class="font-bold text-green-600">Green</span> on Constant Monitor (indicating <span class="font-bold">YES</span>)
+                                                <span class="mx-1">•</span>
+                                                If not = <span class="font-bold text-red-600">NO</span>
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                                 
@@ -178,13 +182,17 @@
                                         </label>
                                     </div>
                                     <div class="bg-red-50 dark:bg-red-950/30 rounded-lg p-4">
-                                        <p class="text-sm text-red-800 dark:text-red-400 font-medium mb-2">
-                                            Check with Decade Resistance Box with Selector 35MΩ
-                                        </p>
-                                        <p class="text-sm text-zinc-700 dark:text-zinc-300">
-                                            LED will light up <span class="font-bold text-red-600">Red</span> on Constant Monitor (indicating <span class="font-bold">YES</span>)<br>
-                                            If not = <span class="font-bold text-red-600">NO</span>
-                                        </p>
+                                        <div class="flex flex-wrap items-baseline gap-x-3 gap-y-2">
+                                            <p class="text-sm text-red-800 dark:text-red-400 font-medium">
+                                                Check with Decade Resistance Box with Selector 35MΩ
+                                            </p>
+                                            <p class="text-sm text-zinc-700 dark:text-zinc-300">
+                                                LED will light up <span class="font-bold text-red-600">Red</span> on Constant Monitor (indicating <span class="font-bold">YES</span>)
+                                            </p>
+                                            <p class="text-sm text-zinc-700 dark:text-zinc-300">
+                                                If not = <span class="font-bold text-red-600">NO</span>
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -192,29 +200,29 @@
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
                                 <!-- Frequency -->
                                 <div class="text-center">
-                                    <div class="flex items-center justify-center gap-2 mb-2">
-                                        <flux:icon name="calendar" class="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                                        <label class="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
+                                    <div class="flex items-center justify-center gap-2 mb-1">
+                                        <flux:icon name="calendar" class="w-3 h-3 text-purple-600 dark:text-purple-400" />
+                                        <label class="text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
                                             Frequency
                                         </label>
                                     </div>
-                                    <div class="bg-purple-50 dark:bg-purple-950/30 rounded-lg p-3">
-                                        <p class="text-2xl font-bold text-purple-700 dark:text-purple-400">
+                                    <div class="bg-purple-50 dark:bg-purple-950/30 rounded-lg py-1.5 px-3 h-full flex items-center justify-center">
+                                        <p class="text-lg font-bold text-purple-700 dark:text-purple-400">
                                             Yearly
                                         </p>
                                     </div>
                                 </div>
                                 
-                                <!-- Document Code -->
+                                <!-- Document Reference -->
                                 <div class="text-center">
-                                    <div class="flex items-center justify-center gap-2 mb-2">
-                                        <flux:icon name="document-text" class="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                                        <label class="text-sm font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
-                                            Document Code
+                                    <div class="flex items-center justify-center gap-2 mb-1">
+                                        <flux:icon name="document-text" class="w-3 h-3 text-zinc-500" />
+                                        <label class="text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
+                                            Document Reference
                                         </label>
                                     </div>
-                                    <div class="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-3">
-                                        <code class="text-lg font-mono font-bold text-blue-800 dark:text-blue-400">
+                                    <div class="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg py-1.5 px-3 h-full flex items-center justify-center">
+                                        <code class="text-sm font-mono font-bold text-zinc-800 dark:text-white bg-white dark:bg-zinc-900 px-3 py-1 rounded">
                                             QR-ADM-22-K018
                                         </code>
                                     </div>

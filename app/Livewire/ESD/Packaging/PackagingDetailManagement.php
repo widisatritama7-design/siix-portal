@@ -42,8 +42,8 @@ class PackagingDetailManagement extends Component
     {
         return [
             'packaging_id' => 'required|exists:tb_esd_packagings,id',
-            'f1' => 'required|numeric|min:10000|max:99999999999',
-            'f2' => 'required|numeric|min:0|max:99',
+            'f1' => 'nullable|numeric', // diubah
+            'f2' => 'nullable|numeric', // diubah
             'remarks' => 'nullable|string|max:500',
             'next_date' => 'nullable|date',
         ];
@@ -52,14 +52,8 @@ class PackagingDetailManagement extends Component
     protected $messages = [
         'packaging_id.required' => 'Packaging material is required.',
         'packaging_id.exists' => 'Selected packaging does not exist.',
-        'f1.required' => 'F1 measurement result is required.',
         'f1.numeric' => 'F1 measurement result must be a number.',
-        'f1.min' => 'F1 measurement result must be at least 10,000 Ω.',
-        'f1.max' => 'F1 measurement result must be less than 100,000,000,000 Ω.',
-        'f2.required' => 'F2 measurement result is required.',
         'f2.numeric' => 'F2 measurement result must be a number.',
-        'f2.min' => 'F2 measurement result must be at least 0.',
-        'f2.max' => 'F2 measurement result must be less than 100.',
         'next_date.date' => 'Next date must be a valid date.',
     ];
 

@@ -34,8 +34,8 @@ class WristStrapManagement extends Component
     protected function rules()
     {
         return [
-            'register_no' => 'required|min:3|max:100|unique:tb_esd_wrist_straps,register_no,' . ($this->strap_id ?? 'NULL'),
-            'result' => 'required|numeric|min:0|max:34999999',
+            'register_no' => 'required|min:3|max:100', // Hapus unique
+            'result' => 'nullable|numeric', // Diubah jadi nullable, hapus min/max
             'type' => 'nullable|string|max:50',
             'remarks' => 'nullable|string|max:500',
             'next_date' => 'nullable|date',
@@ -45,11 +45,7 @@ class WristStrapManagement extends Component
     protected $messages = [
         'register_no.required' => 'Register number is required.',
         'register_no.min' => 'Register number must be at least 3 characters.',
-        'register_no.unique' => 'Register number already exists.',
-        'result.required' => 'Result measurement is required.',
         'result.numeric' => 'Result measurement must be a number.',
-        'result.min' => 'Result measurement must be at least 0.',
-        'result.max' => 'Result measurement must be less than 35,000,000 Ω.',
         'next_date.date' => 'Next date must be a valid date.',
     ];
 

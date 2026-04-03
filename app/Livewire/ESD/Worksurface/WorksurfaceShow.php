@@ -47,9 +47,9 @@ class WorksurfaceShow extends Component
     {
         return [
             'worksurface_id' => 'required|exists:tb_esd_worksurfaces,id',
-            'item' => 'required|string|max:100',
-            'a1' => 'required|numeric|min:0|max:999999999',
-            'a2' => 'required|numeric|min:0|max:99',
+            'item' => 'nullable|string|max:100', // required -> nullable
+            'a1' => 'nullable|numeric', // hapus required, min, max
+            'a2' => 'nullable|numeric', // hapus required, min, max
             'remarks' => 'nullable|string',
             'next_date' => 'nullable|date',
         ];
@@ -60,15 +60,10 @@ class WorksurfaceShow extends Component
         return [
             'worksurface_id.required' => 'Worksurface equipment is required.',
             'worksurface_id.exists' => 'Selected worksurface does not exist.',
-            'item.required' => 'Item is required.',
-            'a1.required' => 'A1 measurement is required.',
+            'item.string' => 'Item must be a string.',
+            'item.max' => 'Item cannot exceed 100 characters.',
             'a1.numeric' => 'A1 measurement must be a number.',
-            'a1.min' => 'A1 measurement must be at least 0.',
-            'a1.max' => 'A1 measurement must be less than 1,000,000,000 Ω.',
-            'a2.required' => 'A2 measurement is required.',
             'a2.numeric' => 'A2 measurement must be a number.',
-            'a2.min' => 'A2 measurement must be at least 0.',
-            'a2.max' => 'A2 measurement must be less than 100.',
             'next_date.date' => 'Next date must be a valid date.',
         ];
     }
