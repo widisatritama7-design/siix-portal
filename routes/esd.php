@@ -35,6 +35,8 @@ use App\Livewire\ESD\Shower\ShowerShow;
 use App\Livewire\ESD\Soldering\SolderingDetailManagement;
 use App\Livewire\ESD\Soldering\SolderingManagement;
 use App\Livewire\ESD\Soldering\SolderingShow;
+use App\Livewire\ESD\Stock\MaterialManagement;
+use App\Livewire\ESD\Stock\TransactionManagement;
 use App\Livewire\ESD\Worksurface\WorksurfaceDetailManagement;
 use App\Livewire\ESD\Worksurface\WorksurfaceManagement;
 use App\Livewire\ESD\Worksurface\WorksurfaceShow;
@@ -102,6 +104,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::livewire('esd/showers', ShowerManagement::class)->name('esd.showers');
     Route::livewire('/esd/showers/{id}', ShowerShow::class)->name('esd.showers.show');
     Route::livewire('esd/shower-details', ShowerDetailManagement::class)->name('esd.shower-details');
+
+    // Stock
+    Route::livewire('esd/materials', MaterialManagement::class)->name('esd.materials');
+    Route::livewire('esd/transactions', TransactionManagement::class)->name('esd.transactions');
 
     // Insulatif Check
     Route::livewire('esd/insulatif-checks', InsulatifCheckManagement::class)->name('esd.insulatif-checks');

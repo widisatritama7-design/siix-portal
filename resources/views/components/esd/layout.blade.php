@@ -11,6 +11,7 @@
         weeklyOpen: true,
         dailyOpen: true,
         newAdmissionOpen: true,
+        stockOpen: true,
         init() {
             // Load all saved states from localStorage
             const savedSidebarOpen = localStorage.getItem('sidebarOpen');
@@ -48,6 +49,11 @@
             if (savedNewAdmissionState !== null) {
                 this.newAdmissionOpen = JSON.parse(savedNewAdmissionState);
             }
+
+            const savedStockState = localStorage.getItem('stockOpen');
+            if (savedStockState !== null) {
+                this.stockOpen = JSON.parse(savedStockState);
+            }
         },
         saveToLocalStorage() {
             localStorage.setItem('sidebarOpen', JSON.stringify(this.sidebarPinned ? this.sidebarOpen : false));
@@ -57,6 +63,7 @@
             localStorage.setItem('weeklyOpen', JSON.stringify(this.weeklyOpen));
             localStorage.setItem('dailyOpen', JSON.stringify(this.dailyOpen));
             localStorage.setItem('newAdmissionOpen', JSON.stringify(this.newAdmissionOpen));
+            localStorage.setItem('stockOpen', JSON.stringify(this.stockOpen));
         },
         toggleSidebar() {
             this.sidebarPinned = !this.sidebarPinned;
@@ -113,6 +120,57 @@
     >
         <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-lg p-3">
             <flux:navlist aria-label="Settings" class="w-full">
+
+                <!-- Stock Group Mobile -->
+                <div class="mb-1 relative">
+                    <button 
+                        @click="stockOpen = !stockOpen"
+                        class="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                    >
+                        <div class="flex items-center gap-2">
+                            <!-- Icon Weekly (Document stack - same as expanded mode) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                <path d="M10.464 8.746c.227-.18.497-.311.786-.394v2.795a2.252 2.252 0 0 1-.786-.393c-.394-.313-.546-.681-.546-1.004 0-.323.152-.691.546-1.004ZM12.75 15.662v-2.824c.347.085.664.228.921.421.427.32.579.686.579.991 0 .305-.152.671-.579.991a2.534 2.534 0 0 1-.921.42Z" />
+                                <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 6a.75.75 0 0 0-1.5 0v.816a3.836 3.836 0 0 0-1.72.756c-.712.566-1.112 1.35-1.112 2.178 0 .829.4 1.612 1.113 2.178.502.4 1.102.647 1.719.756v2.978a2.536 2.536 0 0 1-.921-.421l-.879-.66a.75.75 0 0 0-.9 1.2l.879.66c.533.4 1.169.645 1.821.75V18a.75.75 0 0 0 1.5 0v-.81a4.124 4.124 0 0 0 1.821-.749c.745-.559 1.179-1.344 1.179-2.191 0-.847-.434-1.632-1.179-2.191a4.122 4.122 0 0 0-1.821-.75V8.354c.29.082.559.213.786.393l.415.33a.75.75 0 0 0 .933-1.175l-.415-.33a3.836 3.836 0 0 0-1.719-.755V6Z" clip-rule="evenodd" />
+                            </svg>
+                            <span>Stock Management</span>
+                        </div>
+                        <svg 
+                            :class="{'rotate-180': stockOpen}"
+                            class="w-4 h-4 transition-transform duration-200"
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24"
+                        >
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    
+                    <div x-show="stockOpen" x-collapse class="mt-1 relative">
+                        <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
+                        <div class="space-y-1 ml-[30px]">
+                            <a href="{{ route('esd.materials') }}" wire:navigate
+                                class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.materials') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}"
+                                @click="mobileMenuOpen = false">
+                                <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.materials') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                <span class="truncate">Material</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div x-show="stockOpen" x-collapse class="mt-1 relative">
+                        <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
+                        <div class="space-y-1 ml-[30px]">
+                            <a href="{{ route('esd.transactions') }}" wire:navigate
+                                class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.transactions') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}"
+                                @click="mobileMenuOpen = false">
+                                <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.transactions') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                <span class="truncate">Transaction</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Yearly Group Mobile -->
                 <div class="mb-1 relative">
                     <button 
@@ -405,6 +463,7 @@
                         </div>
                     </div>
                 </div>
+
             </flux:navlist>
         </div>
     </div>
@@ -435,6 +494,68 @@
                     </button>
                 </div>
                 <div class="space-y-2">
+
+                    <!-- Stock Group Desktop -->
+                    <div class="relative">
+                        <button 
+                            x-show="!sidebarOpen"
+                            @click="stockOpen = !stockOpen"
+                            class="flex items-center justify-center w-full py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-zinc-600 dark:text-zinc-400"
+                            title="Weekly"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                <path d="M10.464 8.746c.227-.18.497-.311.786-.394v2.795a2.252 2.252 0 0 1-.786-.393c-.394-.313-.546-.681-.546-1.004 0-.323.152-.691.546-1.004ZM12.75 15.662v-2.824c.347.085.664.228.921.421.427.32.579.686.579.991 0 .305-.152.671-.579.991a2.534 2.534 0 0 1-.921.42Z" />
+                                <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 6a.75.75 0 0 0-1.5 0v.816a3.836 3.836 0 0 0-1.72.756c-.712.566-1.112 1.35-1.112 2.178 0 .829.4 1.612 1.113 2.178.502.4 1.102.647 1.719.756v2.978a2.536 2.536 0 0 1-.921-.421l-.879-.66a.75.75 0 0 0-.9 1.2l.879.66c.533.4 1.169.645 1.821.75V18a.75.75 0 0 0 1.5 0v-.81a4.124 4.124 0 0 0 1.821-.749c.745-.559 1.179-1.344 1.179-2.191 0-.847-.434-1.632-1.179-2.191a4.122 4.122 0 0 0-1.821-.75V8.354c.29.082.559.213.786.393l.415.33a.75.75 0 0 0 .933-1.175l-.415-.33a3.836 3.836 0 0 0-1.719-.755V6Z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+
+                        <div x-show="sidebarOpen">
+                            <button 
+                                @click="stockOpen = !stockOpen"
+                                class="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                            >
+                                <div class="flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                        <path d="M10.464 8.746c.227-.18.497-.311.786-.394v2.795a2.252 2.252 0 0 1-.786-.393c-.394-.313-.546-.681-.546-1.004 0-.323.152-.691.546-1.004ZM12.75 15.662v-2.824c.347.085.664.228.921.421.427.32.579.686.579.991 0 .305-.152.671-.579.991a2.534 2.534 0 0 1-.921.42Z" />
+                                        <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 6a.75.75 0 0 0-1.5 0v.816a3.836 3.836 0 0 0-1.72.756c-.712.566-1.112 1.35-1.112 2.178 0 .829.4 1.612 1.113 2.178.502.4 1.102.647 1.719.756v2.978a2.536 2.536 0 0 1-.921-.421l-.879-.66a.75.75 0 0 0-.9 1.2l.879.66c.533.4 1.169.645 1.821.75V18a.75.75 0 0 0 1.5 0v-.81a4.124 4.124 0 0 0 1.821-.749c.745-.559 1.179-1.344 1.179-2.191 0-.847-.434-1.632-1.179-2.191a4.122 4.122 0 0 0-1.821-.75V8.354c.29.082.559.213.786.393l.415.33a.75.75 0 0 0 .933-1.175l-.415-.33a3.836 3.836 0 0 0-1.719-.755V6Z" clip-rule="evenodd" />
+                                    </svg>
+                                    <span>Stock Management</span>
+                                </div>
+                                <svg 
+                                    :class="{'rotate-180': stockOpen}"
+                                    class="w-4 h-4 transition-transform duration-200"
+                                    fill="none" 
+                                    stroke="currentColor" 
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            
+                            <div x-show="stockOpen" x-collapse class="mt-1 relative">
+                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
+                                <div class="space-y-1 ml-[30px]">
+                                    <a href="{{ route('esd.materials') }}" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.materials') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
+                                        <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.materials') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                        <span class="truncate">Material</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div x-show="stockOpen" x-collapse class="mt-1 relative">
+                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
+                                <div class="space-y-1 ml-[30px]">
+                                    <a href="{{ route('esd.transactions') }}" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.transactions') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
+                                        <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.transactions') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                        <span class="truncate">Transaction</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Yearly Group Desktop -->
                     <div class="relative">
                         <!-- Button untuk collapsed mode (hanya icon) -->
@@ -801,12 +922,13 @@
                             </div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
 
         <!-- Gap kanan -->
-        <div class="flex-shrink-0 w-6"></div>
+        <div class="flex-shrink-0 w-8"></div>
     </div>
 
     <flux:separator class="md:hidden my-4" />
