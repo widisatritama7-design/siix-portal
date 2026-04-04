@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\EventController;
+use App\Livewire\ESD\Activity\EventCalendar;
 use App\Livewire\ESD\EG\EquipmentGroundDetailManagement;
 use App\Livewire\ESD\EG\EquipmentGroundManagement;
 use App\Livewire\ESD\EG\EquipmentGroundShow;
@@ -22,6 +24,7 @@ use App\Livewire\ESD\Ionizer\IonizerShow;
 use App\Livewire\ESD\Jig\JigDetailManagement;
 use App\Livewire\ESD\Jig\JigManagement;
 use App\Livewire\ESD\Jig\JigShow;
+use App\Livewire\ESD\Locker\LockerStatusManagement;
 use App\Livewire\ESD\Magazine\MagazineDetailManagement;
 use App\Livewire\ESD\Magazine\MagazineManagement;
 use App\Livewire\ESD\Magazine\MagazineShow;
@@ -29,6 +32,8 @@ use App\Livewire\ESD\Packaging\PackagingDetailManagement;
 use App\Livewire\ESD\Packaging\PackagingManagement;
 use App\Livewire\ESD\Packaging\PackagingShow;
 use App\Livewire\ESD\Patrol\PatrolManagement;
+use App\Livewire\ESD\PQ\ProductQualificationManagement;
+use App\Livewire\ESD\PQ\ProductQualificationShow;
 use App\Livewire\ESD\Shower\ShowerDetailManagement;
 use App\Livewire\ESD\Shower\ShowerManagement;
 use App\Livewire\ESD\Shower\ShowerShow;
@@ -105,6 +110,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::livewire('/esd/showers/{id}', ShowerShow::class)->name('esd.showers.show');
     Route::livewire('esd/shower-details', ShowerDetailManagement::class)->name('esd.shower-details');
 
+    // Product Qualification
+    Route::livewire('esd/product-qualifications', ProductQualificationManagement::class)->name('esd.product-qualifications');
+    Route::livewire('/esd/product-qualifications/{id}', ProductQualificationShow::class)->name('esd.product-qualifications.show');
+
     // Stock
     Route::livewire('esd/materials', MaterialManagement::class)->name('esd.materials');
     Route::livewire('esd/transactions', TransactionManagement::class)->name('esd.transactions');
@@ -117,5 +126,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Patrol
     Route::livewire('esd/patrols', PatrolManagement::class)->name('esd.patrols');
+
+    // Locker
+    Route::livewire('esd/lockers', LockerStatusManagement::class)->name('esd.lockers');
+
+    // Event Calendar
+    Route::get('/esd/events', EventCalendar::class)->name('esd.events');
+    Route::get('/esd/events/create', [EventController::class, 'create'])->name('esd.events.create');
+    Route::get('/calendar-events', [EventController::class, 'getEvents']);
 
 });

@@ -381,21 +381,11 @@
                                             wire:click="viewTransactions({{ $material->id }})" 
                                             x-on:click="$dispatch('open-modal', 'transaction-history-modal')"
                                             size="sm"
-                                            icon="archive-box"
+                                            icon="shopping-cart"
                                             variant="primary"
                                             color="green"
                                             class="!p-2 flex-shrink-0"
                                             title="View transaction history"
-                                        />
-                                        <flux:button 
-                                            wire:click="viewDetail({{ $material->id }})" 
-                                            x-on:click="$dispatch('open-modal', 'detail-material-modal')"
-                                            size="sm"
-                                            icon="eye"
-                                            variant="primary"
-                                            color="blue"
-                                            class="!p-2 flex-shrink-0"
-                                            title="View details"
                                         />
                                         
                                         @can('edit material')

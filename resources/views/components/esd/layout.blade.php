@@ -12,6 +12,8 @@
         dailyOpen: true,
         newAdmissionOpen: true,
         stockOpen: true,
+        managementOpen: true,
+
         init() {
             // Load all saved states from localStorage
             const savedSidebarOpen = localStorage.getItem('sidebarOpen');
@@ -54,6 +56,12 @@
             if (savedStockState !== null) {
                 this.stockOpen = JSON.parse(savedStockState);
             }
+
+            const savedmanagementState = localStorage.getItem('managementOpen');
+            if (savedmanagementState !== null) {
+                this.managementOpen = JSON.parse(savedmanagementState);
+            }
+
         },
         saveToLocalStorage() {
             localStorage.setItem('sidebarOpen', JSON.stringify(this.sidebarPinned ? this.sidebarOpen : false));
@@ -64,6 +72,7 @@
             localStorage.setItem('dailyOpen', JSON.stringify(this.dailyOpen));
             localStorage.setItem('newAdmissionOpen', JSON.stringify(this.newAdmissionOpen));
             localStorage.setItem('stockOpen', JSON.stringify(this.stockOpen));
+            localStorage.setItem('managementOpen', JSON.stringify(this.managementOpen));
         },
         toggleSidebar() {
             this.sidebarPinned = !this.sidebarPinned;
@@ -120,6 +129,67 @@
     >
         <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-lg p-3">
             <flux:navlist aria-label="Settings" class="w-full">
+
+                <!-- Management Group Mobile -->
+                <div class="mb-1 relative">
+                    <button 
+                        @click="managementOpen = !managementOpen"
+                        class="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                    >
+                        <div class="flex items-center gap-2">
+                            <!-- Icon Weekly (Document stack - same as expanded mode) -->
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                <path d="M18.75 12.75h1.5a.75.75 0 0 0 0-1.5h-1.5a.75.75 0 0 0 0 1.5ZM12 6a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 12 6ZM12 18a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 12 18ZM3.75 6.75h1.5a.75.75 0 1 0 0-1.5h-1.5a.75.75 0 0 0 0 1.5ZM5.25 18.75h-1.5a.75.75 0 0 1 0-1.5h1.5a.75.75 0 0 1 0 1.5ZM3 12a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 3 12ZM9 3.75a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5ZM12.75 12a2.25 2.25 0 1 1 4.5 0 2.25 2.25 0 0 1-4.5 0ZM9 15.75a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5Z" />
+                            </svg>
+                            <span>ESD Management</span>
+                        </div>
+                        <svg 
+                            :class="{'rotate-180': managementOpen}"
+                            class="w-4 h-4 transition-transform duration-200"
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24"
+                        >
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+
+                    <div x-show="managementOpen" x-collapse class="mt-1 relative">
+                        <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
+                        <div class="space-y-1 ml-[30px]">
+                            <a href="{{ route('esd.events') }}" wire:navigate
+                                class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.events') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}"
+                                @click="mobileMenuOpen = false">
+                                <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.events') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                <span class="truncate">Event Management</span>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div x-show="managementOpen" x-collapse class="mt-1 relative">
+                        <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
+                        <div class="space-y-1 ml-[30px]">
+                            <a href="{{ route('esd.lockers') }}" wire:navigate
+                                class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.lockers') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}"
+                                @click="mobileMenuOpen = false">
+                                <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.lockers') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                <span class="truncate">Locker Management</span>
+                            </a>
+                        </div>
+                    </div>
+
+                    <div x-show="managementOpen" x-collapse class="mt-1 relative">
+                        <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
+                        <div class="space-y-1 ml-[30px]">
+                            <a href="{{ route('esd.product-qualifications') }}" wire:navigate
+                                class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.product-qualifications') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}"
+                                @click="mobileMenuOpen = false">
+                                <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.product-qualifications') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                <span class="truncate">Product Qualification</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Stock Group Mobile -->
                 <div class="mb-1 relative">
@@ -494,6 +564,76 @@
                     </button>
                 </div>
                 <div class="space-y-2">
+
+                    <!-- Management Group Desktop -->
+                    <div class="relative">
+                        <button 
+                            x-show="!sidebarOpen"
+                            @click="managementOpen = !managementOpen"
+                            class="flex items-center justify-center w-full py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-zinc-600 dark:text-zinc-400"
+                            title="Weekly"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                <path d="M18.75 12.75h1.5a.75.75 0 0 0 0-1.5h-1.5a.75.75 0 0 0 0 1.5ZM12 6a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 12 6ZM12 18a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 12 18ZM3.75 6.75h1.5a.75.75 0 1 0 0-1.5h-1.5a.75.75 0 0 0 0 1.5ZM5.25 18.75h-1.5a.75.75 0 0 1 0-1.5h1.5a.75.75 0 0 1 0 1.5ZM3 12a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 3 12ZM9 3.75a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5ZM12.75 12a2.25 2.25 0 1 1 4.5 0 2.25 2.25 0 0 1-4.5 0ZM9 15.75a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5Z" />
+                            </svg>
+                        </button>
+
+                        <div x-show="sidebarOpen">
+                            <button 
+                                @click="managementOpen = !managementOpen"
+                                class="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                            >
+                                <div class="flex items-center gap-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                        <path d="M18.75 12.75h1.5a.75.75 0 0 0 0-1.5h-1.5a.75.75 0 0 0 0 1.5ZM12 6a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 12 6ZM12 18a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 12 18ZM3.75 6.75h1.5a.75.75 0 1 0 0-1.5h-1.5a.75.75 0 0 0 0 1.5ZM5.25 18.75h-1.5a.75.75 0 0 1 0-1.5h1.5a.75.75 0 0 1 0 1.5ZM3 12a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 3 12ZM9 3.75a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5ZM12.75 12a2.25 2.25 0 1 1 4.5 0 2.25 2.25 0 0 1-4.5 0ZM9 15.75a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5Z" />
+                                    </svg>
+                                    <span>ESD Management</span>
+                                </div>
+                                <svg 
+                                    :class="{'rotate-180': managementOpen}"
+                                    class="w-4 h-4 transition-transform duration-200"
+                                    fill="none" 
+                                    stroke="currentColor" 
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+
+                            <div x-show="managementOpen" x-collapse class="mt-1 relative">
+                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
+                                <div class="space-y-1 ml-[30px]">
+                                    <a href="{{ route('esd.events') }}" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.events') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
+                                        <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.events') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                        <span class="truncate">Event Management</span>
+                                    </a>
+                                </div>
+                            </div>
+                            
+                            <div x-show="managementOpen" x-collapse class="mt-1 relative">
+                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
+                                <div class="space-y-1 ml-[30px]">
+                                    <a href="{{ route('esd.lockers') }}" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.lockers') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
+                                        <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.lockers') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                        <span class="truncate">Locker Management</span>
+                                    </a>
+                                </div>
+                            </div>
+
+                            <div x-show="managementOpen" x-collapse class="mt-1 relative">
+                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
+                                <div class="space-y-1 ml-[30px]">
+                                    <a href="{{ route('esd.product-qualifications') }}" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.product-qualifications') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
+                                        <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.product-qualifications') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                        <span class="truncate">Product Qualification</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Stock Group Desktop -->
                     <div class="relative">
