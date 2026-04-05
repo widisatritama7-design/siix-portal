@@ -19,7 +19,7 @@
                         ESD
                     </flux:breadcrumbs.item>
                     <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
-                        Event Calendar
+                        Event
                     </flux:breadcrumbs.item>
                 </flux:breadcrumbs>
             </div>

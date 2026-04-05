@@ -157,30 +157,24 @@
                     <div x-show="managementOpen" x-collapse class="mt-1 relative">
                         <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
                         <div class="space-y-1 ml-[30px]">
+                            <a href="{{ route('esd.calendar') }}" wire:navigate
+                                class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.calendar') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}"
+                                @click="mobileMenuOpen = false">
+                                <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.calendar') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                <span class="truncate">Calendar Management</span>
+                            </a>
                             <a href="{{ route('esd.events') }}" wire:navigate
                                 class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.events') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}"
                                 @click="mobileMenuOpen = false">
                                 <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.events') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
                                 <span class="truncate">Event Management</span>
                             </a>
-                        </div>
-                    </div>
-                    
-                    <div x-show="managementOpen" x-collapse class="mt-1 relative">
-                        <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
-                        <div class="space-y-1 ml-[30px]">
                             <a href="{{ route('esd.lockers') }}" wire:navigate
                                 class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.lockers') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}"
                                 @click="mobileMenuOpen = false">
                                 <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.lockers') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
                                 <span class="truncate">Locker Management</span>
                             </a>
-                        </div>
-                    </div>
-
-                    <div x-show="managementOpen" x-collapse class="mt-1 relative">
-                        <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
-                        <div class="space-y-1 ml-[30px]">
                             <a href="{{ route('esd.product-qualifications') }}" wire:navigate
                                 class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.product-qualifications') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}"
                                 @click="mobileMenuOpen = false">
@@ -225,12 +219,6 @@
                                 <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.materials') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
                                 <span class="truncate">Material</span>
                             </a>
-                        </div>
-                    </div>
-
-                    <div x-show="stockOpen" x-collapse class="mt-1 relative">
-                        <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
-                        <div class="space-y-1 ml-[30px]">
                             <a href="{{ route('esd.transactions') }}" wire:navigate
                                 class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.transactions') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}"
                                 @click="mobileMenuOpen = false">
@@ -480,12 +468,6 @@
                                 <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.insulatif-checks') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
                                 <span class="truncate">Insulatif Check</span>
                             </a>
-                        </div>
-                    </div>
-
-                    <div x-show="dailyOpen" x-collapse class="mt-1 relative">
-                        <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
-                        <div class="space-y-1 ml-[30px]">
                             <a href="{{ route('esd.patrols') }}" wire:navigate
                                 class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.patrols') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}"
                                 @click="mobileMenuOpen = false">
@@ -599,32 +581,25 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                 </svg>
                             </button>
-
+                            
                             <div x-show="managementOpen" x-collapse class="mt-1 relative">
                                 <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
                                 <div class="space-y-1 ml-[30px]">
+                                    <a href="{{ route('esd.calendar') }}" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.calendar') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
+                                        <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.calendar') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                        <span class="truncate">Calendar Management</span>
+                                    </a>
                                     <a href="{{ route('esd.events') }}" wire:navigate
                                         class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.events') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
                                         <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.events') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
                                         <span class="truncate">Event Management</span>
                                     </a>
-                                </div>
-                            </div>
-                            
-                            <div x-show="managementOpen" x-collapse class="mt-1 relative">
-                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
-                                <div class="space-y-1 ml-[30px]">
                                     <a href="{{ route('esd.lockers') }}" wire:navigate
                                         class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.lockers') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
                                         <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.lockers') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
                                         <span class="truncate">Locker Management</span>
                                     </a>
-                                </div>
-                            </div>
-
-                            <div x-show="managementOpen" x-collapse class="mt-1 relative">
-                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
-                                <div class="space-y-1 ml-[30px]">
                                     <a href="{{ route('esd.product-qualifications') }}" wire:navigate
                                         class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.product-qualifications') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
                                         <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.product-qualifications') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
@@ -680,12 +655,7 @@
                                         <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.materials') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
                                         <span class="truncate">Material</span>
                                     </a>
-                                </div>
-                            </div>
 
-                            <div x-show="stockOpen" x-collapse class="mt-1 relative">
-                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
-                                <div class="space-y-1 ml-[30px]">
                                     <a href="{{ route('esd.transactions') }}" wire:navigate
                                         class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.transactions') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
                                         <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.transactions') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
@@ -995,12 +965,6 @@
                                         <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.insulatif-checks') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
                                         <span class="truncate">Insulatif Check</span>
                                     </a>
-                                </div>
-                            </div>
-
-                            <div x-show="dailyOpen" x-collapse class="mt-1 relative">
-                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
-                                <div class="space-y-1 ml-[30px]">
                                     <a href="{{ route('esd.patrols') }}" wire:navigate
                                         class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.patrols') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
                                         <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.patrols') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>

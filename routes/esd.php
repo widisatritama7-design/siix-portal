@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\EventController;
+use App\Livewire\ESD\Activity\EsdCalendar;
 use App\Livewire\ESD\Activity\EventCalendar;
 use App\Livewire\ESD\EG\EquipmentGroundDetailManagement;
 use App\Livewire\ESD\EG\EquipmentGroundManagement;
@@ -134,5 +135,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/esd/events', EventCalendar::class)->name('esd.events');
     Route::get('/esd/events/create', [EventController::class, 'create'])->name('esd.events.create');
     Route::get('/calendar-events', [EventController::class, 'getEvents']);
+
+    // ESD Calendar
+    Route::get('/esd/calendar', EsdCalendar::class)->name('esd.calendar');
 
 });

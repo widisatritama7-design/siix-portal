@@ -168,99 +168,137 @@
         </div>
     </div>
 
-    <!-- Tickets Table -->
-    <flux:card class="p-6 h-full shadow-lg hover:shadow-xl transition-shadow duration-300 mt-6">
-        <div class="overflow-x-auto">
-            <table class="w-full min-w-max">
-                <thead>
-                    <tr class="bg-zinc-50 dark:bg-zinc-800/50">
-                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">#</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Ticket #</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Title</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Status</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Priority</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Category</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Requester</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Created</th>
-                        <th class="px-4 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
-                    @forelse($tickets as $index => $ticket)
-                    <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors" wire:key="ticket-{{ $ticket->id }}">
-                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400 whitespace-nowrap">
-                            {{ $tickets->firstItem() + $index }}
-                        </td>
-                        <td class="px-4 py-3 whitespace-nowrap">
-                            <div class="text-sm font-mono font-semibold text-blue-600 dark:text-blue-400">
-                                {{ $ticket->ticket_number }}
+    <!-- Tickets Grid - Cinema Ticket Style with Load More -->
+    <div class="p-6 h-full mt-6">
+
+        <!-- Grid Layout - Cinema Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
+            @forelse($tickets as $index => $ticket)
+                <div wire:key="ticket-{{ $ticket->id }}" 
+                    class="group relative bg-gradient-to-br from-white via-white to-gray-50 
+                    dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-800 
+                    rounded-[24px] shadow-md hover:shadow-2xl transition-all duration-300 
+                    overflow-hidden
+                    hover:scale-105 hover:-translate-y-1"
+
+                    style="
+                    /* ===== NOTCH (CEKUNG) ===== */
+                    -webkit-mask:
+                        radial-gradient(circle 22px at left center, transparent 98%, black 100%),
+                        radial-gradient(circle 22px at right center, transparent 98%, black 100%),
+                        linear-gradient(black, black);
+                    -webkit-mask-composite: destination-out, destination-out, source-over;
+
+                    mask:
+                        radial-gradient(circle 22px at left center, transparent 98%, black 100%),
+                        radial-gradient(circle 22px at right center, transparent 98%, black 100%),
+                        linear-gradient(black, black);
+                    mask-composite: exclude;
+
+                    /* ===== BORDER ABU-ABU ===== */
+                    box-shadow:
+                    0 0 0 2px rgba(161,161,170,0.6),
+                    0 10px 25px rgba(0,0,0,0.1);
+                ">
+                
+                <!-- HORIZONTAL DASHED PERFORATION LINE (posisi 40% dari atas - lebih ke atas) -->
+                <div class="absolute left-0 right-0 top-1/2 -translate-y-1/2 -translate-y-1/2 h-px pointer-events-none z-10">
+                    <div class="w-full h-full bg-repeat-x" 
+                        style="background-image: repeating-linear-gradient(to right, #cbd5e1 0px, #cbd5e1 8px, transparent 8px, transparent 16px);
+                                background-size: 16px 1px;
+                                height: 2px;">
+                    </div>
+                    <div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-white dark:bg-zinc-900 px-1 text-gray-400 text-xs rounded-full">
+                        ✂
+                    </div>
+                </div>
+                
+                <!-- ========== UPPER HALF (Title + Status) ========== -->
+                <div class="p-4 pb-4">
+                    <!-- Ticket Number -->
+                    <div class="text-center bg-yellow-100 dark:bg-yellow-900/30 rounded-lg py-2 px-3">
+                        <span class="block text-xs font-mono text-yellow-700 dark:text-yellow-300">
+                            TICKET NO.
+                        </span>
+                        <div class="text-sm font-mono font-bold text-yellow-800 dark:text-yellow-200">
+                            {{ $ticket->ticket_number }}
+                        </div>
+                    </div>
+                    
+                    <!-- Title -->
+                    <div class="mt-3">
+                        @php
+                            $title = $ticket->title;
+                            $isLongText = strlen($title) > 30;
+                        @endphp
+                        
+                        @if($isLongText)
+                            <div class="relative group/title inline-block w-full">
+                                <h3 class="text-base font-bold text-gray-900 dark:text-white cursor-help line-clamp-2">
+                                    {{ Str::limit($title, 30) }}
+                                </h3>
+                                <div class="absolute z-50 invisible group-hover/title:visible opacity-0 group-hover/title:opacity-100 transition-all duration-200 bottom-full left-0 mb-2 pointer-events-none">
+                                    <div class="bg-gray-900 dark:bg-gray-800 text-white rounded-lg shadow-lg px-3 py-2 text-sm whitespace-normal max-w-xs">
+                                        <div class="font-semibold text-xs text-gray-300 mb-1">🎬 Title</div>
+                                        {{ $title }}
+                                    </div>
+                                    <div class="absolute -bottom-1 left-4 w-2 h-2 bg-gray-900 dark:bg-gray-800 transform rotate-45"></div>
+                                </div>
                             </div>
-                        </td>
-                        <td class="px-4 py-3 whitespace-nowrap">
-                            @php
-                                $title = $ticket->title;
-                                $isLongText = strlen($title) > 25;
-                            @endphp
+                        @else
+                            <h3 class="text-base font-bold text-gray-900 dark:text-white">
+                                {{ $title }}
+                            </h3>
+                        @endif
+                    </div>
+                    
+                    <!-- Status & Priority -->
+                    <div class="flex gap-2 mt-3">
+                        @php
+                            $statusColors = [
+                                'Open' => 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
+                                'In Progress' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
+                                'Pending' => 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
+                                'Closed' => 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
+                            ];
+                            $statusColor = $statusColors[$ticket->status] ?? 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300';
                             
-                            @if($isLongText)
-                                <div class="relative group inline-block">
-                                    <div class="text-sm text-zinc-800 dark:text-white cursor-help border-b border-dashed border-zinc-400 dark:border-zinc-500">
-                                        {{ Str::limit($title, 25) }}
-                                    </div>
-                                    <div class="absolute z-50 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200 bottom-full left-0 mb-2 pointer-events-none">
-                                        <div class="bg-gray-900 dark:bg-gray-800 text-white rounded-lg shadow-lg px-3 py-2 text-sm whitespace-normal max-w-xs">
-                                            <div class="font-semibold text-xs text-gray-300 mb-1">Title</div>
-                                            {{ $title }}
-                                        </div>
-                                        <div class="absolute -bottom-1 left-4 w-2 h-2 bg-gray-900 dark:bg-gray-800 transform rotate-45"></div>
-                                    </div>
-                                </div>
-                            @else
-                                <div class="text-sm text-zinc-800 dark:text-white">
-                                    {{ $title }}
-                                </div>
-                            @endif
-                        </td>
-                        <td class="px-4 py-3 whitespace-nowrap">
-                            @php
-                                $statusColors = [
-                                    'Open' => 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
-                                    'In Progress' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
-                                    'Pending' => 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300',
-                                    'Closed' => 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
-                                ];
-                                $statusColor = $statusColors[$ticket->status] ?? 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300';
-                            @endphp
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $statusColor }}">
-                                {{ $ticket->status }}
-                            </span>
-                        </td>
-                        <td class="px-4 py-3 whitespace-nowrap">
-                            @php
-                                $priorityColors = [
-                                    'Low' => 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300',
-                                    'Medium' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
-                                    'Urgent' => 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
-                                    'Critical' => 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
-                                ];
-                                $priorityColor = $priorityColors[$ticket->priority] ?? 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300';
-                            @endphp
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $priorityColor }}">
-                                {{ $ticket->priority }}
-                            </span>
-                        </td>
-                        <td class="px-4 py-3 whitespace-nowrap">
+                            $priorityColors = [
+                                'Low' => 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300',
+                                'Medium' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
+                                'Urgent' => 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300',
+                                'Critical' => 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
+                            ];
+                            $priorityColor = $priorityColors[$ticket->priority] ?? 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300';
+                        @endphp
+                        
+                        <span class="flex-1 inline-flex items-center justify-center px-2 py-1 rounded-lg text-xs font-medium {{ $statusColor }}">
+                            {{ $ticket->status }}
+                        </span>
+                        
+                        <span class="flex-1 inline-flex items-center justify-center px-2 py-1 rounded-lg text-xs font-medium {{ $priorityColor }}">
+                            {{ $ticket->priority }}
+                        </span>
+                    </div>
+                </div>
+                
+                <!-- ========== LOWER HALF (Detail info - tetap di posisi bawah garis) ========== -->
+                <div class="p-4 pt-2 space-y-1 relative z-10">
+                    <div class="mt-10 space-y-0">
+                        <!-- Category -->
+                        <div class="flex items-center gap-2 text-sm">
+                            <span class="text-gray-500 dark:text-gray-400 w-20">Category :</span>
                             @php
                                 $categoryName = $ticket->category->name ?? '-';
                                 $isLongText = strlen($categoryName) > 25;
                             @endphp
                             
                             @if($isLongText && $categoryName !== '-')
-                                <div class="relative group inline-block">
-                                    <div class="text-sm text-zinc-600 dark:text-zinc-400 cursor-help border-b border-dashed border-zinc-400 dark:border-zinc-500">
+                                <div class="relative group/category inline-block flex-1">
+                                    <span class="text-gray-700 dark:text-gray-300 cursor-help line-clamp-1">
                                         {{ Str::limit($categoryName, 25) }}
-                                    </div>
-                                    <div class="absolute z-50 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200 bottom-full left-0 mb-2 pointer-events-none">
+                                    </span>
+                                    <div class="absolute z-50 invisible group-hover/category:visible opacity-0 group-hover/category:opacity-100 transition-all duration-200 bottom-full left-0 mb-2 pointer-events-none">
                                         <div class="bg-gray-900 dark:bg-gray-800 text-white rounded-lg shadow-lg px-3 py-2 text-sm whitespace-normal max-w-xs">
                                             <div class="font-semibold text-xs text-gray-300 mb-1">Category</div>
                                             {{ $categoryName }}
@@ -269,147 +307,191 @@
                                     </div>
                                 </div>
                             @else
-                                <div class="text-sm text-zinc-600 dark:text-zinc-400">
-                                    {{ $categoryName }}
-                                </div>
+                                <span class="text-gray-700 dark:text-gray-300 flex-1">{{ $categoryName }}</span>
                             @endif
-                        </td>
-                        <td class="px-4 py-3 whitespace-nowrap">
-                            <div class="text-sm">
-                                <div class="text-zinc-800 dark:text-white">{{ $ticket->creator->name ?? 'N/A' }}</div>
-                                <div class="text-xs text-zinc-500">{{ $ticket->email_user }}</div>
+                        </div>
+                        
+                        <!-- Requester -->
+                        <div class="flex items-center gap-2 text-sm">
+                            <span class="text-gray-500 dark:text-gray-400 w-20">Requester :</span>
+                            <div class="flex-1">
+                                <div class="text-gray-700 dark:text-gray-300 font-medium">{{ $ticket->creator->name ?? 'N/A' }}</div>
                             </div>
-                        </td>
-                        <td class="px-4 py-3 whitespace-nowrap">
-                            <div class="text-sm">
-                                <div class="text-zinc-600 dark:text-zinc-400">{{ $ticket->created_at->format('d M Y') }}</div>
-                                <div class="text-xs text-zinc-500">{{ $ticket->created_at->format('H:i') }}</div>
+                        </div>
+                        
+                        <div class="flex items-center justify-center gap-2 text-sm pt-2 mt-1 border-t border-dashed border-gray-200 dark:border-zinc-700 text-center">
+                            <div class="text-gray-700 dark:text-gray-300 font-mono text-xs">
+                                {{ $ticket->created_at->format('d M Y H:i') }}
                             </div>
-                        </td>
-                        <td class="px-4 py-3 text-right whitespace-nowrap">
-                            <div class="flex items-center justify-end gap-1">
-                                <!-- View - Ghost Emerald (lebih subtle) -->
-                                <flux:tooltip content="View">
-                                    <flux:button 
-                                        href="{{ route('ticket.show', $ticket->id) }}"
-                                        size="sm"
-                                        icon="eye"
-                                        variant="primary"
-                                        color="blue"
-                                        class="!p-2"
-                                        title="View ticket"
-                                    />
-                                </flux:tooltip>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Footer - Actions -->
+                <div class="p-3 bg-gray-50 dark:bg-zinc-800/50 border-t border-dashed border-gray-200 dark:border-zinc-700">
+                    <div class="flex items-center justify-around gap-1">
+                        <!-- action buttons sama seperti sebelumnya -->
+                        <flux:tooltip content="View Ticket">
+                            <flux:button href="{{ route('ticket.show', $ticket->id) }}" size="sm" icon="eye" variant="primary" color="blue" class="!p-2" />
+                        </flux:tooltip>
 
-                                <!-- PIC Approval Button - Primary Purple -->
-                                @if($ticket->approval === 'Waiting Approval' && auth()->user()->can('approve tickets', $ticket))
-                                <flux:tooltip content="PIC Approval">
-                                    <flux:button 
-                                        wire:click="openPicApprovalModal({{ $ticket->id }})"
-                                        size="sm"
-                                        icon="check-badge"
-                                        variant="primary"
-                                        color="purple"
-                                        class="!p-2"
-                                        title="PIC Approval"
-                                    />
-                                </flux:tooltip>
-                                @endif
-                                
-                                <!-- User Approval Button - Primary Teal -->
-                                @if($ticket->approval_user === 'Waiting Approval' && auth()->user()->can('check tickets', $ticket))
-                                <flux:tooltip content="User Approval">
-                                    <flux:button 
-                                        wire:click="openUserApprovalModal({{ $ticket->id }})"
-                                        size="sm"
-                                        icon="check-circle"
-                                        variant="primary"
-                                        color="teal"
-                                        class="!p-2"
-                                        title="User Approval"
-                                    />
-                                </flux:tooltip>
-                                @endif
-                                
-                                <!-- Edit - Outline Blue (lebih ringan) -->
-                                @if(!in_array($ticket->status, ['In Progress', 'Pending', 'Closed']) && $ticket->created_at > now()->subHours(24))
-                                @can('edit tickets')
-                                <flux:tooltip content="Edit">
-                                    <flux:button 
-                                        wire:click="editTicket({{ $ticket->id }})"
-                                        size="sm"
-                                        icon="pencil-square"
-                                        variant="outline"
-                                        color="blue"
-                                        class="!p-2"
-                                        title="Edit ticket"
-                                    />
-                                </flux:tooltip>
-                                @endcan
-                                @endif
-                                
-                                <!-- Delete - Primary Red -->
-                                @can('delete tickets')
-                                <flux:tooltip content="Delete">
-                                    <flux:button 
-                                        wire:click="confirmDelete({{ $ticket->id }})"
-                                        size="sm"
-                                        icon="trash"
-                                        variant="primary"
-                                        color="red"
-                                        class="!p-2"
-                                        title="Delete ticket"
-                                    />
-                                </flux:tooltip>
-                                @endcan
-                            </div>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="9" class="px-4 py-12 text-center">
-                            <div class="flex flex-col items-center gap-3">
-                                <div class="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-                                    <flux:icon name="ticket" class="w-10 h-10 text-zinc-400 dark:text-zinc-500" />
-                                </div>
-                                <div>
-                                    <h3 class="text-lg font-medium text-zinc-900 dark:text-white mb-1">
-                                        No tickets found
-                                    </h3>
-                                    <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-4">
-                                        {{ $search ? 'Try adjusting your search query' : 'Get started by creating a new ticket' }}
-                                    </p>
-                                </div>
-                                @if($search)
-                                    <flux:button wire:click="$set('search', '')" size="sm">
-                                        Clear Search
-                                    </flux:button>
-                                @else
-                                    @can('create tickets')
-                                    <flux:button 
-                                        variant="primary" 
-                                        size="sm"
-                                        wire:click="$set('showCreateModal', true)"
-                                    >
-                                        Create Your First Ticket
-                                    </flux:button>
-                                    @endcan
-                                @endif
-                            </div>
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
+                        @if($ticket->approval === 'Waiting Approval' && auth()->user()->can('approve tickets', $ticket))
+                        <flux:tooltip content="PIC Approval">
+                            <flux:button wire:click="openPicApprovalModal({{ $ticket->id }})" size="sm" icon="check-badge" variant="primary" color="purple" class="!p-2" />
+                        </flux:tooltip>
+                        @endif
+                        
+                        @if($ticket->approval_user === 'Waiting Approval' && auth()->user()->can('check tickets', $ticket))
+                        <flux:tooltip content="User Approval">
+                            <flux:button wire:click="openUserApprovalModal({{ $ticket->id }})" size="sm" icon="check-circle" variant="primary" color="teal" class="!p-2" />
+                        </flux:tooltip>
+                        @endif
+                        
+                        @if(!in_array($ticket->status, ['In Progress', 'Pending', 'Closed']) && $ticket->created_at > now()->subHours(24))
+                        @can('edit tickets')
+                        <flux:tooltip content="Edit Ticket">
+                            <flux:button wire:click="editTicket({{ $ticket->id }})" size="sm" icon="pencil-square" variant="outline" color="blue" class="!p-2" />
+                        </flux:tooltip>
+                        @endcan
+                        @endif
+                        
+                        @can('delete tickets')
+                        <flux:tooltip content="Delete Ticket">
+                            <flux:button wire:click="confirmDelete({{ $ticket->id }})" size="sm" icon="trash" variant="primary" color="red" class="!p-2" />
+                        </flux:tooltip>
+                        @endcan
+                    </div>
+                </div>
+            </div>
+            
+            @empty
+            <!-- Empty State -->
+            <div class="col-span-full">
+                <div class="flex flex-col items-center gap-3 py-12">
+                    <div class="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                        <flux:icon name="ticket" class="w-10 h-10 text-zinc-400 dark:text-zinc-500" />
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-medium text-zinc-900 dark:text-white mb-1">
+                            No tickets found
+                        </h3>
+                        <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-4">
+                            {{ $search ? 'Try adjusting your search query' : 'Get started by creating a new ticket' }}
+                        </p>
+                    </div>
+                    @if($search)
+                        <flux:button wire:click="$set('search', '')" size="sm">
+                            Clear Search
+                        </flux:button>
+                    @else
+                        @can('create tickets')
+                        <flux:button 
+                            variant="primary" 
+                            size="sm"
+                            wire:click="$set('showCreateModal', true)"
+                        >
+                            Create Your First Ticket
+                        </flux:button>
+                        @endcan
+                    @endif
+                </div>
+            </div>
+            @endforelse
         </div>
 
-        <!-- Pagination -->
-        @if($tickets->hasPages())
-        <div class="p-4 border-t border-zinc-200 dark:border-zinc-700">
-            {{ $tickets->links() }}
+        <!-- Load More Section (Custom Pagination) -->
+        @if($tickets->hasPages() && $perPage != $tickets->total())
+        <div class="mt-8 pt-6 border-t border-dashed border-zinc-200 dark:border-zinc-700">
+            <div class="flex flex-col items-center gap-4">
+                <!-- Info Text -->
+                <div class="text-center">
+                    <p class="text-sm text-gray-500 dark:text-gray-400">
+                        Showing <span class="font-semibold text-gray-700 dark:text-gray-300">{{ $tickets->firstItem() }}</span> 
+                        to <span class="font-semibold text-gray-700 dark:text-gray-300">{{ $tickets->lastItem() }}</span> 
+                        of <span class="font-semibold text-gray-700 dark:text-gray-300">{{ $tickets->total() }}</span> tickets
+                    </p>
+                </div>
+                
+                <!-- Load More Buttons -->
+                <div class="flex flex-wrap items-center justify-center gap-3">
+                    @if($tickets->onFirstPage())
+                        <button disabled class="px-4 py-2 rounded-lg bg-gray-100 dark:bg-zinc-800 text-gray-400 cursor-not-allowed">
+                            Previous
+                        </button>
+                    @else
+                        <button wire:click="previousPage" 
+                                class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-all duration-200 shadow-md hover:shadow-lg">
+                            Previous
+                        </button>
+                    @endif
+                    
+                    <!-- Quick Load More Options -->
+                    <div class="flex gap-2">
+                        <button wire:click="setPage(1)" 
+                                class="px-4 py-2 rounded-lg {{ $tickets->currentPage() == 1 ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-zinc-600' }}">
+                            1
+                        </button>
+                        
+                        @if($tickets->currentPage() > 3)
+                            <span class="px-2 py-2 text-gray-500">...</span>
+                        @endif
+                        
+                        @for($i = max(2, $tickets->currentPage() - 1); $i <= min($tickets->lastPage() - 1, $tickets->currentPage() + 1); $i++)
+                            @if($i != 1 && $i != $tickets->lastPage())
+                                <button wire:click="setPage({{ $i }})" 
+                                        class="px-4 py-2 rounded-lg {{ $tickets->currentPage() == $i ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-zinc-600' }}">
+                                    {{ $i }}
+                                </button>
+                            @endif
+                        @endfor
+                        
+                        @if($tickets->currentPage() < $tickets->lastPage() - 2)
+                            <span class="px-2 py-2 text-gray-500">...</span>
+                        @endif
+                        
+                        @if($tickets->lastPage() > 1)
+                            <button wire:click="setPage({{ $tickets->lastPage() }})" 
+                                    class="px-4 py-2 rounded-lg {{ $tickets->currentPage() == $tickets->lastPage() ? 'bg-blue-600 text-white' : 'bg-gray-200 dark:bg-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-zinc-600' }}">
+                                {{ $tickets->lastPage() }}
+                            </button>
+                        @endif
+                    </div>
+                    
+                    @if($tickets->hasMorePages())
+                        <button wire:click="nextPage" 
+                                class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white transition-all duration-200 shadow-md hover:shadow-lg">
+                            Next
+                        </button>
+                    @else
+                        <button disabled class="px-4 py-2 rounded-lg bg-gray-100 dark:bg-zinc-800 text-gray-400 cursor-not-allowed">
+                            Next
+                        </button>
+                    @endif
+                </div>
+                
+                <!-- View More Options -->
+                <div class="flex gap-2 mt-2">
+                    <button wire:click="$set('perPage', 10)" 
+                            class="px-3 py-1 text-sm rounded-lg {{ $perPage == 10 ? 'bg-purple-600 text-white' : 'bg-gray-200 dark:bg-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-zinc-600' }}">
+                        View 10
+                    </button>
+                    <button wire:click="$set('perPage', 20)" 
+                            class="px-3 py-1 text-sm rounded-lg {{ $perPage == 20 ? 'bg-purple-600 text-white' : 'bg-gray-200 dark:bg-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-zinc-600' }}">
+                        View 20
+                    </button>
+                    <button wire:click="$set('perPage', 50)" 
+                            class="px-3 py-1 text-sm rounded-lg {{ $perPage == 50 ? 'bg-purple-600 text-white' : 'bg-gray-200 dark:bg-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-zinc-600' }}">
+                        View 50
+                    </button>
+                    <button wire:click="$set('perPage', {{ $tickets->total() }})" 
+                            class="px-3 py-1 text-sm rounded-lg {{ $perPage == $tickets->total() ? 'bg-purple-600 text-white' : 'bg-gray-200 dark:bg-zinc-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-zinc-600' }}">
+                        View All
+                    </button>
+                </div>
+            </div>
         </div>
         @endif
-    </flux:card>
+    </div>
 
     <!-- MODAL CREATE TICKET -->
     @if($showCreateModal)

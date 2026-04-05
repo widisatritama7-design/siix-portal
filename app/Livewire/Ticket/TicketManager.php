@@ -86,6 +86,8 @@ class TicketManager extends Component
     public $comment_manager = '';
     public $comment_user = '';
 
+    public $perPage = 8;
+
     protected function rules()
     {
         return [
@@ -128,6 +130,7 @@ class TicketManager extends Component
 
     public function mount()
     {
+        $this->perPage = 8;
         $this->email_user = Auth::user()->email ?? '';
         $this->ticket_number = Ticket::generateTicketNumber();
         $this->updateStatusCounts();
@@ -376,7 +379,7 @@ class TicketManager extends Component
                 $query->where('approval_user', $this->userApprovalFilter);
             })
             ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->paginate($this->perPage);
 
         $categories = CategoryTicket::orderBy('name')->get();
         $statusOptions = ['Open', 'In Progress', 'Pending', 'Closed'];

@@ -400,7 +400,7 @@
                             @endcan
 
                             <!-- Sub Group: Report - Sekarang sejajar dengan menu lainnya -->
-                            @canany(['view comelate report', 'view violation report'])
+                            @canany(['export comelate report', 'export violation report'])
                             <div class="relative w-full">
                                 <button @click="toggleGroup('hrReport')" 
                                         class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
@@ -426,7 +426,7 @@
                                     <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
                                     
                                     <div class="space-y-1 ml-[24px]">
-                                        @can('view comelate report')
+                                        @can('export comelate report')
                                         <a href="{{ route('hr.comelate.report') }}" wire:navigate
                                         class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('hr.comelate.report') ? 'menu-active' : '' }}">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
@@ -435,7 +435,7 @@
                                             <span class="truncate">Comelate Report</span>
                                         </a>
                                         @endcan
-                                        @can('view violation report')
+                                        @can('export violation report')
                                         <a href="{{ route('hr.violation.report') }}" wire:navigate
                                         class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('hr.violation.report') ? 'menu-active' : '' }}">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
