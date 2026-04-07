@@ -7,6 +7,7 @@ use Livewire\WithPagination;
 use App\Models\ESD\Flooring\Flooring;
 use App\Models\ESD\Flooring\FlooringDetail;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class FlooringDetailManagement extends Component
 {
@@ -35,6 +36,12 @@ class FlooringDetailManagement extends Component
 
     public $modalTitle = 'Add New Flooring Measurement';
     public $detailToDelete = null;
+
+    // Properti untuk print
+    public $printPreview = false;
+    public $printRegisterNo = '';
+    public $printDateFrom = '';
+    public $printDateUntil = '';
 
     protected function rules()
     {
@@ -243,6 +250,105 @@ class FlooringDetailManagement extends Component
     {
         $this->detailToDelete = null;
         $this->dispatch('close-modal', 'delete-detail-modal');
+    }
+
+    /**
+     * Generate PDF untuk print
+     */
+    public function printPDF()
+    {
+        if (!auth()->user()->can('view flooring details')) {
+            $this->dispatch('notify', message: 'You do not have permission!', type: 'error');
+            return;
+        }
+
+        // Validasi minimal satu filter dipilih
+        if (empty($this->printRegisterNo) && empty($this->printDateFrom) && empty($this->printDateUntil)) {
+            $this->dispatch('notify', message: 'Please select at least one filter (Register No or Date Range)!', type: 'error');
+            return;
+        }
+
+        // Query data untuk print
+        $query = FlooringDetail::with(['flooring', 'creator']);
+
+        // Filter by Register No
+        if (!empty($this->printRegisterNo)) {
+            $query->whereHas('flooring', function ($q) {
+                $q->where('register_no', 'like', '%' . $this->printRegisterNo . '%');
+            });
+        }
+
+        // Filter by Date Range (created_at)
+        if (!empty($this->printDateFrom)) {
+            $query->whereDate('created_at', '>=', $this->printDateFrom);
+        }
+
+        if (!empty($this->printDateUntil)) {
+            $query->whereDate('created_at', '<=', $this->printDateUntil);
+        }
+
+        $details = $query->orderBy('created_at', 'desc')->get();
+
+        if ($details->isEmpty()) {
+            $this->dispatch('notify', message: 'No data found for the selected filters!', type: 'warning');
+            return;
+        }
+
+        // Data untuk PDF
+        $data = [
+            'details' => $details,
+            'title' => 'ESD Flooring Measurement Report',
+            'date_from' => $this->printDateFrom,
+            'date_until' => $this->printDateUntil,
+            'register_no' => $this->printRegisterNo,
+            'generated_by' => auth()->user()->name,
+            'generated_at' => Carbon::now()->format('d M Y H:i:s'),
+        ];
+
+        // Generate PDF
+        $pdf = Pdf::loadView('livewire.esd.flooring.flooring-detail-pdf', $data);
+        $pdf->setPaper('A4', 'landscape');
+        
+        // Download PDF
+        return response()->streamDownload(
+            function () use ($pdf) {
+                echo $pdf->output();
+            },
+            'flooring-measurement-' . Carbon::now()->format('Ymd_His') . '.pdf'
+        );
+    }
+
+    public function printPreview()
+    {
+        if (!auth()->user()->can('view flooring details')) {
+            $this->dispatch('notify', message: 'You do not have permission!', type: 'error');
+            return;
+        }
+
+        // Validasi minimal satu filter dipilih
+        if (empty($this->printRegisterNo) && empty($this->printDateFrom) && empty($this->printDateUntil)) {
+            $this->dispatch('notify', message: 'Please select at least one filter (Register No or Date Range)!', type: 'error');
+            return;
+        }
+
+        // Simpan filter ke session
+        session()->put('print_filters', [
+            'register_no' => $this->printRegisterNo,
+            'date_from' => $this->printDateFrom,
+            'date_until' => $this->printDateUntil,
+        ]);
+
+        // Dispatch event untuk membuka tab baru
+        $this->dispatch('open-print-preview');
+    }
+
+    public function resetPrintFilters()
+    {
+        $this->printRegisterNo = '';
+        $this->printDateFrom = '';
+        $this->printDateUntil = '';
+        $this->printPreview = false;
+        $this->dispatch('notify', message: 'Print filters have been reset!', type: 'success');
     }
 
     public function render()
