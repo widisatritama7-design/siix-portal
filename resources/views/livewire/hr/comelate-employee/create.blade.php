@@ -38,38 +38,53 @@
                         Employee Information
                     </h2>
                     
-                    <!-- Select Employee with Search -->
                     <div x-data="{ show: false, search: '' }" class="relative">
                         <flux:label required>Employee</flux:label>
-                        
+
+                        <!-- Input -->
                         <input 
                             type="text"
                             x-model="search"
-                            @focus="show = true"
-                            @keyup="show = true"
+                            @input="show = search.trim().length > 0"
                             placeholder="Search by NIK or name..."
-                            class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-800 dark:border-zinc-600 dark:text-white"
+                            class="w-full px-3 py-2 border border-zinc-300 rounded-lg 
+                                focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+                                dark:bg-zinc-800 dark:border-zinc-600 dark:text-white"
                         >
-                        
-                        <div x-show="show" 
+
+                        <!-- Dropdown -->
+                        <div 
+                            x-show="show"
                             x-transition
-                            @click.away="show = false"
-                            class="absolute z-50 w-full mt-1 bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-600 rounded-lg shadow-lg max-h-60 overflow-y-auto"
-                            style="display: none;">
-                            
+                            @click.outside="show = false"
+                            class="absolute z-50 w-full mt-1 bg-white dark:bg-zinc-800 
+                                border border-zinc-300 dark:border-zinc-600 rounded-lg shadow-lg 
+                                max-h-60 overflow-y-auto"
+                            style="display: none;"
+                        >
                             @foreach($this->employees as $value => $label)
                                 <div 
-                                    x-show="search === '' || '{{ $label }}'.toLowerCase().includes(search.toLowerCase()) || '{{ $value }}'.includes(search)"
-                                    @click="$wire.set('nik', '{{ $value }}'); show = false; search = '{{ $label }}'"
+                                    x-show="'{{ strtolower($label) }}'.includes(search.toLowerCase()) 
+                                            || '{{ $value }}'.includes(search)"
+                                    
+                                    @click="
+                                        $wire.set('nik', '{{ $value }}'); 
+                                        search = '{{ $label }}'; 
+                                        show = false;
+                                    "
                                     class="px-3 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-700 cursor-pointer"
                                 >
                                     <span class="text-sm">{{ $label }}</span>
                                 </div>
                             @endforeach
                         </div>
-                        
+
+                        <!-- Hidden -->
                         <input type="hidden" wire:model="nik">
-                        @error('nik') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+
+                        @error('nik') 
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p> 
+                        @enderror
                     </div>
                     
                     <!-- Name -->
