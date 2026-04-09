@@ -7,6 +7,7 @@ use Livewire\WithPagination;
 use App\Models\ESD\GB\GroundMonitorBox;
 use App\Models\ESD\GB\GroundMonitorBoxDetail;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class GroundMonitorBoxDetailManagement extends Component
 {
@@ -35,6 +36,14 @@ class GroundMonitorBoxDetailManagement extends Component
 
     public $modalTitle = 'Add New Ground Monitor Box Measurement';
     public $detailToDelete = null;
+
+    // Properti untuk print
+    public $printPreview = false;
+    public $printRegisterNo = '';
+    public $printArea = '';
+    public $printLocation = '';
+    public $printDateFrom = '';
+    public $printDateUntil = '';
 
     protected function rules()
     {
@@ -213,6 +222,101 @@ class GroundMonitorBoxDetailManagement extends Component
     {
         $this->detailToDelete = null;
         $this->dispatch('close-modal', 'delete-detail-modal');
+    }
+
+    /**
+     * Generate PDF untuk print
+     */
+    public function printPDF()
+    {
+        if (!auth()->user()->can('view ground monitor box details')) {
+            $this->dispatch('notify', message: 'You do not have permission!', type: 'error');
+            return;
+        }
+
+        // Validasi minimal satu filter dipilih
+        if (empty($this->printRegisterNo) && empty($this->printArea) && empty($this->printLocation) && empty($this->printDateFrom) && empty($this->printDateUntil)) {
+            $this->dispatch('notify', message: 'Please select at least one filter (Register No, Area, Location, or Date Range)!', type: 'error');
+            return;
+        }
+
+        // Query data untuk print
+        $query = GroundMonitorBoxDetail::with(['groundMonitorBox', 'creator']);
+
+        // Filter by Register No
+        if (!empty($this->printRegisterNo)) {
+            $query->whereHas('groundMonitorBox', function ($q) {
+                $q->where('register_no', 'like', '%' . $this->printRegisterNo . '%');
+            });
+        }
+
+        // Filter by Area
+        if (!empty($this->printArea)) {
+            $query->whereHas('groundMonitorBox', function ($q) {
+                $q->where('area', 'like', '%' . $this->printArea . '%');
+            });
+        }
+
+        // Filter by Location
+        if (!empty($this->printLocation)) {
+            $query->whereHas('groundMonitorBox', function ($q) {
+                $q->where('location', 'like', '%' . $this->printLocation . '%');
+            });
+        }
+
+        // Filter by Date Range
+        if (!empty($this->printDateFrom)) {
+            $query->whereDate('created_at', '>=', $this->printDateFrom);
+        }
+
+        if (!empty($this->printDateUntil)) {
+            $query->whereDate('created_at', '<=', $this->printDateUntil);
+        }
+
+        $details = $query->orderBy('created_at', 'desc')->get();
+
+        if ($details->isEmpty()) {
+            $this->dispatch('notify', message: 'No data found for the selected filters!', type: 'warning');
+            return;
+        }
+
+        // Data untuk PDF
+        $data = [
+            'details' => $details,
+            'title' => 'ESD GROUND MONITOR BOX MEASUREMENT REPORT',
+            'date_from' => $this->printDateFrom,
+            'date_until' => $this->printDateUntil,
+            'register_no' => $this->printRegisterNo,
+            'area' => $this->printArea,
+            'location' => $this->printLocation,
+            'generated_by' => auth()->user()->name,
+            'generated_at' => Carbon::now()->format('d M Y H:i:s'),
+            'prepared_by' => auth()->user()->name,
+            'checked_by' => null,
+            'approved_by' => null,
+        ];
+
+        // Generate PDF
+        $pdf = Pdf::loadView('livewire.esd.gb.ground-monitor-box-detail-pdf', $data);
+        $pdf->setPaper('A4', 'landscape');
+        
+        return response()->streamDownload(
+            function () use ($pdf) {
+                echo $pdf->output();
+            },
+            'ground-monitor-box-measurement-' . Carbon::now()->format('Ymd_His') . '.pdf'
+        );
+    }
+
+    public function resetPrintFilters()
+    {
+        $this->printRegisterNo = '';
+        $this->printArea = '';
+        $this->printLocation = '';
+        $this->printDateFrom = '';
+        $this->printDateUntil = '';
+        $this->printPreview = false;
+        $this->dispatch('notify', message: 'Print filters have been reset!', type: 'success');
     }
 
     public function render()

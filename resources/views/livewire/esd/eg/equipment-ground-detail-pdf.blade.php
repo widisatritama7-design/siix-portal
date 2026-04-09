@@ -36,12 +36,6 @@
             color: #1a56db;
         }
         
-        .header h3 {
-            margin: 3px 0;
-            font-size: 11pt;
-            color: #666;
-        }
-        
         .report-info {
             margin-bottom: 15px;
             padding: 8px;
@@ -74,7 +68,7 @@
             background: #1a56db;
             color: white;
             padding: 6px 4px;
-            text-align: center;  /* Diubah menjadi center */
+            text-align: center;
             border: 1px solid #ddd;
             font-weight: bold;
         }
@@ -120,39 +114,30 @@
             text-align: left;
         }
         
-        .text-right {
-            text-align: right;
-        }
-        
         .wrap-text {
             word-wrap: break-word;
             word-break: break-all;
             white-space: normal;
         }
         
-        /* Untuk mencegah teks terpotong */
-        .no-wrap {
-            white-space: nowrap;
-        }
-        
-        /* Ukuran kolom */
-        .col-no { width: 5%; }
-        .col-register { width: 12%; }
-        .col-area { width: 10%; }
-        .col-location { width: 10%; }
-        .col-b1 { width: 10%; }
-        .col-judgement { width: 6%; }
-        .col-remarks { width: 15%; }
+        .col-no { width: 3%; }
+        .col-machine { width: 12%; }
+        .col-area { width: 8%; }
+        .col-location { width: 8%; }
+        .col-ohm { width: 8%; }
+        .col-judge-ohm { width: 5%; }
+        .col-volts { width: 8%; }
+        .col-judge-volts { width: 5%; }
+        .col-remarks { width: 10%; }
         .col-date { width: 8%; }
         .col-next-date { width: 8%; }
-        .col-checked { width: 10%; }
+        .col-checked { width: 8%; }
         
         @page {
             size: A4 landscape;
             margin: 15px;
         }
         
-        /* Untuk print */
         @media print {
             body {
                 margin: 0;
@@ -161,9 +146,6 @@
             .footer {
                 position: fixed;
                 bottom: 0;
-            }
-            .page-break {
-                page-break-before: always;
             }
         }
     </style>
@@ -199,10 +181,10 @@
                                 <td>Print Date</td>
                                 <td>: {{ $generated_at }}</td>
                             </tr>
-                            @if($register_no)
+                            @if($machine_name)
                             <tr>
-                                <td>Register No Filter</td>
-                                <td colspan="3">: {{ $register_no }}</td>
+                                <td>Machine Filter</td>
+                                <td colspan="3">: {{ $machine_name }}</td>
                             </tr>
                             @endif
                             @if($date_from || $date_until)
@@ -219,6 +201,7 @@
                                 <td>Total Records</td>
                                 <td colspan="3">: {{ $details->count() }} Record(s)</td>
                             </tr>
+                        </table>
                     </td>
                     <td style="width: 50%; vertical-align: top;">
                         <table style="width: 100%;">
@@ -228,21 +211,21 @@
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
-                                    <span style="font-size: 7pt;">( {{ $prepared_by ?? '_________________' }} )</span>
+                                    <span style="font-size: 7pt;">( {{ '_________________' }} )</span>
                                 </td>
                                 <td style="text-align: center; padding: 0 10px; width: 33%;">
                                     <strong>CHECKED BY</strong><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
-                                    <span style="font-size: 7pt;">( {{ $checked_by ?? '_________________' }} )</span>
+                                    <span style="font-size: 7pt;">( {{ '_________________' }} )</span>
                                 </td>
                                 <td style="text-align: center; padding: 0 10px; width: 33%;">
                                     <strong>APPROVED BY</strong><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
-                                    <span style="font-size: 7pt;">( {{ $approved_by ?? '_________________' }} )</span>
+                                    <span style="font-size: 7pt;">( {{ '_________________' }} )</span>
                                 </td>
                             </tr>
                         </table>
@@ -250,7 +233,11 @@
                 </tr>
             </table>
             <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid #ddd; font-size: 8pt; text-align: left;">
-                <strong>STANDARD OF ESD FLOORING :</strong> ( B1 ) Point To Ground : &lt; 1.00E+9 Ohm
+                <strong>STANDARD OF ESD EQUIPMENT GROUND</strong><br>
+                <div style="margin-top: 5px; font-size: 7.5pt;">
+                    <div>• Measurement Ohm: Standard: &lt; 1.0 Ohm</div>
+                    <div>• Measurement Volts: Standard: &lt; 2.0 Volts</div>
+                </div>
             </div>
         </div>
         
@@ -258,11 +245,13 @@
             <thead>
                 <tr>
                     <th class="col-no">#</th>
-                    <th class="col-register">Register No</th>
+                    <th class="col-machine">Machine Name</th>
                     <th class="col-area">Area</th>
                     <th class="col-location">Location</th>
-                    <th class="col-b1">B1 Result</th>
-                    <th class="col-judgement">Judgement</th>
+                    <th class="col-ohm">Ohm Result</th>
+                    <th class="col-judge-ohm">Judg</th>
+                    <th class="col-volts">Volts Result</th>
+                    <th class="col-judge-volts">Judg</th>
                     <th class="col-remarks">Remarks</th>
                     <th class="col-date">Date</th>
                     <th class="col-next-date">Next Date</th>
@@ -273,13 +262,19 @@
                 @forelse($details as $index => $detail)
                 <tr>
                     <td class="text-center">{{ $index + 1 }}</td>
-                    <td class="text-center">{{ $detail->flooring->register_no ?? 'N/A' }}</td>
-                    <td class="wrap-text">{{ $detail->flooring->area ?? 'N/A' }}</td>
-                    <td class="wrap-text">{{ $detail->flooring->location ?? 'N/A' }}</td>
-                    <td class="text-center">{{ $detail->b1_scientific ?? '-' }}</td>
+                    <td class="wrap-text">{{ $detail->equipmentGround->machine_name ?? 'N/A' }}</td>
+                    <td class="wrap-text">{{ $detail->equipmentGround->area ?? 'N/A' }}</td>
+                    <td class="wrap-text">{{ $detail->equipmentGround->location ?? 'N/A' }}</td>
+                    <td class="text-center">{{ $detail->measure_results_ohm ?? '-' }} Ohm</td>
                     <td class="text-center">
-                        <span class="{{ $detail->judgement == 'OK' ? 'badge-ok' : 'badge-ng' }}">
-                            {{ $detail->judgement ?? '-' }}
+                        <span class="{{ $detail->judgement_ohm == 'OK' ? 'badge-ok' : 'badge-ng' }}">
+                            {{ $detail->judgement_ohm ?? '-' }}
+                        </span>
+                    </td>
+                    <td class="text-center">{{ $detail->measure_results_volts ?? '-' }} V</td>
+                    <td class="text-center">
+                        <span class="{{ $detail->judgement_volts == 'OK' ? 'badge-ok' : 'badge-ng' }}">
+                            {{ $detail->judgement_volts ?? '-' }}
                         </span>
                     </td>
                     <td class="wrap-text">{{ $detail->remarks ?? '-' }}</td>
@@ -289,7 +284,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="10" class="text-center" style="padding: 20px;">
+                    <td colspan="12" class="text-center" style="padding: 20px;">
                         No data found for the selected filters.
                     </td>
                 </tr>
@@ -298,7 +293,7 @@
         </table>
         
         <div class="footer" style="font-weight: bold;">
-            QR-ADM-22-K016
+            QR-ADM-22-K024
         </div>
     </div>
 </body>

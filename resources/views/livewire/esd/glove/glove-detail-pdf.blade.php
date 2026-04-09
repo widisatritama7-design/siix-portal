@@ -36,12 +36,6 @@
             color: #1a56db;
         }
         
-        .header h3 {
-            margin: 3px 0;
-            font-size: 11pt;
-            color: #666;
-        }
-        
         .report-info {
             margin-bottom: 15px;
             padding: 8px;
@@ -74,7 +68,7 @@
             background: #1a56db;
             color: white;
             padding: 6px 4px;
-            text-align: center;  /* Diubah menjadi center */
+            text-align: center;
             border: 1px solid #ddd;
             font-weight: bold;
         }
@@ -120,39 +114,28 @@
             text-align: left;
         }
         
-        .text-right {
-            text-align: right;
-        }
-        
         .wrap-text {
             word-wrap: break-word;
             word-break: break-all;
             white-space: normal;
         }
         
-        /* Untuk mencegah teks terpotong */
-        .no-wrap {
-            white-space: nowrap;
-        }
-        
-        /* Ukuran kolom */
-        .col-no { width: 5%; }
-        .col-register { width: 12%; }
-        .col-area { width: 10%; }
-        .col-location { width: 10%; }
-        .col-b1 { width: 10%; }
-        .col-judgement { width: 6%; }
-        .col-remarks { width: 15%; }
+        .col-no { width: 3%; }
+        .col-sap { width: 10%; }
+        .col-description { width: 15%; }
+        .col-delivery { width: 8%; }
+        .col-c1 { width: 10%; }
+        .col-judge { width: 5%; }
+        .col-remarks { width: 12%; }
         .col-date { width: 8%; }
         .col-next-date { width: 8%; }
-        .col-checked { width: 10%; }
+        .col-checked { width: 8%; }
         
         @page {
             size: A4 landscape;
             margin: 15px;
         }
         
-        /* Untuk print */
         @media print {
             body {
                 margin: 0;
@@ -161,9 +144,6 @@
             .footer {
                 position: fixed;
                 bottom: 0;
-            }
-            .page-break {
-                page-break-before: always;
             }
         }
     </style>
@@ -199,10 +179,22 @@
                                 <td>Print Date</td>
                                 <td>: {{ $generated_at }}</td>
                             </tr>
-                            @if($register_no)
+                            @if($sap_code)
                             <tr>
-                                <td>Register No Filter</td>
-                                <td colspan="3">: {{ $register_no }}</td>
+                                <td>SAP Code Filter</td>
+                                <td colspan="3">: {{ $sap_code }}</td>
+                            </tr>
+                            @endif
+                            @if($description)
+                            <tr>
+                                <td>Description Filter</td>
+                                <td colspan="3">: {{ $description }}</td>
+                            </tr>
+                            @endif
+                            @if($delivery)
+                            <tr>
+                                <td>Delivery Filter</td>
+                                <td colspan="3">: {{ $delivery }}</td>
                             </tr>
                             @endif
                             @if($date_from || $date_until)
@@ -219,6 +211,7 @@
                                 <td>Total Records</td>
                                 <td colspan="3">: {{ $details->count() }} Record(s)</td>
                             </tr>
+                        </table>
                     </td>
                     <td style="width: 50%; vertical-align: top;">
                         <table style="width: 100%;">
@@ -228,21 +221,21 @@
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
-                                    <span style="font-size: 7pt;">( {{ $prepared_by ?? '_________________' }} )</span>
+                                    <span style="font-size: 7pt;">( {{ '_________________' }} )</span>
                                 </td>
                                 <td style="text-align: center; padding: 0 10px; width: 33%;">
                                     <strong>CHECKED BY</strong><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
-                                    <span style="font-size: 7pt;">( {{ $checked_by ?? '_________________' }} )</span>
+                                    <span style="font-size: 7pt;">( {{ '_________________' }} )</span>
                                 </td>
                                 <td style="text-align: center; padding: 0 10px; width: 33%;">
                                     <strong>APPROVED BY</strong><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
-                                    <span style="font-size: 7pt;">( {{ $approved_by ?? '_________________' }} )</span>
+                                    <span style="font-size: 7pt;">( {{ '_________________' }} )</span>
                                 </td>
                             </tr>
                         </table>
@@ -250,7 +243,10 @@
                 </tr>
             </table>
             <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid #ddd; font-size: 8pt; text-align: left;">
-                <strong>STANDARD OF ESD FLOORING :</strong> ( B1 ) Point To Ground : &lt; 1.00E+9 Ohm
+                <strong>STANDARD ESD OF GLOVE</strong><br>
+                <div style="margin-top: 5px; font-size: 7.5pt;">
+                    <div>( C1 ) Glove Point to Ground Resistance Test : &lt; 3.50E+7 Ohm</div>
+                </div>
             </div>
         </div>
         
@@ -258,11 +254,11 @@
             <thead>
                 <tr>
                     <th class="col-no">#</th>
-                    <th class="col-register">Register No</th>
-                    <th class="col-area">Area</th>
-                    <th class="col-location">Location</th>
-                    <th class="col-b1">B1 Result</th>
-                    <th class="col-judgement">Judgement</th>
+                    <th class="col-sap">SAP Code</th>
+                    <th class="col-description">Description</th>
+                    <th class="col-delivery">Delivery</th>
+                    <th class="col-c1">C1 Result</th>
+                    <th class="col-judge">Judgement</th>
                     <th class="col-remarks">Remarks</th>
                     <th class="col-date">Date</th>
                     <th class="col-next-date">Next Date</th>
@@ -273,10 +269,10 @@
                 @forelse($details as $index => $detail)
                 <tr>
                     <td class="text-center">{{ $index + 1 }}</td>
-                    <td class="text-center">{{ $detail->flooring->register_no ?? 'N/A' }}</td>
-                    <td class="wrap-text">{{ $detail->flooring->area ?? 'N/A' }}</td>
-                    <td class="wrap-text">{{ $detail->flooring->location ?? 'N/A' }}</td>
-                    <td class="text-center">{{ $detail->b1_scientific ?? '-' }}</td>
+                    <td class="text-center">{{ $detail->glove->sap_code ?? 'N/A' }}</td>
+                    <td class="wrap-text">{{ $detail->glove->description ?? 'N/A' }}</td>
+                    <td class="text-center">{{ $detail->glove->delivery ?? '-' }}</td>
+                    <td class="text-center">{{ $detail->c1_scientific ?? '-' }}</td>
                     <td class="text-center">
                         <span class="{{ $detail->judgement == 'OK' ? 'badge-ok' : 'badge-ng' }}">
                             {{ $detail->judgement ?? '-' }}
@@ -298,7 +294,7 @@
         </table>
         
         <div class="footer" style="font-weight: bold;">
-            QR-ADM-22-K016
+            QR-ADM-24-K013
         </div>
     </div>
 </body>

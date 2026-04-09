@@ -7,6 +7,7 @@ use Livewire\WithPagination;
 use App\Models\ESD\EG\EquipmentGround;
 use App\Models\ESD\EG\EquipmentGroundDetail;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class EquipmentGroundDetailManagement extends Component
 {
@@ -38,6 +39,14 @@ class EquipmentGroundDetailManagement extends Component
     public $modalTitle = 'Add New Measurement Detail';
     public $detailToDelete = null;
 
+    // Properti untuk print
+    public $printPreview = false;
+    public $printMachineName = '';
+    public $printArea = '';
+    public $printLocation = '';
+    public $printDateFrom = '';
+    public $printDateUntil = '';
+
     protected function rules()
     {
         return [
@@ -66,12 +75,18 @@ class EquipmentGroundDetailManagement extends Component
 
     public function resetJudgement()
     {
-        if ($this->measure_results_ohm !== null) {
+        // Standard Ohm: < 1.00 Ohm
+        if ($this->measure_results_ohm !== null && $this->measure_results_ohm !== '') {
             $this->judgement_ohm = floatval($this->measure_results_ohm) >= 1.00 ? 'NG' : 'OK';
+        } else {
+            $this->judgement_ohm = null;
         }
         
-        if ($this->measure_results_volts !== null) {
+        // Standard Volts: < 2.00 Volts
+        if ($this->measure_results_volts !== null && $this->measure_results_volts !== '') {
             $this->judgement_volts = floatval($this->measure_results_volts) >= 2.00 ? 'NG' : 'OK';
+        } else {
+            $this->judgement_volts = null;
         }
     }
 
@@ -143,6 +158,8 @@ class EquipmentGroundDetailManagement extends Component
         }
 
         $this->validate();
+
+        $this->resetJudgement();
 
         $data = [
             'equipment_ground_id' => $this->equipment_ground_id,
@@ -246,6 +263,101 @@ class EquipmentGroundDetailManagement extends Component
     {
         $this->detailToDelete = null;
         $this->dispatch('close-modal', 'delete-detail-modal');
+    }
+
+    /**
+     * Generate PDF untuk print
+     */
+    public function printPDF()
+    {
+        if (!auth()->user()->can('view equipment ground details')) {
+            $this->dispatch('notify', message: 'You do not have permission!', type: 'error');
+            return;
+        }
+
+        // Validasi minimal satu filter dipilih
+        if (empty($this->printMachineName) && empty($this->printArea) && empty($this->printLocation) && empty($this->printDateFrom) && empty($this->printDateUntil)) {
+            $this->dispatch('notify', message: 'Please select at least one filter (Machine Name, Area, Location, or Date Range)!', type: 'error');
+            return;
+        }
+
+        // Query data untuk print
+        $query = EquipmentGroundDetail::with(['equipmentGround', 'creator']);
+
+        // Filter by Machine Name
+        if (!empty($this->printMachineName)) {
+            $query->whereHas('equipmentGround', function ($q) {
+                $q->where('machine_name', 'like', '%' . $this->printMachineName . '%');
+            });
+        }
+
+        // Filter by Area
+        if (!empty($this->printArea)) {
+            $query->whereHas('equipmentGround', function ($q) {
+                $q->where('area', 'like', '%' . $this->printArea . '%');
+            });
+        }
+
+        // Filter by Location
+        if (!empty($this->printLocation)) {
+            $query->whereHas('equipmentGround', function ($q) {
+                $q->where('location', 'like', '%' . $this->printLocation . '%');
+            });
+        }
+
+        // Filter by Date Range
+        if (!empty($this->printDateFrom)) {
+            $query->whereDate('created_at', '>=', $this->printDateFrom);
+        }
+
+        if (!empty($this->printDateUntil)) {
+            $query->whereDate('created_at', '<=', $this->printDateUntil);
+        }
+
+        $details = $query->orderBy('created_at', 'desc')->get();
+
+        if ($details->isEmpty()) {
+            $this->dispatch('notify', message: 'No data found for the selected filters!', type: 'warning');
+            return;
+        }
+
+        // Data untuk PDF
+        $data = [
+            'details' => $details,
+            'title' => 'ESD EQUIPMENT GROUND MEASUREMENT REPORT',
+            'date_from' => $this->printDateFrom,
+            'date_until' => $this->printDateUntil,
+            'machine_name' => $this->printMachineName,
+            'area' => $this->printArea,
+            'location' => $this->printLocation,
+            'generated_by' => auth()->user()->name,
+            'generated_at' => Carbon::now()->format('d M Y H:i:s'),
+            'prepared_by' => auth()->user()->name,
+            'checked_by' => null,
+            'approved_by' => null,
+        ];
+
+        // Generate PDF
+        $pdf = Pdf::loadView('livewire.esd.eg.equipment-ground-detail-pdf', $data);
+        $pdf->setPaper('A4', 'landscape');
+        
+        return response()->streamDownload(
+            function () use ($pdf) {
+                echo $pdf->output();
+            },
+            'equipment-ground-measurement-' . Carbon::now()->format('Ymd_His') . '.pdf'
+        );
+    }
+
+    public function resetPrintFilters()
+    {
+        $this->printMachineName = '';
+        $this->printArea = '';
+        $this->printLocation = '';
+        $this->printDateFrom = '';
+        $this->printDateUntil = '';
+        $this->printPreview = false;
+        $this->dispatch('notify', message: 'Print filters have been reset!', type: 'success');
     }
 
     public function render()

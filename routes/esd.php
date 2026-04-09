@@ -119,6 +119,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::livewire('esd/materials', MaterialManagement::class)->name('esd.materials');
     Route::livewire('esd/transactions', TransactionManagement::class)->name('esd.transactions');
 
+    // Event Calendar
+    Route::get('/esd/events', EventCalendar::class)->name('esd.events');
+    Route::get('/esd/events/create', [EventController::class, 'create'])->name('esd.events.create');
+    Route::get('/calendar-events', [EventController::class, 'getEvents']);
+
     // Insulatif Check
     Route::livewire('esd/insulatif-checks', InsulatifCheckManagement::class)->name('esd.insulatif-checks');
 
@@ -130,11 +135,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Locker
     Route::livewire('esd/lockers', LockerStatusManagement::class)->name('esd.lockers');
-
-    // Event Calendar
-    Route::get('/esd/events', EventCalendar::class)->name('esd.events');
-    Route::get('/esd/events/create', [EventController::class, 'create'])->name('esd.events.create');
-    Route::get('/calendar-events', [EventController::class, 'getEvents']);
 
     // ESD Calendar
     Route::get('/esd/calendar', EsdCalendar::class)->name('esd.calendar');

@@ -36,12 +36,6 @@
             color: #1a56db;
         }
         
-        .header h3 {
-            margin: 3px 0;
-            font-size: 11pt;
-            color: #666;
-        }
-        
         .report-info {
             margin-bottom: 15px;
             padding: 8px;
@@ -67,14 +61,14 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
-            font-size: 8pt;
+            font-size: 7pt;
         }
         
         table.data-table th {
             background: #1a56db;
             color: white;
             padding: 6px 4px;
-            text-align: center;  /* Diubah menjadi center */
+            text-align: center;
             border: 1px solid #ddd;
             font-weight: bold;
         }
@@ -120,39 +114,33 @@
             text-align: left;
         }
         
-        .text-right {
-            text-align: right;
-        }
-        
         .wrap-text {
             word-wrap: break-word;
             word-break: break-all;
             white-space: normal;
         }
         
-        /* Untuk mencegah teks terpotong */
-        .no-wrap {
-            white-space: nowrap;
-        }
-        
-        /* Ukuran kolom */
-        .col-no { width: 5%; }
-        .col-register { width: 12%; }
-        .col-area { width: 10%; }
-        .col-location { width: 10%; }
-        .col-b1 { width: 10%; }
-        .col-judgement { width: 6%; }
-        .col-remarks { width: 15%; }
-        .col-date { width: 8%; }
-        .col-next-date { width: 8%; }
-        .col-checked { width: 10%; }
+        .col-no { width: 3%; }
+        .col-nik { width: 8%; }
+        .col-name { width: 10%; }
+        .col-d1 { width: 8%; }
+        .col-judge1 { width: 5%; }
+        .col-d2 { width: 8%; }
+        .col-judge2 { width: 5%; }
+        .col-d3 { width: 8%; }
+        .col-judge3 { width: 5%; }
+        .col-d4 { width: 8%; }
+        .col-judge4 { width: 5%; }
+        .col-remarks { width: 10%; }
+        .col-date { width: 6%; }
+        .col-next-date { width: 6%; }
+        .col-checked { width: 8%; }
         
         @page {
             size: A4 landscape;
             margin: 15px;
         }
         
-        /* Untuk print */
         @media print {
             body {
                 margin: 0;
@@ -161,9 +149,6 @@
             .footer {
                 position: fixed;
                 bottom: 0;
-            }
-            .page-break {
-                page-break-before: always;
             }
         }
     </style>
@@ -183,7 +168,7 @@
                         <img src="{{ public_path('images/esd-logo.png') }}" alt="ESD Logo" style="height: 50px; width: auto;">
                     </td>
                 </tr>
-            </table>
+            ?</table>
         </div>
         
         <div class="report-info">
@@ -199,10 +184,16 @@
                                 <td>Print Date</td>
                                 <td>: {{ $generated_at }}</td>
                             </tr>
-                            @if($register_no)
+                            @if($nik)
                             <tr>
-                                <td>Register No Filter</td>
-                                <td colspan="3">: {{ $register_no }}</td>
+                                <td>NIK Filter</td>
+                                <td colspan="3">: {{ $nik }}</td>
+                            </tr>
+                            @endif
+                            @if($name)
+                            <tr>
+                                <td>Name Filter</td>
+                                <td colspan="3">: {{ $name }}</td>
                             </tr>
                             @endif
                             @if($date_from || $date_until)
@@ -219,6 +210,7 @@
                                 <td>Total Records</td>
                                 <td colspan="3">: {{ $details->count() }} Record(s)</td>
                             </tr>
+                        ?</table>
                     </td>
                     <td style="width: 50%; vertical-align: top;">
                         <table style="width: 100%;">
@@ -228,21 +220,21 @@
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
-                                    <span style="font-size: 7pt;">( {{ $prepared_by ?? '_________________' }} )</span>
+                                    <span style="font-size: 7pt;">( {{ '_________________' }} )</span>
                                 </td>
                                 <td style="text-align: center; padding: 0 10px; width: 33%;">
                                     <strong>CHECKED BY</strong><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
-                                    <span style="font-size: 7pt;">( {{ $checked_by ?? '_________________' }} )</span>
+                                    <span style="font-size: 7pt;">( {{ '_________________' }} )</span>
                                 </td>
                                 <td style="text-align: center; padding: 0 10px; width: 33%;">
                                     <strong>APPROVED BY</strong><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
-                                    <span style="font-size: 7pt;">( {{ $approved_by ?? '_________________' }} )</span>
+                                    <span style="font-size: 7pt;">( {{ '_________________' }} )</span>
                                 </td>
                             </tr>
                         </table>
@@ -250,7 +242,13 @@
                 </tr>
             </table>
             <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid #ddd; font-size: 8pt; text-align: left;">
-                <strong>STANDARD OF ESD FLOORING :</strong> ( B1 ) Point To Ground : &lt; 1.00E+9 Ohm
+                <strong>STANDARD ESD OF STATIC CONTROL GARMENT</strong><br>
+                <div style="margin-top: 5px; font-size: 7.5pt;">
+                    <div>( D1 ) Shirt Point To Point : < 1.00E+11 Ohm</div>
+                    <div>( D2 ) Pants Point To Point : < 1.00E+11 Ohm</div>
+                    <div>( D3 ) Cap Point To Point : < 1.00E+11 Ohm</div>
+                    <div>( D4 ) Hijab Point To Point : < 1.00E+11 Ohm</div>
+                </div>
             </div>
         </div>
         
@@ -258,11 +256,16 @@
             <thead>
                 <tr>
                     <th class="col-no">#</th>
-                    <th class="col-register">Register No</th>
-                    <th class="col-area">Area</th>
-                    <th class="col-location">Location</th>
-                    <th class="col-b1">B1 Result</th>
-                    <th class="col-judgement">Judgement</th>
+                    <th class="col-nik">NIK</th>
+                    <th class="col-name">Name</th>
+                    <th class="col-d1">Shirt (D1)</th>
+                    <th class="col-judge1">Judg</th>
+                    <th class="col-d2">Pants (D2)</th>
+                    <th class="col-judge2">Judg</th>
+                    <th class="col-d3">Cap (D3)</th>
+                    <th class="col-judge3">Judg</th>
+                    <th class="col-d4">Hijab (D4)</th>
+                    <th class="col-judge4">Judg</th>
                     <th class="col-remarks">Remarks</th>
                     <th class="col-date">Date</th>
                     <th class="col-next-date">Next Date</th>
@@ -273,13 +276,30 @@
                 @forelse($details as $index => $detail)
                 <tr>
                     <td class="text-center">{{ $index + 1 }}</td>
-                    <td class="text-center">{{ $detail->flooring->register_no ?? 'N/A' }}</td>
-                    <td class="wrap-text">{{ $detail->flooring->area ?? 'N/A' }}</td>
-                    <td class="wrap-text">{{ $detail->flooring->location ?? 'N/A' }}</td>
-                    <td class="text-center">{{ $detail->b1_scientific ?? '-' }}</td>
+                    <td class="text-center">{{ $detail->garment->nik ?? $detail->nik }}</td>
+                    <td class="wrap-text">{{ $detail->garment->name ?? $detail->name }}</td>
+                    <td class="text-center">{{ $detail->d1_scientific ?? '-' }}</td>
                     <td class="text-center">
-                        <span class="{{ $detail->judgement == 'OK' ? 'badge-ok' : 'badge-ng' }}">
-                            {{ $detail->judgement ?? '-' }}
+                        <span class="{{ $detail->judgement_d1 == 'OK' ? 'badge-ok' : 'badge-ng' }}">
+                            {{ $detail->judgement_d1 ?? '-' }}
+                        </span>
+                    </td>
+                    <td class="text-center">{{ $detail->d2_scientific ?? '-' }}</td>
+                    <td class="text-center">
+                        <span class="{{ $detail->judgement_d2 == 'OK' ? 'badge-ok' : 'badge-ng' }}">
+                            {{ $detail->judgement_d2 ?? '-' }}
+                        </span>
+                    </td>
+                    <td class="text-center">{{ $detail->d3_scientific ?? '-' }}</td>
+                    <td class="text-center">
+                        <span class="{{ $detail->judgement_d3 == 'OK' ? 'badge-ok' : 'badge-ng' }}">
+                            {{ $detail->judgement_d3 ?? '-' }}
+                        </span>
+                    </td>
+                    <td class="text-center">{{ $detail->d4_scientific ?? '-' }}</td>
+                    <td class="text-center">
+                        <span class="{{ $detail->judgement_d4 == 'OK' ? 'badge-ok' : 'badge-ng' }}">
+                            {{ $detail->judgement_d4 ?? '-' }}
                         </span>
                     </td>
                     <td class="wrap-text">{{ $detail->remarks ?? '-' }}</td>
@@ -289,7 +309,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="10" class="text-center" style="padding: 20px;">
+                    <td colspan="15" class="text-center" style="padding: 20px;">
                         No data found for the selected filters.
                     </td>
                 </tr>
@@ -298,7 +318,7 @@
         </table>
         
         <div class="footer" style="font-weight: bold;">
-            QR-ADM-22-K016
+            QR-ADM-22-K020
         </div>
     </div>
 </body>

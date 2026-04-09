@@ -7,6 +7,7 @@ use Livewire\WithPagination;
 use App\Models\ESD\Glove\Glove;
 use App\Models\ESD\Glove\GloveDetail;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class GloveDetailManagement extends Component
 {
@@ -37,11 +38,19 @@ class GloveDetailManagement extends Component
     public $modalTitle = 'Add New Glove Measurement';
     public $detailToDelete = null;
 
+    // Properti untuk print
+    public $printPreview = false;
+    public $printSapCode = '';
+    public $printDescription = '';
+    public $printDelivery = '';
+    public $printDateFrom = '';
+    public $printDateUntil = '';
+
     protected function rules()
     {
         return [
             'glove_id' => 'required|exists:tb_esd_gloves,id',
-            'c1' => 'nullable|numeric', // hapus required, min
+            'c1' => 'nullable|numeric',
             'remarks' => 'nullable|string|max:255',
             'next_date' => 'nullable|date',
         ];
@@ -69,6 +78,9 @@ class GloveDetailManagement extends Component
             $this->judgement = floatval($this->c1) >= 35000000 ? 'NG' : 'OK';
             // Convert to scientific notation with 2 decimal places
             $this->c1_scientific = sprintf('%.2E', floatval($this->c1));
+        } else {
+            $this->judgement = null;
+            $this->c1_scientific = null;
         }
     }
 
@@ -236,6 +248,101 @@ class GloveDetailManagement extends Component
     {
         $this->detailToDelete = null;
         $this->dispatch('close-modal', 'delete-detail-modal');
+    }
+
+    /**
+     * Generate PDF untuk print
+     */
+    public function printPDF()
+    {
+        if (!auth()->user()->can('view glove details')) {
+            $this->dispatch('notify', message: 'You do not have permission!', type: 'error');
+            return;
+        }
+
+        // Validasi minimal satu filter dipilih
+        if (empty($this->printSapCode) && empty($this->printDescription) && empty($this->printDelivery) && empty($this->printDateFrom) && empty($this->printDateUntil)) {
+            $this->dispatch('notify', message: 'Please select at least one filter (SAP Code, Description, Delivery, or Date Range)!', type: 'error');
+            return;
+        }
+
+        // Query data untuk print
+        $query = GloveDetail::with(['glove', 'creator']);
+
+        // Filter by SAP Code
+        if (!empty($this->printSapCode)) {
+            $query->whereHas('glove', function ($q) {
+                $q->where('sap_code', 'like', '%' . $this->printSapCode . '%');
+            });
+        }
+
+        // Filter by Description
+        if (!empty($this->printDescription)) {
+            $query->whereHas('glove', function ($q) {
+                $q->where('description', 'like', '%' . $this->printDescription . '%');
+            });
+        }
+
+        // Filter by Delivery
+        if (!empty($this->printDelivery)) {
+            $query->whereHas('glove', function ($q) {
+                $q->where('delivery', 'like', '%' . $this->printDelivery . '%');
+            });
+        }
+
+        // Filter by Date Range
+        if (!empty($this->printDateFrom)) {
+            $query->whereDate('created_at', '>=', $this->printDateFrom);
+        }
+
+        if (!empty($this->printDateUntil)) {
+            $query->whereDate('created_at', '<=', $this->printDateUntil);
+        }
+
+        $details = $query->orderBy('created_at', 'desc')->get();
+
+        if ($details->isEmpty()) {
+            $this->dispatch('notify', message: 'No data found for the selected filters!', type: 'warning');
+            return;
+        }
+
+        // Data untuk PDF
+        $data = [
+            'details' => $details,
+            'title' => 'ESD GLOVE MEASUREMENT REPORT',
+            'date_from' => $this->printDateFrom,
+            'date_until' => $this->printDateUntil,
+            'sap_code' => $this->printSapCode,
+            'description' => $this->printDescription,
+            'delivery' => $this->printDelivery,
+            'generated_by' => auth()->user()->name,
+            'generated_at' => Carbon::now()->format('d M Y H:i:s'),
+            'prepared_by' => auth()->user()->name,
+            'checked_by' => null,
+            'approved_by' => null,
+        ];
+
+        // Generate PDF
+        $pdf = Pdf::loadView('livewire.esd.glove.glove-detail-pdf', $data);
+        $pdf->setPaper('A4', 'landscape');
+        
+        return response()->streamDownload(
+            function () use ($pdf) {
+                echo $pdf->output();
+            },
+            'glove-measurement-' . Carbon::now()->format('Ymd_His') . '.pdf'
+        );
+    }
+
+    public function resetPrintFilters()
+    {
+        $this->printSapCode = '';
+        $this->printDescription = '';
+        $this->printDelivery = '';
+        $this->printDateFrom = '';
+        $this->printDateUntil = '';
+        $this->printPreview = false;
+        $this->dispatch('notify', message: 'Print filters have been reset!', type: 'success');
     }
 
     public function render()

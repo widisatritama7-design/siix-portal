@@ -247,69 +247,6 @@
             $gt30minPercent = round(($gt30min / $totalActivities) * 100);
         @endphp
 
-        <!-- Stats Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-2">
-            <!-- Your Status Card -->
-            <flux:card class="p-6 bg-gradient-to-br from-emerald-50 to-emerald-100 dark:from-emerald-900/20 dark:to-emerald-800/20 border-emerald-200 dark:border-emerald-800 shadow-lg hover:shadow-xl transition-all duration-300">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <flux:heading size="sm" class="text-emerald-700 dark:text-emerald-300">Your Status</flux:heading>
-                        <flux:heading size="xl" class="mt-1 text-emerald-800 dark:text-emerald-200">
-                            @if($activeNow)
-                                <span class="flex items-center gap-2">
-                                    Active Now
-                                    <span class="relative flex h-3 w-3">
-                                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                                        <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
-                                    </span>
-                                </span>
-                            @else
-                                Inactive
-                            @endif
-                        </flux:heading>
-                        <p class="text-xs text-emerald-600 dark:text-emerald-400 mt-1">
-                            @if($lastLogin)
-                                Last login: {{ \Carbon\Carbon::parse($lastLogin->login_at)->setTimezone('Asia/Jakarta')->diffForHumans() }}
-                            @endif
-                        </p>
-                    </div>
-                    <div class="p-3 bg-emerald-200 dark:bg-emerald-800 rounded-lg">
-                        <flux:icon name="user" class="w-5 h-5 text-emerald-700 dark:text-emerald-200" />
-                    </div>
-                </div>
-            </flux:card>
-
-            <!-- Today's Activities Card -->
-            <flux:card class="p-6 bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-800/20 border-blue-200 dark:border-blue-800 shadow-lg hover:shadow-xl transition-all duration-300">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <flux:heading size="sm" class="text-blue-700 dark:text-blue-300">Session's Activities</flux:heading>
-                        <flux:heading size="xl" class="mt-1 text-blue-800 dark:text-blue-200">{{ $todayActivities }}</flux:heading>
-                        <p class="text-xs text-blue-600 dark:text-blue-400 mt-1">
-                            {{ $todayPageViews }} page views, {{ $todaySessions }} sessions
-                        </p>
-                    </div>
-                    <div class="p-3 bg-blue-200 dark:bg-blue-800 rounded-lg">
-                        <flux:icon name="arrow-trending-up" class="w-5 h-5 text-blue-700 dark:text-blue-200" />
-                    </div>
-                </div>
-            </flux:card>
-
-            <!-- Pages Visited Card -->
-            <flux:card class="p-6 bg-gradient-to-br from-amber-50 to-amber-100 dark:from-amber-900/20 dark:to-amber-800/20 border-amber-200 dark:border-amber-800 shadow-lg hover:shadow-xl transition-all duration-300">
-                <div class="flex items-center justify-between">
-                    <div>
-                        <flux:heading size="sm" class="text-amber-700 dark:text-amber-300">Pages Visited</flux:heading>
-                        <flux:heading size="xl" class="mt-1 text-amber-800 dark:text-amber-200">{{ $uniquePagesToday }}</flux:heading>
-                        <p class="text-xs text-amber-600 dark:text-amber-400 mt-1">Unique pages today</p>
-                    </div>
-                    <div class="p-3 bg-amber-200 dark:bg-amber-800 rounded-lg">
-                        <flux:icon name="document-text" class="w-5 h-5 text-amber-700 dark:text-amber-200" />
-                    </div>
-                </div>
-            </flux:card>
-        </div>
-
         <!-- Recent Activity and Session Stats -->
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
             <!-- Recent Activity Timeline -->

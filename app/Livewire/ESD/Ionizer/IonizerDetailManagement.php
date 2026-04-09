@@ -7,6 +7,7 @@ use Livewire\WithPagination;
 use App\Models\ESD\Ionizer\Ionizer;
 use App\Models\ESD\Ionizer\IonizerDetail;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class IonizerDetailManagement extends Component
 {
@@ -53,6 +54,14 @@ class IonizerDetailManagement extends Component
 
     public $modalTitle = 'Add New Ionizer Measurement';
     public $detailToDelete = null;
+
+    // Properti untuk print
+    public $printPreview = false;
+    public $printRegisterNo = '';
+    public $printArea = '';
+    public $printLocation = '';
+    public $printDateFrom = '';
+    public $printDateUntil = '';
 
     protected function rules()
     {
@@ -104,39 +113,45 @@ class IonizerDetailManagement extends Component
     public function resetJudgements()
     {
         // C1 Before Judgement (< 8.0)
-        // OK if value < 8.0 (max 7.9), NG if value >= 8.0
         if ($this->c1_before !== null && $this->c1_before !== '') {
             $this->judgement_c1_before = floatval($this->c1_before) >= 8.0 ? 'NG' : 'OK';
+        } else {
+            $this->judgement_c1_before = null;
         }
         
         // C2 Before Judgement (< 8.0)
-        // OK if value < 8.0 (max 7.9), NG if value >= 8.0
         if ($this->c2_before !== null && $this->c2_before !== '') {
             $this->judgement_c2_before = floatval($this->c2_before) >= 8.0 ? 'NG' : 'OK';
+        } else {
+            $this->judgement_c2_before = null;
         }
         
         // C3 Before Judgement (± 35)
-        // OK if value between -34.9 and 34.9, NG if value <= -35 or >= 35
         if ($this->c3_before !== null && $this->c3_before !== '') {
             $this->judgement_c3_before = (floatval($this->c3_before) <= -35.0 || floatval($this->c3_before) >= 35.0) ? 'NG' : 'OK';
+        } else {
+            $this->judgement_c3_before = null;
         }
         
         // C1 Judgement (< 8.0)
-        // OK if value < 8.0 (max 7.9), NG if value >= 8.0
         if ($this->c1 !== null && $this->c1 !== '') {
             $this->judgement_c1 = floatval($this->c1) >= 8.0 ? 'NG' : 'OK';
+        } else {
+            $this->judgement_c1 = null;
         }
         
         // C2 Judgement (< 8.0)
-        // OK if value < 8.0 (max 7.9), NG if value >= 8.0
         if ($this->c2 !== null && $this->c2 !== '') {
             $this->judgement_c2 = floatval($this->c2) >= 8.0 ? 'NG' : 'OK';
+        } else {
+            $this->judgement_c2 = null;
         }
         
         // C3 Judgement (± 35)
-        // OK if value between -34.9 and 34.9, NG if value <= -35 or >= 35
         if ($this->c3 !== null && $this->c3 !== '') {
             $this->judgement_c3 = (floatval($this->c3) <= -35.0 || floatval($this->c3) >= 35.0) ? 'NG' : 'OK';
+        } else {
+            $this->judgement_c3 = null;
         }
     }
 
@@ -364,6 +379,101 @@ class IonizerDetailManagement extends Component
     {
         $this->detailToDelete = null;
         $this->dispatch('close-modal', 'delete-detail-modal');
+    }
+
+    /**
+     * Generate PDF untuk print
+     */
+    public function printPDF()
+    {
+        if (!auth()->user()->can('view ionizer details')) {
+            $this->dispatch('notify', message: 'You do not have permission!', type: 'error');
+            return;
+        }
+
+        // Validasi minimal satu filter dipilih
+        if (empty($this->printRegisterNo) && empty($this->printArea) && empty($this->printLocation) && empty($this->printDateFrom) && empty($this->printDateUntil)) {
+            $this->dispatch('notify', message: 'Please select at least one filter (Register No, Area, Location, or Date Range)!', type: 'error');
+            return;
+        }
+
+        // Query data untuk print
+        $query = IonizerDetail::with(['ionizer', 'creator']);
+
+        // Filter by Register No
+        if (!empty($this->printRegisterNo)) {
+            $query->whereHas('ionizer', function ($q) {
+                $q->where('register_no', 'like', '%' . $this->printRegisterNo . '%');
+            });
+        }
+
+        // Filter by Area
+        if (!empty($this->printArea)) {
+            $query->whereHas('ionizer', function ($q) {
+                $q->where('area', 'like', '%' . $this->printArea . '%');
+            });
+        }
+
+        // Filter by Location
+        if (!empty($this->printLocation)) {
+            $query->whereHas('ionizer', function ($q) {
+                $q->where('location', 'like', '%' . $this->printLocation . '%');
+            });
+        }
+
+        // Filter by Date Range
+        if (!empty($this->printDateFrom)) {
+            $query->whereDate('created_at', '>=', $this->printDateFrom);
+        }
+
+        if (!empty($this->printDateUntil)) {
+            $query->whereDate('created_at', '<=', $this->printDateUntil);
+        }
+
+        $details = $query->orderBy('created_at', 'desc')->get();
+
+        if ($details->isEmpty()) {
+            $this->dispatch('notify', message: 'No data found for the selected filters!', type: 'warning');
+            return;
+        }
+
+        // Data untuk PDF
+        $data = [
+            'details' => $details,
+            'title' => 'ESD IONIZER MEASUREMENT REPORT',
+            'date_from' => $this->printDateFrom,
+            'date_until' => $this->printDateUntil,
+            'register_no' => $this->printRegisterNo,
+            'area' => $this->printArea,
+            'location' => $this->printLocation,
+            'generated_by' => auth()->user()->name,
+            'generated_at' => Carbon::now()->format('d M Y H:i:s'),
+            'prepared_by' => auth()->user()->name,
+            'checked_by' => null,
+            'approved_by' => null,
+        ];
+
+        // Generate PDF
+        $pdf = Pdf::loadView('livewire.esd.ionizer.ionizer-detail-pdf', $data);
+        $pdf->setPaper('A4', 'landscape');
+        
+        return response()->streamDownload(
+            function () use ($pdf) {
+                echo $pdf->output();
+            },
+            'ionizer-measurement-' . Carbon::now()->format('Ymd_His') . '.pdf'
+        );
+    }
+
+    public function resetPrintFilters()
+    {
+        $this->printRegisterNo = '';
+        $this->printArea = '';
+        $this->printLocation = '';
+        $this->printDateFrom = '';
+        $this->printDateUntil = '';
+        $this->printPreview = false;
+        $this->dispatch('notify', message: 'Print filters have been reset!', type: 'success');
     }
 
     public function render()

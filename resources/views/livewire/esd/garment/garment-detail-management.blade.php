@@ -1,4 +1,3 @@
-{{-- resources/views/livewire/esd/garment/garment-detail-management.blade.php --}}
 <section class="w-full">
     @include('partials.esd-heading')
 
@@ -112,6 +111,18 @@
                             <input type="text" wire:model.live.debounce.300ms="search" placeholder="Search by NIK, name..." class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
                         </div>
 
+                        <!-- NIK Filter -->
+                        <div>
+                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">NIK</label>
+                            <input type="text" wire:model.live="filterNik" placeholder="Filter by NIK..." class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                        </div>
+
+                        <!-- Name Filter -->
+                        <div>
+                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Name</label>
+                            <input type="text" wire:model.live="filterName" placeholder="Filter by name..." class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                        </div>
+
                         <!-- Date From -->
                         <div>
                             <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Date From</label>
@@ -124,6 +135,8 @@
                             <input type="date" wire:model.live="filterDateUntil" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
                         </div>
 
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
                         <!-- Next Date From -->
                         <div>
                             <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Next Date From</label>
@@ -136,7 +149,89 @@
                             <input type="date" wire:model.live="filterNextDateUntil" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
                         </div>
 
+                        <!-- Judgement Filter -->
+                        <div>
+                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Judgement</label>
+                            <select wire:model.live="filterJudgementD1" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                                <option value="">All</option>
+                                <option value="OK">OK</option>
+                                <option value="NG">NG</option>
+                            </select>
+                        </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- PRINT SECTION -->
+            <div class="mb-4">
+                <div class="bg-white dark:bg-zinc-800 rounded-xl p-4 border border-zinc-200 dark:border-zinc-700 shadow-sm">
+                    <h3 class="text-lg font-semibold text-zinc-800 dark:text-zinc-100 mb-3 flex items-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                        </svg>
+                        Print Report
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <!-- Filter NIK -->
+                        <div>
+                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">NIK</label>
+                            <input type="text" 
+                                wire:model.live="printNik" 
+                                placeholder="Search by NIK..."
+                                class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                        </div>
+                        
+                        <!-- Filter Name -->
+                        <div>
+                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Name</label>
+                            <input type="text" 
+                                wire:model.live="printName" 
+                                placeholder="Search by name..."
+                                class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                        </div>
+                        
+                        <!-- Date From -->
+                        <div>
+                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Date From</label>
+                            <input type="date" 
+                                wire:model.live="printDateFrom" 
+                                class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                        </div>
+                        
+                        <!-- Date Until -->
+                        <div>
+                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Date Until</label>
+                            <input type="date" 
+                                wire:model.live="printDateUntil" 
+                                class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                        </div>
+                    </div>
+                    
+                    <!-- Print Buttons -->
+                    @if($printNik || $printName || $printDateFrom || $printDateUntil)
+                        <div class="flex gap-2 mt-4">
+                            <button wire:click="printPDF" 
+                                    class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path>
+                                </svg>
+                                Download PDF
+                            </button>
+                            
+                            <button wire:click="resetPrintFilters" 
+                                    class="inline-flex items-center gap-2 px-4 py-2 border border-zinc-300 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                </svg>
+                                Reset Filters
+                            </button>
+                        </div>
+                    @else
+                        <div class="text-sm text-zinc-500 dark:text-zinc-400 mt-3">
+                            ⚠️ Please fill at least one filter (NIK, Name, or Date Range) to generate PDF
+                        </div>
+                    @endif
                 </div>
             </div>
 
@@ -351,7 +446,7 @@
                                     </div>
                                 </div>
 
-                                <!-- D1 - Shirt Measurement (1 baris) -->
+                                <!-- D1 - Shirt Measurement -->
                                 <div class="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
                                     <div class="text-sm font-semibold text-yellow-800 dark:text-yellow-400 mb-2">
                                         Shirt Point to Point
@@ -390,7 +485,7 @@
                                     </div>
                                 </div>
 
-                                <!-- D2 - Pants Measurement (1 baris) -->
+                                <!-- D2 - Pants Measurement -->
                                 <div class="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
                                     <div class="text-sm font-semibold text-yellow-800 dark:text-yellow-400 mb-2">
                                         Pants Point to Point
@@ -429,7 +524,7 @@
                                     </div>
                                 </div>
 
-                                <!-- D3 - Cap Measurement (1 baris) -->
+                                <!-- D3 - Cap Measurement -->
                                 <div class="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
                                     <div class="text-sm font-semibold text-yellow-800 dark:text-yellow-400 mb-2">
                                         Cap Point to Point
@@ -468,7 +563,7 @@
                                     </div>
                                 </div>
 
-                                <!-- D4 - Hijab Measurement (1 baris) -->
+                                <!-- D4 - Hijab Measurement -->
                                 <div class="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
                                     <div class="text-sm font-semibold text-yellow-800 dark:text-yellow-400 mb-2">
                                         Hijab Point to Point
@@ -558,7 +653,7 @@
 
                         <h3 class="text-lg font-bold mb-2">Delete Measurement Record</h3>
                         <p class="text-gray-600 dark:text-gray-400 mb-6">
-                            Are you sure you want to delete measurement for NIK "{{ $detailToDelete?->nik ?? 'this employee' }}"? This action cannot be undone.
+                            Are you sure you want to delete measurement for NIK "{{ $detailToDelete?->garment?->nik ?? $detailToDelete?->nik ?? 'this employee' }}"? This action cannot be undone.
                         </p>
 
                         <div class="flex justify-center gap-3">

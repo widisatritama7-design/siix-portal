@@ -12,8 +12,8 @@
         
         body {
             font-family: 'Arial', sans-serif;
-            font-size: 9pt;
-            line-height: 1.3;
+            font-size: 8pt;
+            line-height: 1.2;
             margin: 15px;
             padding: 0;
         }
@@ -36,18 +36,12 @@
             color: #1a56db;
         }
         
-        .header h3 {
-            margin: 3px 0;
-            font-size: 11pt;
-            color: #666;
-        }
-        
         .report-info {
             margin-bottom: 15px;
             padding: 8px;
             background: #f3f4f6;
             border-radius: 5px;
-            font-size: 8pt;
+            font-size: 7pt;
         }
         
         .report-info table {
@@ -67,20 +61,20 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 10px;
-            font-size: 8pt;
+            font-size: 6.5pt;
         }
         
         table.data-table th {
             background: #1a56db;
             color: white;
-            padding: 6px 4px;
-            text-align: center;  /* Diubah menjadi center */
+            padding: 5px 3px;
+            text-align: center;
             border: 1px solid #ddd;
             font-weight: bold;
         }
         
         table.data-table td {
-            padding: 5px 4px;
+            padding: 4px 3px;
             border: 1px solid #ddd;
             vertical-align: top;
         }
@@ -116,43 +110,41 @@
             text-align: center;
         }
         
-        .text-left {
-            text-align: left;
-        }
-        
-        .text-right {
-            text-align: right;
-        }
-        
         .wrap-text {
             word-wrap: break-word;
             word-break: break-all;
             white-space: normal;
         }
         
-        /* Untuk mencegah teks terpotong */
-        .no-wrap {
-            white-space: nowrap;
-        }
-        
-        /* Ukuran kolom */
-        .col-no { width: 5%; }
-        .col-register { width: 12%; }
-        .col-area { width: 10%; }
-        .col-location { width: 10%; }
-        .col-b1 { width: 10%; }
-        .col-judgement { width: 6%; }
-        .col-remarks { width: 15%; }
-        .col-date { width: 8%; }
-        .col-next-date { width: 8%; }
-        .col-checked { width: 10%; }
+        .col-no { width: 2%; }
+        .col-register { width: 6%; }
+        .col-area { width: 5%; }
+        .col-location { width: 5%; }
+        .col-pm1 { width: 4%; }
+        .col-pm2 { width: 4%; }
+        .col-pm3 { width: 4%; }
+        .col-c1b { width: 5%; }
+        .col-judge1b { width: 3%; }
+        .col-c2b { width: 5%; }
+        .col-judge2b { width: 3%; }
+        .col-c3b { width: 5%; }
+        .col-judge3b { width: 3%; }
+        .col-c1 { width: 5%; }
+        .col-judge1 { width: 3%; }
+        .col-c2 { width: 5%; }
+        .col-judge2 { width: 3%; }
+        .col-c3 { width: 5%; }
+        .col-judge3 { width: 3%; }
+        .col-remarks { width: 7%; }
+        .col-date { width: 5%; }
+        .col-next-date { width: 5%; }
+        .col-checked { width: 6%; }
         
         @page {
             size: A4 landscape;
-            margin: 15px;
+            margin: 10px;
         }
         
-        /* Untuk print */
         @media print {
             body {
                 margin: 0;
@@ -161,9 +153,6 @@
             .footer {
                 position: fixed;
                 bottom: 0;
-            }
-            .page-break {
-                page-break-before: always;
             }
         }
     </style>
@@ -219,6 +208,7 @@
                                 <td>Total Records</td>
                                 <td colspan="3">: {{ $details->count() }} Record(s)</td>
                             </tr>
+                        </table>
                     </td>
                     <td style="width: 50%; vertical-align: top;">
                         <table style="width: 100%;">
@@ -228,29 +218,37 @@
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
-                                    <span style="font-size: 7pt;">( {{ $prepared_by ?? '_________________' }} )</span>
+                                    <span style="font-size: 7pt;">( {{ '_________________' }} )</span>
                                 </td>
                                 <td style="text-align: center; padding: 0 10px; width: 33%;">
                                     <strong>CHECKED BY</strong><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
-                                    <span style="font-size: 7pt;">( {{ $checked_by ?? '_________________' }} )</span>
+                                    <span style="font-size: 7pt;">( {{ '_________________' }} )</span>
                                 </td>
                                 <td style="text-align: center; padding: 0 10px; width: 33%;">
                                     <strong>APPROVED BY</strong><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
-                                    <span style="font-size: 7pt;">( {{ $approved_by ?? '_________________' }} )</span>
+                                    <span style="font-size: 7pt;">( {{ '_________________' }} )</span>
                                 </td>
                             </tr>
                         </table>
                     </td>
                 </tr>
             </table>
-            <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid #ddd; font-size: 8pt; text-align: left;">
-                <strong>STANDARD OF ESD FLOORING :</strong> ( B1 ) Point To Ground : &lt; 1.00E+9 Ohm
+            <div style="margin-top: 10px; padding: 6px 8px; background: #e8f0fe; border-radius: 4px; font-size: 7pt; text-align: left; border-top: 1px solid #ddd;">
+                <strong>STANDARD ESD OF IONIZER</strong><br>
+                <div style="margin-top: 4px;">
+                    <div>• (PM 1) Check H.V light flashing condition. If the indicator is flashing, record as NG and perform inspection immediately.</div>
+                    <div>• (PM 2) Check and clean the discharge electrode needle. Result: OK / NG.</div>
+                    <div>• (PM 3) Clean up filter and fan. Perform verification after PM (Preventive Maintenance).</div>
+                    <div>• (C1) Measure Charge Decay Time (+), from 1,000V to 100V &lt; 8.0 seconds.</div>
+                    <div>• (C2) Measure Charge Decay Time (-), from 1,000V to 100V &lt; 8.0 seconds.</div>
+                    <div>• (C3) Measure Offset Voltage, voltage swing within ±35V in 30 seconds.</div>
+                </div>
             </div>
         </div>
         
@@ -261,8 +259,21 @@
                     <th class="col-register">Register No</th>
                     <th class="col-area">Area</th>
                     <th class="col-location">Location</th>
-                    <th class="col-b1">B1 Result</th>
-                    <th class="col-judgement">Judgement</th>
+                    <th class="col-pm1">PM 1</th>
+                    <th class="col-pm2">PM 2</th>
+                    <th class="col-pm3">PM 3</th>
+                    <th class="col-c1b">C1 Before</th>
+                    <th class="col-judge1b">Jdg</th>
+                    <th class="col-c2b">C2 Before</th>
+                    <th class="col-judge2b">Jdg</th>
+                    <th class="col-c3b">C3 Before</th>
+                    <th class="col-judge3b">Jdg</th>
+                    <th class="col-c1">C1</th>
+                    <th class="col-judge1">Jdg</th>
+                    <th class="col-c2">C2</th>
+                    <th class="col-judge2">Jdg</th>
+                    <th class="col-c3">C3</th>
+                    <th class="col-judge3">Jdg</th>
                     <th class="col-remarks">Remarks</th>
                     <th class="col-date">Date</th>
                     <th class="col-next-date">Next Date</th>
@@ -273,13 +284,46 @@
                 @forelse($details as $index => $detail)
                 <tr>
                     <td class="text-center">{{ $index + 1 }}</td>
-                    <td class="text-center">{{ $detail->flooring->register_no ?? 'N/A' }}</td>
-                    <td class="wrap-text">{{ $detail->flooring->area ?? 'N/A' }}</td>
-                    <td class="wrap-text">{{ $detail->flooring->location ?? 'N/A' }}</td>
-                    <td class="text-center">{{ $detail->b1_scientific ?? '-' }}</td>
+                    <td class="text-center">{{ $detail->ionizer->register_no ?? 'N/A' }}</td>
+                    <td class="wrap-text">{{ $detail->ionizer->area ?? 'N/A' }}</td>
+                    <td class="wrap-text">{{ $detail->ionizer->location ?? 'N/A' }}</td>
+                    <td class="text-center">{{ $detail->pm_1 ?? '-' }}</td>
+                    <td class="text-center">{{ $detail->pm_2 ?? '-' }}</td>
+                    <td class="text-center">{{ $detail->pm_3 ?? '-' }}</td>
+                    <td class="text-center">{{ $detail->c1_before ?? '-' }}</td>
                     <td class="text-center">
-                        <span class="{{ $detail->judgement == 'OK' ? 'badge-ok' : 'badge-ng' }}">
-                            {{ $detail->judgement ?? '-' }}
+                        <span class="{{ $detail->judgement_c1_before == 'OK' ? 'badge-ok' : 'badge-ng' }}">
+                            {{ $detail->judgement_c1_before ?? '-' }}
+                        </span>
+                    </td>
+                    <td class="text-center">{{ $detail->c2_before ?? '-' }}</td>
+                    <td class="text-center">
+                        <span class="{{ $detail->judgement_c2_before == 'OK' ? 'badge-ok' : 'badge-ng' }}">
+                            {{ $detail->judgement_c2_before ?? '-' }}
+                        </span>
+                    </td>
+                    <td class="text-center">{{ $detail->c3_before ?? '-' }}</td>
+                    <td class="text-center">
+                        <span class="{{ $detail->judgement_c3_before == 'OK' ? 'badge-ok' : 'badge-ng' }}">
+                            {{ $detail->judgement_c3_before ?? '-' }}
+                        </span>
+                    </td>
+                    <td class="text-center">{{ $detail->c1 ?? '-' }}</td>
+                    <td class="text-center">
+                        <span class="{{ $detail->judgement_c1 == 'OK' ? 'badge-ok' : 'badge-ng' }}">
+                            {{ $detail->judgement_c1 ?? '-' }}
+                        </span>
+                    </td>
+                    <td class="text-center">{{ $detail->c2 ?? '-' }}</td>
+                    <td class="text-center">
+                        <span class="{{ $detail->judgement_c2 == 'OK' ? 'badge-ok' : 'badge-ng' }}">
+                            {{ $detail->judgement_c2 ?? '-' }}
+                        </span>
+                    </td>
+                    <td class="text-center">{{ $detail->c3 ?? '-' }}</td>
+                    <td class="text-center">
+                        <span class="{{ $detail->judgement_c3 == 'OK' ? 'badge-ok' : 'badge-ng' }}">
+                            {{ $detail->judgement_c3 ?? '-' }}
                         </span>
                     </td>
                     <td class="wrap-text">{{ $detail->remarks ?? '-' }}</td>
@@ -289,7 +333,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="10" class="text-center" style="padding: 20px;">
+                    <td colspan="23" class="text-center" style="padding: 20px;">
                         No data found for the selected filters.
                     </td>
                 </tr>
@@ -298,7 +342,7 @@
         </table>
         
         <div class="footer" style="font-weight: bold;">
-            QR-ADM-22-K016
+            QR-ADM-22-K017
         </div>
     </div>
 </body>

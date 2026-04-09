@@ -297,7 +297,7 @@ class FlooringDetailManagement extends Component
         // Data untuk PDF
         $data = [
             'details' => $details,
-            'title' => 'ESD Flooring Measurement Report',
+            'title' => 'ESD FLOORING MEASUREMENT REPORT',
             'date_from' => $this->printDateFrom,
             'date_until' => $this->printDateUntil,
             'register_no' => $this->printRegisterNo,

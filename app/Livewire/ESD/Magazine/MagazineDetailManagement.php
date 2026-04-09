@@ -7,6 +7,7 @@ use Livewire\WithPagination;
 use App\Models\ESD\Magazine\Magazine;
 use App\Models\ESD\Magazine\MagazineDetail;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class MagazineDetailManagement extends Component
 {
@@ -35,12 +36,18 @@ class MagazineDetailManagement extends Component
     public $modalTitle = 'Add New Magazine Measurement';
     public $detailToDelete = null;
 
+    // Properti untuk print
+    public $printPreview = false;
+    public $printRegisterNo = '';
+    public $printDateFrom = '';
+    public $printDateUntil = '';
+
     protected function rules()
     {
         return [
             'magazine_id' => 'required|exists:tb_esd_magazines,id',
-            'm1' => 'nullable|numeric', // hapus required, min, max
-            'm2' => 'nullable|numeric', // hapus required, min, max
+            'm1' => 'nullable|numeric',
+            'm2' => 'nullable|numeric',
             'remarks' => 'nullable|string|max:500',
             'next_date' => 'nullable|date',
         ];
@@ -65,11 +72,16 @@ class MagazineDetailManagement extends Component
         if ($this->m1 !== null && $this->m1 !== '') {
             $this->judgement_m1 = (floatval($this->m1) >= 10000 && floatval($this->m1) < 100000000000) ? 'OK' : 'NG';
             $this->m1_scientific = sprintf('%.2E', floatval($this->m1));
+        } else {
+            $this->judgement_m1 = null;
+            $this->m1_scientific = null;
         }
 
         // M2 Judgement: < 100 is OK
         if ($this->m2 !== null && $this->m2 !== '') {
             $this->judgement_m2 = floatval($this->m2) < 100 ? 'OK' : 'NG';
+        } else {
+            $this->judgement_m2 = null;
         }
     }
 
@@ -137,6 +149,8 @@ class MagazineDetailManagement extends Component
 
         $this->validate();
 
+        $this->resetJudgements();
+
         $data = [
             'magazines_id' => $this->magazine_id,
             'm1' => $this->m1,
@@ -190,7 +204,7 @@ class MagazineDetailManagement extends Component
         $this->m2 = $detail->m2;
         $this->judgement_m2 = $detail->judgement_m2;
         $this->remarks = $detail->remarks;
-        $this->next_date = $detail->next_date;
+        $this->next_date = $detail->next_date ? Carbon::parse($detail->next_date)->format('Y-m-d') : null;
         $this->modalTitle = 'Edit Magazine Measurement';
     }
 
@@ -239,6 +253,83 @@ class MagazineDetailManagement extends Component
     {
         $this->detailToDelete = null;
         $this->dispatch('close-modal', 'delete-detail-modal');
+    }
+
+    /**
+     * Generate PDF untuk print
+     */
+    public function printPDF()
+    {
+        if (!auth()->user()->can('view magazine details')) {
+            $this->dispatch('notify', message: 'You do not have permission!', type: 'error');
+            return;
+        }
+
+        // Validasi minimal satu filter dipilih
+        if (empty($this->printRegisterNo) && empty($this->printDateFrom) && empty($this->printDateUntil)) {
+            $this->dispatch('notify', message: 'Please select at least one filter (Register No or Date Range)!', type: 'error');
+            return;
+        }
+
+        // Query data untuk print
+        $query = MagazineDetail::with(['magazine', 'creator']);
+
+        // Filter by Register No
+        if (!empty($this->printRegisterNo)) {
+            $query->whereHas('magazine', function ($q) {
+                $q->where('register_no', 'like', '%' . $this->printRegisterNo . '%');
+            });
+        }
+
+        // Filter by Date Range
+        if (!empty($this->printDateFrom)) {
+            $query->whereDate('created_at', '>=', $this->printDateFrom);
+        }
+
+        if (!empty($this->printDateUntil)) {
+            $query->whereDate('created_at', '<=', $this->printDateUntil);
+        }
+
+        $details = $query->orderBy('created_at', 'desc')->get();
+
+        if ($details->isEmpty()) {
+            $this->dispatch('notify', message: 'No data found for the selected filters!', type: 'warning');
+            return;
+        }
+
+        // Data untuk PDF
+        $data = [
+            'details' => $details,
+            'title' => 'ESD MAGAZINE MEASUREMENT REPORT',
+            'date_from' => $this->printDateFrom,
+            'date_until' => $this->printDateUntil,
+            'register_no' => $this->printRegisterNo,
+            'generated_by' => auth()->user()->name,
+            'generated_at' => Carbon::now()->format('d M Y H:i:s'),
+            'prepared_by' => auth()->user()->name,
+            'checked_by' => null,
+            'approved_by' => null,
+        ];
+
+        // Generate PDF
+        $pdf = Pdf::loadView('livewire.esd.magazine.magazine-detail-pdf', $data);
+        $pdf->setPaper('A4', 'landscape');
+        
+        return response()->streamDownload(
+            function () use ($pdf) {
+                echo $pdf->output();
+            },
+            'magazine-measurement-' . Carbon::now()->format('Ymd_His') . '.pdf'
+        );
+    }
+
+    public function resetPrintFilters()
+    {
+        $this->printRegisterNo = '';
+        $this->printDateFrom = '';
+        $this->printDateUntil = '';
+        $this->printPreview = false;
+        $this->dispatch('notify', message: 'Print filters have been reset!', type: 'success');
     }
 
     public function render()

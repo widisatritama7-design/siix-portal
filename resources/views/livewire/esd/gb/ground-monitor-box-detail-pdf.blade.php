@@ -36,12 +36,6 @@
             color: #1a56db;
         }
         
-        .header h3 {
-            margin: 3px 0;
-            font-size: 11pt;
-            color: #666;
-        }
-        
         .report-info {
             margin-bottom: 15px;
             padding: 8px;
@@ -74,7 +68,7 @@
             background: #1a56db;
             color: white;
             padding: 6px 4px;
-            text-align: center;  /* Diubah menjadi center */
+            text-align: center;
             border: 1px solid #ddd;
             font-weight: bold;
         }
@@ -102,12 +96,12 @@
             right: 0;
         }
         
-        .badge-ok {
+        .badge-yes {
             color: #059669;
             font-weight: bold;
         }
         
-        .badge-ng {
+        .badge-no {
             color: #dc2626;
             font-weight: bold;
         }
@@ -120,28 +114,18 @@
             text-align: left;
         }
         
-        .text-right {
-            text-align: right;
-        }
-        
         .wrap-text {
             word-wrap: break-word;
             word-break: break-all;
             white-space: normal;
         }
         
-        /* Untuk mencegah teks terpotong */
-        .no-wrap {
-            white-space: nowrap;
-        }
-        
-        /* Ukuran kolom */
-        .col-no { width: 5%; }
+        .col-no { width: 3%; }
         .col-register { width: 12%; }
         .col-area { width: 10%; }
         .col-location { width: 10%; }
-        .col-b1 { width: 10%; }
-        .col-judgement { width: 6%; }
+        .col-g1 { width: 5%; }
+        .col-g2 { width: 5%; }
         .col-remarks { width: 15%; }
         .col-date { width: 8%; }
         .col-next-date { width: 8%; }
@@ -152,7 +136,6 @@
             margin: 15px;
         }
         
-        /* Untuk print */
         @media print {
             body {
                 margin: 0;
@@ -161,9 +144,6 @@
             .footer {
                 position: fixed;
                 bottom: 0;
-            }
-            .page-break {
-                page-break-before: always;
             }
         }
     </style>
@@ -205,6 +185,18 @@
                                 <td colspan="3">: {{ $register_no }}</td>
                             </tr>
                             @endif
+                            @if($area)
+                            <tr>
+                                <td>Area Filter</td>
+                                <td colspan="3">: {{ $area }}</td>
+                            </tr>
+                            @endif
+                            @if($location)
+                            <tr>
+                                <td>Location Filter</td>
+                                <td colspan="3">: {{ $location }}</td>
+                            </tr>
+                            @endif
                             @if($date_from || $date_until)
                             <tr>
                                 <td>Date Range</td>
@@ -219,6 +211,7 @@
                                 <td>Total Records</td>
                                 <td colspan="3">: {{ $details->count() }} Record(s)</td>
                             </tr>
+                        </table>
                     </td>
                     <td style="width: 50%; vertical-align: top;">
                         <table style="width: 100%;">
@@ -228,21 +221,21 @@
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
-                                    <span style="font-size: 7pt;">( {{ $prepared_by ?? '_________________' }} )</span>
+                                    <span style="font-size: 7pt;">( {{ '_________________' }} )</span>
                                 </td>
                                 <td style="text-align: center; padding: 0 10px; width: 33%;">
                                     <strong>CHECKED BY</strong><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
-                                    <span style="font-size: 7pt;">( {{ $checked_by ?? '_________________' }} )</span>
+                                    <span style="font-size: 7pt;">( {{ '_________________' }} )</span>
                                 </td>
                                 <td style="text-align: center; padding: 0 10px; width: 33%;">
                                     <strong>APPROVED BY</strong><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
-                                    <span style="font-size: 7pt;">( {{ $approved_by ?? '_________________' }} )</span>
+                                    <span style="font-size: 7pt;">( {{ '_________________' }} )</span>
                                 </td>
                             </tr>
                         </table>
@@ -250,7 +243,12 @@
                 </tr>
             </table>
             <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid #ddd; font-size: 8pt; text-align: left;">
-                <strong>STANDARD OF ESD FLOORING :</strong> ( B1 ) Point To Ground : &lt; 1.00E+9 Ohm
+                <strong>STANDARD ESD OF GROUND MONITOR BOX / CONTINUOUS MONITOR</strong><br>
+                <span style="font-size: 8pt;">Standard :</span>
+                <div style="margin-top: 5px; font-size: 7.5pt;">
+                    <div>• (G1) Check with Decade Resistance Box with Selector 1M, LED will light Green on Constant Monitor (indicating YES) If Not NO</div>
+                    <div>• (G2) Check with Decade Resistance Box with Selector 35M, LED will light up Red on Constant Monitor (indicating YES) If not NO</div>
+                </div>
             </div>
         </div>
         
@@ -261,8 +259,8 @@
                     <th class="col-register">Register No</th>
                     <th class="col-area">Area</th>
                     <th class="col-location">Location</th>
-                    <th class="col-b1">B1 Result</th>
-                    <th class="col-judgement">Judgement</th>
+                    <th class="col-g1">G1</th>
+                    <th class="col-g2">G2</th>
                     <th class="col-remarks">Remarks</th>
                     <th class="col-date">Date</th>
                     <th class="col-next-date">Next Date</th>
@@ -273,13 +271,17 @@
                 @forelse($details as $index => $detail)
                 <tr>
                     <td class="text-center">{{ $index + 1 }}</td>
-                    <td class="text-center">{{ $detail->flooring->register_no ?? 'N/A' }}</td>
-                    <td class="wrap-text">{{ $detail->flooring->area ?? 'N/A' }}</td>
-                    <td class="wrap-text">{{ $detail->flooring->location ?? 'N/A' }}</td>
-                    <td class="text-center">{{ $detail->b1_scientific ?? '-' }}</td>
+                    <td class="text-center">{{ $detail->groundMonitorBox->register_no ?? 'N/A' }}</td>
+                    <td class="wrap-text">{{ $detail->groundMonitorBox->area ?? 'N/A' }}</td>
+                    <td class="wrap-text">{{ $detail->groundMonitorBox->location ?? 'N/A' }}</td>
                     <td class="text-center">
-                        <span class="{{ $detail->judgement == 'OK' ? 'badge-ok' : 'badge-ng' }}">
-                            {{ $detail->judgement ?? '-' }}
+                        <span class="{{ $detail->g_3 == 'YES' ? 'badge-yes' : 'badge-no' }}">
+                            {{ $detail->g_3 ?? '-' }}
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        <span class="{{ $detail->g_4 == 'YES' ? 'badge-yes' : 'badge-no' }}">
+                            {{ $detail->g_4 ?? '-' }}
                         </span>
                     </td>
                     <td class="wrap-text">{{ $detail->remarks ?? '-' }}</td>
@@ -298,7 +300,7 @@
         </table>
         
         <div class="footer" style="font-weight: bold;">
-            QR-ADM-22-K016
+            QR-ADM-22-K018
         </div>
     </div>
 </body>

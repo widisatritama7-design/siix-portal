@@ -7,6 +7,7 @@ use Livewire\WithPagination;
 use App\Models\ESD\Garment\Garment;
 use App\Models\ESD\Garment\GarmentDetail;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class GarmentDetailManagement extends Component
 {
@@ -46,6 +47,13 @@ class GarmentDetailManagement extends Component
     public $detailToDelete = null;
     
     public $garments = [];
+
+    // Properti untuk print
+    public $printPreview = false;
+    public $printNik = '';
+    public $printName = '';
+    public $printDateFrom = '';
+    public $printDateUntil = '';
 
     protected function rules()
     {
@@ -205,7 +213,6 @@ class GarmentDetailManagement extends Component
 
         $this->validate();
 
-        // Reset judgements before save to ensure all fields are properly set
         $this->resetJudgements();
 
         $data = [
@@ -327,6 +334,99 @@ class GarmentDetailManagement extends Component
         $this->dispatch('close-modal', 'delete-detail-modal');
     }
 
+    public function printPDF()
+    {
+        if (!auth()->user()->can('view garment details')) {
+            $this->dispatch('notify', message: 'You do not have permission!', type: 'error');
+            return;
+        }
+
+        // Validasi minimal satu filter dipilih
+        if (empty($this->printNik) && empty($this->printName) && empty($this->printDateFrom) && empty($this->printDateUntil)) {
+            $this->dispatch('notify', message: 'Please select at least one filter (NIK, Name, or Date Range)!', type: 'error');
+            return;
+        }
+
+        // Query data untuk print
+        $query = GarmentDetail::with(['garment', 'creator']);
+
+        // Filter by NIK - melalui relasi garment
+        if (!empty($this->printNik)) {
+            $query->whereHas('garment', function ($q) {
+                $q->where('nik', 'like', '%' . $this->printNik . '%');
+            });
+        }
+
+        // Filter by Name - melalui relasi garment
+        if (!empty($this->printName)) {
+            $query->whereHas('garment', function ($q) {
+                $q->where('name', 'like', '%' . $this->printName . '%');
+            });
+        }
+
+        // PERBAIKAN: Filter by Date Range berdasarkan created_at
+        if (!empty($this->printDateFrom)) {
+            $fromDate = Carbon::parse($this->printDateFrom)->startOfDay();
+            $query->where('created_at', '>=', $fromDate);
+        }
+
+        if (!empty($this->printDateUntil)) {
+            $untilDate = Carbon::parse($this->printDateUntil)->endOfDay();
+            $query->where('created_at', '<=', $untilDate);
+        }
+
+        // Debug: log query untuk memastikan
+        \Log::info('Print Date Filter:', [
+            'date_from' => $this->printDateFrom,
+            'date_until' => $this->printDateUntil,
+            'parsed_from' => !empty($this->printDateFrom) ? Carbon::parse($this->printDateFrom)->startOfDay() : null,
+            'parsed_until' => !empty($this->printDateUntil) ? Carbon::parse($this->printDateUntil)->endOfDay() : null,
+        ]);
+
+        $details = $query->orderBy('created_at', 'desc')->get();
+
+        if ($details->isEmpty()) {
+            $this->dispatch('notify', message: 'No data found for the selected filters!', type: 'warning');
+            return;
+        }
+
+        // Data untuk PDF
+        $data = [
+            'details' => $details,
+            'title' => 'ESD GARMENT MEASUREMENT REPORT',
+            'date_from' => $this->printDateFrom,
+            'date_until' => $this->printDateUntil,
+            'nik' => $this->printNik,
+            'name' => $this->printName,
+            'generated_by' => auth()->user()->name,
+            'generated_at' => Carbon::now()->format('d M Y H:i:s'),
+            'prepared_by' => auth()->user()->name,
+            'checked_by' => null,
+            'approved_by' => null,
+        ];
+
+        // Generate PDF
+        $pdf = Pdf::loadView('livewire.esd.garment.garment-detail-pdf', $data);
+        $pdf->setPaper('A4', 'landscape');
+        
+        return response()->streamDownload(
+            function () use ($pdf) {
+                echo $pdf->output();
+            },
+            'garment-measurement-' . Carbon::now()->format('Ymd_His') . '.pdf'
+        );
+    }
+
+    public function resetPrintFilters()
+    {
+        $this->printNik = '';
+        $this->printName = '';
+        $this->printDateFrom = '';
+        $this->printDateUntil = '';
+        $this->printPreview = false;
+        $this->dispatch('notify', message: 'Print filters have been reset!', type: 'success');
+    }
+
     public function render()
     {
         if (!auth()->user()->can('view garment details')) {
@@ -345,7 +445,9 @@ class GarmentDetailManagement extends Component
                 });
             })
             ->when($this->filterNik, function ($query) {
-                $query->where('nik', $this->filterNik);
+                $query->whereHas('garment', function ($q) {
+                    $q->where('nik', 'like', '%' . $this->filterNik . '%');
+                });
             })
             ->when($this->filterName, function ($query) {
                 $query->whereHas('garment', function ($q) {

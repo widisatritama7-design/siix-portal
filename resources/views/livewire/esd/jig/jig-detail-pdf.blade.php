@@ -36,12 +36,6 @@
             color: #1a56db;
         }
         
-        .header h3 {
-            margin: 3px 0;
-            font-size: 11pt;
-            color: #666;
-        }
-        
         .report-info {
             margin-bottom: 15px;
             padding: 8px;
@@ -74,7 +68,7 @@
             background: #1a56db;
             color: white;
             padding: 6px 4px;
-            text-align: center;  /* Diubah menjadi center */
+            text-align: center;
             border: 1px solid #ddd;
             font-weight: bold;
         }
@@ -120,28 +114,19 @@
             text-align: left;
         }
         
-        .text-right {
-            text-align: right;
-        }
-        
         .wrap-text {
             word-wrap: break-word;
             word-break: break-all;
             white-space: normal;
         }
         
-        /* Untuk mencegah teks terpotong */
-        .no-wrap {
-            white-space: nowrap;
-        }
-        
-        /* Ukuran kolom */
-        .col-no { width: 5%; }
+        .col-no { width: 3%; }
         .col-register { width: 12%; }
-        .col-area { width: 10%; }
-        .col-location { width: 10%; }
-        .col-b1 { width: 10%; }
-        .col-judgement { width: 6%; }
+        .col-location { width: 12%; }
+        .col-j1 { width: 8%; }
+        .col-judge1 { width: 6%; }
+        .col-j2 { width: 8%; }
+        .col-judge2 { width: 6%; }
         .col-remarks { width: 15%; }
         .col-date { width: 8%; }
         .col-next-date { width: 8%; }
@@ -152,7 +137,6 @@
             margin: 15px;
         }
         
-        /* Untuk print */
         @media print {
             body {
                 margin: 0;
@@ -161,9 +145,6 @@
             .footer {
                 position: fixed;
                 bottom: 0;
-            }
-            .page-break {
-                page-break-before: always;
             }
         }
     </style>
@@ -219,6 +200,7 @@
                                 <td>Total Records</td>
                                 <td colspan="3">: {{ $details->count() }} Record(s)</td>
                             </tr>
+                        </table>
                     </td>
                     <td style="width: 50%; vertical-align: top;">
                         <table style="width: 100%;">
@@ -228,29 +210,33 @@
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
-                                    <span style="font-size: 7pt;">( {{ $prepared_by ?? '_________________' }} )</span>
+                                    <span style="font-size: 7pt;">( {{ '_________________' }} )</span>
                                 </td>
                                 <td style="text-align: center; padding: 0 10px; width: 33%;">
                                     <strong>CHECKED BY</strong><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
-                                    <span style="font-size: 7pt;">( {{ $checked_by ?? '_________________' }} )</span>
+                                    <span style="font-size: 7pt;">( {{ '_________________' }} )</span>
                                 </td>
                                 <td style="text-align: center; padding: 0 10px; width: 33%;">
                                     <strong>APPROVED BY</strong><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
-                                    <span style="font-size: 7pt;">( {{ $approved_by ?? '_________________' }} )</span>
+                                    <span style="font-size: 7pt;">( {{ '_________________' }} )</span>
                                 </td>
                             </tr>
                         </table>
                     </td>
                 </tr>
             </table>
-            <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid #ddd; font-size: 8pt; text-align: left;">
-                <strong>STANDARD OF ESD FLOORING :</strong> ( B1 ) Point To Ground : &lt; 1.00E+9 Ohm
+            <div style="margin-top: 10px; padding: 6px 8px; background: #e8f0fe; border-radius: 4px; font-size: 8pt; text-align: left; border-top: 1px solid #ddd;">
+                <strong>STANDARD ESD OF JIGS</strong><br>
+                <div style="margin-top: 4px;">
+                    <div>• (J1) Resistance spec &lt; 1 Ohm (fixed aluminum jig) only on Register TU-KO-004-0 QI CHARGER MAIN BOARD</div>
+                    <div>• (J2) Surface static field voltage ( &lt; +/- 100 Volts )</div>
+                </div>
             </div>
         </div>
         
@@ -259,10 +245,11 @@
                 <tr>
                     <th class="col-no">#</th>
                     <th class="col-register">Register No</th>
-                    <th class="col-area">Area</th>
                     <th class="col-location">Location</th>
-                    <th class="col-b1">B1 Result</th>
-                    <th class="col-judgement">Judgement</th>
+                    <th class="col-j1">J1 Result</th>
+                    <th class="col-judge1">Judg</th>
+                    <th class="col-j2">J2 Result</th>
+                    <th class="col-judge2">Judg</th>
                     <th class="col-remarks">Remarks</th>
                     <th class="col-date">Date</th>
                     <th class="col-next-date">Next Date</th>
@@ -273,13 +260,36 @@
                 @forelse($details as $index => $detail)
                 <tr>
                     <td class="text-center">{{ $index + 1 }}</td>
-                    <td class="text-center">{{ $detail->flooring->register_no ?? 'N/A' }}</td>
-                    <td class="wrap-text">{{ $detail->flooring->area ?? 'N/A' }}</td>
-                    <td class="wrap-text">{{ $detail->flooring->location ?? 'N/A' }}</td>
-                    <td class="text-center">{{ $detail->b1_scientific ?? '-' }}</td>
+                    <td class="text-center">{{ $detail->jig->register_no ?? 'N/A' }}</td>
+                    <td class="wrap-text">{{ $detail->jig->location ?? 'N/A' }}</td>
                     <td class="text-center">
-                        <span class="{{ $detail->judgement == 'OK' ? 'badge-ok' : 'badge-ng' }}">
-                            {{ $detail->judgement ?? '-' }}
+                        @php
+                            $j1Value = $detail->j1;
+                            if (is_numeric($j1Value)) {
+                                echo number_format(floatval($j1Value), 2);
+                            } else {
+                                echo '-';
+                            }
+                        @endphp
+                    </td>
+                    <td class="text-center">
+                        <span class="{{ $detail->judgement_j1 == 'OK' ? 'badge-ok' : 'badge-ng' }}">
+                            {{ $detail->judgement_j1 ?? '-' }}
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        @php
+                            $j2Value = $detail->j2;
+                            if (is_numeric($j2Value)) {
+                                echo number_format(floatval($j2Value), 2);
+                            } else {
+                                echo '-';
+                            }
+                        @endphp
+                    </td>
+                    <td class="text-center">
+                        <span class="{{ $detail->judgement_j2 == 'OK' ? 'badge-ok' : 'badge-ng' }}">
+                            {{ $detail->judgement_j2 ?? '-' }}
                         </span>
                     </td>
                     <td class="wrap-text">{{ $detail->remarks ?? '-' }}</td>
@@ -289,7 +299,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="10" class="text-center" style="padding: 20px;">
+                    <td colspan="11" class="text-center" style="padding: 20px;">
                         No data found for the selected filters.
                     </td>
                 </tr>
@@ -298,7 +308,7 @@
         </table>
         
         <div class="footer" style="font-weight: bold;">
-            QR-ADM-22-K016
+            QR-ADM-24-K041
         </div>
     </div>
 </body>

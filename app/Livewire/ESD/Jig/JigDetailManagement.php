@@ -7,6 +7,7 @@ use Livewire\WithPagination;
 use App\Models\ESD\Jig\Jig;
 use App\Models\ESD\Jig\JigDetail;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class JigDetailManagement extends Component
 {
@@ -35,6 +36,13 @@ class JigDetailManagement extends Component
     public $modalTitle = 'Add New Jig Measurement';
     public $detailToDelete = null;
 
+    // Properti untuk print
+    public $printPreview = false;
+    public $printRegisterNo = '';
+    public $printLocation = '';
+    public $printDateFrom = '';
+    public $printDateUntil = '';
+
     protected function rules()
     {
         return [
@@ -60,16 +68,20 @@ class JigDetailManagement extends Component
     public function resetJudgementJ1()
     {
         if ($this->j1 !== null && $this->j1 !== '') {
-            // Standard: > 1.00 is NG
+            // Standard: < 1.00 Ohm (OK if < 1.00, NG if >= 1.00)
             $this->judgement_j1 = floatval($this->j1) >= 1.00 ? 'NG' : 'OK';
+        } else {
+            $this->judgement_j1 = null;
         }
     }
 
     public function resetJudgementJ2()
     {
         if ($this->j2 !== null && $this->j2 !== '') {
-            // Standard: > 100 is NG
+            // Standard: < 100 Volt (OK if < 100, NG if >= 100)
             $this->judgement_j2 = floatval($this->j2) >= 100 ? 'NG' : 'OK';
+        } else {
+            $this->judgement_j2 = null;
         }
     }
 
@@ -136,6 +148,9 @@ class JigDetailManagement extends Component
 
         $this->validate();
 
+        $this->resetJudgementJ1();
+        $this->resetJudgementJ2();
+
         $data = [
             'jigs_id' => $this->jigs_id,
             'j1' => $this->j1,
@@ -187,7 +202,7 @@ class JigDetailManagement extends Component
         $this->j2 = $detail->j2;
         $this->judgement_j2 = $detail->judgement_j2;
         $this->remarks = $detail->remarks;
-        $this->next_date = $detail->next_date;
+        $this->next_date = $detail->next_date ? Carbon::parse($detail->next_date)->format('Y-m-d') : null;
         $this->modalTitle = 'Edit Jig Measurement';
     }
 
@@ -236,6 +251,92 @@ class JigDetailManagement extends Component
     {
         $this->detailToDelete = null;
         $this->dispatch('close-modal', 'delete-detail-modal');
+    }
+
+    /**
+     * Generate PDF untuk print
+     */
+    public function printPDF()
+    {
+        if (!auth()->user()->can('view jig details')) {
+            $this->dispatch('notify', message: 'You do not have permission!', type: 'error');
+            return;
+        }
+
+        // Validasi minimal satu filter dipilih
+        if (empty($this->printRegisterNo) && empty($this->printLocation) && empty($this->printDateFrom) && empty($this->printDateUntil)) {
+            $this->dispatch('notify', message: 'Please select at least one filter (Register No, Location, or Date Range)!', type: 'error');
+            return;
+        }
+
+        // Query data untuk print
+        $query = JigDetail::with(['jig', 'creator']);
+
+        // Filter by Register No
+        if (!empty($this->printRegisterNo)) {
+            $query->whereHas('jig', function ($q) {
+                $q->where('register_no', 'like', '%' . $this->printRegisterNo . '%');
+            });
+        }
+
+        // Filter by Location
+        if (!empty($this->printLocation)) {
+            $query->whereHas('jig', function ($q) {
+                $q->where('location', 'like', '%' . $this->printLocation . '%');
+            });
+        }
+
+        // Filter by Date Range
+        if (!empty($this->printDateFrom)) {
+            $query->whereDate('created_at', '>=', $this->printDateFrom);
+        }
+
+        if (!empty($this->printDateUntil)) {
+            $query->whereDate('created_at', '<=', $this->printDateUntil);
+        }
+
+        $details = $query->orderBy('created_at', 'desc')->get();
+
+        if ($details->isEmpty()) {
+            $this->dispatch('notify', message: 'No data found for the selected filters!', type: 'warning');
+            return;
+        }
+
+        // Data untuk PDF
+        $data = [
+            'details' => $details,
+            'title' => 'ESD JIG MEASUREMENT REPORT',
+            'date_from' => $this->printDateFrom,
+            'date_until' => $this->printDateUntil,
+            'register_no' => $this->printRegisterNo,
+            'location' => $this->printLocation,
+            'generated_by' => auth()->user()->name,
+            'generated_at' => Carbon::now()->format('d M Y H:i:s'),
+            'prepared_by' => auth()->user()->name,
+            'checked_by' => null,
+            'approved_by' => null,
+        ];
+
+        // Generate PDF
+        $pdf = Pdf::loadView('livewire.esd.jig.jig-detail-pdf', $data);
+        $pdf->setPaper('A4', 'landscape');
+        
+        return response()->streamDownload(
+            function () use ($pdf) {
+                echo $pdf->output();
+            },
+            'jig-measurement-' . Carbon::now()->format('Ymd_His') . '.pdf'
+        );
+    }
+
+    public function resetPrintFilters()
+    {
+        $this->printRegisterNo = '';
+        $this->printLocation = '';
+        $this->printDateFrom = '';
+        $this->printDateUntil = '';
+        $this->printPreview = false;
+        $this->dispatch('notify', message: 'Print filters have been reset!', type: 'success');
     }
 
     public function render()
