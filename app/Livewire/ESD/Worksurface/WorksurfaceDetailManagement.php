@@ -2,11 +2,12 @@
 
 namespace App\Livewire\ESD\Worksurface;
 
-use Livewire\Component;
-use Livewire\WithPagination;
 use App\Models\ESD\Worksurface\Worksurface;
 use App\Models\ESD\Worksurface\WorksurfaceDetail;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class WorksurfaceDetailManagement extends Component
 {
@@ -40,6 +41,15 @@ class WorksurfaceDetailManagement extends Component
     public $filterNextDateFrom = '';
     public $filterNextDateUntil = '';
 
+    // Properti untuk print
+    public $printPreview = false;
+    public $printRegisterFilter = '';
+    public $printAreaFilter = '';
+    public $printLocationFilter = '';
+    public $printItemFilter = '';
+    public $printDateFrom = '';
+    public $printDateUntil = '';
+
     public $modalTitle = 'Add New Worksurface Measurement';
     public $detailToDelete = null;
 
@@ -64,6 +74,108 @@ class WorksurfaceDetailManagement extends Component
         'a2.numeric' => 'A2 measurement result must be a number.',
         'next_date.date' => 'Next date must be a valid date.',
     ];
+
+    /**
+     * Generate PDF untuk print
+     */
+    public function printPDF()
+    {
+        if (!auth()->user()->can('view worksurface details')) {
+            $this->dispatch('notify', message: 'You do not have permission!', type: 'error');
+            return;
+        }
+
+        // Validasi minimal satu filter dipilih
+        if (empty($this->printRegisterFilter) && empty($this->printAreaFilter) && empty($this->printLocationFilter) && empty($this->printItemFilter) && empty($this->printDateFrom) && empty($this->printDateUntil)) {
+            $this->dispatch('notify', message: 'Please select at least one filter (Register No, Area, Location, Item, or Date Range)!', type: 'error');
+            return;
+        }
+
+        // Query data untuk print
+        $query = WorksurfaceDetail::with(['worksurface', 'creator']);
+
+        // Filter by Register No
+        if (!empty($this->printRegisterFilter)) {
+            $query->whereHas('worksurface', function ($q) {
+                $q->where('register_no', 'like', '%' . $this->printRegisterFilter . '%');
+            });
+        }
+
+        // Filter by Area
+        if (!empty($this->printAreaFilter)) {
+            $query->whereHas('worksurface', function ($q) {
+                $q->where('area', 'like', '%' . $this->printAreaFilter . '%');
+            });
+        }
+
+        // Filter by Location
+        if (!empty($this->printLocationFilter)) {
+            $query->whereHas('worksurface', function ($q) {
+                $q->where('location', 'like', '%' . $this->printLocationFilter . '%');
+            });
+        }
+
+        // Filter by Item
+        if (!empty($this->printItemFilter)) {
+            $query->where('item', 'like', '%' . $this->printItemFilter . '%');
+        }
+
+        // Filter by Date Range
+        if (!empty($this->printDateFrom)) {
+            $query->whereDate('created_at', '>=', $this->printDateFrom);
+        }
+
+        if (!empty($this->printDateUntil)) {
+            $query->whereDate('created_at', '<=', $this->printDateUntil);
+        }
+
+        $details = $query->orderBy('created_at', 'desc')->get();
+
+        if ($details->isEmpty()) {
+            $this->dispatch('notify', message: 'No data found for the selected filters!', type: 'warning');
+            return;
+        }
+
+        // Data untuk PDF
+        $data = [
+            'details' => $details,
+            'title' => 'ESD WORK SURFACE MAT MEASUREMENT REPORT',
+            'date_from' => $this->printDateFrom,
+            'date_until' => $this->printDateUntil,
+            'register_filter' => $this->printRegisterFilter,
+            'area_filter' => $this->printAreaFilter,
+            'location_filter' => $this->printLocationFilter,
+            'item_filter' => $this->printItemFilter,
+            'generated_by' => auth()->user()->name,
+            'generated_at' => Carbon::now()->format('d M Y H:i:s'),
+            'prepared_by' => auth()->user()->name,
+            'checked_by' => null,
+            'approved_by' => null,
+        ];
+
+        // Generate PDF
+        $pdf = Pdf::loadView('livewire.esd.worksurface.worksurface-detail-pdf', $data);
+        $pdf->setPaper('A4', 'landscape');
+        
+        return response()->streamDownload(
+            function () use ($pdf) {
+                echo $pdf->output();
+            },
+            'worksurface-measurement-' . Carbon::now()->format('Ymd_His') . '.pdf'
+        );
+    }
+
+    public function resetPrintFilters()
+    {
+        $this->printRegisterFilter = '';
+        $this->printAreaFilter = '';
+        $this->printLocationFilter = '';
+        $this->printItemFilter = '';
+        $this->printDateFrom = '';
+        $this->printDateUntil = '';
+        $this->printPreview = false;
+        $this->dispatch('notify', message: 'Print filters have been reset!', type: 'success');
+    }
 
     public function mount()
     {

@@ -2,11 +2,12 @@
 
 namespace App\Livewire\ESD\Packaging;
 
-use Livewire\Component;
-use Livewire\WithPagination;
 use App\Models\ESD\Packaging\Packaging;
 use App\Models\ESD\Packaging\PackagingDetail;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class PackagingDetailManagement extends Component
 {
@@ -35,6 +36,13 @@ class PackagingDetailManagement extends Component
     public $filterNextDateFrom = '';
     public $filterNextDateUntil = '';
 
+    // Properti untuk print
+    public $printPreview = false;
+    public $printMaterialFilter = '';
+    public $printCategoryFilter = '';
+    public $printDateFrom = '';
+    public $printDateUntil = '';
+
     public $modalTitle = 'Add New Packaging Measurement';
     public $detailToDelete = null;
 
@@ -56,6 +64,92 @@ class PackagingDetailManagement extends Component
         'f2.numeric' => 'F2 measurement result must be a number.',
         'next_date.date' => 'Next date must be a valid date.',
     ];
+
+    /**
+     * Generate PDF untuk print
+     */
+    public function printPDF()
+    {
+        if (!auth()->user()->can('view packaging details')) {
+            $this->dispatch('notify', message: 'You do not have permission!', type: 'error');
+            return;
+        }
+
+        // Validasi minimal satu filter dipilih
+        if (empty($this->printMaterialFilter) && empty($this->printCategoryFilter) && empty($this->printDateFrom) && empty($this->printDateUntil)) {
+            $this->dispatch('notify', message: 'Please select at least one filter (Material, Category, or Date Range)!', type: 'error');
+            return;
+        }
+
+        // Query data untuk print
+        $query = PackagingDetail::with(['packaging', 'creator']);
+
+        // Filter by Material
+        if (!empty($this->printMaterialFilter)) {
+            $query->whereHas('packaging', function ($q) {
+                $q->where('material', 'like', '%' . $this->printMaterialFilter . '%');
+            });
+        }
+
+        // Filter by Category
+        if (!empty($this->printCategoryFilter)) {
+            $query->whereHas('packaging', function ($q) {
+                $q->where('category', 'like', '%' . $this->printCategoryFilter . '%');
+            });
+        }
+
+        // Filter by Date Range
+        if (!empty($this->printDateFrom)) {
+            $query->whereDate('created_at', '>=', $this->printDateFrom);
+        }
+
+        if (!empty($this->printDateUntil)) {
+            $query->whereDate('created_at', '<=', $this->printDateUntil);
+        }
+
+        $details = $query->orderBy('created_at', 'desc')->get();
+
+        if ($details->isEmpty()) {
+            $this->dispatch('notify', message: 'No data found for the selected filters!', type: 'warning');
+            return;
+        }
+
+        // Data untuk PDF
+        $data = [
+            'details' => $details,
+            'title' => 'ESD PACKAGING MEASUREMENT REPORT',
+            'date_from' => $this->printDateFrom,
+            'date_until' => $this->printDateUntil,
+            'material_filter' => $this->printMaterialFilter,
+            'category_filter' => $this->printCategoryFilter,
+            'generated_by' => auth()->user()->name,
+            'generated_at' => Carbon::now()->format('d M Y H:i:s'),
+            'prepared_by' => auth()->user()->name,
+            'checked_by' => null,
+            'approved_by' => null,
+        ];
+
+        // Generate PDF
+        $pdf = Pdf::loadView('livewire.esd.packaging.packaging-detail-pdf', $data);
+        $pdf->setPaper('A4', 'landscape');
+        
+        return response()->streamDownload(
+            function () use ($pdf) {
+                echo $pdf->output();
+            },
+            'packaging-measurement-' . Carbon::now()->format('Ymd_His') . '.pdf'
+        );
+    }
+
+    public function resetPrintFilters()
+    {
+        $this->printMaterialFilter = '';
+        $this->printCategoryFilter = '';
+        $this->printDateFrom = '';
+        $this->printDateUntil = '';
+        $this->printPreview = false;
+        $this->dispatch('notify', message: 'Print filters have been reset!', type: 'success');
+    }
 
     public function mount()
     {

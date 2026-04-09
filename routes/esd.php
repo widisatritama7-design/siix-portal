@@ -35,6 +35,7 @@ use App\Livewire\ESD\Packaging\PackagingShow;
 use App\Livewire\ESD\Patrol\PatrolManagement;
 use App\Livewire\ESD\PQ\ProductQualificationManagement;
 use App\Livewire\ESD\PQ\ProductQualificationShow;
+use App\Livewire\ESD\Print\MultiModelQrPrinter;
 use App\Livewire\ESD\Shower\ShowerDetailManagement;
 use App\Livewire\ESD\Shower\ShowerManagement;
 use App\Livewire\ESD\Shower\ShowerShow;
@@ -138,5 +139,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // ESD Calendar
     Route::get('/esd/calendar', EsdCalendar::class)->name('esd.calendar');
+
+    // Print QR-Code
+    Route::get('/esd/print', MultiModelQrPrinter::class)->name('esd.print');
 
 });

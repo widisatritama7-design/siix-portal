@@ -2,10 +2,11 @@
 
 namespace App\Livewire\ESD\Insulatif;
 
+use App\Models\ESD\Insulatif\InsulatifCheck;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Carbon\Carbon;
 use Livewire\Component;
 use Livewire\WithPagination;
-use App\Models\ESD\Insulatif\InsulatifCheck;
-use Carbon\Carbon;
 
 class InsulatifCheckManagement extends Component
 {
@@ -26,6 +27,13 @@ class InsulatifCheckManagement extends Component
     public $filterNextDateFrom = '';
     public $filterNextDateUntil = '';
 
+    // Properti untuk print
+    public $printPreview = false;
+    public $printRegisterFilter = '';
+    public $printJudgementFilter = '';
+    public $printDateFrom = '';
+    public $printDateUntil = '';
+
     public $modalTitle = 'Add New Insulatif Check';
     public $checkToDelete = null;
 
@@ -45,6 +53,88 @@ class InsulatifCheckManagement extends Component
         'result.numeric' => 'Result measurement must be a number.',
         'next_date.date' => 'Next date must be a valid date.',
     ];
+
+    /**
+     * Generate PDF untuk print
+     */
+    public function printPDF()
+    {
+        if (!auth()->user()->can('view insulatif check')) {
+            $this->dispatch('notify', message: 'You do not have permission!', type: 'error');
+            return;
+        }
+
+        // Validasi minimal satu filter dipilih
+        if (empty($this->printRegisterFilter) && empty($this->printJudgementFilter) && empty($this->printDateFrom) && empty($this->printDateUntil)) {
+            $this->dispatch('notify', message: 'Please select at least one filter (Register No, Judgement, or Date Range)!', type: 'error');
+            return;
+        }
+
+        // Query data untuk print
+        $query = InsulatifCheck::with('creator');
+
+        // Filter by Register No
+        if (!empty($this->printRegisterFilter)) {
+            $query->where('register_no', 'like', '%' . $this->printRegisterFilter . '%');
+        }
+
+        // Filter by Judgement
+        if (!empty($this->printJudgementFilter)) {
+            $query->where('judgement', $this->printJudgementFilter);
+        }
+
+        // Filter by Date Range
+        if (!empty($this->printDateFrom)) {
+            $query->whereDate('created_at', '>=', $this->printDateFrom);
+        }
+
+        if (!empty($this->printDateUntil)) {
+            $query->whereDate('created_at', '<=', $this->printDateUntil);
+        }
+
+        $details = $query->orderBy('created_at', 'desc')->get();
+
+        if ($details->isEmpty()) {
+            $this->dispatch('notify', message: 'No data found for the selected filters!', type: 'warning');
+            return;
+        }
+
+        // Data untuk PDF
+        $data = [
+            'details' => $details,
+            'title' => 'ESD INSULATIVE SUPPORT SURFACE REPORT',
+            'date_from' => $this->printDateFrom,
+            'date_until' => $this->printDateUntil,
+            'register_filter' => $this->printRegisterFilter,
+            'judgement_filter' => $this->printJudgementFilter,
+            'generated_by' => auth()->user()->name,
+            'generated_at' => Carbon::now()->format('d M Y H:i:s'),
+            'prepared_by' => auth()->user()->name,
+            'checked_by' => null,
+            'approved_by' => null,
+        ];
+
+        // Generate PDF
+        $pdf = Pdf::loadView('livewire.esd.insulatif.insulatif-check-pdf', $data);
+        $pdf->setPaper('A4', 'landscape');
+        
+        return response()->streamDownload(
+            function () use ($pdf) {
+                echo $pdf->output();
+            },
+            'insulatif-check-' . Carbon::now()->format('Ymd_His') . '.pdf'
+        );
+    }
+
+    public function resetPrintFilters()
+    {
+        $this->printRegisterFilter = '';
+        $this->printJudgementFilter = '';
+        $this->printDateFrom = '';
+        $this->printDateUntil = '';
+        $this->printPreview = false;
+        $this->dispatch('notify', message: 'Print filters have been reset!', type: 'success');
+    }
 
     public function mount()
     {

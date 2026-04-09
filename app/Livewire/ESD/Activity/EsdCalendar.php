@@ -33,7 +33,7 @@ class EsdCalendar extends Component
     protected $modelMap = [
         'equipment' => [EquipmentGroundDetail::class, 'equipmentGround', 'machine_name', 'equipment_ground_id'],
         'flooring' => [FlooringDetail::class, 'flooring', 'register_no', 'flooring_id'],
-        'garment' => [GarmentDetail::class, 'garment', 'nik', 'nik'],
+        'garment' => [GarmentDetail::class, 'garment', 'name', 'nik'],
         'glove' => [GloveDetail::class, 'glove', 'sap_code', 'glove_id'],
         'groundmonitorbox' => [GroundMonitorBoxDetail::class, 'groundMonitorBox', 'register_no', 'ground_monitor_box_id'],
         'ionizer' => [IonizerDetail::class, 'ionizer', 'register_no', 'ionizer_id'],
@@ -60,10 +60,10 @@ class EsdCalendar extends Component
         'magazine' => '-',
         'glove' => '-',
         'packaging' => 'QR-ADM-24-K052',
-        'insulatif' => 'QR-ADM-24-K062',
-        'patrol' => 'QR-ADM-24-K063',
-        'shower' => 'QR-ADM-24-K064',
-        'wriststrap' => 'QR-ADM-24-K065'
+        'insulatif' => '-',
+        'patrol' => '-',
+        'shower' => '-',
+        'wriststrap' => '-'
     ];
 
     public $displayNames = [

@@ -60,7 +60,7 @@
         
         <div class="-mt-2">
             <!-- Grid auto-fill dengan card ukuran sedang -->
-            <div class="grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1rem;">
+            <div class="grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem;">
                 @foreach($sortedTypes as $type)
                 <div class="bg-white dark:bg-zinc-800 rounded-2xl shadow-md border border-zinc-200 dark:border-zinc-700 p-3.5 hover:shadow-lg transition-all duration-300">
                     
@@ -174,10 +174,27 @@
                                     <a href="{{ $detailUrl }}" 
                                        target="_blank"
                                        class="block transition-all duration-200 hover:translate-x-0.5">
-                                        <div class="flex items-center justify-between p-1.5 rounded-xl text-[10px] sm:text-xs
+                                       <div class="flex items-center justify-between p-1.5 rounded-xl text-[10px] sm:text-xs
                                             {{ $event['hasActual'] ? 'bg-green-50 dark:bg-green-900/20 border-l-2 border-green-500' : 'bg-red-50 dark:bg-red-900/20 border-l-2 border-red-500' }}">
-                                            <span class="flex-1 truncate mr-1 font-medium">{{ $event['title'] }}</span>
-                                            <span class="font-bold flex-shrink-0 text-[11px] sm:text-xs">{{ $event['hasActual'] ? '✓' : '✗' }}</span>
+                                            
+                                            <span class="flex-1 truncate mr-1 font-medium">
+                                                {{ $event['title'] }}
+                                            </span>
+
+                                            <!-- ICON -->
+                                            @if($event['hasActual'])
+                                                <!-- CHECK (HIJAU) -->
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                                                    class="w-4 h-4 sm:w-5 sm:h-5 text-green-600 flex-shrink-0">
+                                                    <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
+                                                </svg>
+                                            @else
+                                                <!-- CROSS (MERAH) -->
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                                                    class="w-4 h-4 sm:w-5 sm:h-5 text-red-600 flex-shrink-0">
+                                                    <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z" clip-rule="evenodd" />
+                                                </svg>
+                                            @endif
                                         </div>
                                     </a>
                                 @endforeach
@@ -196,13 +213,13 @@
     /* Fully responsive grid - auto adjust */
     .grid {
         display: grid !important;
-        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)) !important;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)) !important;
         gap: 1rem !important;
     }
     
     /* Card styling */
     .rounded-2xl {
-        border-radius: 1rem !important;
+        border-radius: 0.5rem !important;
     }
     
     /* Hover effect card */

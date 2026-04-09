@@ -181,6 +181,12 @@
                                 <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.product-qualifications') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
                                 <span class="truncate">Product Qualification</span>
                             </a>
+                            <a href="{{ route('esd.print') }}" wire:navigate
+                                class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.print') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}"
+                                @click="mobileMenuOpen = false">
+                                <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.print') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                <span class="truncate">QR-Code Print</span>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -604,6 +610,11 @@
                                         class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.product-qualifications') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
                                         <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.product-qualifications') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
                                         <span class="truncate">Product Qualification</span>
+                                    </a>
+                                    <a href="{{ route('esd.print') }}" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('esd.print') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
+                                        <span class="w-2 h-2 rounded-full {{ request()->routeIs('esd.print') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                        <span class="truncate">QR-Code Print</span>
                                     </a>
                                 </div>
                             </div>
