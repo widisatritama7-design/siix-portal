@@ -1,113 +1,271 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
-    <title>QR Codes - ESD Equipment</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            padding: 20px;
-        }
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #1a56db;
-        }
-        .header h1 {
-            font-size: 24px;
-            color: #1a56db;
-            margin-bottom: 5px;
-        }
-        .header p {
-            font-size: 12px;
-            color: #666;
-        }
-        .info {
-            text-align: right;
-            font-size: 10px;
-            color: #999;
-            margin-bottom: 20px;
-        }
-        .qr-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 20px;
-            page-break-inside: avoid;
-        }
-        .qr-item {
-            text-align: center;
-            page-break-inside: avoid;
-            break-inside: avoid;
-            border: 1px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 15px;
-        }
-        .qr-item img {
-            width: 120px;
-            height: 120px;
-            display: block;
-            margin: 0 auto;
-        }
-        .register-no {
-            font-size: 10px;
-            font-weight: bold;
-            margin-top: 10px;
-            word-break: break-all;
-            color: #333;
-        }
-        .model-label {
-            font-size: 9px;
-            color: #666;
-            margin-top: 5px;
-        }
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            font-size: 9px;
-            color: #999;
-            padding-top: 10px;
-            border-top: 1px solid #eee;
-        }
-        @page {
-            size: A4;
-            margin: 1cm;
-        }
-    </style>
+<meta charset="UTF-8">
+<title>QR Codes - ESD Equipment</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    padding: 15px;
+}
+
+/* HEADER */
+.header {
+    text-align: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #1a56db;
+}
+
+.header h1 {
+    font-size: 20px;
+    color: #1a56db;
+}
+
+.header p {
+    font-size: 11px;
+    color: #666;
+}
+
+.info {
+    text-align: right;
+    font-size: 9px;
+    color: #999;
+    margin-bottom: 15px;
+}
+
+/* CONTAINER */
+.qr-cards-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+/* CARD */
+.qr-card {
+    border: 1px solid black;
+    background: white;
+    overflow: hidden;
+    height: 45px;
+}
+
+.card-flex {
+    display: flex;
+    align-items: center;
+    height: 45px;
+}
+
+/* TEXT */
+.text-section {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    overflow: hidden;
+}
+
+.register-text {
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .4px;
+    line-height: 1.1;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* LOGO */
+.logo-section {
+    background-color: #facc15;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    overflow: hidden;
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.logo-section img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* QR */
+.qr-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    flex-shrink: 0;
+}
+
+/* ============================= */
+/* GROUND MONITOR SIZE */
+/* ============================= */
+
+.size-ground-monitor {
+    width: 178px;
+}
+
+.size-ground-monitor .text-section {
+    width: 99px;
+    padding: 0 4px;
+}
+
+.size-ground-monitor .register-text {
+    font-size: 8px;
+}
+
+.size-ground-monitor .logo-section {
+    width: 45px;
+}
+
+.size-ground-monitor .qr-section {
+    width: 40px;
+}
+
+.size-ground-monitor .qr-section img {
+    width: 24px;
+    height: 24px;
+}
+
+/* ============================= */
+/* DEFAULT SIZE */
+/* ============================= */
+
+.size-default {
+    width: 240px;
+}
+
+.size-default .text-section {
+    flex: 1;
+    padding: 0 8px;
+}
+
+.size-default .register-text {
+    font-size: 12px;
+}
+
+.size-default .logo-section {
+    width: 55px;
+}
+
+.size-default .qr-section {
+    width: 55px;
+}
+
+.size-default .qr-section img {
+    width: 32px;
+    height: 28px;
+}
+
+/* FOOTER */
+.footer {
+    text-align: center;
+    margin-top: 25px;
+    font-size: 9px;
+    color: #999;
+    padding-top: 10px;
+    border-top: 1px solid #eee;
+}
+
+/* PRINT */
+@page {
+    size: A4;
+    margin: 1cm;
+}
+
+@media print {
+
+body {
+    padding: 0;
+}
+
+.qr-card {
+    break-inside: avoid;
+    page-break-inside: avoid;
+}
+
+.logo-section {
+    background-color: #facc15 !important;
+    print-color-adjust: exact;
+    -webkit-print-color-adjust: exact;
+}
+
+}
+</style>
 </head>
+
 <body>
-    <div class="header">
-        <h1>ESD Equipment QR Codes</h1>
-        <p>Electrostatic Discharge Equipment Identification System</p>
-    </div>
-    
-    <div class="info">
-        Printed: {{ $date }} | Total: {{ $total }} items
-    </div>
-    
-    <div class="qr-grid">
-        @foreach($items as $item)
-            <div class="qr-item">
-                @if($item['qr_base64'])
-                    <img src="{{ $item['qr_base64'] }}" alt="QR Code">
-                @else
-                    <div style="width:120px;height:120px;background:#f0f0f0;display:flex;align-items:center;justify-content:center;margin:0 auto;">
-                        <span style="font-size:10px;">{{ $item['register_no'] }}</span>
-                    </div>
-                @endif
-                <div class="register-no">{{ $item['register_no'] }}</div>
-                <div class="model-label">{{ $modelLabels[$item['model']] }}</div>
-            </div>
-        @endforeach
-    </div>
-    
-    <div class="footer">
-        Generated by ESD QR Code Printer System | {{ date('Y-m-d H:i:s') }}
-    </div>
+
+<div class="header">
+    <h1>ESD Equipment QR Codes</h1>
+    <p>Electrostatic Discharge Equipment Identification System</p>
+</div>
+
+<div class="info">
+    Printed: {{ $date ?? date('d-m-Y H:i:s') }} 
+    | Total: {{ $total ?? 0 }} items
+</div>
+
+<div class="qr-cards-container">
+
+@foreach($items as $item)
+
+@php
+$isGroundMonitor = ($item['model'] == 'ground_monitor_box');
+$sizeClass = $isGroundMonitor ? 'size-ground-monitor' : 'size-default';
+
+$registerNo = $item['register_no'];
+
+$qrSrc = !empty($item['qr_base64']) 
+    ? $item['qr_base64'] 
+    : 'https://quickchart.io/qr?text=' . urlencode($registerNo) . '&size=120&margin=0';
+
+$logoSrc = !empty($item['logo_base64']) 
+    ? $item['logo_base64'] 
+    : asset('images/esd-safe.png');
+@endphp
+
+<div class="qr-card {{ $sizeClass }}">
+<div class="card-flex">
+
+<!-- TEXT -->
+<div class="text-section">
+<div class="register-text">
+{{ $registerNo }}
+</div>
+</div>
+
+<!-- LOGO -->
+<div class="logo-section">
+<img src="{{ $logoSrc }}">
+</div>
+
+<!-- QR -->
+<div class="qr-section">
+<img src="{{ $qrSrc }}">
+</div>
+
+</div>
+</div>
+
+@endforeach
+
+</div>
+
+<div class="footer">
+Generated by ESD QR Code Printer System | {{ date('Y-m-d H:i:s') }}
+</div>
+
 </body>
 </html>

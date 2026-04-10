@@ -68,16 +68,23 @@
                         </h3>
                         
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <!-- Model Selection -->
                             <div>
-                                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Select Model <span class="text-red-500">*</span></label>
-                                <select wire:model.live="selectedModel" 
-                                        class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                                    <option value="">-- Choose Model --</option>
-                                    @foreach($modelLabels as $value => $label)
-                                        <option value="{{ $value }}">{{ $label }}</option>
-                                    @endforeach
-                                </select>
+                                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                                    Select Model <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <select wire:model.live="selectedModel" 
+                                            class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white appearance-none"
+                                            style="background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2024%2024%22%20fill%3D%22none%22%20stroke%3D%22%23666%22%20stroke-width%3D%222%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%3E%3Cpolyline%20points%3D%226%209%2012%2015%2018%209%22%3E%3C%2Fpolyline%3E%3C%2Fsvg%3E'); 
+                                                background-repeat: no-repeat; 
+                                                background-position: right 1rem center; 
+                                                background-size: 1rem;">
+                                        <option value="">-- Choose Model --</option>
+                                        @foreach($modelLabels as $value => $label)
+                                            <option value="{{ $value }}">{{ $label }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
                             
                             <!-- Search Input -->
@@ -171,7 +178,6 @@
                                     </svg>
                                     Preview - QR Codes
                                 </h3>
-                                <!-- TOMBOL DOWNLOAD PDF -->
                                 <button wire:click="exportPDF" 
                                         class="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -184,47 +190,56 @@
                             <!-- QR Code Cards - Format: TEXT | LOGO | QR -->
                             <div id="qr-codes-container" class="flex flex-wrap gap-2">
                                 @foreach($selectedItems as $item)
-                                    <div class="qr-card border border-black bg-white">
+                                    @php
+                                        // Tentukan ukuran berdasarkan model (tinggi semua 45px)
+                                        $isGroundMonitor = ($item['model'] == 'ground_monitor_box');
                                         
-                                        <div class="flex items-center h-[45px] w-[240px]">
+                                        if ($isGroundMonitor) {
+                                            $cardWidth = 'w-[178px]';
+                                            $logoWidth = 'w-[45px]';
+                                            $qrWidth = 'w-[40px]';
+                                            $textWidth = 'w-[99px]';
+                                            $fontSize = 'text-[8px]';
+                                            $qrImageSize = 'w-6 h-6';
+                                            $textPadding = 'px-1';
+                                        } else {
+                                            $cardWidth = 'w-[240px]';
+                                            $logoWidth = 'w-[55px]';
+                                            $qrWidth = 'w-[55px]';
+                                            $textWidth = 'flex-1';
+                                            $fontSize = 'text-[12px]';
+                                            $qrImageSize = 'w-8 h-7';
+                                            $textPadding = 'px-2';
+                                        }
+                                    @endphp
+                                    
+                                    <div class="qr-card border border-black bg-white">
+                                        <div class="flex items-center h-[45px] {{ $cardWidth }}">
                                             
                                             <!-- LEFT: TEXT -->
-                                            <div class="flex-1 flex items-center justify-center px-2">
-                                                <div class="text-[12px] font-semibold text-black uppercase tracking-wide leading-none">
+                                            <div class="{{ $textWidth }} flex items-center justify-start {{ $textPadding }} overflow-hidden">
+                                                <div class="{{ $fontSize }} font-semibold text-black uppercase tracking-wide leading-tight text-left truncate w-full">
                                                     {{ $item['register_no'] }}
                                                 </div>
                                             </div>
                                             
-                                            <div class="bg-yellow-400 flex items-center justify-center w-[45px] h-full border-l border-r border-black overflow-hidden">
-                                            <img src="{{ asset('images/esd-safe.png') }}" 
-                                                alt="ESD Logo" 
-                                                class="h-full object-contain scale-110 -translate-y-[0.5px]">
+                                            <!-- MIDDLE: LOGO -->
+                                            <div class="bg-yellow-400 flex items-center justify-center {{ $logoWidth }} h-full overflow-hidden p-0 flex-shrink-0">
+                                                <img src="{{ asset('images/esd-safe.png') }}" 
+                                                    alt="ESD Logo" 
+                                                    class="w-full h-full object-contain block">
                                             </div>
                                             
                                             <!-- RIGHT: QR -->
-                                            <div class="flex items-center justify-center w-[45px] h-full">
-                                                <img src="https://quickchart.io/qr?text={{ urlencode($item['register_no']) }}&size=80&margin=0" 
-                                                    class="w-8 h-8"
+                                            <div class="flex items-center justify-center {{ $qrWidth }} h-full flex-shrink-0">
+                                                <img src="https://quickchart.io/qr?text={{ urlencode($item['register_no']) }}&size=120&margin=0" 
+                                                    class="{{ $qrImageSize }}"
                                                     alt="QR Code">
                                             </div>
 
                                         </div>
-
                                     </div>
                                 @endforeach
-                            </div>
-                            
-                            <!-- Print Layout Guide -->
-                            <div class="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                                <div class="flex items-start gap-3">
-                                    <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                    <div class="text-sm text-blue-800 dark:text-blue-200">
-                                        <p class="font-semibold mb-1">Print Information:</p>
-                                        <p class="text-xs">Each QR code card measures approximately 250px width. When printing to PDF, these cards will be arranged in a grid layout. The format follows: <strong>Register Number | ESD Logo (Yellow Background) | QR Code</strong></p>
-                                    </div>
-                                </div>
                             </div>
                         </div>
                     </div>

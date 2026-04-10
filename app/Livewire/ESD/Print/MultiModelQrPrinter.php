@@ -120,57 +120,85 @@ class MultiModelQrPrinter extends Component
     public function exportPDF()
     {
         if (count($this->selectedItems) == 0) {
-            $this->dispatch('notify', message: 'Tidak ada data untuk di export', type: 'error');
+            session()->flash('error', 'Tidak ada data untuk di export');
             return;
         }
 
-        $modelLabels = [
-            'equipment_ground' => 'Equipment Ground',
-            'flooring' => 'Flooring',
-            'ground_monitor_box' => 'Ground Monitor Box',
-            'insulatif_check' => 'Insulatif Check',
-            'ionizer' => 'Ionizer',
-            'magazine' => 'Magazine',
-            'shower' => 'Shower',
-            'soldering' => 'Soldering',
-            'worksurface' => 'Worksurface',
-            'wrist_strap' => 'Wrist Strap',
-        ];
+        // Load logo image
+        $logoPath = public_path('images/esd-safe.png');
+        $logoBase64 = '';
+        
+        if (file_exists($logoPath)) {
+            $logoData = file_get_contents($logoPath);
+            $logoBase64 = 'data:image/png;base64,' . base64_encode($logoData);
+        } else {
+            // Fallback: buat logo sederhana
+            $logoBase64 = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23facc15"%3E%3Cpath d="M12 2L1 7l11 5 11-5-11-5zM1 17l11 5 11-5M1 12l11 5 11-5" stroke="%23000" stroke-width="1"/%3E%3C/svg%3E';
+        }
 
-        // Generate QR Code sebagai base64 menggunakan API eksternal (diambil dari server)
+        // Urutkan items
+        $sortedItems = collect($this->selectedItems)->sortBy(function ($item) {
+            $priority = ['ground_monitor_box' => 1, 'equipment_ground' => 2];
+            return $priority[$item['model']] ?? 999;
+        })->values()->toArray();
+
+        // Generate QR Code untuk setiap item
         $itemsWithQR = [];
-        foreach ($this->selectedItems as $item) {
-            // Download QR code dari API dan convert ke base64
-            $qrUrl = 'https://quickchart.io/qr?text=' . urlencode($item['register_no']) . '&size=150&margin=2';
+        foreach ($sortedItems as $index => $item) {
+            $registerNo = $item['register_no'];
+            
+            // Generate QR code sebagai base64
+            $qrUrl = 'https://quickchart.io/qr?text=' . urlencode($registerNo) . '&size=200&margin=2';
             $qrImage = @file_get_contents($qrUrl);
             
             if ($qrImage === false) {
                 // Fallback ke API lain
-                $qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=' . urlencode($item['register_no']);
+                $qrUrl = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' . urlencode($registerNo);
                 $qrImage = @file_get_contents($qrUrl);
             }
             
-            $qrBase64 = $qrImage !== false ? 'data:image/png;base64,' . base64_encode($qrImage) : '';
+            $qrBase64 = ($qrImage !== false) ? 'data:image/png;base64,' . base64_encode($qrImage) : '';
+            
+            // Jika masih gagal, buat QR code manual via Google Charts API
+            if (empty($qrBase64)) {
+                $qrUrl = 'https://chart.googleapis.com/chart?chs=150x150&cht=qr&chl=' . urlencode($registerNo);
+                $qrImage = @file_get_contents($qrUrl);
+                $qrBase64 = ($qrImage !== false) ? 'data:image/png;base64,' . base64_encode($qrImage) : '';
+            }
             
             $itemsWithQR[] = [
-                'register_no' => $item['register_no'],
+                'register_no' => $registerNo,
                 'model' => $item['model'],
-                'qr_base64' => $qrBase64
+                'qr_base64' => $qrBase64,
+                'logo_base64' => $logoBase64,
             ];
         }
 
+        // Debug: cek apakah data terisi
+        // Log::info('Items with QR:', $itemsWithQR);
+        
         $data = [
             'items' => $itemsWithQR,
-            'modelLabels' => $modelLabels,
             'date' => now()->format('d-m-Y H:i:s'),
-            'total' => count($this->selectedItems)
+            'total' => count($itemsWithQR)
         ];
 
+        // Generate PDF
         $pdf = Pdf::loadView('livewire.esd.print.qr-codes', $data);
         $pdf->setPaper('A4', 'portrait');
         
+        // Download PDF
         return response()->streamDownload(function() use ($pdf) {
             echo $pdf->output();
         }, 'qr-codes-' . date('Y-m-d-His') . '.pdf');
+    }
+
+    public function getCardSize($model)
+    {
+        $sizeMap = [
+            'ground_monitor_box' => ['width' => '227px', 'height' => '45px'],
+        ];
+        
+        return $sizeMap[$model] ?? ['width' => '240px', 'height' => '45px'];
     }
 }
