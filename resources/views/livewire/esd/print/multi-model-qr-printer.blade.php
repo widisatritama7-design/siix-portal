@@ -196,7 +196,7 @@
                                         
                                         if ($isGroundMonitor) {
                                             $cardWidth = 'w-[178px]';
-                                            $logoWidth = 'w-[45px]';
+                                            $logoWidth = 'w-[48px]';
                                             $qrWidth = 'w-[40px]';
                                             $textWidth = 'w-[99px]';
                                             $fontSize = 'text-[8px]';

@@ -1,271 +1,194 @@
+<?php
+// FILE: livewire/esd/print/qr-codes.blade.php
+// VERSI TANPA FLEXBOX - PAKAI TABLE
+?>
+
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>QR Codes - ESD Equipment</title>
-
-<style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    padding: 15px;
-}
-
-/* HEADER */
-.header {
-    text-align: center;
-    margin-bottom: 20px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid #1a56db;
-}
-
-.header h1 {
-    font-size: 20px;
-    color: #1a56db;
-}
-
-.header p {
-    font-size: 11px;
-    color: #666;
-}
-
-.info {
-    text-align: right;
-    font-size: 9px;
-    color: #999;
-    margin-bottom: 15px;
-}
-
-/* CONTAINER */
-.qr-cards-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-}
-
-/* CARD */
-.qr-card {
-    border: 1px solid black;
-    background: white;
-    overflow: hidden;
-    height: 45px;
-}
-
-.card-flex {
-    display: flex;
-    align-items: center;
-    height: 45px;
-}
-
-/* TEXT */
-.text-section {
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-    overflow: hidden;
-}
-
-.register-text {
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: .4px;
-    line-height: 1.1;
-    text-align: left;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-/* LOGO */
-.logo-section {
-    background-color: #facc15;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    overflow: hidden;
-    padding: 0;
-    flex-shrink: 0;
-}
-
-.logo-section img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
-
-/* QR */
-.qr-section {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    flex-shrink: 0;
-}
-
-/* ============================= */
-/* GROUND MONITOR SIZE */
-/* ============================= */
-
-.size-ground-monitor {
-    width: 178px;
-}
-
-.size-ground-monitor .text-section {
-    width: 99px;
-    padding: 0 4px;
-}
-
-.size-ground-monitor .register-text {
-    font-size: 8px;
-}
-
-.size-ground-monitor .logo-section {
-    width: 45px;
-}
-
-.size-ground-monitor .qr-section {
-    width: 40px;
-}
-
-.size-ground-monitor .qr-section img {
-    width: 24px;
-    height: 24px;
-}
-
-/* ============================= */
-/* DEFAULT SIZE */
-/* ============================= */
-
-.size-default {
-    width: 240px;
-}
-
-.size-default .text-section {
-    flex: 1;
-    padding: 0 8px;
-}
-
-.size-default .register-text {
-    font-size: 12px;
-}
-
-.size-default .logo-section {
-    width: 55px;
-}
-
-.size-default .qr-section {
-    width: 55px;
-}
-
-.size-default .qr-section img {
-    width: 32px;
-    height: 28px;
-}
-
-/* FOOTER */
-.footer {
-    text-align: center;
-    margin-top: 25px;
-    font-size: 9px;
-    color: #999;
-    padding-top: 10px;
-    border-top: 1px solid #eee;
-}
-
-/* PRINT */
-@page {
-    size: A4;
-    margin: 1cm;
-}
-
-@media print {
-
-body {
-    padding: 0;
-}
-
-.qr-card {
-    break-inside: avoid;
-    page-break-inside: avoid;
-}
-
-.logo-section {
-    background-color: #facc15 !important;
-    print-color-adjust: exact;
-    -webkit-print-color-adjust: exact;
-}
-
-}
-</style>
+    <meta charset="utf-8">
+    <title>ESD QR Codes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background: white;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #333;
+        }
+        
+        .header h1 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            font-size: 11px;
+            color: #666;
+        }
+        
+        /* PAKAI TABLE LAYOUT - PALING AMAN UNTUK DOMPDF */
+        .qr-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+        
+        .qr-table td {
+            padding: 5px;
+            vertical-align: top;
+            width: 25%; /* 4 kolom */
+        }
+        
+        .qr-card {
+            border: 1px solid #000;
+            background: white;
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+        
+        .card-content {
+            width: 100%;
+            display: table;
+            table-layout: fixed;
+        }
+        
+        .card-text {
+            display: table-cell;
+            vertical-align: middle;
+            padding: 8px;
+            background: white;
+        }
+        
+        .card-logo {
+            display: table-cell;
+            vertical-align: middle;
+            width: 55px;
+            background: #facc15;
+            text-align: center;
+            padding: 5px;
+        }
+        
+        .card-qr {
+            display: table-cell;
+            vertical-align: middle;
+            width: 65px;
+            background: white;
+            text-align: center;
+            padding: 5px;
+            border-left: 1px solid #ddd;
+        }
+        
+        .register-text {
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 10px;
+            line-height: 1.3;
+            word-wrap: break-word;
+        }
+        
+        /* GMB specific */
+        .card-gmb .register-text {
+            font-size: 8px;
+        }
+        
+        .logo-img {
+            max-width: 48px;
+            max-height: 48px;
+        }
+        
+        .qr-img {
+            max-width: 55px;
+            max-height: 55px;
+        }
+        
+        .footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 9px;
+            color: #999;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: white;
+        }
+        
+        @media print {
+            .card-logo {
+                background-color: #facc15 !important;
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+            }
+        }
+    </style>
 </head>
-
 <body>
-
-<div class="header">
-    <h1>ESD Equipment QR Codes</h1>
-    <p>Electrostatic Discharge Equipment Identification System</p>
-</div>
-
-<div class="info">
-    Printed: {{ $date ?? date('d-m-Y H:i:s') }} 
-    | Total: {{ $total ?? 0 }} items
-</div>
-
-<div class="qr-cards-container">
-
-@foreach($items as $item)
-
-@php
-$isGroundMonitor = ($item['model'] == 'ground_monitor_box');
-$sizeClass = $isGroundMonitor ? 'size-ground-monitor' : 'size-default';
-
-$registerNo = $item['register_no'];
-
-$qrSrc = !empty($item['qr_base64']) 
-    ? $item['qr_base64'] 
-    : 'https://quickchart.io/qr?text=' . urlencode($registerNo) . '&size=120&margin=0';
-
-$logoSrc = !empty($item['logo_base64']) 
-    ? $item['logo_base64'] 
-    : asset('images/esd-safe.png');
-@endphp
-
-<div class="qr-card {{ $sizeClass }}">
-<div class="card-flex">
-
-<!-- TEXT -->
-<div class="text-section">
-<div class="register-text">
-{{ $registerNo }}
-</div>
-</div>
-
-<!-- LOGO -->
-<div class="logo-section">
-<img src="{{ $logoSrc }}">
-</div>
-
-<!-- QR -->
-<div class="qr-section">
-<img src="{{ $qrSrc }}">
-</div>
-
-</div>
-</div>
-
-@endforeach
-
-</div>
-
-<div class="footer">
-Generated by ESD QR Code Printer System | {{ date('Y-m-d H:i:s') }}
-</div>
-
+    <div class="header">
+        <h1>ELECTROSTATIC DISCHARGE (ESD) QR CODES</h1>
+        <p>Generated on: {{ $date }} | Total QR Codes: {{ $total }}</p>
+    </div>
+    
+    <table class="qr-table" cellpadding="0" cellspacing="0">
+        @php
+            $cols = 4;
+            $itemsCount = count($items);
+        @endphp
+        
+        @for($i = 0; $i < $itemsCount; $i += $cols)
+            <tr>
+                @for($j = 0; $j < $cols && ($i + $j) < $itemsCount; $j++)
+                    @php
+                        $item = $items[$i + $j];
+                        $isGmb = ($item['model'] == 'ground_monitor_box');
+                        $cardClass = $isGmb ? 'card-gmb' : 'card-other';
+                    @endphp
+                    <td align="left" valign="top">
+                        <div class="qr-card {{ $cardClass }}">
+                            <div class="card-content">
+                                <div class="card-text">
+                                    <div class="register-text">{{ $item['register_no'] }}</div>
+                                </div>
+                                <div class="card-logo">
+                                    @if(!empty($item['logo_base64']))
+                                        <img src="{{ $item['logo_base64'] }}" class="logo-img" alt="ESD Logo">
+                                    @else
+                                        <span style="font-size: 10px;">ESD</span>
+                                    @endif
+                                </div>
+                                <div class="card-qr">
+                                    @if(!empty($item['qr_base64']))
+                                        <img src="{{ $item['qr_base64'] }}" class="qr-img" alt="QR">
+                                    @else
+                                        <span style="font-size: 8px;">No QR</span>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                @endfor
+                
+                @for($k = 0; $k < $cols - min($cols, $itemsCount - $i); $k++)
+                    <td>&nbsp;</td>
+                @endfor
+            </tr>
+        @endfor
+    </table>
+    
+    <div class="footer">
+        <p>ESD Safe - Quality Management System | This document is system generated</p>
+    </div>
 </body>
 </html>
