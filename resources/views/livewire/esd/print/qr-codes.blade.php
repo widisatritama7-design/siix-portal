@@ -1,194 +1,247 @@
-<?php
-// FILE: livewire/esd/print/qr-codes.blade.php
-// VERSI TANPA FLEXBOX - PAKAI TABLE
-?>
-
+{{-- resources/views/livewire/esd/print/qr-codes.blade.php --}}
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8">
     <title>ESD QR Codes</title>
+
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: Arial, Helvetica, sans-serif;
             background: white;
-            padding: 20px;
+            padding: 15px;
         }
-        
+
+        /* HEADER */
         .header {
             text-align: center;
             margin-bottom: 20px;
             padding-bottom: 10px;
             border-bottom: 2px solid #333;
         }
-        
+
         .header h1 {
-            font-size: 18px;
+            font-size: 16px;
             margin-bottom: 5px;
         }
-        
+
         .header p {
-            font-size: 11px;
+            font-size: 10px;
             color: #666;
         }
-        
-        /* PAKAI TABLE LAYOUT - PALING AMAN UNTUK DOMPDF */
-        .qr-table {
+
+        /* ======================================== */
+        /* CONTAINER */
+        /* ======================================== */
+        .qr-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
             width: 100%;
-            border-collapse: collapse;
-            table-layout: fixed;
         }
-        
-        .qr-table td {
-            padding: 5px;
-            vertical-align: top;
-            width: 25%; /* 4 kolom */
+
+        .qr-row {
+            display: flex;
+            flex-direction: row;
+            gap: 12px;
+            width: 100%;
         }
-        
+
+        /* ======================================== */
+        /* CARD */
+        /* ======================================== */
         .qr-card {
             border: 1px solid #000;
             background: white;
             page-break-inside: avoid;
             break-inside: avoid;
+            padding: 2px 0;
         }
-        
-        .card-content {
+
+        .qr-card.card-gmb {
+            width: 4.7cm;
+            min-height: 1.6cm;
+        }
+
+        .qr-card.card-other {
+            width: 6cm;
+            min-height: 1.6cm;
+        }
+
+        /* TABLE */
+        .card-table {
             width: 100%;
-            display: table;
+            border-collapse: collapse;
             table-layout: fixed;
+            height: 100%;
         }
-        
-        .card-text {
-            display: table-cell;
+
+        .card-table td {
             vertical-align: middle;
-            padding: 8px;
-            background: white;
+            padding: 0;
         }
-        
-        .card-logo {
-            display: table-cell;
-            vertical-align: middle;
-            width: 55px;
-            background: #facc15;
-            text-align: center;
-            padding: 5px;
+
+        /* FLEX WRAPPER (INI KUNCI CENTER) */
+        .cell-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
         }
-        
-        .card-qr {
-            display: table-cell;
-            vertical-align: middle;
-            width: 65px;
-            background: white;
-            text-align: center;
-            padding: 5px;
-            border-left: 1px solid #ddd;
-        }
-        
+
+        /* COLUMN WIDTH */
+        .text-cell { width: 60%; padding: 0 4px; }
+        .logo-cell { width: 20%; background-color: #facc15; }
+        .qr-cell   { width: 20%; }
+
+        /* TEXT */
         .register-text {
             font-weight: bold;
             text-transform: uppercase;
-            font-size: 10px;
-            line-height: 1.3;
-            word-wrap: break-word;
+            word-break: break-word;
+            text-align: center;
         }
-        
-        /* GMB specific */
-        .card-gmb .register-text {
-            font-size: 8px;
-        }
-        
-        .logo-img {
-            max-width: 48px;
-            max-height: 48px;
-        }
-        
+
+        .card-gmb .register-text { font-size: 7px; }
+        .card-other .register-text { font-size: 9px; }
+
+        /* IMAGE */
+        .logo-img,
         .qr-img {
-            max-width: 55px;
-            max-height: 55px;
+            display: block;
+            max-width: 100%;
         }
-        
+
+        .card-gmb .logo-img,
+        .card-gmb .qr-img {
+            max-height: 28px;
+        }
+
+        .card-other .logo-img,
+        .card-other .qr-img {
+            max-height: 36px;
+        }
+
+        /* FOOTER */
         .footer {
             margin-top: 20px;
             text-align: center;
-            font-size: 9px;
+            font-size: 8px;
             color: #999;
             border-top: 1px solid #ddd;
-            padding-top: 10px;
+            padding-top: 8px;
             position: fixed;
             bottom: 0;
             width: 100%;
             background: white;
         }
-        
+
+        /* PRINT */
         @media print {
-            .card-logo {
+            body {
+                padding: 0;
+                margin: 0;
+            }
+
+            .logo-cell {
                 background-color: #facc15 !important;
                 print-color-adjust: exact;
                 -webkit-print-color-adjust: exact;
             }
+
+            .qr-card {
+                border: 1px solid #000 !important;
+            }
         }
     </style>
 </head>
+
 <body>
-    <div class="header">
-        <h1>ELECTROSTATIC DISCHARGE (ESD) QR CODES</h1>
-        <p>Generated on: {{ $date }} | Total QR Codes: {{ $total }}</p>
-    </div>
-    
-    <table class="qr-table" cellpadding="0" cellspacing="0">
-        @php
-            $cols = 4;
-            $itemsCount = count($items);
-        @endphp
-        
-        @for($i = 0; $i < $itemsCount; $i += $cols)
-            <tr>
-                @for($j = 0; $j < $cols && ($i + $j) < $itemsCount; $j++)
+
+<div class="header">
+    <h1>ELECTROSTATIC DISCHARGE (ESD) QR CODES</h1>
+    <p>Generated on: {{ $date }} | Total QR Codes: {{ $total }}</p>
+</div>
+
+<div class="qr-container">
+    @php
+        $cols = 4;
+        $itemsCount = count($items);
+        $rows = ceil($itemsCount / $cols);
+    @endphp
+
+    @for($row = 0; $row < $rows; $row++)
+        <div class="qr-row">
+
+            @for($col = 0; $col < $cols; $col++)
+                @php
+                    $index = ($row * $cols) + $col;
+                @endphp
+
+                @if($index < $itemsCount)
                     @php
-                        $item = $items[$i + $j];
+                        $item = $items[$index];
                         $isGmb = ($item['model'] == 'ground_monitor_box');
                         $cardClass = $isGmb ? 'card-gmb' : 'card-other';
                     @endphp
-                    <td align="left" valign="top">
-                        <div class="qr-card {{ $cardClass }}">
-                            <div class="card-content">
-                                <div class="card-text">
-                                    <div class="register-text">{{ $item['register_no'] }}</div>
-                                </div>
-                                <div class="card-logo">
-                                    @if(!empty($item['logo_base64']))
-                                        <img src="{{ $item['logo_base64'] }}" class="logo-img" alt="ESD Logo">
-                                    @else
-                                        <span style="font-size: 10px;">ESD</span>
-                                    @endif
-                                </div>
-                                <div class="card-qr">
-                                    @if(!empty($item['qr_base64']))
-                                        <img src="{{ $item['qr_base64'] }}" class="qr-img" alt="QR">
-                                    @else
-                                        <span style="font-size: 8px;">No QR</span>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    </td>
-                @endfor
-                
-                @for($k = 0; $k < $cols - min($cols, $itemsCount - $i); $k++)
-                    <td>&nbsp;</td>
-                @endfor
-            </tr>
-        @endfor
-    </table>
-    
-    <div class="footer">
-        <p>ESD Safe - Quality Management System | This document is system generated</p>
-    </div>
+
+                    <div class="qr-card {{ $cardClass }}">
+                        <table class="card-table">
+                            <tr>
+                                <!-- TEXT -->
+                                <td class="text-cell">
+                                    <div class="cell-content">
+                                        <div class="register-text">
+                                            {{ $item['register_no'] }}
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <!-- LOGO -->
+                                <td class="logo-cell">
+                                    <div class="cell-content">
+                                        @if(!empty($item['logo_base64']))
+                                            <img src="{{ $item['logo_base64'] }}" class="logo-img">
+                                        @else
+                                            <span style="font-size:7px;font-weight:bold;">ESD</span>
+                                        @endif
+                                    </div>
+                                </td>
+
+                                <!-- QR -->
+                                <td class="qr-cell">
+                                    <div class="cell-content">
+                                        @if(!empty($item['qr_base64']))
+                                            <img src="{{ $item['qr_base64'] }}" class="qr-img">
+                                        @else
+                                            <span style="font-size:6px;">No QR</span>
+                                        @endif
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                @else
+                    <div style="width:6cm; visibility:hidden;"></div>
+                @endif
+
+            @endfor
+
+        </div>
+    @endfor
+</div>
+
+<div class="footer">
+    <p>ESD Safe - Quality Management System | This document is system generated</p>
+</div>
+
 </body>
 </html>

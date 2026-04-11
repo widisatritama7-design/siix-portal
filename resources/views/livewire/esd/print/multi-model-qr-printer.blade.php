@@ -200,7 +200,7 @@
                                             $qrWidth = 'w-[40px]';
                                             $textWidth = 'w-[99px]';
                                             $fontSize = 'text-[8px]';
-                                            $qrImageSize = 'w-6 h-6';
+                                            $qrImageSize = 'w-8 h-7';
                                             $textPadding = 'px-1';
                                         } else {
                                             $cardWidth = 'w-[240px]';

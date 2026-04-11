@@ -163,18 +163,18 @@
                         <div class="space-y-1 ml-[30px]">
                         <a href="{{ route('dashboard') }}" wire:navigate
                         class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('dashboard') ? 'menu-active' : '' }}">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
-                                <path fill-rule="evenodd" d="M2.25 13.5a8.25 8.25 0 0 1 8.25-8.25.75.75 0 0 1 .75.75v6.75H18a.75.75 0 0 1 .75.75 8.25 8.25 0 0 1-16.5 0Z" clip-rule="evenodd" />
-                                <path fill-rule="evenodd" d="M12.75 3a.75.75 0 0 1 .75-.75 8.25 8.25 0 0 1 8.25 8.25.75.75 0 0 1-.75.75h-7.5a.75.75 0 0 1-.75-.75V3Z" clip-rule="evenodd" />
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gauge-icon lucide-gauge w-4 h-4">
+                                <path d="m12 14 4-4"/>
+                                <path d="M3.34 19a10 10 0 1 1 17.32 0"/>
                             </svg>
                             <span class="truncate">Main Dashboard</span>
                         </a>
                         @can('view dcc-dashboard')
                         <a href="{{ route('dcc-dashboard') }}" wire:navigate
                         class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('dcc-dashboard') ? 'menu-active' : '' }}">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
-                                <path fill-rule="evenodd" d="M2.25 13.5a8.25 8.25 0 0 1 8.25-8.25.75.75 0 0 1 .75.75v6.75H18a.75.75 0 0 1 .75.75 8.25 8.25 0 0 1-16.5 0Z" clip-rule="evenodd" />
-                                <path fill-rule="evenodd" d="M12.75 3a.75.75 0 0 1 .75-.75 8.25 8.25 0 0 1 8.25 8.25.75.75 0 0 1-.75.75h-7.5a.75.75 0 0 1-.75-.75V3Z" clip-rule="evenodd" />
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gauge-icon lucide-gauge w-4 h-4">
+                                <path d="m12 14 4-4"/>
+                                <path d="M3.34 19a10 10 0 1 1 17.32 0"/>
                             </svg>
                             <span class="truncate">DCC Dashboard</span>
                         </a>
@@ -182,19 +182,29 @@
                         @can('view hr-dashboard')
                         <a href="{{ route('hr-dashboard') }}" wire:navigate
                         class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('hr-dashboard') ? 'menu-active' : '' }}">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
-                                <path fill-rule="evenodd" d="M2.25 13.5a8.25 8.25 0 0 1 8.25-8.25.75.75 0 0 1 .75.75v6.75H18a.75.75 0 0 1 .75.75 8.25 8.25 0 0 1-16.5 0Z" clip-rule="evenodd" />
-                                <path fill-rule="evenodd" d="M12.75 3a.75.75 0 0 1 .75-.75 8.25 8.25 0 0 1 8.25 8.25.75.75 0 0 1-.75.75h-7.5a.75.75 0 0 1-.75-.75V3Z" clip-rule="evenodd" />
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gauge-icon lucide-gauge w-4 h-4">
+                                <path d="m12 14 4-4"/>
+                                <path d="M3.34 19a10 10 0 1 1 17.32 0"/>
                             </svg>
                             <span class="truncate">HR Dashboard</span>
+                        </a>
+                        @endcan
+                        @can('view esd-dashboard')
+                        <a href="{{ route('esd-dashboard') }}" wire:navigate
+                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('esd-dashboard') ? 'menu-active' : '' }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gauge-icon lucide-gauge w-4 h-4">
+                                <path d="m12 14 4-4"/>
+                                <path d="M3.34 19a10 10 0 1 1 17.32 0"/>
+                            </svg>
+                            <span class="truncate">ESD Dashboard</span>
                         </a>
                         @endcan
                         @can('view ticket-dashboard')
                         <a href="{{ route('ticket-dashboard') }}" wire:navigate
                         class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('ticket-dashboard') ? 'menu-active' : '' }}">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
-                                <path fill-rule="evenodd" d="M2.25 13.5a8.25 8.25 0 0 1 8.25-8.25.75.75 0 0 1 .75.75v6.75H18a.75.75 0 0 1 .75.75 8.25 8.25 0 0 1-16.5 0Z" clip-rule="evenodd" />
-                                <path fill-rule="evenodd" d="M12.75 3a.75.75 0 0 1 .75-.75 8.25 8.25 0 0 1 8.25 8.25.75.75 0 0 1-.75.75h-7.5a.75.75 0 0 1-.75-.75V3Z" clip-rule="evenodd" />
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gauge-icon lucide-gauge w-4 h-4">
+                                <path d="m12 14 4-4"/>
+                                <path d="M3.34 19a10 10 0 1 1 17.32 0"/>
                             </svg>
                             <span class="truncate">Ticket Dashboard</span>
                         </a>
@@ -260,6 +270,26 @@
                             <span class="truncate">ESD Monitoring</span>
                         </a>
                         @endcan
+                        <a href="{{ route('mtc.master-areas') }}" wire:navigate
+                           class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('mtc.master-areas') ? 'menu-active' : '' }}">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cog-icon lucide-cog w-4 h-4">
+                                <path d="M11 10.27 7 3.34"/>
+                                <path d="m11 13.73-4 6.93"/>
+                                <path d="M12 22v-2"/>
+                                <path d="M12 2v2"/>
+                                <path d="M14 12h8"/>
+                                <path d="m17 20.66-1-1.73"/>
+                                <path d="m17 3.34-1 1.73"/>
+                                <path d="M2 12h2"/>
+                                <path d="m20.66 17-1.73-1"/>
+                                <path d="m20.66 7-1.73 1"/>
+                                <path d="m3.34 17 1.73-1"/>
+                                <path d="m3.34 7 1.73 1"/>
+                                <circle cx="12" cy="12" r="2"/>
+                                <circle cx="12" cy="12" r="8"/>
+                            </svg>
+                            <span class="truncate">MTC Monitoring</span>
+                        </a>
                         </div>
                     </div>
                 </div>

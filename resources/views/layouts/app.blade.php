@@ -2,4 +2,6 @@
     <flux:main>
         {{ $slot }}
     </flux:main>
+    
+    @stack('scripts')
 </x-layouts::app.sidebar>

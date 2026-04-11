@@ -32,6 +32,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('dcc-dashboard', 'home.dcc_dashboard')->name('dcc-dashboard');
     Route::view('hr-dashboard', 'home.hr_dashboard')->name('hr-dashboard');
     Route::view('ticket-dashboard', 'home.ticket_dashboard')->name('ticket-dashboard');
+    Route::view('esd-dashboard', 'home.esd_dashboard')->name('esd-dashboard');
 
     // Notification
     Route::get('/notifications', NotificationManager::class)->name('notifications.manager');
@@ -73,3 +74,4 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 require __DIR__.'/settings.php';
 require __DIR__.'/esd.php';
+require __DIR__.'/mtc.php';
