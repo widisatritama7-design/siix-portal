@@ -16,10 +16,7 @@
                         Dashboard
                     </flux:breadcrumbs.item>
                     <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
-                        MTC
-                    </flux:breadcrumbs.item>
-                    <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
-                        Master
+                        Maintenance
                     </flux:breadcrumbs.item>
                     <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
                         Machine

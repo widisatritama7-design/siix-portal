@@ -76,6 +76,26 @@
                 ->orderBy('login_at', 'desc')
                 ->first();
             
+            // Calculate session remaining time (1 hour limit)
+            $sessionRemainingSeconds = 0;
+            $sessionExpired = false;
+            $sessionDurationMinutes = 0; // Durasi session saat ini dalam menit
+            if ($activeSession && $activeSession->login_at) {
+                $loginTime = \Carbon\Carbon::parse($activeSession->login_at)->setTimezone('Asia/Jakarta');
+                $sessionEndTime = $loginTime->copy()->addHours(1); // 1 hour limit
+                $now = now()->setTimezone('Asia/Jakarta');
+                
+                // Hitung durasi session saat ini
+                $sessionDurationMinutes = $loginTime->diffInMinutes($now);
+                
+                if ($now->gte($sessionEndTime)) {
+                    $sessionExpired = true;
+                    $sessionRemainingSeconds = 0;
+                } else {
+                    $sessionRemainingSeconds = $now->diffInSeconds($sessionEndTime, false);
+                }
+            }
+            
             // Get today's sessions
             $todaySessions = DB::table('session_analytics')
                 ->where('user_id', $userId)
@@ -88,34 +108,124 @@
                 ->orderBy('login_at', 'desc')
                 ->first();
             
-            // Calculate average session duration for this user
-            $avgSessionDuration = DB::table('session_analytics')
+            // ==================== PAGE VIEWS DISTRIBUTION BY SESSION DURATION ====================
+            // Get all sessions for today
+            $allSessions = DB::table('session_analytics')
                 ->where('user_id', $userId)
-                ->whereNotNull('duration_seconds')
-                ->avg('duration_seconds');
+                ->whereDate('login_at', $today)
+                ->get();
             
-            $avgSessionMinutes = $avgSessionDuration ? round($avgSessionDuration / 60) : 0;
+            // Initialize counters for page views in each session duration category
+            $pageViewsDistribution = [
+                '0_5' => 0,      // 0-5 menit
+                '5_10' => 0,     // 5-10 menit
+                '10_30' => 0,    // 10-30 menit
+                '30_60' => 0,    // 30-60 menit
+            ];
+            
+            // For each session, get its page views and categorize by when they occurred
+            foreach ($allSessions as $session) {
+                $loginTime = \Carbon\Carbon::parse($session->login_at)->setTimezone('Asia/Jakarta');
+                $sessionEndTime = $loginTime->copy()->addHours(1); // Max 1 hour
+                
+                // Get all page views for this session
+                $sessionPageViews = DB::table('page_views')
+                    ->where('user_id', $userId)
+                    ->whereBetween('created_at', [$loginTime, $sessionEndTime])
+                    ->whereNotIn('page', ['livewire', 'livewire/*', 'livewire/update'])
+                    ->orderBy('created_at', 'asc')
+                    ->get();
+                
+                // Categorize each page view based on when it occurred in the session
+                foreach ($sessionPageViews as $pageView) {
+                    $viewTime = \Carbon\Carbon::parse($pageView->created_at)->setTimezone('Asia/Jakarta');
+                    $minutesAfterLogin = $loginTime->diffInMinutes($viewTime);
+                    
+                    if ($minutesAfterLogin >= 0 && $minutesAfterLogin < 5) {
+                        $pageViewsDistribution['0_5']++;
+                    } elseif ($minutesAfterLogin >= 5 && $minutesAfterLogin < 10) {
+                        $pageViewsDistribution['5_10']++;
+                    } elseif ($minutesAfterLogin >= 10 && $minutesAfterLogin < 30) {
+                        $pageViewsDistribution['10_30']++;
+                    } elseif ($minutesAfterLogin >= 30 && $minutesAfterLogin <= 60) {
+                        $pageViewsDistribution['30_60']++;
+                    }
+                }
+            }
+            
+            // Calculate total page views for distribution
+            $totalPageViewsForDist = array_sum($pageViewsDistribution);
+            if ($totalPageViewsForDist == 0) {
+                $totalPageViewsForDist = 1;
+            }
+            
+            // Calculate percentages
+            $percent0_5 = round(($pageViewsDistribution['0_5'] / $totalPageViewsForDist) * 100);
+            $percent5_10 = round(($pageViewsDistribution['5_10'] / $totalPageViewsForDist) * 100);
+            $percent10_30 = round(($pageViewsDistribution['10_30'] / $totalPageViewsForDist) * 100);
+            $percent30_60 = round(($pageViewsDistribution['30_60'] / $totalPageViewsForDist) * 100);
+            
+            // Adjust percentages to ensure total = 100%
+            $totalPercent = $percent0_5 + $percent5_10 + $percent10_30 + $percent30_60;
+            if ($totalPercent != 100 && $totalPercent > 0) {
+                $diff = 100 - $totalPercent;
+                // Add diff to the largest category
+                $percentages = [
+                    '0_5' => &$percent0_5,
+                    '5_10' => &$percent5_10,
+                    '10_30' => &$percent10_30,
+                    '30_60' => &$percent30_60
+                ];
+                arsort($percentages);
+                foreach ($percentages as $key => &$value) {
+                    $value += $diff;
+                    break;
+                }
+            }
+            
+            // Get current session's page view category for active session
+            $currentPageViewCategory = '';
+            if ($activeSession) {
+                if ($sessionDurationMinutes >= 0 && $sessionDurationMinutes < 5) {
+                    $currentPageViewCategory = '0-5 minutes';
+                } elseif ($sessionDurationMinutes >= 5 && $sessionDurationMinutes < 10) {
+                    $currentPageViewCategory = '5-10 minutes';
+                } elseif ($sessionDurationMinutes >= 10 && $sessionDurationMinutes < 30) {
+                    $currentPageViewCategory = '10-30 minutes';
+                } elseif ($sessionDurationMinutes >= 30 && $sessionDurationMinutes <= 60) {
+                    $currentPageViewCategory = '30-60 minutes';
+                }
+            }
             
             // ==================== USER ACTIVITIES ====================
-            // Get today's activities
+            // Get today's activities (filter out Livewire-related activities)
             $todayActivities = DB::table('user_activities')
                 ->where('user_id', $userId)
                 ->whereDate('created_at', $today)
+                ->whereNotIn('action', ['livewire', 'wire:navigate', 'wire:submit', 'wire:click'])
+                ->whereNotIn('description', ['Livewire component update', 'Livewire navigation'])
+                ->whereNull('ip_address')
                 ->count();
             
-            // Get activities by type today
+            // Get activities by type today (filter out Livewire)
             $activitiesByType = DB::table('user_activities')
                 ->where('user_id', $userId)
                 ->whereDate('created_at', $today)
+                ->whereNotIn('action', ['livewire', 'wire:navigate', 'wire:submit', 'wire:click'])
+                ->whereNotIn('description', ['Livewire component update', 'Livewire navigation'])
+                ->whereNull('ip_address')
                 ->select('action', DB::raw('COUNT(*) as count'))
                 ->groupBy('action')
                 ->get()
                 ->keyBy('action');
             
-            // Get hourly activity data
+            // Get hourly activity data (filter out Livewire)
             $hourlyActivity = DB::table('user_activities')
                 ->where('user_id', $userId)
                 ->whereDate('created_at', $today)
+                ->whereNotIn('action', ['livewire', 'wire:navigate', 'wire:submit', 'wire:click'])
+                ->whereNotIn('description', ['Livewire component update', 'Livewire navigation'])
+                ->whereNull('ip_address')
                 ->select(DB::raw('HOUR(created_at) as hour'), DB::raw('COUNT(*) as count'))
                 ->groupBy('hour')
                 ->orderBy('hour')
@@ -123,34 +233,38 @@
                 ->keyBy('hour');
             
             // ==================== PAGE VIEWS ====================
-            // Get today's page views
+            // Get today's page views (filter out Livewire routes)
             $todayPageViews = DB::table('page_views')
                 ->where('user_id', $userId)
                 ->whereDate('created_at', $today)
+                ->whereNotIn('page', ['livewire', 'livewire/*', 'livewire/update'])
                 ->count();
             
-            // Get unique pages visited today
+            // Get unique pages visited today (filter out Livewire)
             $uniquePagesToday = DB::table('page_views')
                 ->where('user_id', $userId)
                 ->whereDate('created_at', $today)
+                ->whereNotIn('page', ['livewire', 'livewire/*', 'livewire/update'])
                 ->distinct('page')
                 ->count('page');
             
-            // Get most visited pages
+            // Get most visited pages (filter out Livewire)
             $topPages = DB::table('page_views')
                 ->where('user_id', $userId)
                 ->whereDate('created_at', $today)
+                ->whereNotIn('page', ['livewire', 'livewire/*', 'livewire/update', 'null'])
+                ->whereNotNull('page')
                 ->select('page', DB::raw('COUNT(*) as views'))
                 ->groupBy('page')
                 ->orderBy('views', 'desc')
                 ->limit(5)
                 ->get();
             
-            // ==================== COMBINED STATS ====================
-            // Check if user is active now (activity in last 5 minutes)
+            // Check if user is active now
             $activeNow = DB::table('user_activities')
                 ->where('user_id', $userId)
                 ->where('created_at', '>=', $now->copy()->subMinutes(5))
+                ->whereNotIn('action', ['livewire', 'wire:navigate', 'wire:submit', 'wire:click'])
                 ->exists() || ($activeSession && $activeSession->login_at >= $now->copy()->subMinutes(5));
             
             // Generate data untuk chart (24 jam)
@@ -163,225 +277,326 @@
             }
             
             $maxActivity = !empty($activityData) ? max($activityData) : 1;
-            
-            // ==================== RECENT ACTIVITIES (Combined) ====================
-            // Get recent user activities
-            $recentActivities = DB::table('user_activities')
-                ->where('user_id', $userId)
-                ->orderBy('created_at', 'desc')
-                ->limit(10)
-                ->get()
-                ->map(function($item) {
-                    return (object)[
-                        'type' => 'activity',
-                        'action' => $item->action,
-                        'description' => $item->description,
-                        'created_at' => $item->created_at,
-                        'icon' => $item->action == 'login' ? 'arrow-right-end-on-rectangle' : 
-                                ($item->action == 'logout' ? 'arrow-left-start-on-rectangle' : 
-                                ($item->action == 'create' ? 'plus' : 
-                                ($item->action == 'update' ? 'pencil-square' : 
-                                ($item->action == 'download' ? 'arrow-down-tray' : 'eye')))),
-                        'color' => $item->action == 'login' ? 'text-green-500 bg-green-100' : 
-                                  ($item->action == 'logout' ? 'text-orange-500 bg-orange-100' : 
-                                  ($item->action == 'create' ? 'text-blue-500 bg-blue-100' : 
-                                  ($item->action == 'update' ? 'text-purple-500 bg-purple-100' : 
-                                  ($item->action == 'download' ? 'text-amber-500 bg-amber-100' : 
-                                  'text-zinc-500 bg-zinc-100'))))
-                    ];
-                });
-            
-            // Get recent page views
-            $recentPageViews = DB::table('page_views')
-                ->where('user_id', $userId)
-                ->orderBy('created_at', 'desc')
-                ->limit(10)
-                ->get()
-                ->map(function($item) {
-                    return (object)[
-                        'type' => 'page_view',
-                        'action' => 'view',
-                        'description' => 'Visited ' . $item->page,
-                        'page' => $item->page,
-                        'page' => $item->page,
-                        'created_at' => $item->created_at,
-                        'icon' => 'eye',
-                        'color' => 'text-blue-500 bg-blue-100'
-                    ];
-                });
-            
-            // Combine and sort by created_at
-            $allRecent = collect($recentActivities)
-                ->concat($recentPageViews)
-                ->sortByDesc('created_at')
-                ->take(20)
-                ->values();
-            
-            // Session statistics for distribution
-            $totalActivities = DB::table('user_activities')
-                ->where('user_id', $userId)
-                ->count() ?: 1;
-            
-            $lt5min = DB::table('user_activities')
-                ->where('user_id', $userId)
-                ->where('created_at', '>=', $now->copy()->subMinutes(5))
-                ->count();
-            $lt5minPercent = round(($lt5min / $totalActivities) * 100);
-            
-            $lt15min = DB::table('user_activities')
-                ->where('user_id', $userId)
-                ->whereBetween('created_at', [$now->copy()->subMinutes(15), $now->copy()->subMinutes(5)])
-                ->count();
-            $lt15minPercent = round(($lt15min / $totalActivities) * 100);
-            
-            $lt30min = DB::table('user_activities')
-                ->where('user_id', $userId)
-                ->whereBetween('created_at', [$now->copy()->subMinutes(30), $now->copy()->subMinutes(15)])
-                ->count();
-            $lt30minPercent = round(($lt30min / $totalActivities) * 100);
-            
-            $gt30min = DB::table('user_activities')
-                ->where('user_id', $userId)
-                ->where('created_at', '<', $now->copy()->subMinutes(30))
-                ->count();
-            $gt30minPercent = round(($gt30min / $totalActivities) * 100);
         @endphp
 
-        <!-- Recent Activity and Session Stats -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-4">
-            <!-- Recent Activity Timeline -->
-            <div class="w-full">
-                <flux:card class="p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 h-full">
+        <!-- Two Column Layout: Left (Most Visited Pages) and Right (Stats + Page Views Distribution) -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
+            
+            <!-- LEFT COLUMN: Most Visited Pages Today -->
+            <div class="lg:col-span-1 flex flex-col">
+                <flux:card class="p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 flex-1">
                     <div class="flex items-center justify-between mb-4">
                         <div>
-                            <flux:heading size="lg">Your Recent Activity</flux:heading>
-                            <flux:subheading>Your latest 5 activities</flux:subheading>
+                            <flux:heading size="lg">Most Visited Pages Today</flux:heading>
+                            <flux:subheading>Pages you've visited the most</flux:subheading>
                         </div>
-                        <flux:badge color="blue" size="sm">Real-time</flux:badge>
+                        <flux:badge color="blue" size="sm">Top 5</flux:badge>
                     </div>
                     
-                    <div class="space-y-4">
-                        @forelse($allRecent->take(5) as $activity)
-                            <div class="flex items-start gap-3 group hover:bg-zinc-50 dark:hover:bg-zinc-800/50 p-2 rounded-lg transition-colors">
-                                <div class="flex-shrink-0">
-                                    <div class="w-8 h-8 rounded-full {{ $activity->color }} dark:{{ str_replace('bg-', 'dark:bg-', $activity->color) }}/30 flex items-center justify-center">
-                                        <flux:icon name="{{ $activity->icon }}" class="w-4 h-4" />
+                    <div class="space-y-2">
+                        @forelse($topPages->take(5) as $index => $page)
+                            <a href="{{ url($page->page) }}" target="_blank" rel="noopener noreferrer" class="block group">
+                                <div class="flex items-center gap-3 p-3 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all duration-200">
+                                    
+                                    <!-- TIMELINE -->
+                                    <div class="relative flex flex-col items-center">
+                                        @php
+                                            $rankColors = ['bg-amber-500', 'bg-gray-400', 'bg-orange-600', 'bg-blue-500', 'bg-green-500'];
+                                            $rankColor = $rankColors[$index] ?? 'bg-purple-500';
+                                        @endphp
+
+                                        <!-- Circle -->
+                                        <div class="w-8 h-8 rounded-full {{ $rankColor }} flex items-center justify-center text-white font-bold text-sm z-10">
+                                            {{ $index + 1 }}
+                                        </div>
+
+                                        @if(!$loop->last)
+                                            <div class="absolute top-8 left-1/2 -translate-x-1/2 w-[2px] h-[calc(100%+8px)] bg-zinc-300 dark:bg-zinc-600"></div>
+                                        @endif
                                     </div>
-                                </div>
-                                
-                                <div class="flex-1 min-w-0">
-                                    <div class="flex items-center justify-between">
-                                        <p class="text-sm font-medium text-zinc-900 dark:text-white">
-                                            @if($activity->type == 'activity')
-                                                {{ ucfirst($activity->action) }}
-                                                @if($activity->description)
-                                                    <span class="text-xs text-zinc-500">- {{ $activity->description }}</span>
-                                                @endif
-                                            @else
-                                                Viewed {{ $activity->page }}
-                                            @endif
-                                        </p>
-                                        <span class="text-xs text-zinc-500 dark:text-zinc-400">
-                                            {{ \Carbon\Carbon::parse($activity->created_at)->setTimezone('Asia/Jakarta')->diffForHumans() }}
+                                    
+                                    <!-- Page Name -->
+                                    <div class="flex-1">
+                                        <div class="text-sm font-medium text-zinc-800 dark:text-zinc-200 truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                            {{ $page->page }}
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- View Count -->
+                                    <div class="flex items-center gap-1">
+                                        <flux:icon.eye class="w-3.5 h-3.5 text-zinc-400" />
+                                        <span class="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
+                                            {{ $page->views }}
                                         </span>
                                     </div>
-                                    @if($activity->type == 'page_view' && $activity->page)
-                                        <p class="text-xs text-zinc-600 dark:text-zinc-400 mt-0.5 truncate">
-                                            {{ $activity->page }}
-                                        </p>
-                                    @endif
+                                    
+                                    <!-- Arrow -->
+                                    <flux:icon.arrow-top-right-on-square class="w-4 h-4 text-zinc-400 opacity-0 group-hover:opacity-100 transition-opacity" />
                                 </div>
-                            </div>
+                            </a>
                         @empty
-                            <div class="text-center py-8">
-                                <flux:icon name="clock" class="w-12 h-12 text-zinc-400 mx-auto mb-2" />
-                                <p class="text-zinc-500 dark:text-zinc-400">No activities yet</p>
+                            <div class="text-center py-12">
+                                <flux:icon.chart-bar class="w-12 h-12 text-zinc-400 mx-auto mb-3" />
+                                <p class="text-zinc-500 dark:text-zinc-400">No pages visited yet</p>
+                                <p class="text-xs text-zinc-400 dark:text-zinc-500 mt-1">Start exploring the dashboard</p>
                             </div>
                         @endforelse
-                        
-                        @if($allRecent->count() > 5)
-                            <div class="text-center pt-2">
-                                <span class="text-xs text-zinc-500 dark:text-zinc-400">
-                                    + {{ $allRecent->count() - 5 }} more activities
-                                </span>
-                            </div>
-                        @endif
                     </div>
                 </flux:card>
             </div>
 
-            <!-- Session Statistics -->
-            <div class="w-full">
-                <flux:card class="p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 h-full">
+            <!-- RIGHT COLUMN: Stats Overview + Page Views Distribution -->
+            <div class="lg:col-span-2 flex flex-col gap-4">
+                
+                <!-- Stats Overview Grid (3 cards) -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 flex-shrink-0">
+
+                    <!-- Page Views Today -->
+                    <flux:card class="p-4 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-purple-500 to-purple-600 dark:from-purple-700 dark:to-purple-800">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-white/80 dark:text-white/70">Page Views Today</p>
+                                <p class="text-2xl font-bold text-white dark:text-white mt-1">{{ number_format($todayPageViews) }}</p>
+                            </div>
+                            <div class="w-10 h-10 rounded-full bg-white/20 dark:bg-white/10 backdrop-blur-sm flex items-center justify-center">
+                                <flux:icon name="document-text" class="w-5 h-5 text-white dark:text-white" />
+                            </div>
+                        </div>
+                    </flux:card>
+
+                    <!-- Session Limit Time (Countdown Timer) -->
+                    <flux:card class="p-4 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-emerald-500 to-emerald-600 dark:from-emerald-700 dark:to-emerald-800">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-white/80 dark:text-white/70">Session Time Limit</p>
+                                <div x-data="{
+                                    remainingSeconds: {{ $sessionRemainingSeconds }},
+                                    expired: {{ $sessionExpired ? 'true' : 'false' }},
+                                    durationMinutes: {{ $sessionDurationMinutes }},
+                                    interval: null,
+                                    formatTime(seconds) {
+                                        if (seconds <= 0) return 'Expired';
+                                        const hours = Math.floor(seconds / 3600);
+                                        const minutes = Math.floor((seconds % 3600) / 60);
+                                        const secs = seconds % 60;
+                                        
+                                        if (hours > 0) {
+                                            return `${hours}h ${minutes}m ${secs}s`;
+                                        }
+                                        return `${minutes}m ${secs}s`;
+                                    },
+                                    init() {
+                                        if (!this.expired && this.remainingSeconds > 0) {
+                                            this.interval = setInterval(() => {
+                                                if (this.remainingSeconds > 0) {
+                                                    this.remainingSeconds--;
+                                                    this.durationMinutes++;
+                                                    if (this.remainingSeconds <= 0) {
+                                                        this.expired = true;
+                                                        clearInterval(this.interval);
+                                                    }
+                                                }
+                                            }, 1000);
+                                        }
+                                    },
+                                    destroy() {
+                                        if (this.interval) clearInterval(this.interval);
+                                    }
+                                }" class="mt-1">
+                                    <template x-if="!expired && remainingSeconds > 0">
+                                        <div>
+                                            <p class="text-2xl font-bold text-white dark:text-white font-mono" x-text="formatTime(Math.floor(remainingSeconds))"></p>
+                                            <p class="text-xs text-white/70 mt-1" x-text="formatDuration(durationMinutes)"></p>
+                                        </div>
+                                    </template>
+                                    <template x-if="expired || remainingSeconds <= 0">
+                                        <div>
+                                            <p class="text-2xl font-bold text-white dark:text-white">Session Expired</p>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                            <div class="w-10 h-10 rounded-full bg-white/20 dark:bg-white/10 backdrop-blur-sm flex items-center justify-center">
+                                <flux:icon name="clock" class="w-5 h-5 text-white dark:text-white" />
+                            </div>
+                        </div>
+                    </flux:card>
+
+                    <!-- Total Sessions -->
+                    <flux:card class="p-4 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-amber-500 to-amber-600 dark:from-amber-700 dark:to-amber-800">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-sm text-white/80 dark:text-white/70">Total Sessions Today</p>
+                                <p class="text-2xl font-bold text-white dark:text-white mt-1">{{ number_format($todaySessions) }}</p>
+                            </div>
+                            <div class="w-10 h-10 rounded-full bg-white/20 dark:bg-white/10 backdrop-blur-sm flex items-center justify-center">
+                                <flux:icon name="arrow-path-rounded-square" class="w-5 h-5 text-white dark:text-white" />
+                            </div>
+                        </div>
+                    </flux:card>
+                </div>
+
+                <!-- Page Views Distribution by Session Duration -->
+                <flux:card class="p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 flex-1">
                     <div class="flex items-center justify-between mb-4">
                         <div>
-                            <flux:heading size="lg">Session Statistics</flux:heading>
-                            <flux:subheading>Your activity patterns</flux:subheading>
+                            <flux:heading size="lg">Page Views by Session Duration</flux:heading>
+                            <flux:subheading>When do you view pages during your session? (max 60 min)</flux:subheading>
                         </div>
-                        <flux:badge color="purple" size="sm">Analytics</flux:badge>
+                        <flux:badge color="purple" size="sm">Per Session</flux:badge>
                     </div>
                     
-                    <!-- Activity distribution -->
-                    <div class="space-y-4">
-                        <div>
-                            <div class="flex items-center justify-between text-sm mb-1">
-                                <span class="text-zinc-600 dark:text-zinc-400">Last 5 minutes</span>
-                                <span class="font-medium text-zinc-800 dark:text-white">{{ $lt5min }} activities ({{ $lt5minPercent }}%)</span>
+                    <!-- 4 Speedometer Gauges -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <!-- Gauge 1: 0-5 minutes -->
+                        <div class="flex flex-col items-center">
+                            <div class="relative w-32 h-20 mx-auto pageview-gauge-1" data-percentage="{{ $percent0_5 }}">
+                                <svg class="w-full h-full" viewBox="0 0 200 100">
+                                    <path d="M 30 85 A 70 70 0 0 1 170 85" fill="none" stroke="#e5e7eb" stroke-width="10" stroke-linecap="round" class="dark:stroke-zinc-700" />
+                                    <path class="pageview-arc-1" d="M 30 85 A 70 70 0 0 1 170 85" fill="none" stroke="#10b981" stroke-width="10" stroke-linecap="round" stroke-dasharray="0 220" />
+                                    <line class="pageview-needle-1" x1="100" y1="85" x2="100" y2="35" stroke="#4b5563" stroke-width="2.5" stroke-linecap="round" transform="rotate(-90, 100, 85)" />
+                                    <circle cx="100" cy="85" r="5" fill="#10b981" stroke="#fff" stroke-width="1.5" />
+                                </svg>
                             </div>
-                            <div class="w-full h-2 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
-                                <div class="h-full bg-emerald-500 rounded-full" style="width: {{ $lt5minPercent }}%"></div>
+                            <div class="text-center mt-2">
+                                <span class="text-xl font-bold text-emerald-600 dark:text-emerald-400 pageview-percentage-1">{{ $percent0_5 }}%</span>
                             </div>
-                        </div>
-                        
-                        <div>
-                            <div class="flex items-center justify-between text-sm mb-1">
-                                <span class="text-zinc-600 dark:text-zinc-400">5 - 15 minutes ago</span>
-                                <span class="font-medium text-zinc-800 dark:text-white">{{ $lt15min }} activities ({{ $lt15minPercent }}%)</span>
-                            </div>
-                            <div class="w-full h-2 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
-                                <div class="h-full bg-blue-500 rounded-full" style="width: {{ $lt15minPercent }}%"></div>
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <div class="flex items-center justify-between text-sm mb-1">
-                                <span class="text-zinc-600 dark:text-zinc-400">15 - 30 minutes ago</span>
-                                <span class="font-medium text-zinc-800 dark:text-white">{{ $lt30min }} activities ({{ $lt30minPercent }}%)</span>
-                            </div>
-                            <div class="w-full h-2 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
-                                <div class="h-full bg-purple-500 rounded-full" style="width: {{ $lt30minPercent }}%"></div>
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <div class="flex items-center justify-between text-sm mb-1">
-                                <span class="text-zinc-600 dark:text-zinc-400">> 30 minutes ago</span>
-                                <span class="font-medium text-zinc-800 dark:text-white">{{ $gt30min }} activities ({{ $gt30minPercent }}%)</span>
-                            </div>
-                            <div class="w-full h-2 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
-                                <div class="h-full bg-amber-500 rounded-full" style="width: {{ $gt30minPercent }}%"></div>
+                            <div class="text-center mt-1">
+                                <div class="flex items-center gap-1 justify-center">
+                                    <span class="w-2 h-2 bg-emerald-500 rounded-full {{ $currentPageViewCategory == '0-5 minutes' ? 'animate-pulse' : '' }}"></span>
+                                    <span class="text-xs font-medium text-zinc-600 dark:text-zinc-400">0-5 minutes</span>
+                                </div>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">{{ number_format($pageViewsDistribution['0_5']) }} views</span>
                             </div>
                         </div>
 
-                        <!-- Top Pages -->
-                        @if($topPages->count() > 0)
-                            <div class="mt-6 pt-4 border-t border-zinc-200 dark:border-zinc-700">
-                                <h4 class="text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-3">Most Visited Pages Today</h4>
-                                <div class="space-y-2">
-                                    @foreach($topPages as $page)
-                                        <div class="flex items-center justify-between text-sm">
-                                            <span class="text-zinc-600 dark:text-zinc-400 truncate max-w-[200px]">{{ $page->page }}</span>
-                                            <span class="font-medium text-zinc-800 dark:text-white">{{ $page->views }} views</span>
-                                        </div>
-                                    @endforeach
-                                </div>
+                        <!-- Gauge 2: 5-10 minutes -->
+                        <div class="flex flex-col items-center">
+                            <div class="relative w-32 h-20 mx-auto pageview-gauge-2" data-percentage="{{ $percent5_10 }}">
+                                <svg class="w-full h-full" viewBox="0 0 200 100">
+                                    <path d="M 30 85 A 70 70 0 0 1 170 85" fill="none" stroke="#e5e7eb" stroke-width="10" stroke-linecap="round" class="dark:stroke-zinc-700" />
+                                    <path class="pageview-arc-2" d="M 30 85 A 70 70 0 0 1 170 85" fill="none" stroke="#8b5cf6" stroke-width="10" stroke-linecap="round" stroke-dasharray="0 220" />
+                                    <line class="pageview-needle-2" x1="100" y1="85" x2="100" y2="35" stroke="#4b5563" stroke-width="2.5" stroke-linecap="round" transform="rotate(-90, 100, 85)" />
+                                    <circle cx="100" cy="85" r="5" fill="#8b5cf6" stroke="#fff" stroke-width="1.5" />
+                                </svg>
                             </div>
-                        @endif
+                            <div class="text-center mt-2">
+                                <span class="text-xl font-bold text-purple-600 dark:text-purple-400 pageview-percentage-2">{{ $percent5_10 }}%</span>
+                            </div>
+                            <div class="text-center mt-1">
+                                <div class="flex items-center gap-1 justify-center">
+                                    <span class="w-2 h-2 bg-purple-500 rounded-full {{ $currentPageViewCategory == '5-10 minutes' ? 'animate-pulse' : '' }}"></span>
+                                    <span class="text-xs font-medium text-zinc-600 dark:text-zinc-400">5-10 minutes</span>
+                                </div>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">{{ number_format($pageViewsDistribution['5_10']) }} views</span>
+                            </div>
+                        </div>
+
+                        <!-- Gauge 3: 10-30 minutes -->
+                        <div class="flex flex-col items-center">
+                            <div class="relative w-32 h-20 mx-auto pageview-gauge-3" data-percentage="{{ $percent10_30 }}">
+                                <svg class="w-full h-full" viewBox="0 0 200 100">
+                                    <path d="M 30 85 A 70 70 0 0 1 170 85" fill="none" stroke="#e5e7eb" stroke-width="10" stroke-linecap="round" class="dark:stroke-zinc-700" />
+                                    <path class="pageview-arc-3" d="M 30 85 A 70 70 0 0 1 170 85" fill="none" stroke="#3b82f6" stroke-width="10" stroke-linecap="round" stroke-dasharray="0 220" />
+                                    <line class="pageview-needle-3" x1="100" y1="85" x2="100" y2="35" stroke="#4b5563" stroke-width="2.5" stroke-linecap="round" transform="rotate(-90, 100, 85)" />
+                                    <circle cx="100" cy="85" r="5" fill="#3b82f6" stroke="#fff" stroke-width="1.5" />
+                                </svg>
+                            </div>
+                            <div class="text-center mt-2">
+                                <span class="text-xl font-bold text-blue-600 dark:text-blue-400 pageview-percentage-3">{{ $percent10_30 }}%</span>
+                            </div>
+                            <div class="text-center mt-1">
+                                <div class="flex items-center gap-1 justify-center">
+                                    <span class="w-2 h-2 bg-blue-500 rounded-full {{ $currentPageViewCategory == '10-30 minutes' ? 'animate-pulse' : '' }}"></span>
+                                    <span class="text-xs font-medium text-zinc-600 dark:text-zinc-400">10-30 minutes</span>
+                                </div>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">{{ number_format($pageViewsDistribution['10_30']) }} views</span>
+                            </div>
+                        </div>
+
+                        <!-- Gauge 4: 30-60 minutes -->
+                        <div class="flex flex-col items-center">
+                            <div class="relative w-32 h-20 mx-auto pageview-gauge-4" data-percentage="{{ $percent30_60 }}">
+                                <svg class="w-full h-full" viewBox="0 0 200 100">
+                                    <path d="M 30 85 A 70 70 0 0 1 170 85" fill="none" stroke="#e5e7eb" stroke-width="10" stroke-linecap="round" class="dark:stroke-zinc-700" />
+                                    <path class="pageview-arc-4" d="M 30 85 A 70 70 0 0 1 170 85" fill="none" stroke="#f59e0b" stroke-width="10" stroke-linecap="round" stroke-dasharray="0 220" />
+                                    <line class="pageview-needle-4" x1="100" y1="85" x2="100" y2="35" stroke="#4b5563" stroke-width="2.5" stroke-linecap="round" transform="rotate(-90, 100, 85)" />
+                                    <circle cx="100" cy="85" r="5" fill="#f59e0b" stroke="#fff" stroke-width="1.5" />
+                                </svg>
+                            </div>
+                            <div class="text-center mt-2">
+                                <span class="text-xl font-bold text-amber-600 dark:text-amber-400 pageview-percentage-4">{{ $percent30_60 }}%</span>
+                            </div>
+                            <div class="text-center mt-1">
+                                <div class="flex items-center gap-1 justify-center">
+                                    <span class="w-2 h-2 bg-amber-500 rounded-full {{ $currentPageViewCategory == '30-60 minutes' ? 'animate-pulse' : '' }}"></span>
+                                    <span class="text-xs font-medium text-zinc-600 dark:text-zinc-400">30-60 minutes</span>
+                                </div>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">{{ number_format($pageViewsDistribution['30_60']) }} views</span>
+                            </div>
+                        </div>
                     </div>
                 </flux:card>
+
             </div>
         </div>
     </div>
+
+    @push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Function to animate a single gauge
+            function animateGauge(gaugeNumber, percentage) {
+                const targetPercentage = Math.min(percentage, 100);
+                const radius = 70;
+                const halfCircumference = Math.PI * radius;
+                const arcLength = (targetPercentage / 100) * halfCircumference;
+                const dasharray = `${arcLength} ${halfCircumference * 2}`;
+                const targetAngle = -90 + (targetPercentage * 1.8);
+                
+                setTimeout(() => {
+                    const arcElement = document.querySelector(`.pageview-arc-${gaugeNumber}`);
+                    const needleElement = document.querySelector(`.pageview-needle-${gaugeNumber}`);
+                    const percentageElement = document.querySelector(`.pageview-percentage-${gaugeNumber}`);
+                    
+                    if (arcElement) {
+                        arcElement.style.transition = 'stroke-dasharray 1.5s ease-out';
+                        arcElement.setAttribute('stroke-dasharray', dasharray);
+                    }
+                    
+                    if (needleElement) {
+                        needleElement.style.transition = 'transform 1.5s ease-out';
+                        needleElement.setAttribute('transform', `rotate(${targetAngle}, 100, 85)`);
+                    }
+                    
+                    if (percentageElement) {
+                        let current = 0;
+                        const increment = percentage / 30;
+                        const timer = setInterval(() => {
+                            current += increment;
+                            if (current >= percentage) {
+                                current = percentage;
+                                clearInterval(timer);
+                            }
+                            percentageElement.textContent = Math.round(current) + '%';
+                        }, 50);
+                    }
+                }, 100);
+            }
+            
+            // Animate all four gauges
+            for (let i = 1; i <= 4; i++) {
+                const gauge = document.querySelector(`.pageview-gauge-${i}`);
+                if (gauge) {
+                    const percentage = parseFloat(gauge.dataset.percentage);
+                    if (!isNaN(percentage)) {
+                        animateGauge(i, percentage);
+                    }
+                }
+            }
+        });
+    </script>
+    @endpush
 
     <style>
         @keyframes pulse {
@@ -391,9 +606,49 @@
         .animate-pulse {
             animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
-        .max-h-96 {
-            max-height: 24rem;
-            overflow-y: auto;
+        
+        /* Custom Scrollbar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        /* Dark mode scrollbar */
+        .dark .custom-scrollbar::-webkit-scrollbar-track {
+            background: #1f2937;
+        }
+        
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #4b5563;
+        }
+        
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #6b7280;
+        }
+        
+        /* Transition effects */
+        .transition-all {
+            transition-property: all;
+            transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+            transition-duration: 300ms;
+        }
+        
+        /* Hover effects */
+        .hover\:shadow-sm:hover {
+            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
         }
     </style>
 </x-layouts::app>

@@ -53,7 +53,7 @@
                 <div class="w-full">
                     <select 
                         wire:model.live="selectedLocation"
-                        class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-700 dark:bg-zinc-800 dark:border-zinc-700 dark:text-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-[url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"gray\" class=\"w-4 h-4\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"m19.5 8.25-7.5 7.5-7.5-7.5\" /></svg>')] bg-[length:1.25rem] bg-[position:left_0.75rem_center] bg-no-repeat pl-8"
                     >
                         <option value="">All Locations</option>
                         @foreach($locations as $location)
@@ -68,7 +68,7 @@
                 <div class="w-full">
                     <select 
                         wire:model.live="selectedMachineType"
-                        class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-700 dark:bg-zinc-800 dark:border-zinc-700 dark:text-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-[url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"gray\" class=\"w-4 h-4\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"m19.5 8.25-7.5 7.5-7.5-7.5\" /></svg>')] bg-[length:1.25rem] bg-[position:left_0.75rem_center] bg-no-repeat pl-8"
                     >
                         <option value="">All Machine Types</option>
                         <option value="fuji">Fuji</option>
@@ -81,7 +81,7 @@
                 <div class="w-full">
                     <select 
                         wire:model.live="selectedStatus"
-                        class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-700 dark:bg-zinc-800 dark:border-zinc-700 dark:text-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none bg-[url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" fill=\"none\" viewBox=\"0 0 24 24\" stroke-width=\"1.5\" stroke=\"gray\" class=\"w-4 h-4\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" d=\"m19.5 8.25-7.5 7.5-7.5-7.5\" /></svg>')] bg-[length:1.25rem] bg-[position:left_0.75rem_center] bg-no-repeat pl-8"
                     >
                         <option value="">All Status</option>
                         <option value="Running">Running</option>
@@ -118,7 +118,6 @@
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Machine Type</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Status</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[150px]">PIC</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[120px]">Total Machines</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider w-24">Actions</th>
                             </tr>
                         </thead>
@@ -175,21 +174,12 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="px-4 py-3">
-                                    <div class="flex items-center gap-2">
-                                        <flux:icon name="computer-desktop" class="w-4 h-4 text-purple-500" />
-                                        <span class="text-sm font-semibold text-zinc-800 dark:text-white">
-                                            {{ $line->machines()->count() }}
-                                        </span>
-                                        <span class="text-xs text-zinc-500">Machines</span>
-                                    </div>
-                                </td>
                                 <td class="px-4 py-3 text-right">
                                     <div class="flex items-center justify-end gap-1 whitespace-nowrap">
                                         @can('view master line')
                                         <flux:button 
-                                            wire:click="edit({{ $line->id }})" 
-                                            x-on:click="$dispatch('open-modal', 'line-form-modal')"
+                                            href="{{ route('mtc.master-lines.show', $line->id) }}"
+                                            wire:navigate
                                             size="sm"
                                             icon="eye"
                                             variant="primary"
