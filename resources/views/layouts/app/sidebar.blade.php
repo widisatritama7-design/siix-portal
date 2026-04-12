@@ -107,9 +107,9 @@
                     class="flex justify-center w-full"
                     :class="{'hidden': !sidebarOpen && !isHovering && !sidebarPinned}">
                     <img 
-                        src="{{ asset('images/siix-portal.png') }}" 
+                        src="{{ asset('images/logo-siix.png') }}" 
                         alt="SIIX Portal" 
-                        class="h-12 w-auto object-contain image-rendering-auto"
+                        class="h-11 w-auto object-contain image-rendering-auto"
                     />
                 </div>
                 
