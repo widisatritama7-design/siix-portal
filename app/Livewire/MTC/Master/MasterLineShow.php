@@ -20,11 +20,11 @@ class MasterLineShow extends Component
     public $search = '';
     public $selectedStatus = '';
     
-    // Daily Fuji properties
+    // Daily Fuji properties for view modal
     public $selectedDailyFuji = null;
     public $showDailyFujiModal = false;
     
-    // Form properties untuk edit langsung di show page (opsional)
+    // Form properties untuk edit line (opsional, jika ada modal edit line)
     public $line_id;
     public $location_id;
     public $line_number;
@@ -33,6 +33,9 @@ class MasterLineShow extends Component
     public $trouble_desc;
     public $machine_type;
     public $modalTitle = 'Edit Line';
+
+    public $showApprovalModal = false;
+    public $approvalDailyFujiId = null;
 
     protected $rules = [
         'location_id' => 'required|exists:tb_mtc_master_locations,id',
@@ -52,9 +55,65 @@ class MasterLineShow extends Component
         'nik.exists' => 'Selected employee is invalid.',
     ];
 
+    // Listeners untuk refresh data
     protected $listeners = [
         'refreshDailyFujiTable' => '$refresh'
     ];
+
+    public function openApprovalModal($dailyFujiId)
+    {
+        if (!auth()->user()->can('edit daily fuji')) {
+            $this->dispatch('notify', message: 'You do not have permission to approve!', type: 'error');
+            return;
+        }
+        
+        $this->approvalDailyFujiId = $dailyFujiId;
+        $this->showApprovalModal = true;
+    }
+
+    public function closeApprovalModal()
+    {
+        $this->showApprovalModal = false;
+        $this->approvalDailyFujiId = null;
+    }
+
+    public function setApproval($status)
+    {
+        if (!auth()->user()->can('edit daily fuji')) {
+            $this->dispatch('notify', message: 'You do not have permission to approve!', type: 'error');
+            return;
+        }
+        
+        $dailyFuji = DailyFuji::find($this->approvalDailyFujiId);
+        
+        if (!$dailyFuji) {
+            $this->dispatch('notify', message: 'Record not found!', type: 'error');
+            $this->closeApprovalModal();
+            return;
+        }
+        
+        // Cek apakah sudah approved
+        if ($dailyFuji->approval === 'Approved') {
+            $this->dispatch('notify', message: 'This record is already approved!', type: 'error');
+            $this->closeApprovalModal();
+            return;
+        }
+        
+        // Cek status harus Checked dulu
+        if ($dailyFuji->status !== 'Checked') {
+            $this->dispatch('notify', message: 'Cannot approve. Status must be "Checked" first!', type: 'error');
+            $this->closeApprovalModal();
+            return;
+        }
+        
+        $dailyFuji->approval = $status;
+        $dailyFuji->approved_by = auth()->id();
+        $dailyFuji->save();
+        
+        $this->dispatch('notify', message: "Inspection has been {$status}!", type: 'success');
+        $this->closeApprovalModal();
+        $this->dispatch('refreshDailyFujiTable');
+    }
 
     public function updatingSearch()
     {
@@ -68,20 +127,33 @@ class MasterLineShow extends Component
 
     public function mount($id)
     {
-        $this->line = MasterLine::with(['location', 'location.area', 'employee', 'creator', 'updater', 'machines'])
-            ->findOrFail($id);
+        $this->line = MasterLine::with([
+            'location', 
+            'location.area', 
+            'employee', 
+            'creator', 
+            'updater', 
+            'machines'
+        ])->findOrFail($id);
         
+        // Check permission
         if (!auth()->user()->can('view master line')) {
             abort(403, 'Unauthorized access.');
         }
     }
 
+    /**
+     * Reset filters untuk Daily Fuji table
+     */
     public function resetFilters()
     {
         $this->reset(['search', 'selectedStatus']);
         $this->resetPage();
     }
 
+    /**
+     * Reset form untuk edit line (jika menggunakan modal edit)
+     */
     public function resetForm()
     {
         $this->reset([
@@ -92,55 +164,97 @@ class MasterLineShow extends Component
         $this->modalTitle = 'Edit Line';
     }
 
+    /**
+     * Navigate ke halaman create Daily Fuji
+     */
     public function createDailyFuji()
     {
         if (!auth()->user()->can('create daily fuji')) {
             $this->dispatch('notify', message: 'You do not have permission to create daily fuji!', type: 'error');
             return;
         }
-        $this->dispatch('open-daily-fuji-form', masterLineId: $this->line->id);
+        
+        // Redirect ke halaman create terpisah
+        return redirect()->route('mtc.daily-fuji.create', $this->line->id);
     }
     
+    /**
+     * Navigate ke halaman edit Daily Fuji
+     */
     public function editDailyFuji($id)
     {
         if (!auth()->user()->can('edit daily fuji')) {
             $this->dispatch('notify', message: 'You do not have permission to edit daily fuji!', type: 'error');
             return;
         }
-        $this->dispatch('open-daily-fuji-form', masterLineId: $this->line->id, id: $id);
+        
+        $dailyFuji = DailyFuji::find($id);
+        
+        // Cek apakah masih dalam shift yang sama
+        if (now()->greaterThan($dailyFuji->getShiftEnd())) {
+            $this->dispatch('notify', message: 'Cannot edit! The inspection shift has ended.', type: 'error');
+            return;
+        }
+        
+        return redirect()->route('mtc.daily-fuji.edit', [
+            'masterLineId' => $this->line->id,
+            'dailyFujiId' => $id
+        ]);
     }
 
+    /**
+     * View Daily Fuji details dalam modal (read-only)
+     */
     public function viewDailyFujiDetails($dailyFujiId)
     {
-        $this->selectedDailyFuji = DailyFuji::with(['creator', 'updater', 'approvedBy', 'masterLine'])
-            ->findOrFail($dailyFujiId);
+        $this->selectedDailyFuji = DailyFuji::with([
+            'creator', 
+            'updater', 
+            'approvedBy', 
+            'masterLine'
+        ])->findOrFail($dailyFujiId);
+        
         $this->showDailyFujiModal = true;
     }
     
+    /**
+     * Close detail modal
+     */
     public function closeDetailModal()
     {
         $this->showDailyFujiModal = false;
         $this->selectedDailyFuji = null;
     }
 
+    /**
+     * Get locations untuk dropdown (jika menggunakan modal edit line)
+     */
     public function getLocationsProperty()
     {
         return MasterLocation::with('area')->orderBy('location_name')->get();
     }
 
+    /**
+     * Get employees untuk dropdown (jika menggunakan modal edit line)
+     */
     public function getEmployeesProperty()
     {
         return Employee::orderBy('name')->get();
     }
 
+    /**
+     * Render component
+     */
     public function render()
     {
         $locations = $this->locations;
         $employees = $this->employees;
         
+        // Query Daily Fuji records untuk line ini
         $dailyFujisQuery = DailyFuji::with(['creator', 'updater', 'approvedBy', 'masterLine'])
             ->where('master_line_id', $this->line->id);
         
+        // Apply search filter
         if ($this->search) {
             $dailyFujisQuery->where(function($query) {
                 $query->where('group', 'like', '%' . $this->search . '%')
@@ -149,11 +263,13 @@ class MasterLineShow extends Component
             });
         }
         
+        // Apply status filter
         if ($this->selectedStatus) {
             $dailyFujisQuery->where('status', $this->selectedStatus);
         }
         
-        $dailyFujis = $dailyFujisQuery->orderBy('created_at', 'desc')->paginate(5);
+        // Paginate results
+        $dailyFujis = $dailyFujisQuery->orderBy('created_at', 'desc')->paginate(10);
 
         return view('livewire.mtc.master.master-line-show', [
             'locations' => $locations,

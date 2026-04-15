@@ -8,6 +8,19 @@
         <!-- Session Status -->
         <x-auth-session-status class="text-center" :status="session('status')" />
 
+        <!-- Global Error Alert -->
+        @if (session('error'))
+            <div class="p-3 rounded-lg bg-red-100 text-red-700 text-sm text-center">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        @if ($errors->any())
+            <div class="p-3 rounded-lg bg-red-100 text-red-700 text-sm text-center">
+                {{ $errors->first() }}
+            </div>
+        @endif
+
         <form method="POST" action="{{ route('login.store') }}" class="flex flex-col gap-6">
             @csrf
 

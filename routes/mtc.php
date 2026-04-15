@@ -1,5 +1,7 @@
 <?php
 
+use App\Livewire\MTC\Daily\DailyFujiCreate;
+use App\Livewire\MTC\Daily\DailyFujiEdit;
 use App\Livewire\MTC\Master\MasterAreaManagement;
 use App\Livewire\MTC\Master\MasterLineManagement;
 use App\Livewire\MTC\Master\MasterLineShow;
@@ -21,5 +23,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Master Line
     Route::livewire('mtc/master-lines', MasterLineManagement::class)->name('mtc.master-lines');
     Route::livewire('mtc/master-lines/{id}', MasterLineShow::class)->name('mtc.master-lines.show');
+    Route::get('mtc/master-lines/{masterLineId}/daily-fuji/create', DailyFujiCreate::class)->name('mtc.daily-fuji.create');
+    Route::get('mtc/master-lines/{masterLineId}/daily-fuji/{dailyFujiId}/edit', DailyFujiEdit::class)->name('mtc.daily-fuji.edit');
 
 });

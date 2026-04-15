@@ -138,17 +138,17 @@
             @if(in_array($line->machine_type, ['fuji', 'both']))
             <flux:card class="p-0 shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden mb-6">
                 <div class="bg-green-600 dark:bg-green-500 px-6 py-4">
-                    <div class="flex items-center justify-between">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                         <div class="flex items-center gap-2">
                             <flux:icon name="clipboard-document-list" class="w-5 h-5 text-white" />
                             <h3 class="font-semibold text-base text-white">Daily Fuji Inspection Records</h3>
                         </div>
-                        <div class="flex items-center gap-2">
+                        <div class="flex flex-wrap items-center gap-2">
                             <flux:input 
                                 wire:model.live.debounce.300ms="search" 
-                                placeholder="Search by group or status..."
+                                placeholder="Search..."
                                 icon="magnifying-glass"
-                                class="w-64"
+                                class="w-48 sm:w-64"
                             />
                             <select 
                                 wire:model.live="selectedStatus" 
@@ -180,105 +180,198 @@
                     </div>
                 </div>
                 
-                <div class="p-6">
+                <div class="p-4 sm:p-6">
                     @if($dailyFujis->count() > 0)
                     <div class="overflow-x-auto">
                         <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
                             <thead class="bg-zinc-50 dark:bg-zinc-800/50">
                                 <tr>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Status</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Approval</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Group</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Run Time</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Stop Time</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Check By</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Approved By</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Created At</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Actions</th>
+                                    <th class="px-3 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Status</th>
+                                    <th class="px-3 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Approval</th>
+                                    <th class="px-3 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Group</th>
+                                    <th class="px-3 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Run Time</th>
+                                    <th class="px-3 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Stop Time</th>
+                                    <th class="px-3 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Check By</th>
+                                    <th class="px-3 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Approved By</th>
+                                    <th class="px-3 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Created</th>
+                                    <th class="px-3 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Actions</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
                                 @foreach($dailyFujis as $dailyFuji)
-                                <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
-                                    <td class="px-4 py-3 whitespace-nowrap">
-                                        <div class="flex items-center gap-2">
+                                <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors group">
+                                    <!-- Status Column with Icon & Tooltip -->
+                                    <td class="px-3 py-3 whitespace-nowrap">
+                                        <div class="relative inline-flex items-center gap-2 cursor-help group/status"
+                                            title="{{ $dailyFuji->overall_status_text }}">
                                             @if($dailyFuji->overall_status === 'success')
                                                 <flux:icon.check-circle class="w-5 h-5 text-green-600" />
                                             @else
                                                 <flux:icon.x-circle class="w-5 h-5 text-red-600" />
                                             @endif
                                             <span class="text-sm text-zinc-700 dark:text-zinc-300">
-                                                {{ $dailyFuji->overall_status_text }}
+                                                {{ $dailyFuji->overall_status === 'success' ? 'OK' : 'Invalid' }}
                                             </span>
                                         </div>
                                     </td>
-                                    <td class="px-4 py-3 whitespace-nowrap">
+                                    
+                                    <!-- Approval Badge -->
+                                    <td class="px-3 py-3 whitespace-nowrap">
                                         @php
-                                            $approvalColors = [
-                                                'Approved' => 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-                                                'Rejected' => 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
-                                                'Pending' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
+                                            $approvalConfig = [
+                                                'Approved' => ['class' => 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400', 'icon' => 'check-circle'],
+                                                'Rejected' => ['class' => 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400', 'icon' => 'x-circle'],
+                                                'Pending' => ['class' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400', 'icon' => 'clock'],
                                             ];
+                                            $config = $approvalConfig[$dailyFuji->approval] ?? $approvalConfig['Pending'];
                                         @endphp
-                                        <span class="inline-flex px-2 py-1 rounded-full text-xs font-medium {{ $approvalColors[$dailyFuji->approval] ?? 'bg-gray-100 text-gray-800' }}">
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium {{ $config['class'] }}">
+                                            <flux:icon name="{{ $config['icon'] }}" class="w-3 h-3" />
                                             {{ $dailyFuji->approval ?? 'Pending' }}
                                         </span>
                                     </td>
-                                    <td class="px-4 py-3 whitespace-nowrap">
-                                        <span class="text-sm font-medium text-zinc-900 dark:text-white">
+                                    
+                                    <!-- Group -->
+                                    <td class="px-3 py-3 whitespace-nowrap">
+                                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 font-semibold text-sm">
                                             {{ $dailyFuji->group ?? '-' }}
                                         </span>
                                     </td>
-                                    <td class="px-4 py-3 whitespace-nowrap">
+                                    
+                                    <!-- Run Time Badge -->
+                                    <td class="px-3 py-3 whitespace-nowrap">
                                         @if($dailyFuji->run_time)
-                                        <span class="inline-flex px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                                        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                                            <flux:icon.play class="w-3 h-3" />
                                             {{ $dailyFuji->run_time->format('H:i') }}
                                         </span>
                                         @else
-                                        <span class="text-sm text-zinc-500">-</span>
+                                        <span class="text-sm text-zinc-400">-</span>
                                         @endif
                                     </td>
-                                    <td class="px-4 py-3 whitespace-nowrap">
+                                    
+                                    <!-- Stop Time Badge -->
+                                    <td class="px-3 py-3 whitespace-nowrap">
                                         @if($dailyFuji->stop_time)
-                                        <span class="inline-flex px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
+                                        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
+                                            <flux:icon.stop class="w-3 h-3" />
                                             {{ $dailyFuji->stop_time->format('H:i') }}
                                         </span>
                                         @else
-                                        <span class="text-sm text-zinc-500">-</span>
+                                        <span class="text-sm text-zinc-400">-</span>
                                         @endif
                                     </td>
-                                    <td class="px-4 py-3 whitespace-nowrap">
-                                        <span class="text-sm text-zinc-700 dark:text-zinc-300">
-                                            {{ $dailyFuji->updater->name ?? $dailyFuji->creator->name ?? '-' }}
-                                        </span>
+                                    
+                                    <!-- Check By -->
+                                    <td class="px-3 py-3 whitespace-nowrap">
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                                                <span class="text-xs font-medium text-blue-600 dark:text-blue-400">
+                                                    {{ substr($dailyFuji->updater->name ?? $dailyFuji->creator->name ?? '-', 0, 1) }}
+                                                </span>
+                                            </div>
+                                            <span class="text-sm text-zinc-700 dark:text-zinc-300">
+                                                {{ $dailyFuji->updater->name ?? $dailyFuji->creator->name ?? '-' }}
+                                            </span>
+                                        </div>
                                     </td>
-                                    <td class="px-4 py-3 whitespace-nowrap">
-                                        <span class="text-sm text-zinc-700 dark:text-zinc-300">
-                                            {{ $dailyFuji->approvedBy->name ?? '-' }}
-                                        </span>
+                                    
+                                    <!-- Approved By -->
+                                    <td class="px-3 py-3 whitespace-nowrap">
+                                        @if($dailyFuji->approvedBy)
+                                        <div class="flex items-center gap-2">
+                                            <div class="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                                                <span class="text-xs font-medium text-green-600 dark:text-green-400">
+                                                    {{ substr($dailyFuji->approvedBy->name, 0, 1) }}
+                                                </span>
+                                            </div>
+                                            <span class="text-sm text-zinc-700 dark:text-zinc-300">
+                                                {{ $dailyFuji->approvedBy->name }}
+                                            </span>
+                                        </div>
+                                        @else
+                                        <span class="text-sm text-zinc-400">-</span>
+                                        @endif
                                     </td>
-                                    <td class="px-4 py-3 whitespace-nowrap">
-                                        <span class="text-sm text-zinc-500">
-                                            {{ $dailyFuji->created_at->format('d/m/Y H:i') }}
-                                        </span>
+                                    
+                                    <!-- Created At -->
+                                    <td class="px-3 py-3 whitespace-nowrap">
+                                        <div class="text-sm">
+                                            <div class="text-zinc-700 dark:text-zinc-300">{{ $dailyFuji->created_at->format('d/m/Y') }}</div>
+                                            <div class="text-xs text-zinc-400">{{ $dailyFuji->created_at->format('H:i:s') }}</div>
+                                        </div>
                                     </td>
-                                    <td class="px-4 py-3 whitespace-nowrap">
-                                        <flux:button 
-                                            wire:click="viewDailyFujiDetails({{ $dailyFuji->id }})"
-                                            icon="eye"
-                                            variant="subtle"
-                                            color="info"
-                                            size="sm"
-                                        >
-                                            View Details
-                                        </flux:button>
-                                        <flux:button 
-                                            wire:click="editDailyFuji({{ $dailyFuji->id }})"
-                                            icon="pencil"
-                                            variant="subtle"
-                                            color="warning"
-                                            size="sm"
-                                        />
+                                    
+                                    <td class="px-4 py-3 text-right">
+                                        <div class="flex items-center justify-end gap-1 whitespace-nowrap">
+                                            <!-- View Details Button -->
+                                            <flux:button 
+                                                wire:click="viewDailyFujiDetails({{ $dailyFuji->id }})"
+                                                size="sm"
+                                                icon="eye"
+                                                variant="primary"
+                                                color="blue"
+                                                class="!p-2 flex-shrink-0"
+                                                title="View inspection details"
+                                            />
+                                            
+                                            <!-- Edit Button dengan validasi waktu -->
+                                            @php
+                                                $canEdit = now()->lessThanOrEqualTo($dailyFuji->getShiftEnd());
+                                            @endphp
+                                            
+                                            @if($canEdit)
+                                                <flux:button 
+                                                    wire:click="editDailyFuji({{ $dailyFuji->id }})"
+                                                    size="sm"
+                                                    icon="pencil-square"
+                                                    variant="primary"
+                                                    color="yellow"
+                                                    class="!p-2 flex-shrink-0"
+                                                    title="Edit inspection"
+                                                />
+                                            @else
+                                                <flux:button 
+                                                    size="sm"
+                                                    icon="pencil-square"
+                                                    variant="subtle"
+                                                    color="gray"
+                                                    class="!p-2 flex-shrink-0 opacity-50 cursor-not-allowed"
+                                                    title="Cannot edit - Shift has ended"
+                                                    disabled
+                                                />
+                                            @endif
+                                            
+                                            <!-- Approval Button -->
+                                            @if($dailyFuji->approval !== 'Approved' && $dailyFuji->status === 'Checked' && auth()->user()->can('edit daily fuji'))
+                                                <flux:button 
+                                                    wire:click="openApprovalModal({{ $dailyFuji->id }})"
+                                                    size="sm"
+                                                    icon="check-badge"
+                                                    variant="primary"
+                                                    color="green"
+                                                    class="!p-2 flex-shrink-0"
+                                                    title="Approve/Reject inspection"
+                                                />
+                                            @endif
+                                            
+                                            <!-- Activity Log Button (opsional) -->
+                                            @if($dailyFuji->activities && $dailyFuji->activities->count() > 0)
+                                                <flux:button 
+                                                    wire:click="viewActivities({{ $dailyFuji->id }})"
+                                                    size="sm"
+                                                    icon="user"
+                                                    variant="primary"
+                                                    color="purple"
+                                                    class="!p-2 flex-shrink-0 relative"
+                                                    title="Activity log"
+                                                >
+                                                    <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                                                        {{ $dailyFuji->activities->count() }}
+                                                    </span>
+                                                </flux:button>
+                                            @endif
+                                        </div>
                                     </td>
                                 </tr>
                                 @endforeach
@@ -286,14 +379,22 @@
                         </table>
                     </div>
                     
-                    <div class="mt-4">
+                    <!-- Pagination -->
+                    <div class="mt-4 px-2">
                         {{ $dailyFujis->links() }}
                     </div>
                     
                     @else
-                    <div class="text-center py-8">
-                        <flux:icon name="document-magnifying-glass" class="w-12 h-12 mx-auto text-zinc-400 mb-3" />
+                    <div class="text-center py-12">
+                        <flux:icon.document-magnifying-glass class="w-12 h-12 mx-auto text-zinc-400 mb-3" />
                         <p class="text-zinc-500 dark:text-zinc-400">No inspection records found for this line.</p>
+                        <button 
+                            wire:click="createDailyFuji"
+                            class="mt-4 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors"
+                        >
+                            <flux:icon.plus class="w-4 h-4" />
+                            Create First Inspection
+                        </button>
                     </div>
                     @endif
                 </div>
@@ -1569,30 +1670,43 @@
         </div>
     </flux:modal>
 
+    <!-- Approval Modal -->
+    <flux:modal wire:model="showApprovalModal" class="max-w-md">
+        <div class="space-y-4">
+            <div class="flex justify-between items-center border-b border-zinc-200 dark:border-zinc-700 pb-3">
+                <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">
+                    Update Approval Status
+                </h3>
+                <flux:button 
+                    wire:click="closeApprovalModal" 
+                    icon="x-mark" 
+                    variant="subtle"
+                    size="sm"
+                />
+            </div>
+            
+            <div class="space-y-4">
+                <p class="text-sm text-zinc-600 dark:text-zinc-400">
+                    Set approval status for inspection record.
+                </p>
+                
+                <div class="flex gap-4 justify-center">
+                    <button 
+                        wire:click="setApproval('Approved')"
+                        class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors"
+                    >
+                        <flux:icon.check-circle class="w-5 h-5" />
+                        <span>Approved</span>
+                    </button>
+                    <button 
+                        wire:click="setApproval('Rejected')"
+                        class="flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-red-600 text-white hover:bg-red-700 transition-colors"
+                    >
+                        <flux:icon.x-circle class="w-5 h-5" />
+                        <span>Rejected</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </flux:modal>
 </section>
-
-@push('scripts')
-<script>
-    document.addEventListener('livewire:initialized', () => {
-        // Open modal event
-        Livewire.on('open-modal', (modalName) => {
-            const modal = document.querySelector(`[name="${modalName}"]`);
-            if (modal && modal._xModal) {
-                modal._xModal.show();
-            }
-        });
-        
-        // Close modal event
-        Livewire.on('close-modal', (modalName) => {
-            const modal = document.querySelector(`[name="${modalName}"]`);
-            if (modal && modal._xModal) {
-                modal._xModal.hide();
-            }
-        });
-    });
-</script>
-@endpush
-
-@push('modals')
-    <livewire:mtc.daily.daily-fuji-form :key="'daily-fuji-form-'.$line->id" />
-@endpush

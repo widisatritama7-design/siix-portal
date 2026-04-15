@@ -26,20 +26,20 @@
         <!-- Right side - 40% with card -->
         <div class="w-full lg:w-[40%] flex items-center justify-center p-4 md:p-6 bg-white dark:bg-stone-950">
             <div class="w-full max-w-sm">
-                <!-- Card with form content -->
+                <!-- Logo SIIX di luar card (di atas card) -->
+                <div class="flex justify-center mb-6">
+                    <a href="{{ route('home') }}" class="block transition-transform hover:scale-105 duration-200" wire:navigate>
+                        <img 
+                            src="{{ asset('images/logo-siix.png') }}" 
+                            alt="SIIX Portal"
+                            class="h-16 w-auto"
+                        >
+                    </a>
+                </div>
+                
+                <!-- Card with form content (logo sudah dipindahkan ke luar) -->
                 <div class="rounded-2xl border bg-white dark:bg-stone-800 dark:border-stone-700 text-stone-800 dark:text-stone-200 shadow-[0_20px_50px_rgba(0,0,0,0.2)] hover:shadow-[0_25px_60px_rgba(0,0,0,0.25)] transition-shadow duration-300">
                     <div class="px-6 py-6">
-                        <!-- Logo SIIX di dalam card, menggantikan icon -->
-                        <div class="flex justify-center mb-6">
-                            <a href="{{ route('home') }}" class="block transition-transform hover:scale-105 duration-200" wire:navigate>
-                                <img 
-                                    src="{{ asset('images/logo-siix.png') }}" 
-                                    alt="SIIX Portal"
-                                    class="h-16 w-auto"
-                                >
-                            </a>
-                        </div>
-                        
                         <!-- Form content from slot -->
                         {{ $slot }}
                     </div>

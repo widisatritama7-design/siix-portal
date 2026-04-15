@@ -8,13 +8,13 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
-use Spatie\Activitylog\LogOptions;
-use Spatie\Activitylog\Traits\LogsActivity;
+// use Spatie\Activitylog\LogOptions;
+// use Spatie\Activitylog\Traits\LogsActivity;
 
 class DailyPanasonic extends Model
 {
     use HasFactory;
-    use LogsActivity;
+    // use LogsActivity;
     
     protected $table = 'tb_mtc_daily_panasonics';
 
@@ -118,76 +118,76 @@ class DailyPanasonic extends Model
         });
     }
 
-    public function getActivitylogOptions(): LogOptions
-    {
-        return LogOptions::defaults()
-            ->logOnly([
-                'master_line_id',
-                'body_cover',
-                'cylinder',
-                'rail_and_magazine_pcb',
-                'cover_magazine',
-                'brush',
-                'air_presure',
-                'vacume_presure_unitech',
-                'vacume_presure_nix',
-                'vacume_brush',
-                'cleaning_roller',
-                'ionizer',
-                'conveyor_speed',
-                'ipa_solvent',
-                'temperature_control_1',
-                'humidity_control_1',
-                'clamp_presure_sp_60',
-                'clamp_presure_spg_2',
-                'squeege_sp_60',
-                'squeege_spg_2',
-                'cleaning_solvent',
-                'air_presure_meter',
-                'air_presure_meter_parmi',
-                'capability_index',
-                'box',
-                'vaccuum_parameter',
-                'expire_date',
-                'vaccuum_pump',
-                'box_2',
-                'vaccuum_parameter_2',
-                'expire_date_2',
-                'vaccuum_pump_2',
-                'abandonment',
-                'fire_posibilty',
-                'rail_and_transfer_unit',
-                'n2_presure',
-                'oxygent_density_sek',
-                'oxygent_density_special',
-                'fire_posibilty_2',
-                'air_presure_2',
-                'cylinder_2',
-                'rail_and_magazine_pcb_2',
-                'cover_magazine_2',
-                'angle_and_filter',
-                'lamp_indicator',
-                'temperature_chiller',
-                'temperature_control_3',
-                'air_presure_supply',
-                'box_3',
-                'vaccuum_pump_3',
-                'air_presure_supply_2',
-                'box_4',
-                'vaccuum_pump_4',
-                'air_presure_3',
-                'temperature_control_4',
-                'water_reservoirs',
-                'filter',
-                'angle_and_filter_2',
-                'stop_time',
-                'run_time',
-                'approval',
-                'group',
-                'status',
-                'approved_by'
-            ]);
-    }
+    // public function getActivitylogOptions(): LogOptions
+    // {
+    //     return LogOptions::defaults()
+    //         ->logOnly([
+    //             'master_line_id',
+    //             'body_cover',
+    //             'cylinder',
+    //             'rail_and_magazine_pcb',
+    //             'cover_magazine',
+    //             'brush',
+    //             'air_presure',
+    //             'vacume_presure_unitech',
+    //             'vacume_presure_nix',
+    //             'vacume_brush',
+    //             'cleaning_roller',
+    //             'ionizer',
+    //             'conveyor_speed',
+    //             'ipa_solvent',
+    //             'temperature_control_1',
+    //             'humidity_control_1',
+    //             'clamp_presure_sp_60',
+    //             'clamp_presure_spg_2',
+    //             'squeege_sp_60',
+    //             'squeege_spg_2',
+    //             'cleaning_solvent',
+    //             'air_presure_meter',
+    //             'air_presure_meter_parmi',
+    //             'capability_index',
+    //             'box',
+    //             'vaccuum_parameter',
+    //             'expire_date',
+    //             'vaccuum_pump',
+    //             'box_2',
+    //             'vaccuum_parameter_2',
+    //             'expire_date_2',
+    //             'vaccuum_pump_2',
+    //             'abandonment',
+    //             'fire_posibilty',
+    //             'rail_and_transfer_unit',
+    //             'n2_presure',
+    //             'oxygent_density_sek',
+    //             'oxygent_density_special',
+    //             'fire_posibilty_2',
+    //             'air_presure_2',
+    //             'cylinder_2',
+    //             'rail_and_magazine_pcb_2',
+    //             'cover_magazine_2',
+    //             'angle_and_filter',
+    //             'lamp_indicator',
+    //             'temperature_chiller',
+    //             'temperature_control_3',
+    //             'air_presure_supply',
+    //             'box_3',
+    //             'vaccuum_pump_3',
+    //             'air_presure_supply_2',
+    //             'box_4',
+    //             'vaccuum_pump_4',
+    //             'air_presure_3',
+    //             'temperature_control_4',
+    //             'water_reservoirs',
+    //             'filter',
+    //             'angle_and_filter_2',
+    //             'stop_time',
+    //             'run_time',
+    //             'approval',
+    //             'group',
+    //             'status',
+    //             'approved_by'
+    //         ]);
+    // }
 
     public function approvedBy()
     {
