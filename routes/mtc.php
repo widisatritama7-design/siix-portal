@@ -4,14 +4,19 @@ use App\Livewire\MTC\Daily\Fuji\DailyFujiCreate;
 use App\Livewire\MTC\Daily\Fuji\DailyFujiEdit;
 use App\Livewire\MTC\Daily\Panasonic\DailyPanasonicCreate;
 use App\Livewire\MTC\Daily\Panasonic\DailyPanasonicEdit;
+use App\Livewire\MTC\Dashboard\DailyDashboard;
+use App\Livewire\MTC\Dashboard\StencilDashboard;
 use App\Livewire\MTC\Master\MasterAreaManagement;
 use App\Livewire\MTC\Master\MasterLineManagement;
 use App\Livewire\MTC\Master\MasterLineShow;
 use App\Livewire\MTC\Master\MasterLocationManagement;
 use App\Livewire\MTC\Master\MasterMachineManagement;
 use App\Livewire\MTC\Master\StencilManagement;
+use App\Models\ESD\Jig\Jig;
+use App\Models\HR\Employee;
 use App\Models\MTC\Daily\DailyFuji;
 use App\Models\MTC\Daily\DailyPanasonic;
+use App\Models\MTC\Master\MasterStencil;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -41,5 +46,70 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Stencil
     Route::livewire('mtc/stencils', StencilManagement::class)->name('mtc.stencils');
+
+    // Daily Dashboard
+    Route::get('/mtc/daily-dashboard', DailyDashboard::class)->name('mtc.daily-dashboard');
+
+    // Stencil Daschboard
+    Route::get('/mtc/stencil-dashboard', StencilDashboard::class)->name('mtc.stencil-dashboard');
+    Route::get('/api/stencils/latest', function () {
+        try {
+            $allStencils = MasterStencil::with(['employee'])
+                ->where('category', 'STENCIL')
+                ->get()
+                ->groupBy('line_name');
+            
+            $stencils = [];
+            for ($i = 1; $i <= 17; $i++) {
+                $line = "SMT $i";
+                $stencils[$line] = $allStencils[$line] ?? [];
+            }
+            
+            return response()->json($stencils);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    })->name('api.stencils.latest')->middleware('web');
+
+    Route::post('/api/stencils/update-status', function () {
+        try {
+            $data = request()->validate([
+                'id' => 'required|exists:tb_esd_jigs,id',
+                'status' => 'required|in:Prepared,In Use,Stand By,Cleaning,Disposed',
+                'nik' => 'required|string', // NIK dari input user
+                'reset_rack' => 'boolean'
+            ]);
+            
+            // Cari employee berdasarkan NIK (bukan ID)
+            $employee = Employee::where('nik', $data['nik'])->first();
+            
+            if (!$employee) {
+                return response()->json([
+                    'success' => false, 
+                    'message' => 'Employee with NIK ' . $data['nik'] . ' not found'
+                ], 404);
+            }
+            
+            $jig = Jig::find($data['id']);
+            
+            if (!$jig) {
+                return response()->json(['success' => false, 'message' => 'Stencil not found'], 404);
+            }
+            
+            // Simpan ID employee, bukan NIK
+            $jig->nik = $employee->ID;  // ID dari tabel employee
+            $jig->status = $data['status'];
+            
+            if ($data['reset_rack'] ?? false) {
+                $jig->rack_number = null;
+            }
+            
+            $jig->save();
+            
+            return response()->json(['success' => true]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
+        }
+    })->name('api.stencils.update-status');
 
 });

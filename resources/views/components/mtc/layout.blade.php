@@ -114,10 +114,10 @@
                     <div x-show="masterOpen" x-collapse class="mt-1 relative">
                         <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
                         <div class="space-y-1 ml-[30px]">
-                            <a href="#" wire:navigate
-                                class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('mtc.master-areas') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}"
+                            <a href="{{ route('mtc.daily-dashboard') }}" wire:navigate
+                                class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('mtc.daily-dashboard') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}"
                                 @click="mobileMenuOpen = false">
-                                <span class="w-2 h-2 rounded-full {{ request()->routeIs('mtc.master-areas') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                <span class="w-2 h-2 rounded-full {{ request()->routeIs('mtc.daily-dashboard') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
                                 <span class="truncate">Daily Check Monitoring</span>
                             </a>
                             @can('view master area')
@@ -166,7 +166,8 @@
                     >
                         <div class="flex items-center gap-2">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
-                                <path d="M11.25 4.533A9.707 9.707 0 0 0 6 3a9.735 9.735 0 0 0-3.25.555.75.75 0 0 0-.5.707v14.25a.75.75 0 0 0 1 .707A8.237 8.237 0 0 1 6 18.75c1.995 0 3.823.707 5.25 1.886V4.533ZM12.75 20.636A8.214 8.214 0 0 1 18 18.75c.966 0 1.89.166 2.75.47a.75.75 0 0 0 1-.708V4.262a.75.75 0 0 0-.5-.707A9.735 9.735 0 0 0 18 3a9.707 9.707 0 0 0-5.25 1.533v16.103Z" />
+                                <path d="M16.5 7.5h-9v9h9v-9Z" />
+                                <path fill-rule="evenodd" d="M8.25 2.25A.75.75 0 0 1 9 3v.75h2.25V3a.75.75 0 0 1 1.5 0v.75H15V3a.75.75 0 0 1 1.5 0v.75h.75a3 3 0 0 1 3 3v.75H21A.75.75 0 0 1 21 9h-.75v2.25H21a.75.75 0 0 1 0 1.5h-.75V15H21a.75.75 0 0 1 0 1.5h-.75v.75a3 3 0 0 1-3 3h-.75V21a.75.75 0 0 1-1.5 0v-.75h-2.25V21a.75.75 0 0 1-1.5 0v-.75H9V21a.75.75 0 0 1-1.5 0v-.75h-.75a3 3 0 0 1-3-3v-.75H3A.75.75 0 0 1 3 15h.75v-2.25H3a.75.75 0 0 1 0-1.5h.75V9H3a.75.75 0 0 1 0-1.5h.75v-.75a3 3 0 0 1 3-3h.75V3a.75.75 0 0 1 .75-.75ZM6 6.75A.75.75 0 0 1 6.75 6h10.5a.75.75 0 0 1 .75.75v10.5a.75.75 0 0 1-.75.75H6.75a.75.75 0 0 1-.75-.75V6.75Z" clip-rule="evenodd" />
                             </svg>
                             <span>Metal Mask</span>
                         </div>
@@ -184,10 +185,10 @@
                     <div x-show="metalOpen" x-collapse class="mt-1 relative">
                         <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
                         <div class="space-y-1 ml-[30px]">
-                            <a href="#" wire:navigate
-                                class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('mtc.master-areas') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}"
+                            <a href="{{ route('mtc.stencil-dashboard') }}" wire:navigate
+                                class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('mtc.stencil-dashboard') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}"
                                 @click="mobileMenuOpen = false">
-                                <span class="w-2 h-2 rounded-full {{ request()->routeIs('mtc.master-areas') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                <span class="w-2 h-2 rounded-full {{ request()->routeIs('mtc.stencil-dashboard') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
                                 <span class="truncate">Stencil Monitoring</span>
                             </a>
                             <a href="{{ route('mtc.stencils') }}" wire:navigate
@@ -322,7 +323,8 @@
                             title="Yearly"
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
-                                <path d="M11.25 4.533A9.707 9.707 0 0 0 6 3a9.735 9.735 0 0 0-3.25.555.75.75 0 0 0-.5.707v14.25a.75.75 0 0 0 1 .707A8.237 8.237 0 0 1 6 18.75c1.995 0 3.823.707 5.25 1.886V4.533ZM12.75 20.636A8.214 8.214 0 0 1 18 18.75c.966 0 1.89.166 2.75.47a.75.75 0 0 0 1-.708V4.262a.75.75 0 0 0-.5-.707A9.735 9.735 0 0 0 18 3a9.707 9.707 0 0 0-5.25 1.533v16.103Z" />
+                                <path d="M16.5 7.5h-9v9h9v-9Z" />
+                                <path fill-rule="evenodd" d="M8.25 2.25A.75.75 0 0 1 9 3v.75h2.25V3a.75.75 0 0 1 1.5 0v.75H15V3a.75.75 0 0 1 1.5 0v.75h.75a3 3 0 0 1 3 3v.75H21A.75.75 0 0 1 21 9h-.75v2.25H21a.75.75 0 0 1 0 1.5h-.75V15H21a.75.75 0 0 1 0 1.5h-.75v.75a3 3 0 0 1-3 3h-.75V21a.75.75 0 0 1-1.5 0v-.75h-2.25V21a.75.75 0 0 1-1.5 0v-.75H9V21a.75.75 0 0 1-1.5 0v-.75h-.75a3 3 0 0 1-3-3v-.75H3A.75.75 0 0 1 3 15h.75v-2.25H3a.75.75 0 0 1 0-1.5h.75V9H3a.75.75 0 0 1 0-1.5h.75v-.75a3 3 0 0 1 3-3h.75V3a.75.75 0 0 1 .75-.75ZM6 6.75A.75.75 0 0 1 6.75 6h10.5a.75.75 0 0 1 .75.75v10.5a.75.75 0 0 1-.75.75H6.75a.75.75 0 0 1-.75-.75V6.75Z" clip-rule="evenodd" />
                             </svg>
                         </button>
 
@@ -333,9 +335,9 @@
                                 class="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
                             >
                                 <div class="flex items-center gap-2">
-                                    <!-- Icon Yearly (Calendar - same as collapsed mode) -->
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
-                                        <path d="M11.25 4.533A9.707 9.707 0 0 0 6 3a9.735 9.735 0 0 0-3.25.555.75.75 0 0 0-.5.707v14.25a.75.75 0 0 0 1 .707A8.237 8.237 0 0 1 6 18.75c1.995 0 3.823.707 5.25 1.886V4.533ZM12.75 20.636A8.214 8.214 0 0 1 18 18.75c.966 0 1.89.166 2.75.47a.75.75 0 0 0 1-.708V4.262a.75.75 0 0 0-.5-.707A9.735 9.735 0 0 0 18 3a9.707 9.707 0 0 0-5.25 1.533v16.103Z" />
+                                        <path d="M16.5 7.5h-9v9h9v-9Z" />
+                                        <path fill-rule="evenodd" d="M8.25 2.25A.75.75 0 0 1 9 3v.75h2.25V3a.75.75 0 0 1 1.5 0v.75H15V3a.75.75 0 0 1 1.5 0v.75h.75a3 3 0 0 1 3 3v.75H21A.75.75 0 0 1 21 9h-.75v2.25H21a.75.75 0 0 1 0 1.5h-.75V15H21a.75.75 0 0 1 0 1.5h-.75v.75a3 3 0 0 1-3 3h-.75V21a.75.75 0 0 1-1.5 0v-.75h-2.25V21a.75.75 0 0 1-1.5 0v-.75H9V21a.75.75 0 0 1-1.5 0v-.75h-.75a3 3 0 0 1-3-3v-.75H3A.75.75 0 0 1 3 15h.75v-2.25H3a.75.75 0 0 1 0-1.5h.75V9H3a.75.75 0 0 1 0-1.5h.75v-.75a3 3 0 0 1 3-3h.75V3a.75.75 0 0 1 .75-.75ZM6 6.75A.75.75 0 0 1 6.75 6h10.5a.75.75 0 0 1 .75.75v10.5a.75.75 0 0 1-.75.75H6.75a.75.75 0 0 1-.75-.75V6.75Z" clip-rule="evenodd" />
                                     </svg>
                                     <span>Metal Mask</span>
                                 </div>
@@ -353,9 +355,9 @@
                             <div x-show="metalOpen" x-collapse class="mt-1 relative">
                                 <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
                                 <div class="space-y-1 ml-[30px]">
-                                    <a href="#" wire:navigate
-                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('mtc.master-areas') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
-                                        <span class="w-2 h-2 rounded-full {{ request()->routeIs('mtc.master-areas') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                    <a href="{{ route('mtc.stencil-dashboard') }}" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('mtc.stencil-dashboard') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
+                                        <span class="w-2 h-2 rounded-full {{ request()->routeIs('mtc.stencil-dashboard') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
                                         <span class="truncate">Stencil Monitoring</span>
                                     </a>
                                     <a href="{{ route('mtc.stencils') }}" wire:navigate

@@ -4,10 +4,12 @@ namespace App\Livewire\MTC\Master;
 
 use App\Models\HR\Employee;
 use App\Models\MTC\Master\MasterStencil;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Spatie\Activitylog\Models\Activity;
 
 class StencilManagement extends Component
 {
@@ -37,9 +39,16 @@ class StencilManagement extends Component
     
     // Properties untuk modal
     public $showUpdateModal = false;
+    public $showActivityModal = false;
+    public $selectedStencilForActivity = null;
+    public $activityPage = 1;
+    public $perPageActivities = 10;
     
     // Loading state
     public $isSaving = false;
+
+    public $activeTab = 'in_use_with_line';
+    public $tabCounts = [];
 
     protected $rules = [
         'status' => 'required|in:In Use,Prepared,Cleaning,Stand By,Disposed',
@@ -62,9 +71,37 @@ class StencilManagement extends Component
         'refreshStencilTable' => '$refresh'
     ];
 
-    /**
-     * Get employees for searchable dropdown
-     */
+    public function mount()
+    {
+        $this->updateTabCounts();
+    }
+
+    public function setTab($tab)
+    {
+        $this->activeTab = $tab;
+        $this->resetPage();
+        $this->updateTabCounts();
+    }
+
+    public function updateTabCounts()
+    {
+        $baseQuery = MasterStencil::query();
+        
+        $this->tabCounts = [
+            'all' => (clone $baseQuery)->count(),
+            'in_use' => (clone $baseQuery)->where('status', 'In Use')->count(),
+            'in_use_with_line' => (clone $baseQuery)
+                ->where('status', 'In Use')
+                ->whereNotNull('line_name')
+                ->where('line_name', '!=', '')
+                ->count(),
+            'prepared' => (clone $baseQuery)->where('status', 'Prepared')->count(),
+            'cleaning' => (clone $baseQuery)->where('status', 'Cleaning')->count(),
+            'stand_by' => (clone $baseQuery)->where('status', 'Stand By')->count(),
+            'disposed' => (clone $baseQuery)->where('status', 'Disposed')->count(),
+        ];
+    }
+
     public function getEmployeesProperty()
     {
         return Employee::query()
@@ -77,18 +114,12 @@ class StencilManagement extends Component
             ]);
     }
 
-    /**
-     * Get all line options (SMT 1 to SMT 17)
-     */
     public function getLineOptionsProperty()
     {
         return collect(range(1, 17))
             ->mapWithKeys(fn ($n) => ["SMT $n" => "SMT $n"]);
     }
 
-    /**
-     * Get status color class
-     */
     public function getStatusColorClass($status)
     {
         $colors = [
@@ -116,9 +147,6 @@ class StencilManagement extends Component
         $this->resetPage();
     }
 
-    /**
-     * Reset filters
-     */
     public function resetFilters()
     {
         $this->search = '';
@@ -128,9 +156,6 @@ class StencilManagement extends Component
         $this->dispatch('notify', message: 'Filters reset successfully!', type: 'success');
     }
 
-    /**
-     * Update employee info when NIK changes
-     */
     public function updatedNik($value)
     {
         if ($value) {
@@ -145,9 +170,6 @@ class StencilManagement extends Component
         }
     }
 
-    /**
-     * Open update status modal
-     */
     public function updateStatus($id)
     {
         if (!auth()->user()->can('edit stencil')) {
@@ -166,7 +188,6 @@ class StencilManagement extends Component
             $this->count_stencil = $stencil->count_stencil;
             $this->nik = $stencil->nik;
             
-            // Set employee info
             if ($this->nik) {
                 $employee = Employee::find($this->nik);
                 if ($employee) {
@@ -185,9 +206,6 @@ class StencilManagement extends Component
         }
     }
 
-    /**
-     * Save status update
-     */
     public function saveStatusUpdate()
     {
         $this->isSaving = true;
@@ -197,39 +215,36 @@ class StencilManagement extends Component
             $this->isSaving = false;
             return;
         }
-
+    
         $this->validate();
-
+    
         try {
             $stencil = MasterStencil::findOrFail($this->stencil_id);
             $oldStatus = $stencil->status;
-            $oldLineName = $stencil->line_name;
             
-            // Prepare update data
             $updateData = [
                 'nik' => $this->nik,
                 'status' => $this->status,
                 'line_name' => in_array($this->status, ['In Use', 'Prepared']) ? $this->line_name : null,
             ];
-
-            // Jika status baru Cleaning, replace count_stencil dengan input
+    
             if ($this->status === 'Cleaning' && isset($this->input_count_stencil)) {
                 $updateData['count_stencil'] = $this->input_count_stencil;
             }
-
-            // Jika status lama Cleaning dan status baru bukan Cleaning, reset count_stencil
+    
             if ($oldStatus === 'Cleaning' && $this->status !== 'Cleaning') {
                 $updateData['count_stencil'] = null;
             }
-
+    
             $stencil->update($updateData);
-
+    
             $this->showUpdateModal = false;
             $this->resetForm();
             
             $message = "Status changed from '{$oldStatus}' to '{$this->status}' successfully!";
             $this->dispatch('notify', message: $message, type: 'success');
             $this->dispatch('refreshStencilTable');
+            $this->updateTabCounts();
             
         } catch (\Exception $e) {
             Log::error('Error updating stencil status: ' . $e->getMessage());
@@ -239,18 +254,76 @@ class StencilManagement extends Component
         }
     }
 
+    public function viewActivity($id)
+    {
+        $this->selectedStencilForActivity = MasterStencil::find($id);
+        $this->activityPage = 1;
+        $this->showActivityModal = true;
+    }
+
+    public function closeActivityModal()
+    {
+        $this->showActivityModal = false;
+        $this->selectedStencilForActivity = null;
+        $this->activityPage = 1;
+    }
+
+    public function setActivityPage($page)
+    {
+        $this->activityPage = $page;
+    }
+
     /**
-     * Close update modal
+     * Get employee name by ID
      */
+    public function getEmployeeName($id)
+    {
+        if (empty($id)) {
+            return '-';
+        }
+        
+        $employee = Employee::where('id', $id)->first();
+        return $employee ? $employee->name . ' (' . $employee->nik . ')' : $id;
+    }
+
+    /**
+     * Get user name by ID
+     */
+    public function getUserName($id)
+    {
+        if (empty($id)) {
+            return '-';
+        }
+        
+        $user = User::find($id);
+        return $user ? $user->name : $id;
+    }
+
+    public function getActivitiesProperty()
+    {
+        if (!$this->selectedStencilForActivity) {
+            return collect();
+        }
+        
+        $activities = Activity::where(function($query) {
+                $query->where('subject_type', 'App\Models\MTC\Master\MasterStencil')
+                      ->orWhere('subject_type', 'App\Models\MasterStencil')
+                      ->orWhere('subject_type', 'like', '%MasterStencil%')
+                      ->orWhere('subject_type', 'App\Models\Jig');
+            })
+            ->where('subject_id', $this->selectedStencilForActivity->id)
+            ->orderBy('created_at', 'desc')
+            ->paginate($this->perPageActivities, ['*'], 'page', $this->activityPage);
+            
+        return $activities;
+    }
+
     public function closeUpdateModal()
     {
         $this->showUpdateModal = false;
         $this->resetForm();
     }
 
-    /**
-     * Reset form
-     */
     public function resetForm()
     {
         $this->reset([
@@ -262,15 +335,33 @@ class StencilManagement extends Component
 
     public function render()
     {
-        // Check permission untuk view
         if (!auth()->user()->can('view stencil')) {
             abort(403, 'You do not have permission to view stencil.');
         }
-
+    
         $employees = $this->employees;
         $lineOptions = $this->lineOptions;
-
+    
         $stencils = MasterStencil::with(['employee', 'creator', 'updater'])
+            ->when($this->activeTab !== 'all', function ($query) {
+                $statusMap = [
+                    'in_use' => 'In Use',
+                    'in_use_with_line' => 'In Use',
+                    'prepared' => 'Prepared',
+                    'cleaning' => 'Cleaning',
+                    'stand_by' => 'Stand By',
+                    'disposed' => 'Disposed',
+                ];
+                
+                if (isset($statusMap[$this->activeTab])) {
+                    $query->where('status', $statusMap[$this->activeTab]);
+                    
+                    if ($this->activeTab === 'in_use_with_line') {
+                        $query->whereNotNull('line_name')
+                              ->where('line_name', '!=', '');
+                    }
+                }
+            })
             ->when($this->search, function ($query) {
                 $query->where('register_no', 'like', '%' . $this->search . '%')
                     ->orWhere('customer', 'like', '%' . $this->search . '%')
@@ -284,20 +375,20 @@ class StencilManagement extends Component
             })
             ->orderBy('id', 'desc')
             ->paginate(10);
-
-        // Get unique customers for filter
+    
         $customers = MasterStencil::select('customer')
             ->distinct()
             ->whereNotNull('customer')
             ->where('customer', '!=', '')
             ->pluck('customer')
             ->toArray();
-
+    
         return view('livewire.mtc.master.stencil-management', [
             'stencils' => $stencils,
             'employees' => $employees,
             'lineOptions' => $lineOptions,
             'customers' => $customers,
+            'activities' => $this->activities,
         ]);
     }
 }

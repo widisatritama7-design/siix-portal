@@ -1,0 +1,397 @@
+<section class="w-full">
+    @include('partials.mtc-heading')
+
+    <flux:heading class="sr-only">
+        {{ __('MTC - Stencil Dashboard') }}
+    </flux:heading>
+
+    <x-mtc.layout class="!max-w-full !px-0 !mx-0">
+        <x-slot name="heading">
+            <div class="w-full">
+                <flux:breadcrumbs class="mb-1">
+                    <flux:breadcrumbs.item href="{{ route('dashboard') }}" wire:navigate separator="slash">
+                        Dashboard
+                    </flux:breadcrumbs.item>
+                    <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
+                        MTC
+                    </flux:breadcrumbs.item>
+                    <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
+                        Stencil Dashboard
+                    </flux:breadcrumbs.item>
+                </flux:breadcrumbs>
+            </div>
+        </x-slot>
+        
+        <x-slot name="subheading">
+            <div class="w-full">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h1 class="text-2xl sm:text-3xl font-bold text-zinc-800 dark:text-white">
+                            Realtime Dashboard For Use Stencil
+                        </h1>
+                        <p class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+                            Monitor stencil usage across all SMT lines
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-4">
+                        <div class="text-sm text-zinc-500 whitespace-nowrap">
+                            Total Active: <span id="totalActive" class="font-bold text-lg text-blue-600">0</span>
+                        </div>
+                        <button onclick="manualRefresh()" 
+                                class="inline-flex items-center gap-2 px-3 sm:px-4 py-2 text-sm font-medium text-zinc-700 bg-white border border-zinc-300 rounded-lg hover:bg-zinc-50 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-600 dark:hover:bg-zinc-700 transition-colors whitespace-nowrap">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                            <span class="hidden sm:inline">Refresh</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </x-slot>
+
+        <div class="-mt-2">
+            <!-- Legend -->
+            <div class="flex flex-wrap gap-2 sm:gap-4 mb-6">
+                <div class="flex items-center gap-2 text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-3 py-1.5 rounded-full">
+                    <span class="w-3 h-3 rounded bg-red-500 animate-pulse"></span>
+                    <span>No Stencil</span>
+                </div>
+                <div class="flex items-center gap-2 text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-3 py-1.5 rounded-full">
+                    <span class="w-3 h-3 rounded bg-green-500"></span>
+                    <span>In Use</span>
+                </div>
+                <div class="flex items-center gap-2 text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-3 py-1.5 rounded-full">
+                    <span class="w-3 h-3 rounded bg-amber-500"></span>
+                    <span>Rack Number</span>
+                </div>
+                <div class="flex items-center gap-2 text-xs sm:text-sm text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-3 py-1.5 rounded-full">
+                    <span class="w-3 h-3 rounded bg-blue-500"></span>
+                    <span>Prepared</span>
+                </div>
+            </div>
+
+            <!-- Content 3 Columns - akan diisi JavaScript -->
+            <div id="stencilCardsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6"></div>
+
+            <!-- Footer -->
+            <div class="mt-6 px-4 py-3 bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 text-xs text-zinc-500 flex flex-col sm:flex-row justify-between items-center gap-3">
+                <div class="flex flex-wrap items-center gap-4 justify-center sm:justify-start">
+                    <span>Total Lines: <strong>17</strong></span>
+                    <span class="hidden sm:inline w-px h-4 bg-zinc-300 dark:bg-zinc-600"></span>
+                    <span id="lastUpdated">Last updated: {{ now()->format('d M Y H:i:s') }}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span>Live updates every 5 seconds</span>
+                </div>
+            </div>
+        </div>
+    </x-mtc.layout>
+
+    <!-- Modal -->
+    <div id="stencilModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); align-items: center; justify-content: center; z-index: 9999;">
+        <div style="background: white; border-radius: 0.75rem; width: 90%; max-width: 1000px; max-height: 85vh; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
+            <div style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 1rem 1.5rem; display: flex; align-items: center; justify-content: space-between;">
+                <h3 id="stencilModalTitle" style="font-size: 1.25rem; font-weight: 600; margin: 0;"></h3>
+                <button onclick="closeStencilModal()" style="background: none; border: none; color: white; font-size: 1.75rem; cursor: pointer; padding: 0 0.5rem; line-height: 1; opacity: 0.8;">×</button>
+            </div>
+            <div id="stencilModalBody" style="padding: 1.5rem; overflow-y: auto; max-height: calc(85vh - 4rem);"></div>
+            <div style="padding: 1rem 1.5rem; border-top: 1px solid #e5e7eb; text-align: right;">
+                <button onclick="closeStencilModal()" style="padding: 0.5rem 1rem; background: #3b82f6; color: white; border: none; border-radius: 0.5rem; cursor: pointer;">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .stencil-card {
+            transition: all 0.2s ease;
+        }
+        .stencil-card:hover {
+            border-color: #3b82f6 !important;
+            transform: translateY(-2px);
+        }
+    </style>
+
+    @push('scripts')
+    <script>
+        let stencilData = {};
+        let refreshInterval;
+        let isModalOpen = false;
+
+        // Data dari server (Laravel)
+        const serverData = @json($jigs);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            stencilData = JSON.parse(JSON.stringify(serverData));
+            renderDashboard();
+            startAutoRefresh();
+        });
+
+        function startAutoRefresh() {
+            if (refreshInterval) clearInterval(refreshInterval);
+            refreshInterval = setInterval(function() {
+                if (!isModalOpen) {
+                    fetchLatestData();
+                }
+            }, 5000);
+        }
+
+        async function fetchLatestData() {
+            if (isModalOpen) return;
+            
+            try {
+                const response = await fetch('{{ url("/api/stencils/latest") }}');
+                const data = await response.json();
+                stencilData = data;
+                renderDashboard();
+                updateLastUpdated();
+            } catch (error) {
+                console.error('Auto refresh error:', error);
+            }
+        }
+
+        function manualRefresh() {
+            if (!isModalOpen) {
+                fetchLatestData();
+            }
+        }
+
+        function updateLastUpdated() {
+            const now = new Date();
+            const formatted = now.toLocaleString('id-ID', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            const lastUpdatedEl = document.getElementById('lastUpdated');
+            if (lastUpdatedEl) {
+                lastUpdatedEl.textContent = `Last updated: ${formatted}`;
+            }
+        }
+
+        function renderDashboard() {
+            const container = document.getElementById('stencilCardsContainer');
+            if (!container) return;
+
+            let totalActive = 0;
+            let html = '';
+
+            // 3 columns
+            const columns = [
+                { start: 1, end: 6 },
+                { start: 7, end: 12 },
+                { start: 13, end: 17 }
+            ];
+
+            columns.forEach(column => {
+                html += `<div class="space-y-3">`;
+                
+                for (let i = column.start; i <= column.end; i++) {
+                    const line = `SMT ${i}`;
+                    const registers = stencilData[line] || [];
+                    const activeRegisters = registers.filter(j => j.status !== 'Stand By');
+                    const isEmpty = activeRegisters.length === 0;
+                    
+                    totalActive += activeRegisters.length;
+                    
+                    html += `
+                        <div class="stencil-card bg-white dark:bg-zinc-800 rounded-xl border ${isEmpty ? 'border-l-4 border-l-red-500' : 'border-zinc-200 dark:border-zinc-700'} p-3 cursor-pointer hover:shadow-lg transition-all duration-300"
+                             onclick="openStencilModal('${line}')">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <div class="flex items-center gap-2 flex-shrink-0">
+                                    <span class="font-bold text-sm bg-zinc-100 dark:bg-zinc-700 px-3 py-1 rounded-full">${escapeHtml(line)}</span>
+                                    ${!isEmpty ? `<span class="text-xs font-semibold bg-blue-500 text-white px-2 py-0.5 rounded-full">${activeRegisters.length}</span>` : ''}
+                                </div>
+                                <div class="flex flex-wrap items-center gap-2 flex-1">
+                    `;
+                    
+                    if (activeRegisters.length > 0) {
+                        activeRegisters.forEach(jig => {
+                            const bgColor = jig.status === 'In Use' ? '#10b981' : '#3b82f6';
+                            html += `
+                                <div class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium text-white shadow-sm" style="background: ${bgColor};">
+                                    <span>${escapeHtml(jig.register_no)}</span>
+                                    ${jig.rack_number ? `<span class="bg-amber-500 px-1.5 py-0.5 rounded-full text-xs font-bold ml-1">${escapeHtml(jig.rack_number)}</span>` : ''}
+                                </div>
+                            `;
+                        });
+                    } else {
+                        html += `<div class="text-red-500 text-xs bg-red-50 dark:bg-red-950/30 px-3 py-1 rounded-full">🔴 No Stencil in Use</div>`;
+                    }
+                    
+                    html += `
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                html += `</div>`;
+            });
+            
+            container.innerHTML = html;
+            
+            const totalActiveEl = document.getElementById('totalActive');
+            if (totalActiveEl) {
+                totalActiveEl.textContent = totalActive;
+            }
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        function openStencilModal(line) {
+            isModalOpen = true;
+            
+            const data = stencilData[line] || [];
+            const activeData = data.filter(jig => jig.status !== 'Stand By');
+            
+            document.getElementById('stencilModalTitle').textContent = `Line ${line} - Stencil Details`;
+            
+            let html = `
+                <div class="overflow-x-auto">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: #f9fafb;">
+                                <th style="padding: 0.75rem 1rem; text-align: left; font-size: 0.75rem; font-weight: 600; color: #6b7280;">Register No</th>
+                                <th style="padding: 0.75rem 1rem; text-align: left; font-size: 0.75rem; font-weight: 600; color: #6b7280;">Rack</th>
+                                <th style="padding: 0.75rem 1rem; text-align: left; font-size: 0.75rem; font-weight: 600; color: #6b7280;">Last Update</th>
+                                <th style="padding: 0.75rem 1rem; text-align: left; font-size: 0.75rem; font-weight: 600; color: #6b7280;">PIC</th>
+                                <th style="padding: 0.75rem 1rem; text-align: left; font-size: 0.75rem; font-weight: 600; color: #6b7280;">Status</th>
+                                <th style="padding: 0.75rem 1rem; text-align: left; font-size: 0.75rem; font-weight: 600; color: #6b7280;">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+            `;
+            
+            if (activeData.length > 0) {
+                activeData.forEach(jig => {
+                    const updatedAt = jig.updated_at ? new Date(jig.updated_at).toLocaleString('id-ID') : '-';
+                    // Tampilkan NIK dari employee, bukan ID
+                    const employeeNik = jig.employee?.nik || '-';
+                    html += `
+                        <tr style="border-bottom: 1px solid #e5e7eb;" data-id="${jig.id}">
+                            <td style="padding: 0.75rem 1rem; font-size: 0.875rem; font-weight: 600;">${escapeHtml(jig.register_no)}</td>
+                            <td style="padding: 0.75rem 1rem; font-size: 0.875rem;">${jig.rack_number || '-'}</td>
+                            <td style="padding: 0.75rem 1rem; font-size: 0.875rem;">${updatedAt}</td>
+                            <td style="padding: 0.75rem 1rem; font-size: 0.875rem;">${employeeNik}</td>
+                            <td style="padding: 0.75rem 1rem;">
+                                <select class="stencil-status-select" style="padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.875rem;">
+                                    <option value="Prepared" ${jig.status === 'Prepared' ? 'selected' : ''}>Prepared</option>
+                                    <option value="In Use" ${jig.status === 'In Use' ? 'selected' : ''}>In Use</option>
+                                    <option value="Stand By" ${jig.status === 'Stand By' ? 'selected' : ''}>Stand By</option>
+                                    <option value="Cleaning" ${jig.status === 'Cleaning' ? 'selected' : ''}>Cleaning</option>
+                                    <option value="Disposed" ${jig.status === 'Disposed' ? 'selected' : ''}>Disposed</option>
+                                </select>
+                            </td>
+                            <td style="padding: 0.75rem 1rem;">
+                                <button onclick="showNikInput(this, ${jig.id})" style="padding: 0.5rem 1rem; background: #3b82f6; color: white; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 0.875rem;">Update</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } else {
+                html += `<tr><td colspan="6" style="text-align: center; padding: 2rem;">No stencil data available</td></tr>`;
+            }
+            
+            html += `
+                        </tbody>
+                    </table>
+                </div>
+            `;
+            
+            document.getElementById('stencilModalBody').innerHTML = html;
+            document.getElementById('stencilModal').style.display = 'flex';
+        }
+
+        function closeStencilModal() {
+            isModalOpen = false;
+            document.getElementById('stencilModal').style.display = 'none';
+            fetchLatestData();
+        }
+
+        function showNikInput(button, id) {
+            const row = button.closest('tr');
+            if (row.querySelector('.nik-input')) return;
+            
+            const cell = button.parentElement;
+            cell.innerHTML = `
+                <div class="flex gap-2 items-center">
+                    <input type="text" class="nik-input" placeholder="NIK" style="padding: 0.5rem; border: 1px solid #d1d5db; border-radius: 0.5rem; font-size: 0.875rem; width: 100px;">
+                    <button onclick="submitStatus(${id}, this)" style="padding: 0.5rem 0.75rem; background: #10b981; color: white; border: none; border-radius: 0.5rem; cursor: pointer;">✓</button>
+                    <button onclick="cancelNikInput(this, ${id})" style="padding: 0.5rem 0.75rem; background: #6b7280; color: white; border: none; border-radius: 0.5rem; cursor: pointer;">✗</button>
+                </div>
+            `;
+        }
+
+        function cancelNikInput(button, id) {
+            const cell = button.closest('td');
+            cell.innerHTML = `<button onclick="showNikInput(this, ${id})" style="padding: 0.5rem 1rem; background: #3b82f6; color: white; border: none; border-radius: 0.5rem; cursor: pointer; font-size: 0.875rem;">Update</button>`;
+        }
+
+        async function submitStatus(id, button) {
+            const row = button.closest('tr');
+            const status = row.querySelector('.stencil-status-select').value;
+            const nik = row.querySelector('.nik-input').value; // NIK dari input user
+            
+            if (!nik) {
+                alert('Please enter NIK');
+                return;
+            }
+            
+            button.disabled = true;
+            button.textContent = '...';
+            
+            try {
+                const response = await fetch('{{ url("/api/stencils/update-status") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        id: id,           // ID stencil
+                        status: status,   // Status baru
+                        nik: nik,         // NIK dari input (akan dicari ID-nya di backend)
+                        reset_rack: status === 'Stand By'
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('✅ Status updated successfully!');
+                    closeStencilModal();
+                } else {
+                    alert('❌ Update failed: ' + (result.message || 'Unknown error'));
+                    button.disabled = false;
+                    button.textContent = '✓';
+                }
+            } catch (error) {
+                console.error('Submit error:', error);
+                alert('Error: ' + error.message);
+                button.disabled = false;
+                button.textContent = '✓';
+            }
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('stencilModal');
+            if (event.target === modal) {
+                closeStencilModal();
+            }
+        }
+    </script>
+    @endpush
+</section>

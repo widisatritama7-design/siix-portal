@@ -10,6 +10,7 @@ use App\Models\MTC\Master\MasterLocation;
 use Carbon\Carbon;
 use Livewire\Component;
 use Livewire\WithPagination;
+use Spatie\Activitylog\Models\Activity;
 
 class MasterLineShow extends Component
 {
@@ -45,6 +46,13 @@ class MasterLineShow extends Component
     public $showApprovalModal = false;
     public $approvalDailyFujiId = null;
 
+    // Tambahkan property ini di dalam class
+    public $showActivityModal = false;
+    public $selectedRecordForActivity = null;
+    public $activityPage = 1;
+    public $perPageActivities = 10;
+    public $activityRecordType = null; // 'fuji' or 'panasonic'
+
     protected $rules = [
         'location_id' => 'required|exists:tb_mtc_master_locations,id',
         'line_number' => 'required|string|max:255',
@@ -68,6 +76,53 @@ class MasterLineShow extends Component
         'refreshDailyFujiTable' => '$refresh',
         'refreshDailyPanasonicTable' => '$refresh',
     ];
+
+    // Tambahkan method untuk view activity
+    public function viewActivity($id, $type)
+    {
+        if ($type === 'fuji') {
+            $this->selectedRecordForActivity = DailyFuji::find($id);
+            $this->activityRecordType = 'fuji';
+        } else {
+            $this->selectedRecordForActivity = DailyPanasonic::find($id);
+            $this->activityRecordType = 'panasonic';
+        }
+        $this->activityPage = 1;
+        $this->showActivityModal = true;
+    }
+
+    public function closeActivityModal()
+    {
+        $this->showActivityModal = false;
+        $this->selectedRecordForActivity = null;
+        $this->activityRecordType = null;
+        $this->activityPage = 1;
+    }
+
+    public function setActivityPage($page)
+    {
+        $this->activityPage = $page;
+    }
+
+    public function getActivitiesProperty()
+    {
+        if (!$this->selectedRecordForActivity) {
+            return collect();
+        }
+        
+        // Ambil ID dari record yang dipilih
+        $recordId = $this->selectedRecordForActivity->id;
+        
+        // Cari activity dengan subject_id yang sama dan subject_type mengandung DailyPanasonic atau DailyFuji
+        $modelName = $this->activityRecordType === 'fuji' ? 'DailyFuji' : 'DailyPanasonic';
+        
+        $activities = Activity::where('subject_id', $recordId)
+            ->where('subject_type', 'like', '%' . $modelName)
+            ->orderBy('created_at', 'desc')
+            ->paginate($this->perPageActivities, ['*'], 'page', $this->activityPage);
+        
+        return $activities;
+    }
 
     // Tambahkan method untuk Daily Panasonic
     public function viewDailyPanasonicDetails($dailyPanasonicId)

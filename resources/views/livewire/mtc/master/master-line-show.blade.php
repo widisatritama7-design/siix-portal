@@ -486,6 +486,16 @@
                                     
                                     <td class="px-4 py-3 text-right">
                                         <div class="flex items-center justify-end gap-1 whitespace-nowrap">
+                                            <!-- View Activity Button -->
+                                            <flux:button 
+                                                wire:click="viewActivity({{ $dailyFuji->id }}, 'fuji')"
+                                                size="sm"
+                                                icon="document-text"
+                                                color="purple"
+                                                class="!p-2 flex-shrink-0"
+                                                title="View activity log"
+                                            />
+
                                             <!-- View Details Button -->
                                             <flux:button 
                                                 wire:click="viewDailyFujiDetails({{ $dailyFuji->id }})"
@@ -751,6 +761,17 @@
                                     <!-- Actions -->
                                     <td class="px-4 py-3 text-right">
                                         <div class="flex items-center justify-end gap-1 whitespace-nowrap">
+
+                                            <!-- View Activity Button -->
+                                            <flux:button 
+                                                wire:click="viewActivity({{ $dailyPanasonic->id }}, 'panasonic')"
+                                                size="sm"
+                                                icon="document-text"
+                                                color="purple"
+                                                class="!p-2 flex-shrink-0"
+                                                title="View activity log"
+                                            />
+
                                             <!-- View Button -->
                                             <flux:button 
                                                 wire:click="viewDailyPanasonicDetails({{ $dailyPanasonic->id }})"
@@ -3502,6 +3523,213 @@
                     </button>
                 </div>
             </div>
+        </div>
+    </flux:modal>
+
+    <!-- MODAL ACTIVITY LOG -->
+    <flux:modal wire:model="showActivityModal" class="w-full max-w-5xl">
+        <div class="flex flex-col" style="height: auto; max-height: 85vh; overflow: hidden;">
+            <div class="flex justify-between items-center px-6 py-4 border-b border-zinc-200 dark:border-zinc-700 flex-shrink-0">
+                <div>
+                    <h2 class="text-xl font-bold text-zinc-800 dark:text-white">Activity Log</h2>
+                    @if($selectedRecordForActivity)
+                    <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+                        @if($activityRecordType === 'fuji')
+                            Daily Fuji Inspection
+                        @else
+                            Daily Panasonic Inspection
+                        @endif
+                        - Line: <span class="font-semibold">{{ $selectedRecordForActivity->masterLine->line_number ?? 'N/A' }}</span>
+                        | Group: <span class="font-semibold">{{ $selectedRecordForActivity->group ?? '-' }}</span>
+                        | Date: <span class="font-semibold">{{ $selectedRecordForActivity->created_at ? $selectedRecordForActivity->created_at->format('d/m/Y') : '-' }}</span>
+                    </p>
+                    @endif
+                </div>
+                <button wire:click="closeActivityModal" class="text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            @if($selectedRecordForActivity)
+            @php
+                $activitiesData = $this->activities;
+                $totalRecords = $activitiesData->total();
+                $lastPage = $activitiesData->lastPage();
+                $allUsers = \App\Models\User::all()->keyBy('id');
+                $allEmployees = \App\Models\HR\Employee::all()->keyBy('id');
+            @endphp
+            
+            <div class="flex-1 overflow-y-auto p-6">
+                @if($totalRecords > 0)
+                    <div class="space-y-4">
+                        <div class="flex gap-2 mb-2">
+                            <span class="px-2 py-1 rounded-full text-white font-bold bg-red-600 text-xs">Old Value</span>
+                            <span class="px-2 py-1 rounded-full text-white font-bold bg-green-600 text-xs">New Value</span>
+                        </div>
+
+                        <div class="space-y-2">
+                            @foreach($activitiesData as $index => $activity)
+                                @php
+                                    $attributeChanges = is_string($activity->attribute_changes) ? json_decode($activity->attribute_changes, true) : ($activity->attribute_changes ?? []);
+                                    $old = $attributeChanges['old'] ?? [];
+                                    $new = $attributeChanges['attributes'] ?? [];
+                                    
+                                    if (empty($old) && empty($new)) {
+                                        $props = is_string($activity->properties) ? json_decode($activity->properties, true) : ($activity->properties ?? []);
+                                        $old = $props['old'] ?? [];
+                                        $new = $props['attributes'] ?? [];
+                                    }
+                                    
+                                    $changes = [];
+                                    if ($activity->event == 'created') {
+                                        foreach ($new as $key => $val) {
+                                            if (!in_array($key, ['created_by', 'updated_by', 'id', 'created_at', 'updated_at'])) {
+                                                $changes[$key] = ['old' => null, 'new' => $val];
+                                            }
+                                        }
+                                    } elseif ($activity->event == 'updated') {
+                                        foreach ($new as $key => $val) {
+                                            $oldVal = $old[$key] ?? null;
+                                            if ($oldVal !== $val && !in_array($key, ['created_by', 'updated_by', 'id', 'created_at', 'updated_at'])) {
+                                                $changes[$key] = ['old' => $oldVal, 'new' => $val];
+                                            }
+                                        }
+                                    } elseif ($activity->event == 'deleted') {
+                                        foreach ($old as $key => $val) {
+                                            if (!in_array($key, ['created_by', 'updated_by', 'id', 'created_at', 'updated_at'])) {
+                                                $changes[$key] = ['old' => $val, 'new' => null];
+                                            }
+                                        }
+                                    }
+                                    
+                                    $isFirst = $loop->first;
+                                @endphp
+                                
+                                @if(!empty($changes))
+                                <div x-data="{ open: {{ $isFirst ? 'true' : 'false' }} }" class="border rounded-lg shadow-sm bg-white dark:bg-zinc-900">
+                                    <button type="button" @click="open = !open" class="w-full flex justify-between items-center px-4 py-3 text-left font-medium bg-gray-100 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 rounded-t-lg">
+                                        <div class="flex items-center gap-2 flex-wrap">
+                                            @if($activity->event == 'created')
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                                    CREATED
+                                                </span>
+                                            @elseif($activity->event == 'updated')
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
+                                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                                                    UPDATED
+                                                </span>
+                                            @elseif($activity->event == 'deleted')
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
+                                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                                                    DELETED
+                                                </span>
+                                            @endif
+                                            <strong class="text-sm text-zinc-800 dark:text-zinc-200">{{ $activity->causer?->name ?? 'System' }}</strong>
+                                            <span class="text-xs text-zinc-500">{{ $activity->created_at ? $activity->created_at->format('d M Y H:i:s') : '-' }}</span>
+                                        </div>
+                                        <svg :class="{ 'rotate-180': open }" class="w-4 h-4 transform transition-transform text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </button>
+
+                                    <div x-show="open" x-transition class="p-4 space-y-2">
+                                        @foreach ($changes as $field => $change)
+                                            @php
+                                                $oldValue = $change['old'];
+                                                $newValue = $change['new'];
+                                                $fieldName = ucfirst(str_replace('_', ' ', $field));
+                                                
+                                                // Handle field nik - ambil nama employee
+                                                if ($field === 'nik') {
+                                                    if (!empty($oldValue)) {
+                                                        $employee = $allEmployees[$oldValue] ?? null;
+                                                        $oldValue = $employee ? $employee->name . ' (' . $employee->nik . ')' : $oldValue;
+                                                    }
+                                                    if (!empty($newValue)) {
+                                                        $employee = $allEmployees[$newValue] ?? null;
+                                                        $newValue = $employee ? $employee->name . ' (' . $employee->nik . ')' : $newValue;
+                                                    }
+                                                }
+                                                
+                                                // Handle field created_by, updated_by, approved_by
+                                                if (in_array($field, ['created_by', 'updated_by', 'approved_by']) && is_numeric($oldValue)) {
+                                                    $oldValue = $allUsers[$oldValue]?->name ?? $oldValue;
+                                                }
+                                                if (in_array($field, ['created_by', 'updated_by', 'approved_by']) && is_numeric($newValue)) {
+                                                    $newValue = $allUsers[$newValue]?->name ?? $newValue;
+                                                }
+                                                
+                                                // Format untuk waktu
+                                                if (in_array($field, ['run_time', 'stop_time']) && !empty($oldValue) && !is_string($oldValue)) {
+                                                    $oldValue = \Carbon\Carbon::parse($oldValue)->format('H:i');
+                                                }
+                                                if (in_array($field, ['run_time', 'stop_time']) && !empty($newValue) && !is_string($newValue)) {
+                                                    $newValue = \Carbon\Carbon::parse($newValue)->format('H:i');
+                                                }
+                                                
+                                                $displayOld = ($oldValue === null || $oldValue === '') ? '-' : $oldValue;
+                                                $displayNew = ($newValue === null || $newValue === '') ? '-' : $newValue;
+                                            @endphp
+
+                                            <div class="text-sm flex items-center gap-2 flex-wrap">
+                                                <span class="font-semibold min-w-[120px]">{{ $fieldName }}:</span>
+                                                <div class="flex items-center gap-2 flex-wrap">
+                                                    @if($activity->event == 'created')
+                                                        <span class="px-2 py-0.5 rounded-full text-white font-bold bg-green-600 text-xs">{{ $displayNew }}</span>
+                                                    @elseif($activity->event == 'deleted')
+                                                        <span class="px-2 py-0.5 rounded-full text-white font-bold bg-red-600 text-xs">{{ $displayOld }}</span>
+                                                    @else
+                                                        @if($displayOld != '-')
+                                                        <span class="px-2 py-0.5 rounded-full text-white font-bold bg-red-600 line-through text-xs">{{ $displayOld }}</span>
+                                                        <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                                                        </svg>
+                                                        @endif
+                                                        <span class="px-2 py-0.5 rounded-full text-white font-bold bg-green-600 text-xs">{{ $displayNew }}</span>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                                @endif
+                            @endforeach
+                        </div>
+                        
+                        @if($lastPage > 1)
+                        <div class="flex justify-between items-center mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-700">
+                            <div class="text-sm text-zinc-500 dark:text-zinc-400">
+                                Showing {{ $activitiesData->firstItem() }} to {{ $activitiesData->lastItem() }} of {{ $totalRecords }} records
+                            </div>
+                            <div class="flex gap-2">
+                                <flux:button wire:click="setActivityPage({{ $activityPage - 1 }})" size="sm" variant="outline" :disabled="$activityPage <= 1" class="!px-3">Previous</flux:button>
+                                @for($i = 1; $i <= $lastPage; $i++)
+                                    @if($i == $activityPage)
+                                        <flux:button size="sm" variant="primary" class="!px-3">{{ $i }}</flux:button>
+                                    @elseif($i == 1 || $i == $lastPage || ($i >= $activityPage - 1 && $i <= $activityPage + 1))
+                                        <flux:button wire:click="setActivityPage({{ $i }})" size="sm" variant="outline" class="!px-3">{{ $i }}</flux:button>
+                                    @elseif($i == $activityPage - 2 || $i == $activityPage + 2)
+                                        <span class="px-2 py-1 text-sm text-zinc-500 dark:text-zinc-400">...</span>
+                                    @endif
+                                @endfor
+                                <flux:button wire:click="setActivityPage({{ $activityPage + 1 }})" size="sm" variant="outline" :disabled="$activityPage >= $lastPage" class="!px-3">Next</flux:button>
+                            </div>
+                        </div>
+                        @endif
+                    </div>
+                @else
+                    <div class="text-center py-12">
+                        <svg class="w-16 h-16 mx-auto text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <p class="mt-4 text-sm text-zinc-500 dark:text-zinc-400">No activity logs found for this record</p>
+                    </div>
+                @endif
+            </div>
+            @endif
         </div>
     </flux:modal>
     
