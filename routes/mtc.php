@@ -9,6 +9,7 @@ use App\Livewire\MTC\Master\MasterLineManagement;
 use App\Livewire\MTC\Master\MasterLineShow;
 use App\Livewire\MTC\Master\MasterLocationManagement;
 use App\Livewire\MTC\Master\MasterMachineManagement;
+use App\Livewire\MTC\Master\StencilManagement;
 use App\Models\MTC\Daily\DailyFuji;
 use App\Models\MTC\Daily\DailyPanasonic;
 use Illuminate\Support\Facades\Route;
@@ -37,5 +38,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('mtc/master-lines/{masterLineId}/daily-panasonic/create', DailyPanasonicCreate::class)->name('mtc.daily-panasonic.create');
     Route::get('mtc/master-lines/{masterLineId}/daily-panasonic/{dailyPanasonicId}/edit', DailyPanasonicEdit::class)->name('mtc.daily-panasonic.edit');
     Route::get('print/daily-panasonic/{dailyPanasonic}', function ($id) {$dailyPanasonic = DailyPanasonic::with(['masterLine', 'creator', 'updater', 'approvedBy'])->findOrFail($id); return view('mtc.daily.panasonic.daily-panasonic-print', compact('dailyPanasonic')); })->name('print.daily-panasonic');
+
+    // Stencil
+    Route::livewire('mtc/stencils', StencilManagement::class)->name('mtc.stencils');
 
 });
