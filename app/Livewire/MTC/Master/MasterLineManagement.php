@@ -52,6 +52,133 @@ class MasterLineManagement extends Component
         'nik.exists' => 'Selected employee is invalid.',
     ];
 
+    /**
+     * Change machine type for a line
+     */
+    public function changeMachineType($id)
+    {
+        // Check permission
+        if (!auth()->user()->can('edit master line')) {
+            $this->dispatch('notify', message: 'You do not have permission to change machine type!', type: 'error');
+            return;
+        }
+
+        try {
+            $line = MasterLine::findOrFail($id);
+            $this->line_id = $line->id;
+            $this->machine_type = $line->machine_type;
+            $this->modalTitle = 'Change Machine Type';
+            $this->resetValidation();
+            
+            $this->dispatch('open-change-machine-modal');
+        } catch (\Exception $e) {
+            $this->dispatch('notify', message: 'Line not found!', type: 'error');
+        }
+    }
+
+    /**
+     * Save machine type change
+     */
+    public function saveMachineType()
+    {
+        // Check permission
+        if (!auth()->user()->can('edit master line')) {
+            $this->dispatch('notify', message: 'You do not have permission to change machine type!', type: 'error');
+            return;
+        }
+
+        $this->validate([
+            'machine_type' => 'required|in:fuji,panasonic,both',
+        ]);
+
+        try {
+            $line = MasterLine::findOrFail($this->line_id);
+            $oldType = $line->machine_type;
+            $line->update([
+                'machine_type' => $this->machine_type,
+            ]);
+
+            $this->dispatch('close-change-machine-modal');
+            $this->dispatch('notify', 
+                message: "Machine type changed from '{$oldType}' to '{$this->machine_type}' successfully!", 
+                type: 'success'
+            );
+            
+            $this->resetForm();
+            
+        } catch (\Exception $e) {
+            Log::error('Error changing machine type: ' . $e->getMessage());
+            $this->dispatch('notify', message: 'Failed to change machine type!', type: 'error');
+        }
+    }
+
+    /**
+     * Open quick status update modal
+     */
+    public function quickStatusUpdate($id)
+    {
+        // Check permission
+        if (!auth()->user()->can('edit master line')) {
+            $this->dispatch('notify', message: 'You do not have permission to update status!', type: 'error');
+            return;
+        }
+
+        try {
+            $line = MasterLine::findOrFail($id);
+            $this->line_id = $line->id;
+            $this->status = $line->status;
+            $this->trouble_desc = $line->trouble_desc;
+            $this->modalTitle = 'Quick Status Update';
+            $this->resetValidation();
+            
+            $this->dispatch('open-quick-status-modal');
+        } catch (\Exception $e) {
+            $this->dispatch('notify', message: 'Line not found!', type: 'error');
+        }
+    }
+
+    /**
+     * Save quick status update
+     */
+    public function saveQuickStatus()
+    {
+        // Check permission
+        if (!auth()->user()->can('edit master line')) {
+            $this->dispatch('notify', message: 'You do not have permission to update status!', type: 'error');
+            return;
+        }
+
+        $this->validate([
+            'status' => 'required|in:Running,Maintenance,No Schedule,Trouble',
+            'trouble_desc' => 'nullable|string',
+        ]);
+
+        try {
+            $line = MasterLine::findOrFail($this->line_id);
+            $oldStatus = $line->status;
+            
+            $line->update([
+                'status' => $this->status,
+                'trouble_desc' => $this->status === 'Trouble' ? $this->trouble_desc : null,
+            ]);
+
+            $this->dispatch('close-quick-status-modal');
+            
+            $message = "Status changed from '{$oldStatus}' to '{$this->status}' successfully!";
+            if ($this->status === 'Trouble' && $this->trouble_desc) {
+                $message .= " Trouble description added.";
+            }
+            
+            $this->dispatch('notify', message: $message, type: 'success');
+            
+            $this->resetForm();
+            
+        } catch (\Exception $e) {
+            Log::error('Error updating status: ' . $e->getMessage());
+            $this->dispatch('notify', message: 'Failed to update status!', type: 'error');
+        }
+    }
+
     public function resetForm()
     {
         $this->reset([

@@ -1,28 +1,28 @@
 <section class="w-full" x-data="{ currentStep: 0, steps: [] }" x-init="steps = [
-    { number: 1, name: 'GENERAL', short_name: 'GEN', complete: false },
-    { number: 2, name: 'LOADER', short_name: 'LDR', complete: false },
-    { number: 3, name: 'PCB CLEANER', short_name: 'PCB', complete: false },
-    { number: 4, name: 'PRINTING', short_name: 'PRT', complete: false },
-    { number: 5, name: 'SPI', short_name: 'SPI', complete: false },
-    { number: 6, name: 'CHIP MOUNTER 1', short_name: 'CM1', complete: false },
-    { number: 7, name: 'CHIP MOUNTER 2', short_name: 'CM2', complete: false },
-    { number: 8, name: 'REFLOW', short_name: 'RFW', complete: false },
-    { number: 9, name: 'AOI', short_name: 'AOI', complete: false },
-    { number: 10, name: 'UNLOADER', short_name: 'ULD', complete: false },
-    { number: 11, name: 'AOI TABLE', short_name: 'AOIT', complete: false },
-    { number: 12, name: 'REFLOW 2', short_name: 'RFW2', complete: false },
-    { number: 13, name: 'CHIP MOUNTER 3', short_name: 'CM3', complete: false },
-    { number: 14, name: 'CHIP MOUNTER 4', short_name: 'CM4', complete: false },
-    { number: 15, name: 'SPI 2', short_name: 'SPI2', complete: false },
-    { number: 16, name: 'PRINTER', short_name: 'PRN', complete: false },
-    { number: 17, name: 'PCB CLEANER 2', short_name: 'PCB2', complete: false },
-    { number: 18, name: 'IONIZER', short_name: 'ION', complete: false },
-    { number: 19, name: 'TIME & STATUS', short_name: 'TIME', complete: false }
+    { number: 1, name: 'GENERAL', complete: false },
+    { number: 2, name: 'LOADER', complete: false },
+    { number: 3, name: 'PCB CLEANER', complete: false },
+    { number: 4, name: 'PRINTING', complete: false },
+    { number: 5, name: 'SPI', complete: false },
+    { number: 6, name: 'CHIP MOUNTER 1', complete: false },
+    { number: 7, name: 'CHIP MOUNTER 2', complete: false },
+    { number: 8, name: 'REFLOW', complete: false },
+    { number: 9, name: 'AOI', complete: false },
+    { number: 10, name: 'UNLOADER', complete: false },
+    { number: 11, name: 'AOI TABLE', complete: false },
+    { number: 12, name: 'REFLOW 2', complete: false },
+    { number: 13, name: 'CHIP MOUNTER 3', complete: false },
+    { number: 14, name: 'CHIP MOUNTER 4', complete: false },
+    { number: 15, name: 'SPI 2', complete: false },
+    { number: 16, name: 'PRINTER', complete: false },
+    { number: 17, name: 'PCB CLEANER 2', complete: false },
+    { number: 18, name: 'IONIZER', complete: false },
+    { number: 19, name: 'TIME & STATUS', complete: false }
 ]">
     @include('partials.mtc-heading')
 
     <flux:heading class="sr-only">
-        {{ __('MTC - Edit Daily Fuji Inspection') }}
+        {{ __('MTC - Edit Daily Panasonic Inspection') }}
     </flux:heading>
 
     <x-mtc.layout class="!max-w-full !px-0 !mx-0">
@@ -39,10 +39,10 @@
                         Master Line
                     </flux:breadcrumbs.item>
                     <flux:breadcrumbs.item href="{{ route('mtc.master-lines.show', $masterLineId) }}" wire:navigate separator="slash">
-                        {{ $masterLine->line_number }}
+                        Line {{ $masterLine->line_number }}
                     </flux:breadcrumbs.item>
                     <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
-                        Edit Daily Fuji
+                        Edit Daily Panasonic
                     </flux:breadcrumbs.item>
                 </flux:breadcrumbs>
             </div>
@@ -53,10 +53,10 @@
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div class="w-full sm:w-auto">
                         <h1 class="text-2xl sm:text-3xl font-bold text-zinc-800 dark:text-white">
-                            Edit Daily Fuji Inspection
+                            Edit Daily Panasonic Inspection
                         </h1>
                         <p class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-                            Edit inspection record for line {{ $masterLine->line_number }}
+                            Edit new inspection record for line {{ $masterLine->line_number }}
                         </p>
                     </div>
                     <div class="w-full sm:w-auto flex-shrink-0">
@@ -76,8 +76,8 @@
         </x-slot>
         
         <div class="-mt-2">
-            <form wire:submit="update">
-                <!-- Status Judgement Card - SAMA PERSIS dengan create -->
+            <form wire:submit="save">
+                <!-- Status Judgement Card -->
                 <flux:card class="p-0 shadow-lg overflow-hidden mb-6">
                     <div class="{{ $overallStatus === 'success' ? 'bg-green-600' : 'bg-red-600' }} dark:{{ $overallStatus === 'success' ? 'bg-green-500' : 'bg-red-500' }} px-6 py-4">
                         <div class="flex items-center gap-2">
@@ -97,7 +97,7 @@
                         </p>
                         @if($overallStatus === 'success')
                             <p class="text-xs text-green-600 dark:text-green-500 mt-2">
-                                Semua parameter valid. Status akan tetap "{{ $status }}".
+                                Status akan otomatis berubah menjadi "Checked" ketika semua parameter terisi dengan benar.
                             </p>
                         @else
                             <p class="text-xs text-red-600 dark:text-red-500 mt-2">
@@ -106,9 +106,10 @@
                         @endif
                     </div>
                 </flux:card>
-                <!-- Wizard Navigation - Flexible Responsive Design dengan Short Label -->
+
+                <!-- Wizard Navigation -->
                 <div class="mb-8">
-                    <!-- Desktop View (hidden on mobile) -->
+                    <!-- Desktop View -->
                     <div class="hidden lg:block">
                         <div class="relative mb-8">
                             <div class="absolute inset-0 flex items-center" aria-hidden="true">
@@ -121,51 +122,47 @@
                                         @click="currentStep = index"
                                         class="group relative flex flex-col items-center flex-1"
                                     >
-                                        <!-- Step Circle -->
-                                        <span class="flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300"
+                                        <span class="relative flex h-10 w-10 items-center justify-center rounded-full transition-all duration-300"
                                             :class="{
                                                 'bg-blue-600 ring-4 ring-blue-200 dark:ring-blue-900': currentStep === index,
                                                 'bg-green-600 ring-4 ring-green-200 dark:ring-green-900': step.complete && currentStep !== index,
-                                                'bg-zinc-300 dark:bg-zinc-600': !step.complete && currentStep !== index
+                                                'bg-red-500 ring-4 ring-red-200 dark:ring-red-900': step.hasError && currentStep !== index,
+                                                'bg-zinc-300 dark:bg-zinc-600': !step.complete && !step.hasError && currentStep !== index
                                             }">
                                             <template x-if="step.complete && currentStep !== index">
                                                 <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                                 </svg>
                                             </template>
-                                            <template x-if="!step.complete || currentStep === index">
+                                            <template x-if="step.hasError && currentStep !== index">
+                                                <svg class="h-5 w-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                </svg>
+                                            </template>
+                                            <template x-if="(!step.complete && !step.hasError) || currentStep === index">
                                                 <span class="text-sm font-semibold text-white" x-text="step.number"></span>
                                             </template>
                                         </span>
-                                        
-                                        <!-- Short Label (Tooltip on hover) -->
                                         <div class="absolute -bottom-6">
-                                            <span class="text-xs font-medium px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
-                                                :class="{
-                                                    'text-blue-600 dark:text-blue-400': currentStep === index,
-                                                    'text-green-600 dark:text-green-400': step.complete && currentStep !== index,
-                                                    'text-zinc-400 dark:text-zinc-500': !step.complete && currentStep !== index
-                                                }"
-                                                x-text="step.name">
-                                            </span>
+                                            <div class="flex items-center gap-1">
+                                                <span class="text-xs font-medium px-1.5 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
+                                                    :class="{
+                                                        'text-blue-600 dark:text-blue-400': currentStep === index,
+                                                        'text-green-600 dark:text-green-400': step.complete && currentStep !== index,
+                                                        'text-red-600 dark:text-red-400': step.hasError && currentStep !== index,
+                                                        'text-zinc-400 dark:text-zinc-500': !step.complete && !step.hasError && currentStep !== index
+                                                    }"
+                                                    x-text="step.name">
+                                                </span>
+                                            </div>
                                         </div>
-                                        
-                                        <!-- Short number label always visible -->
-                                        <span class="absolute -bottom-6 text-[10px] font-medium whitespace-nowrap sm:hidden"
-                                            :class="{
-                                                'text-blue-600 dark:text-blue-400': currentStep === index,
-                                                'text-green-600 dark:text-green-400': step.complete && currentStep !== index,
-                                                'text-zinc-400 dark:text-zinc-500': !step.complete && currentStep !== index
-                                            }"
-                                            x-text="step.short_name || step.number">
-                                        </span>
                                     </button>
                                 </template>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Tablet View (medium screen) -->
+                    <!-- Tablet View -->
                     <div class="hidden sm:block lg:hidden">
                         <div class="overflow-x-auto pb-4 -mx-4 px-4">
                             <div class="flex gap-3 min-w-max">
@@ -173,22 +170,35 @@
                                     <button
                                         type="button"
                                         @click="currentStep = index"
-                                        class="flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-all duration-200 min-w-[70px]"
+                                        class="flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-all duration-200 min-w-[70px] relative"
                                         :class="{
                                             'bg-blue-600 text-white shadow-lg': currentStep === index,
                                             'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400': step.complete && currentStep !== index,
-                                            'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400': !step.complete && currentStep !== index
+                                            'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400': step.hasError && currentStep !== index,
+                                            'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400': !step.complete && !step.hasError && currentStep !== index
                                         }"
                                     >
+                                        <div x-show="step.hasError && currentStep !== index" 
+                                            class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 flex items-center justify-center">
+                                            <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                            </svg>
+                                        </div>
+                                        <div x-show="step.complete && currentStep !== index" 
+                                            class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-green-500 flex items-center justify-center">
+                                            <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            </svg>
+                                        </div>
                                         <span class="text-sm font-bold" x-text="step.number"></span>
-                                        <span class="text-[10px] font-medium truncate max-w-[60px]" x-text="step.short_name || step.name"></span>
+                                        <span class="text-[10px] font-medium truncate max-w-[60px]" x-text="step.name"></span>
                                     </button>
                                 </template>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Mobile View (horizontal scroll chips) -->
+                    <!-- Mobile View -->
                     <div class="sm:hidden">
                         <div class="overflow-x-auto pb-4 -mx-4 px-4">
                             <div class="flex gap-2 min-w-max">
@@ -196,11 +206,12 @@
                                     <button
                                         type="button"
                                         @click="currentStep = index"
-                                        class="flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all duration-200"
+                                        class="flex items-center gap-1.5 px-3 py-1.5 rounded-full transition-all duration-200 relative"
                                         :class="{
                                             'bg-blue-600 text-white shadow-lg': currentStep === index,
                                             'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400': step.complete && currentStep !== index,
-                                            'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400': !step.complete && currentStep !== index
+                                            'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400': step.hasError && currentStep !== index,
+                                            'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400': !step.complete && !step.hasError && currentStep !== index
                                         }"
                                     >
                                         <template x-if="step.complete && currentStep !== index">
@@ -208,10 +219,15 @@
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                                             </svg>
                                         </template>
-                                        <template x-if="!step.complete || currentStep === index">
+                                        <template x-if="step.hasError && currentStep !== index">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                            </svg>
+                                        </template>
+                                        <template x-if="(!step.complete && !step.hasError) || currentStep === index">
                                             <span class="text-xs font-bold" x-text="step.number"></span>
                                         </template>
-                                        <span class="text-xs whitespace-nowrap" x-text="step.short_name || step.name"></span>
+                                        <span class="text-xs whitespace-nowrap" x-text="step.name"></span>
                                     </button>
                                 </template>
                             </div>
@@ -220,11 +236,16 @@
                     
                     <!-- Current Step Info -->
                     <div class="mt-4 text-center">
-                        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 dark:bg-blue-950/30">
-                            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                            </svg>
-                            <span class="text-xs font-medium text-blue-600 dark:text-blue-400">
+                        <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
+                            :class="{
+                                'bg-blue-50 dark:bg-blue-950/30': !steps[currentStep]?.hasError,
+                                'bg-red-50 dark:bg-red-950/30': steps[currentStep]?.hasError
+                            }">
+                            <span class="text-xs font-medium"
+                                :class="{
+                                    'text-blue-600 dark:text-blue-400': !steps[currentStep]?.hasError,
+                                    'text-red-600 dark:text-red-400': steps[currentStep]?.hasError
+                                }">
                                 Step <span x-text="currentStep + 1" class="font-bold"></span> of <span x-text="steps.length" class="font-bold"></span>
                                 <span class="hidden sm:inline"> - <span x-text="steps[currentStep]?.name"></span></span>
                             </span>
@@ -233,7 +254,7 @@
                 </div>
 
                 <div class="space-y-6">
-                    <!-- STEP 1: GENERAL -->
+                    <!-- STEP 1: GENERAL (sama seperti Daily Fuji) -->
                     <div x-show="currentStep === 0" x-cloak>
                         <flux:card class="p-0 shadow-lg overflow-hidden">
                             <div class="bg-blue-100 dark:bg-blue-900/30 px-6 py-4 border-b border-blue-200 dark:border-blue-800">
@@ -243,20 +264,18 @@
                                 </div>
                             </div>
                             <div class="p-6">
-                                <div class="space-y-4">
-                                    <div>
-                                        <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Body Cover</label>
-                                        <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Make sure all machine cover clean | Standard : No Dust and clean</p>
-                                        <div class="flex gap-6">
-                                            <label class="inline-flex items-center gap-2">
-                                                <input type="radio" wire:model.live="body_cover" value="checked" class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500">
-                                                <span class="text-sm">Checked ✓</span>
-                                            </label>
-                                            <label class="inline-flex items-center gap-2">
-                                                <input type="radio" wire:model.live="body_cover" value="na" class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500">
-                                                <span class="text-sm">N/A (Not Applicable)</span>
-                                            </label>
-                                        </div>
+                                <div>
+                                    <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Body Cover</label>
+                                    <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Make sure all machine cover clean | Standard : No Dust and clean</p>
+                                    <div class="flex gap-6">
+                                        <label class="inline-flex items-center gap-2">
+                                            <input type="radio" wire:model.live="body_cover" value="checked" class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500">
+                                            <span class="text-sm">Checked ✓</span>
+                                        </label>
+                                        <label class="inline-flex items-center gap-2">
+                                            <input type="radio" wire:model.live="body_cover" value="na" class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500">
+                                            <span class="text-sm">N/A (Not Applicable)</span>
+                                        </label>
                                     </div>
                                 </div>
                             </div>
@@ -321,7 +340,7 @@
                         </flux:card>
                     </div>
 
-                    <!-- STEP 3: PCB CLEANER -->
+                    <!-- STEP 3: PCB CLEANER (sama seperti Daily Fuji dengan field yang sama) -->
                     <div x-show="currentStep === 2" x-cloak>
                         <flux:card class="p-0 shadow-lg overflow-hidden">
                             <div class="bg-blue-100 dark:bg-blue-900/30 px-6 py-4 border-b border-blue-200 dark:border-blue-800">
@@ -331,6 +350,7 @@
                                 </div>
                             </div>
                             <div class="p-6 space-y-6">
+                                <!-- Brush -->
                                 <div>
                                     <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Brush (2)</label>
                                     <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Cleaning touch PCB | Standard : Rotation</p>
@@ -346,6 +366,7 @@
                                     </div>
                                 </div>
                                 
+                                <!-- Air Pressure -->
                                 <div>
                                     <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Air Pressure (2.a)</label>
                                     <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Check with Pressure Meter (write value) | Standard : 0.45 - 0.54 Mpa</p>
@@ -356,6 +377,7 @@
                                     @endif
                                 </div>
                                 
+                                <!-- Vacume Pressure Unitech -->
                                 <div>
                                     <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Vacume Pressure Unitech (2.b)</label>
                                     <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Check with Pressure Meter (write value) | Standard : 0.45 - 0.54 Mpa (Unitech only)</p>
@@ -366,6 +388,7 @@
                                     @endif
                                 </div>
                                 
+                                <!-- Vacume Pressure Nix -->
                                 <div>
                                     <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Vacume Pressure Nix (2.c)</label>
                                     <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Check with Pressure Meter (write value) | Standard : 0.60 - 0.70 Mpa (N.I.X only)</p>
@@ -376,6 +399,7 @@
                                     @endif
                                 </div>
                                 
+                                <!-- Vacume Brush -->
                                 <div>
                                     <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Vacume Brush (3)</label>
                                     <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Operation | Standard : Rotation</p>
@@ -391,6 +415,7 @@
                                     </div>
                                 </div>
                                 
+                                <!-- Cleaning Roller -->
                                 <div>
                                     <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Cleaning Roller (4)</label>
                                     <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Rotation and Cleaning | Standard : Smooth rotation & Clean</p>
@@ -406,6 +431,7 @@
                                     </div>
                                 </div>
                                 
+                                <!-- Ionizer -->
                                 <div>
                                     <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Ionizer (5)</label>
                                     <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Cleaning | Standard : 5 Times to push cleaner</p>
@@ -421,6 +447,7 @@
                                     </div>
                                 </div>
                                 
+                                <!-- Conveyor Setting -->
                                 <div>
                                     <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Conveyor Setting (6)</label>
                                     <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Check with Analog panel (write value) | Standard : ≤ 40</p>
@@ -434,7 +461,7 @@
                         </flux:card>
                     </div>
 
-                    <!-- STEP 4: PRINTING -->
+                    <!-- STEP 4: PRINTING (dengan field Panasonic: clamp_presure_sp_60, clamp_presure_spg_2, squeege_sp_60, squeege_spg_2) -->
                     <div x-show="currentStep === 3" x-cloak>
                         <flux:card class="p-0 shadow-lg overflow-hidden">
                             <div class="bg-blue-100 dark:bg-blue-900/30 px-6 py-4 border-b border-blue-200 dark:border-blue-800">
@@ -444,6 +471,7 @@
                                 </div>
                             </div>
                             <div class="p-6 space-y-6">
+                                <!-- IPA Solvent -->
                                 <div>
                                     <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">IPA Solvent (7)</label>
                                     <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Make sure solvent minimal on mid level (half) | Standard : Tank Minimal half</p>
@@ -459,6 +487,7 @@
                                     </div>
                                 </div>
                                 
+                                <!-- Temperature Control -->
                                 <div>
                                     <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Temperature Control (8)</label>
                                     <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Result-01 | Standard : 23-27℃</p>
@@ -469,6 +498,7 @@
                                     @endif
                                 </div>
                                 
+                                <!-- Humidity Control -->
                                 <div>
                                     <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Humidity Control (8.a)</label>
                                     <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Result-01 | Standard : 35 % - 70 %</p>
@@ -479,29 +509,54 @@
                                     @endif
                                 </div>
                                 
+                                <!-- Clamp Pressure SP-60 -->
                                 <div>
-                                    <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Clamp Pressure (9)</label>
+                                    <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Clamp Pressure SP-60 (9)</label>
                                     <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Check with Pressure Meter (write value) | Standard : 0.20 ~ 0.4 Mpa</p>
-                                    <input type="text" wire:model.live="clamp_presure" placeholder="Enter value or '-' for not applicable" class="w-full rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 {{ $this->getFieldColorClass('clamp_presure', $clamp_presure) }}">
-                                    @php $validation = $this->validateNumericField('clamp_presure', $clamp_presure); @endphp
-                                    @if(!$validation['valid'] && $clamp_presure !== null && $clamp_presure !== '' && $clamp_presure !== '-')
+                                    <input type="text" wire:model.live="clamp_presure_sp_60" placeholder="Enter value or '-' for not applicable" class="w-full rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 {{ $this->getFieldColorClass('clamp_presure_sp_60', $clamp_presure_sp_60) }}">
+                                    @php $validation = $this->validateNumericField('clamp_presure_sp_60', $clamp_presure_sp_60); @endphp
+                                    @if(!$validation['valid'] && $clamp_presure_sp_60 !== null && $clamp_presure_sp_60 !== '' && $clamp_presure_sp_60 !== '-')
                                         <p class="text-xs text-red-600 mt-1">{{ $validation['message'] }}</p>
                                     @endif
                                 </div>
                                 
+                                <!-- Clamp Pressure SPG-2 -->
                                 <div>
-                                    <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Squeege Upper (10)</label>
-                                    <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Check with Pressure Meter (write value) | Standard : 0.12 ~ (+/ 0.01) Mpa</p>
-                                    <input type="text" wire:model.live="squeege_upper" placeholder="Enter value or '-' for not applicable" class="w-full rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 {{ $this->getFieldColorClass('squeege_upper', $squeege_upper) }}">
-                                    @php $validation = $this->validateNumericField('squeege_upper', $squeege_upper); @endphp
-                                    @if(!$validation['valid'] && $squeege_upper !== null && $squeege_upper !== '' && $squeege_upper !== '-')
+                                    <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Clamp Pressure SPG-2 (9)</label>
+                                    <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Check with Pressure Meter (write value) | Standard : 0.20 ~ 0.4 Mpa</p>
+                                    <input type="text" wire:model.live="clamp_presure_spg_2" placeholder="Enter value or '-' for not applicable" class="w-full rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 {{ $this->getFieldColorClass('clamp_presure_spg_2', $clamp_presure_spg_2) }}">
+                                    @php $validation = $this->validateNumericField('clamp_presure_spg_2', $clamp_presure_spg_2); @endphp
+                                    @if(!$validation['valid'] && $clamp_presure_spg_2 !== null && $clamp_presure_spg_2 !== '' && $clamp_presure_spg_2 !== '-')
                                         <p class="text-xs text-red-600 mt-1">{{ $validation['message'] }}</p>
                                     @endif
                                 </div>
                                 
+                                <!-- Squeege SP-60 -->
+                                <div>
+                                    <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Squeege SP-60 (10)</label>
+                                    <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Check with Pressure Meter (write value) | Standard : 0.19 ~ 0.21 Mpa</p>
+                                    <input type="text" wire:model.live="squeege_sp_60" placeholder="Enter value or '-' for not applicable" class="w-full rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 {{ $this->getFieldColorClass('squeege_sp_60', $squeege_sp_60) }}">
+                                    @php $validation = $this->validateNumericField('squeege_sp_60', $squeege_sp_60); @endphp
+                                    @if(!$validation['valid'] && $squeege_sp_60 !== null && $squeege_sp_60 !== '' && $squeege_sp_60 !== '-')
+                                        <p class="text-xs text-red-600 mt-1">{{ $validation['message'] }}</p>
+                                    @endif
+                                </div>
+                                
+                                <!-- Squeege SPG-2 -->
+                                <div>
+                                    <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Squeege SPG-2 (10)</label>
+                                    <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Check with Pressure Meter (write value) | Standard : 0.11 ~ 0.13 Mpa</p>
+                                    <input type="text" wire:model.live="squeege_spg_2" placeholder="Enter value or '-' for not applicable" class="w-full rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 {{ $this->getFieldColorClass('squeege_spg_2', $squeege_spg_2) }}">
+                                    @php $validation = $this->validateNumericField('squeege_spg_2', $squeege_spg_2); @endphp
+                                    @if(!$validation['valid'] && $squeege_spg_2 !== null && $squeege_spg_2 !== '' && $squeege_spg_2 !== '-')
+                                        <p class="text-xs text-red-600 mt-1">{{ $validation['message'] }}</p>
+                                    @endif
+                                </div>
+                                
+                                <!-- Cleaning Solvent -->
                                 <div>
                                     <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Cleaning Solvent (11)</label>
-                                    <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Check with Pressure Meter (write value) | Standard : 0.20 ~ (+/ 0.01) Mpa</p>
+                                    <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Check with Pressure Meter (write value) | Standard : 0.19 ~ 0.21 Mpa</p>
                                     <input type="text" wire:model.live="cleaning_solvent" placeholder="Enter value or '-' for not applicable" class="w-full rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 {{ $this->getFieldColorClass('cleaning_solvent', $cleaning_solvent) }}">
                                     @php $validation = $this->validateNumericField('cleaning_solvent', $cleaning_solvent); @endphp
                                     @if(!$validation['valid'] && $cleaning_solvent !== null && $cleaning_solvent !== '' && $cleaning_solvent !== '-')
@@ -509,6 +564,7 @@
                                     @endif
                                 </div>
                                 
+                                <!-- Air Pressure Meter -->
                                 <div>
                                     <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Air Pressure Meter (12)</label>
                                     <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Check with Pressure Meter (write value) | Standard : 0.50~ 0.55 Mpa</p>
@@ -522,7 +578,7 @@
                         </flux:card>
                     </div>
 
-                    <!-- STEP 5: SPI -->
+                    <!-- STEP 5: SPI (sama seperti Daily Fuji) -->
                     <div x-show="currentStep === 4" x-cloak>
                         <flux:card class="p-0 shadow-lg overflow-hidden">
                             <div class="bg-blue-100 dark:bg-blue-900/30 px-6 py-4 border-b border-blue-200 dark:border-blue-800">
@@ -555,7 +611,7 @@
                         </flux:card>
                     </div>
 
-                    <!-- STEP 6: CHIP MOUNTER 1 -->
+                    <!-- STEP 6: CHIP MOUNTER 1 (Panasonic: box, vaccuum_parameter, expire_date, vaccuum_pump) -->
                     <div x-show="currentStep === 5" x-cloak>
                         <flux:card class="p-0 shadow-lg overflow-hidden">
                             <div class="bg-blue-100 dark:bg-blue-900/30 px-6 py-4 border-b border-blue-200 dark:border-blue-800">
@@ -578,9 +634,9 @@
                                 <div>
                                     <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Vaccuum Pump (13.a)</label>
                                     <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Check with Pressure Meter (write value) | Standard : -87 ~ -100 Kpa</p>
-                                    <input type="text" wire:model.live="vaccuum_pump_1" placeholder="Enter value or '-' for not applicable" class="w-full rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 {{ $this->getFieldColorClass('vaccuum_pump_1', $vaccuum_pump_1) }}">
-                                    @php $validation = $this->validateNumericField('vaccuum_pump_1', $vaccuum_pump_1); @endphp
-                                    @if(!$validation['valid'] && $vaccuum_pump_1 !== null && $vaccuum_pump_1 !== '' && $vaccuum_pump_1 !== '-')
+                                    <input type="text" wire:model.live="vaccuum_pump" placeholder="Enter value or '-' for not applicable" class="w-full rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 {{ $this->getFieldColorClass('vaccuum_pump', $vaccuum_pump) }}">
+                                    @php $validation = $this->validateNumericField('vaccuum_pump', $vaccuum_pump); @endphp
+                                    @if(!$validation['valid'] && $vaccuum_pump !== null && $vaccuum_pump !== '' && $vaccuum_pump !== '-')
                                         <p class="text-xs text-red-600 mt-1">{{ $validation['message'] }}</p>
                                     @endif
                                 </div>
@@ -590,11 +646,11 @@
                                     <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Chip collection | Standard : No components</p>
                                     <div class="flex gap-6">
                                         <label class="inline-flex items-center gap-2">
-                                            <input type="radio" wire:model.live="box_1" value="checked" class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500">
+                                            <input type="radio" wire:model.live="box" value="checked" class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500">
                                             <span class="text-sm">Checked ✓</span>
                                         </label>
                                         <label class="inline-flex items-center gap-2">
-                                            <input type="radio" wire:model.live="box_1" value="na" class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500">
+                                            <input type="radio" wire:model.live="box" value="na" class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500">
                                             <span class="text-sm">N/A (Not Applicable)</span>
                                         </label>
                                     </div>
@@ -605,11 +661,11 @@
                                     <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Check with machine parameter result | Standard : No Yellow initial (display)</p>
                                     <div class="flex gap-6">
                                         <label class="inline-flex items-center gap-2">
-                                            <input type="radio" wire:model.live="vaccuum_parameter_1" value="checked" class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500">
+                                            <input type="radio" wire:model.live="vaccuum_parameter" value="checked" class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500">
                                             <span class="text-sm">Checked ✓</span>
                                         </label>
                                         <label class="inline-flex items-center gap-2">
-                                            <input type="radio" wire:model.live="vaccuum_parameter_1" value="na" class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500">
+                                            <input type="radio" wire:model.live="vaccuum_parameter" value="na" class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500">
                                             <span class="text-sm">N/A (Not Applicable)</span>
                                         </label>
                                     </div>
@@ -620,11 +676,11 @@
                                     <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Make sure due date on the label | Standard : No Expired</p>
                                     <div class="flex gap-6">
                                         <label class="inline-flex items-center gap-2">
-                                            <input type="radio" wire:model.live="expire_date_1" value="checked" class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500">
+                                            <input type="radio" wire:model.live="expire_date" value="checked" class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500">
                                             <span class="text-sm">Checked ✓</span>
                                         </label>
                                         <label class="inline-flex items-center gap-2">
-                                            <input type="radio" wire:model.live="expire_date_1" value="na" class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500">
+                                            <input type="radio" wire:model.live="expire_date" value="na" class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500">
                                             <span class="text-sm">N/A (Not Applicable)</span>
                                         </label>
                                     </div>
@@ -633,7 +689,7 @@
                         </flux:card>
                     </div>
 
-                    <!-- STEP 7: CHIP MOUNTER 2 -->
+                    <!-- STEP 7: CHIP MOUNTER 2 (Panasonic: box_2, vaccuum_parameter_2, expire_date_2, vaccuum_pump_2) -->
                     <div x-show="currentStep === 6" x-cloak>
                         <flux:card class="p-0 shadow-lg overflow-hidden">
                             <div class="bg-blue-100 dark:bg-blue-900/30 px-6 py-4 border-b border-blue-200 dark:border-blue-800">
@@ -711,7 +767,7 @@
                         </flux:card>
                     </div>
 
-                    <!-- STEP 8: REFLOW -->
+                    <!-- STEP 8: REFLOW (sama seperti Daily Fuji) -->
                     <div x-show="currentStep === 7" x-cloak>
                         <flux:card class="p-0 shadow-lg overflow-hidden">
                             <div class="bg-blue-100 dark:bg-blue-900/30 px-6 py-4 border-b border-blue-200 dark:border-blue-800">
@@ -814,7 +870,7 @@
                         </flux:card>
                     </div>
 
-                    <!-- STEP 9: AOI -->
+                    <!-- STEP 9: AOI (sama seperti Daily Fuji) -->
                     <div x-show="currentStep === 8" x-cloak>
                         <flux:card class="p-0 shadow-lg overflow-hidden">
                             <div class="bg-blue-100 dark:bg-blue-900/30 px-6 py-4 border-b border-blue-200 dark:border-blue-800">
@@ -837,7 +893,7 @@
                         </flux:card>
                     </div>
 
-                    <!-- STEP 10: UNLOADER -->
+                    <!-- STEP 10: UNLOADER (sama seperti Daily Fuji) -->
                     <div x-show="currentStep === 9" x-cloak>
                         <flux:card class="p-0 shadow-lg overflow-hidden">
                             <div class="bg-blue-100 dark:bg-blue-900/30 px-6 py-4 border-b border-blue-200 dark:border-blue-800">
@@ -895,7 +951,7 @@
                         </flux:card>
                     </div>
 
-                    <!-- STEP 11: AOI TABLE -->
+                    <!-- STEP 11: AOI TABLE (sama seperti Daily Fuji) -->
                     <div x-show="currentStep === 10" x-cloak>
                         <flux:card class="p-0 shadow-lg overflow-hidden">
                             <div class="bg-blue-100 dark:bg-blue-900/30 px-6 py-4 border-b border-blue-200 dark:border-blue-800">
@@ -938,7 +994,7 @@
                         </flux:card>
                     </div>
 
-                    <!-- STEP 12: REFLOW 2 -->
+                    <!-- STEP 12: REFLOW 2 (sama seperti Daily Fuji) -->
                     <div x-show="currentStep === 11" x-cloak>
                         <flux:card class="p-0 shadow-lg overflow-hidden">
                             <div class="bg-blue-100 dark:bg-blue-900/30 px-6 py-4 border-b border-blue-200 dark:border-blue-800">
@@ -971,7 +1027,7 @@
                         </flux:card>
                     </div>
 
-                    <!-- STEP 13: CHIP MOUNTER 3 -->
+                    <!-- STEP 13: CHIP MOUNTER 3 (Panasonic: box_3, vaccuum_pump_3) -->
                     <div x-show="currentStep === 12" x-cloak>
                         <flux:card class="p-0 shadow-lg overflow-hidden">
                             <div class="bg-blue-100 dark:bg-blue-900/30 px-6 py-4 border-b border-blue-200 dark:border-blue-800">
@@ -980,26 +1036,36 @@
                                     <h3 class="font-semibold text-base text-blue-800 dark:text-blue-300">CHIP MOUNTER 3</h3>
                                 </div>
                             </div>
-                            <div class="p-6">
+                            <div class="p-6 space-y-6">
                                 <div>
-                                    <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Fan Unit 1 (25)</label>
-                                    <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Make sure all Fan clean | Standard : Clean</p>
+                                    <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Box (25)</label>
+                                    <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Chip collection | Standard : No components</p>
                                     <div class="flex gap-6">
                                         <label class="inline-flex items-center gap-2">
-                                            <input type="radio" wire:model.live="fan_unit_1" value="checked" class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500">
+                                            <input type="radio" wire:model.live="box_3" value="checked" class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500">
                                             <span class="text-sm">Checked ✓</span>
                                         </label>
                                         <label class="inline-flex items-center gap-2">
-                                            <input type="radio" wire:model.live="fan_unit_1" value="na" class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500">
+                                            <input type="radio" wire:model.live="box_3" value="na" class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500">
                                             <span class="text-sm">N/A (Not Applicable)</span>
                                         </label>
                                     </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Vaccuum Pump (25.a)</label>
+                                    <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Check with Pressure Meter (write value) | Standard : -87 ~ -100 Kpa</p>
+                                    <input type="text" wire:model.live="vaccuum_pump_3" placeholder="Enter value or '-' for not applicable" class="w-full rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 {{ $this->getFieldColorClass('vaccuum_pump_3', $vaccuum_pump_3) }}">
+                                    @php $validation = $this->validateNumericField('vaccuum_pump_3', $vaccuum_pump_3); @endphp
+                                    @if(!$validation['valid'] && $vaccuum_pump_3 !== null && $vaccuum_pump_3 !== '' && $vaccuum_pump_3 !== '-')
+                                        <p class="text-xs text-red-600 mt-1">{{ $validation['message'] }}</p>
+                                    @endif
                                 </div>
                             </div>
                         </flux:card>
                     </div>
 
-                    <!-- STEP 14: CHIP MOUNTER 4 -->
+                    <!-- STEP 14: CHIP MOUNTER 4 (Panasonic: box_4, vaccuum_pump_4) -->
                     <div x-show="currentStep === 13" x-cloak>
                         <flux:card class="p-0 shadow-lg overflow-hidden">
                             <div class="bg-blue-100 dark:bg-blue-900/30 px-6 py-4 border-b border-blue-200 dark:border-blue-800">
@@ -1008,26 +1074,36 @@
                                     <h3 class="font-semibold text-base text-blue-800 dark:text-blue-300">CHIP MOUNTER 4</h3>
                                 </div>
                             </div>
-                            <div class="p-6">
+                            <div class="p-6 space-y-6">
                                 <div>
-                                    <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Fan Unit 2 (26)</label>
-                                    <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Make sure all Fan clean | Standard : Clean</p>
+                                    <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Box (26)</label>
+                                    <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Chip collection | Standard : No components</p>
                                     <div class="flex gap-6">
                                         <label class="inline-flex items-center gap-2">
-                                            <input type="radio" wire:model.live="fan_unit_2" value="checked" class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500">
+                                            <input type="radio" wire:model.live="box_4" value="checked" class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500">
                                             <span class="text-sm">Checked ✓</span>
                                         </label>
                                         <label class="inline-flex items-center gap-2">
-                                            <input type="radio" wire:model.live="fan_unit_2" value="na" class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500">
+                                            <input type="radio" wire:model.live="box_4" value="na" class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500">
                                             <span class="text-sm">N/A (Not Applicable)</span>
                                         </label>
                                     </div>
+                                </div>
+                                
+                                <div>
+                                    <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Vaccuum Pump (26.a)</label>
+                                    <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Check with Pressure Meter (write value) | Standard : -87 ~ -100 Kpa</p>
+                                    <input type="text" wire:model.live="vaccuum_pump_4" placeholder="Enter value or '-' for not applicable" class="w-full rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 {{ $this->getFieldColorClass('vaccuum_pump_4', $vaccuum_pump_4) }}">
+                                    @php $validation = $this->validateNumericField('vaccuum_pump_4', $vaccuum_pump_4); @endphp
+                                    @if(!$validation['valid'] && $vaccuum_pump_4 !== null && $vaccuum_pump_4 !== '' && $vaccuum_pump_4 !== '-')
+                                        <p class="text-xs text-red-600 mt-1">{{ $validation['message'] }}</p>
+                                    @endif
                                 </div>
                             </div>
                         </flux:card>
                     </div>
 
-                    <!-- STEP 15: SPI 2 -->
+                    <!-- STEP 15: SPI 2 (sama seperti Daily Fuji) -->
                     <div x-show="currentStep === 14" x-cloak>
                         <flux:card class="p-0 shadow-lg overflow-hidden">
                             <div class="bg-blue-100 dark:bg-blue-900/30 px-6 py-4 border-b border-blue-200 dark:border-blue-800">
@@ -1050,7 +1126,7 @@
                         </flux:card>
                     </div>
 
-                    <!-- STEP 16: PRINTER -->
+                    <!-- STEP 16: PRINTER (sama seperti Daily Fuji) -->
                     <div x-show="currentStep === 15" x-cloak>
                         <flux:card class="p-0 shadow-lg overflow-hidden">
                             <div class="bg-blue-100 dark:bg-blue-900/30 px-6 py-4 border-b border-blue-200 dark:border-blue-800">
@@ -1088,7 +1164,7 @@
                         </flux:card>
                     </div>
 
-                    <!-- STEP 17: PCB CLEANER 2 -->
+                    <!-- STEP 17: PCB CLEANER 2 (sama seperti Daily Fuji) -->
                     <div x-show="currentStep === 16" x-cloak>
                         <flux:card class="p-0 shadow-lg overflow-hidden">
                             <div class="bg-blue-100 dark:bg-blue-900/30 px-6 py-4 border-b border-blue-200 dark:border-blue-800">
@@ -1116,7 +1192,7 @@
                         </flux:card>
                     </div>
 
-                    <!-- STEP 18: IONIZER -->
+                    <!-- STEP 18: IONIZER (sama seperti Daily Fuji) -->
                     <div x-show="currentStep === 17" x-cloak>
                         <flux:card class="p-0 shadow-lg overflow-hidden">
                             <div class="bg-blue-100 dark:bg-blue-900/30 px-6 py-4 border-b border-blue-200 dark:border-blue-800">
@@ -1197,43 +1273,18 @@
                     </div>
 
                     <!-- Navigation Buttons -->
-                    <div class="flex justify-between gap-3 mt-8 pt-4 border-t border-zinc-200 dark:border-zinc-700">
+                    <div class="flex justify-between gap-3 mt-6">
                         <div>
-                            <button 
-                                type="button" 
-                                x-show="currentStep > 0" 
-                                @click="currentStep--" 
-                                class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-lg border border-zinc-300 dark:border-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-all duration-200 group"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 transition-transform duration-200 group-hover:-translate-x-1">
-                                    <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-4.28 9.22a.75.75 0 0 0 0 1.06l3 3a.75.75 0 1 0 1.06-1.06l-1.72-1.72h5.69a.75.75 0 0 0 0-1.5h-5.69l1.72-1.72a.75.75 0 0 0-1.06-1.06l-3 3Z" clip-rule="evenodd" />
-                                </svg>
-                                <span>Previous</span>
+                            <button type="button" x-show="currentStep > 0" @click="currentStep--" class="px-4 py-2 text-sm font-medium rounded-lg border border-zinc-300 dark:border-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors">
+                                ← Previous
                             </button>
                         </div>
-                        
                         <div class="flex gap-3">
-                            <button 
-                                type="button" 
-                                x-show="currentStep < steps.length - 1" 
-                                @click="currentStep++" 
-                                class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-all duration-200 group shadow-sm hover:shadow-md"
-                            >
-                                <span>Next</span>
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 transition-transform duration-200 group-hover:translate-x-1">
-                                    <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm4.28 10.28a.75.75 0 0 0 0-1.06l-3-3a.75.75 0 1 0-1.06 1.06l1.72 1.72H8.25a.75.75 0 0 0 0 1.5h5.69l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3Z" clip-rule="evenodd" />
-                                </svg>
+                            <button type="button" x-show="currentStep < steps.length - 1" @click="currentStep++" class="px-4 py-2 text-sm font-medium rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors">
+                                Next →
                             </button>
-                            
-                            <button 
-                                type="submit" 
-                                x-show="currentStep === steps.length - 1" 
-                                class="inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium rounded-lg bg-green-600 text-white hover:bg-green-700 transition-all duration-200 shadow-sm hover:shadow-md group"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
-                                    <path fill-rule="evenodd" d="M19.916 4.626a.75.75 0 0 1 .208 1.04l-9 13.5a.75.75 0 0 1-1.154.114l-6-6a.75.75 0 0 1 1.06-1.06l5.353 5.353 8.493-12.74a.75.75 0 0 1 1.04-.207Z" clip-rule="evenodd" />
-                                </svg>
-                                <span>Create Inspection</span>
+                            <button type="submit" x-show="currentStep === steps.length - 1" class="px-6 py-2 text-sm font-medium rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors">
+                                Edit Inspection
                             </button>
                         </div>
                     </div>

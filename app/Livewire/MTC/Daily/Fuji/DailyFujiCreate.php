@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Livewire\MTC\Daily;
+namespace App\Livewire\MTC\Daily\Fuji;
 
 use App\Models\MTC\Daily\DailyFuji;
 use App\Models\MTC\Master\MasterLine;
@@ -346,6 +346,6 @@ class DailyFujiCreate extends Component
 
     public function render()
     {
-        return view('livewire.mtc.daily.daily-fuji-create');
+        return view('livewire.mtc.daily.fuji.daily-fuji-create');
     }
 }

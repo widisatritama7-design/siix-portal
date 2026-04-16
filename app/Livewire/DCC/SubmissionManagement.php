@@ -42,6 +42,9 @@ class SubmissionManagement extends Component
     public $documentation_file;
     public $existing_documentation;
 
+    public $activeTab = 'all';
+    public $tabCounts = [];
+
     // For filters
     #[Url(as: 'search', history: true)]
     public $search = '';
@@ -136,6 +139,40 @@ class SubmissionManagement extends Component
     public function mount()
     {
         $this->resetForm();
+        $this->updateTabCounts();
+    }
+
+    // Tambahkan method setTab
+    public function setTab($tab)
+    {
+        $this->activeTab = $tab;
+        $this->resetPage(); // Reset pagination saat ganti tab
+        $this->updateTabCounts();
+    }
+
+    // Tambahkan method updateTabCounts
+    public function updateTabCounts()
+    {
+        $canReceive = auth()->user()->can('receive', Submission::class);
+        
+        $baseQuery = Submission::query();
+        if (!$canReceive && !auth()->user()->can('view submissions')) {
+            $baseQuery->where('created_by', auth()->id());
+        }
+        
+        $this->tabCounts = [
+            'all' => (clone $baseQuery)->count(),
+            'waiting_received' => (clone $baseQuery)->where('status', 'Waiting Received')->count(),
+            'received' => (clone $baseQuery)->where('status', 'Received')->count(),
+            'rejected' => (clone $baseQuery)->where('status', 'Rejected')->count(),
+            'due_this_week' => (clone $baseQuery)
+                ->whereDate('due_date', '>=', Carbon::now()->startOfWeek(Carbon::SUNDAY))
+                ->whereDate('due_date', '<=', Carbon::now()->endOfWeek(Carbon::SATURDAY))
+                ->where('status_distribute', 'Waiting Distribute')
+                ->count(),
+            'waiting_distribute' => (clone $baseQuery)->where('status_distribute', 'Waiting Distribute')->count(),
+            'distributed' => (clone $baseQuery)->where('status_distribute', 'Distributed')->count(),
+        ];
     }
 
     public function resetForm()
@@ -221,13 +258,40 @@ class SubmissionManagement extends Component
     protected function getFilteredQuery()
     {
         $query = Submission::with(['department', 'creator']);
-    
+        
         $user = auth()->user();
-    
-        if ($user->can('view submissions one user')) {
+
+        if ($user->can('view submissions one user') && !$user->can('view submissions')) {
             $query->where('created_by', $user->id);
         }
-    
+        
+        // Apply tab filter
+        switch ($this->activeTab) {
+            case 'waiting_received':
+                $query->where('status', 'Waiting Received');
+                break;
+            case 'received':
+                $query->where('status', 'Received');
+                break;
+            case 'rejected':
+                $query->where('status', 'Rejected');
+                break;
+            case 'due_this_week':
+                $query->whereDate('due_date', '>=', Carbon::now()->startOfWeek(Carbon::SUNDAY))
+                    ->whereDate('due_date', '<=', Carbon::now()->endOfWeek(Carbon::SATURDAY))
+                    ->where('status_distribute', 'Waiting Distribute');
+                break;
+            case 'waiting_distribute':
+                $query->where('status_distribute', 'Waiting Distribute');
+                break;
+            case 'distributed':
+                $query->where('status_distribute', 'Distributed');
+                break;
+            default:
+                // 'all' - no additional filter
+                break;
+        }
+        
         $query
             ->when($this->search, function ($q) {
                 $q->where(function ($query) {
@@ -245,7 +309,7 @@ class SubmissionManagement extends Component
             ->when($this->filterMonth, fn($q) => $q->whereMonth('created_at', $this->filterMonth))
             ->when($this->filterDateFrom, fn($q) => $q->whereDate('created_at', '>=', $this->filterDateFrom))
             ->when($this->filterDateUntil, fn($q) => $q->whereDate('created_at', '<=', $this->filterDateUntil));
-    
+        
         return $query;
     }
 
@@ -731,7 +795,9 @@ class SubmissionManagement extends Component
         $this->filterDateFrom = '';
         $this->filterDateUntil = '';
         $this->search = '';
+        $this->activeTab = 'all'; // Reset ke tab All
         $this->resetPage();
+        $this->updateTabCounts();
     }
 
     public function render()

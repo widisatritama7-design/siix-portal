@@ -1,17 +1,16 @@
 <?php
 
-namespace App\Livewire\MTC\Daily;
+namespace App\Livewire\MTC\Daily\Panasonic;
 
-use App\Models\MTC\Daily\DailyFuji;
+use App\Models\MTC\Daily\DailyPanasonic;
 use App\Models\MTC\Master\MasterLine;
+use Carbon\Carbon;
 use Livewire\Component;
 
-class DailyFujiEdit extends Component
+class DailyPanasonicCreate extends Component
 {
     public $masterLineId;
-    public $dailyFujiId;
     public $masterLine;
-    public $dailyFuji;
     public $overallStatus = 'danger';
     public $overallStatusText = 'Some parameters are invalid or not filled';
     
@@ -37,8 +36,10 @@ class DailyFujiEdit extends Component
     public $ipa_solvent;
     public $temperature_control_1;
     public $humidity_control_1;
-    public $clamp_presure;
-    public $squeege_upper;
+    public $clamp_presure_sp_60;
+    public $clamp_presure_spg_2;
+    public $squeege_sp_60;
+    public $squeege_spg_2;
     public $cleaning_solvent;
     public $air_presure_meter;
     
@@ -48,10 +49,10 @@ class DailyFujiEdit extends Component
     
     // STEP 6: CHIP MOUNTER 1
     public $air_presure_supply;
-    public $vaccuum_pump_1;
-    public $box_1;
-    public $vaccuum_parameter_1;
-    public $expire_date_1;
+    public $vaccuum_pump;
+    public $box;
+    public $vaccuum_parameter;
+    public $expire_date;
     
     // STEP 7: CHIP MOUNTER 2
     public $air_presure_supply_2;
@@ -86,10 +87,12 @@ class DailyFujiEdit extends Component
     public $temperature_control_3;
     
     // STEP 13: CHIP MOUNTER 3
-    public $fan_unit_1;
+    public $box_3;
+    public $vaccuum_pump_3;
     
     // STEP 14: CHIP MOUNTER 4
-    public $fan_unit_2;
+    public $box_4;
+    public $vaccuum_pump_4;
     
     // STEP 15: SPI 2
     public $air_presure_3;
@@ -108,8 +111,8 @@ class DailyFujiEdit extends Component
     public $stop_time;
     public $run_time;
     public $group;
-    public $status;
-    public $approval;
+    public $status = 'On Progress';
+    public $approval = 'Pending';
 
     protected $rules = [
         'group' => 'required|in:A,B,C',
@@ -123,11 +126,11 @@ class DailyFujiEdit extends Component
     protected $toggleFields = [
         'body_cover', 'cylinder', 'rail_and_magazine_pcb', 'cover_magazine', 'brush',
         'vacume_brush', 'cleaning_roller', 'ionizer', 'ipa_solvent',
-        'box_1', 'vaccuum_parameter_1', 'expire_date_1',
+        'box', 'vaccuum_parameter', 'expire_date',
         'box_2', 'vaccuum_parameter_2', 'expire_date_2',
         'abandonment', 'fire_posibilty', 'rail_and_transfer_unit', 'fire_posibilty_2',
         'cylinder_2', 'rail_and_magazine_pcb_2', 'cover_magazine_2',
-        'angle_and_filter', 'lamp_indicator', 'fan_unit_1', 'fan_unit_2',
+        'angle_and_filter', 'lamp_indicator', 'box_3', 'box_4',
         'water_reservoirs', 'filter', 'angle_and_filter_2'
     ];
 
@@ -139,14 +142,16 @@ class DailyFujiEdit extends Component
         'conveyor_speed' => [null, 40],
         'temperature_control_1' => [23, 27],
         'humidity_control_1' => [35, 70],
-        'clamp_presure' => [0.20, 0.40],
-        'squeege_upper' => [0.11, 0.13],
+        'clamp_presure_sp_60' => [0.20, 0.40],
+        'clamp_presure_spg_2' => [0.20, 0.40],
+        'squeege_sp_60' => [0.19, 0.21],
+        'squeege_spg_2' => [0.11, 0.13],
         'cleaning_solvent' => [0.19, 0.21],
         'air_presure_meter' => [0.50, 0.55],
         'air_presure_meter_parmi' => [0.40, 0.50],
         'capability_index' => [1.33, null],
         'air_presure_supply' => [0.49, 0.54],
-        'vaccuum_pump_1' => [-100, -87],
+        'vaccuum_pump' => [-100, -87],
         'air_presure_supply_2' => [0.49, 0.54],
         'vaccuum_pump_2' => [-100, -87],
         'n2_presure' => [0.4, 0.5],
@@ -155,87 +160,56 @@ class DailyFujiEdit extends Component
         'air_presure_2' => [0.40, 0.50],
         'temperature_chiller' => [17, 23],
         'temperature_control_3' => [290, 310],
+        'vaccuum_pump_3' => [-100, -87],
+        'vaccuum_pump_4' => [-100, -87],
         'air_presure_3' => [0.40, 0.50],
         'temperature_control_4' => [23, 27],
     ];
 
-    public function mount($masterLineId, $dailyFujiId)
+    public function mount($masterLineId)
     {
         $this->masterLineId = $masterLineId;
-        $this->dailyFujiId = $dailyFujiId;
-        
         $this->masterLine = MasterLine::with(['location', 'location.area'])->findOrFail($masterLineId);
-        $this->dailyFuji = DailyFuji::findOrFail($dailyFujiId);
         
-        if ($this->dailyFuji->master_line_id != $masterLineId) {
-            abort(404, 'Daily Fuji record not found for this line.');
-        }
-        
-        if (!auth()->user()->can('edit daily fuji')) {
+        if (!auth()->user()->can('create daily panasonic')) {
             abort(403, 'Unauthorized access.');
         }
         
-        $this->loadData();
-        $this->judgement();
-    }
-    
-    protected function loadData()
-    {
-        $fillableFields = [
-            'body_cover', 'cylinder', 'rail_and_magazine_pcb', 'cover_magazine',
-            'brush', 'air_presure', 'vacume_presure_unitech', 'vacume_presure_nix',
-            'vacume_brush', 'cleaning_roller', 'ionizer', 'conveyor_speed',
-            'ipa_solvent', 'temperature_control_1', 'humidity_control_1', 'clamp_presure',
-            'squeege_upper', 'cleaning_solvent', 'air_presure_meter', 'air_presure_meter_parmi',
-            'capability_index', 'air_presure_supply', 'vaccuum_pump_1', 'box_1',
-            'vaccuum_parameter_1', 'expire_date_1', 'air_presure_supply_2', 'vaccuum_pump_2',
-            'box_2', 'vaccuum_parameter_2', 'expire_date_2', 'abandonment', 'fire_posibilty',
-            'rail_and_transfer_unit', 'n2_presure', 'oxygent_density_sek', 'oxygent_density_special',
-            'fire_posibilty_2', 'air_presure_2', 'cylinder_2', 'rail_and_magazine_pcb_2',
-            'cover_magazine_2', 'angle_and_filter', 'lamp_indicator', 'temperature_chiller',
-            'temperature_control_3', 'fan_unit_1', 'fan_unit_2', 'air_presure_3',
-            'temperature_control_4', 'water_reservoirs', 'filter', 'angle_and_filter_2',
-            'stop_time', 'run_time', 'group', 'status', 'approval'
-        ];
-        
-        foreach ($fillableFields as $field) {
-            if (property_exists($this, $field)) {
-                $this->$field = $this->dailyFuji->$field;
-            }
-        }
-        
-        // Format time fields untuk input HTML
-        if ($this->stop_time && $this->stop_time instanceof \DateTime) {
-            $this->stop_time = $this->stop_time->format('H:i');
-        }
-        if ($this->run_time && $this->run_time instanceof \DateTime) {
-            $this->run_time = $this->run_time->format('H:i');
-        }
+        $this->status = 'On Progress';
+        $this->approval = 'Pending';
     }
 
+    /**
+     * Auto-judgement: Update status berdasarkan semua field yang sudah diisi
+     */
     public function updated($property)
     {
         $this->judgement();
     }
 
+    /**
+     * Lakukan judgement/validasi berdasarkan model DailyPanasonic
+     */
     public function judgement()
     {
         $isComplete = $this->checkOverallStatus();
+        $this->status = $isComplete ? 'Checked' : 'On Progress';
         
         if ($isComplete) {
             $this->overallStatus = 'success';
             $this->overallStatusText = 'All parameters OK';
-            $this->status = 'Checked';
         } else {
             $this->overallStatus = 'danger';
             $this->overallStatusText = 'Some parameters are invalid or not filled';
-            // Jangan auto-update status ke On Progress karena bisa jadi memang sudah Checked sebelumnya
-            // Biarkan status tetap seperti yang sudah ada
         }
     }
 
+    /**
+     * Cek semua field sesuai dengan rules di model DailyPanasonic
+     */
     protected function checkOverallStatus(): bool
     {
+        // Cek semua toggle fields
         foreach ($this->toggleFields as $field) {
             $value = $this->{$field};
             if ($value === null || $value === '' || !in_array($value, ['checked', 'na'])) {
@@ -243,15 +217,13 @@ class DailyFujiEdit extends Component
             }
         }
 
+        // Cek numeric fields dengan range
         foreach ($this->numericRanges as $field => $range) {
             $value = $this->{$field};
             
-            if ($value === null || $value === '') {
-                return false;
-            }
-            
-            if ($value === '-') {
-                continue;
+            // PERBAIKAN: Nilai '-' dianggap valid (skip validasi)
+            if ($value === null || $value === '' || $value === '-') {
+                continue; // SKIP, tidak dianggap error
             }
             
             $floatValue = floatval($value);
@@ -267,6 +239,7 @@ class DailyFujiEdit extends Component
             }
         }
 
+        // Cek group
         if ($this->group === null || $this->group === '') {
             return false;
         }
@@ -274,14 +247,18 @@ class DailyFujiEdit extends Component
         return true;
     }
 
+    /**
+     * Cek validasi untuk field numeric tertentu
+     */
     public function validateNumericField($field, $value)
     {
         if (!isset($this->numericRanges[$field])) {
             return ['valid' => true, 'message' => ''];
         }
         
+        // PERBAIKAN: Nilai '-' dianggap valid
         if ($value === null || $value === '' || $value === '-') {
-            return ['valid' => false, 'message' => 'Field ini harus diisi'];
+            return ['valid' => true, 'message' => '']; // BALIKAN VALID
         }
         
         $floatValue = floatval($value);
@@ -299,10 +276,18 @@ class DailyFujiEdit extends Component
         return ['valid' => true, 'message' => ''];
     }
 
+    /**
+     * Get color class untuk field berdasarkan validasi
+     */
     public function getFieldColorClass($field, $value)
     {
-        if ($value === null || $value === '' || $value === '-') {
+        // PERBAIKAN: Nilai '-' dianggap valid (warna hijau)
+        if ($value === null || $value === '') {
             return 'border-red-500 bg-red-50 dark:bg-red-950/20';
+        }
+        
+        if ($value === '-') {
+            return 'border-green-500 bg-green-50 dark:bg-green-950/20'; // WARNA HIJAU UNTUK '-'
         }
         
         if (in_array($field, array_keys($this->numericRanges))) {
@@ -323,27 +308,30 @@ class DailyFujiEdit extends Component
         return '';
     }
 
-    public function update()
+    public function save()
     {
         $this->validate();
+        
+        // Pastikan judgement terakhir dijalankan
         $this->judgement();
         
+        // Kumpulkan semua data
         $data = [];
         $fillableFields = [
             'body_cover', 'cylinder', 'rail_and_magazine_pcb', 'cover_magazine',
             'brush', 'air_presure', 'vacume_presure_unitech', 'vacume_presure_nix',
             'vacume_brush', 'cleaning_roller', 'ionizer', 'conveyor_speed',
-            'ipa_solvent', 'temperature_control_1', 'humidity_control_1', 'clamp_presure',
-            'squeege_upper', 'cleaning_solvent', 'air_presure_meter', 'air_presure_meter_parmi',
-            'capability_index', 'air_presure_supply', 'vaccuum_pump_1', 'box_1',
-            'vaccuum_parameter_1', 'expire_date_1', 'air_presure_supply_2', 'vaccuum_pump_2',
-            'box_2', 'vaccuum_parameter_2', 'expire_date_2', 'abandonment', 'fire_posibilty',
-            'rail_and_transfer_unit', 'n2_presure', 'oxygent_density_sek', 'oxygent_density_special',
-            'fire_posibilty_2', 'air_presure_2', 'cylinder_2', 'rail_and_magazine_pcb_2',
-            'cover_magazine_2', 'angle_and_filter', 'lamp_indicator', 'temperature_chiller',
-            'temperature_control_3', 'fan_unit_1', 'fan_unit_2', 'air_presure_3',
-            'temperature_control_4', 'water_reservoirs', 'filter', 'angle_and_filter_2',
-            'stop_time', 'run_time', 'group', 'status', 'approval'
+            'ipa_solvent', 'temperature_control_1', 'humidity_control_1', 'clamp_presure_sp_60',
+            'clamp_presure_spg_2', 'squeege_sp_60', 'squeege_spg_2', 'cleaning_solvent',
+            'air_presure_meter', 'air_presure_meter_parmi', 'capability_index',
+            'air_presure_supply', 'vaccuum_pump', 'box', 'vaccuum_parameter', 'expire_date',
+            'air_presure_supply_2', 'vaccuum_pump_2', 'box_2', 'vaccuum_parameter_2', 'expire_date_2',
+            'abandonment', 'fire_posibilty', 'rail_and_transfer_unit', 'n2_presure',
+            'oxygent_density_sek', 'oxygent_density_special', 'fire_posibilty_2', 'air_presure_2',
+            'cylinder_2', 'rail_and_magazine_pcb_2', 'cover_magazine_2', 'angle_and_filter',
+            'lamp_indicator', 'temperature_chiller', 'temperature_control_3', 'box_3', 'vaccuum_pump_3',
+            'box_4', 'vaccuum_pump_4', 'air_presure_3', 'temperature_control_4', 'water_reservoirs',
+            'filter', 'angle_and_filter_2', 'stop_time', 'run_time', 'group', 'status', 'approval'
         ];
         
         foreach ($fillableFields as $field) {
@@ -352,11 +340,11 @@ class DailyFujiEdit extends Component
             }
         }
         
-        $data['updated_by'] = auth()->id();
+        $data['master_line_id'] = $this->masterLineId;
         
-        $this->dailyFuji->update($data);
+        DailyPanasonic::create($data);
         
-        session()->flash('message', 'Daily Fuji inspection updated successfully!');
+        session()->flash('message', 'Daily Panasonic inspection created successfully!');
         session()->flash('type', 'success');
         
         return redirect()->route('mtc.master-lines.show', $this->masterLineId);
@@ -369,6 +357,6 @@ class DailyFujiEdit extends Component
 
     public function render()
     {
-        return view('livewire.mtc.daily.daily-fuji-edit');
+        return view('livewire.mtc.daily.panasonic.daily-panasonic-create');
     }
 }

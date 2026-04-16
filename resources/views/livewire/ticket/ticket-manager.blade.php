@@ -75,7 +75,7 @@
             <div class="md:col-span-2">
                 <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">PIC Approval</label>
                 <select wire:model.live="picApprovalFilter" 
-                        class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-700 dark:bg-zinc-800 dark:border-zinc-700 dark:text-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
                     <option value="">All</option>
                     <option value="Waiting Approval">Waiting Approval</option>
                     <option value="Approved">Approved</option>
@@ -88,7 +88,7 @@
             <div class="md:col-span-2">
                 <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">User Approval</label>
                 <select wire:model.live="userApprovalFilter" 
-                        class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white text-gray-700 dark:bg-zinc-800 dark:border-zinc-700 dark:text-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
                     <option value="">All</option>
                     <option value="Waiting Approval">Waiting Approval</option>
                     <option value="Approved">Approved</option>
@@ -229,25 +229,29 @@
                     <div class="mt-3">
                         @php
                             $title = $ticket->title;
+                            // Convert to proper case: capitalize first letter of each word
+                            $formattedTitle = ucwords(strtolower($title));
+                            // Fix specific acronyms that should be uppercase
+                            $formattedTitle = str_replace(['Esd', 'Esd ', ' Esd'], ['ESD', 'ESD ', ' ESD'], $formattedTitle);
                             $isLongText = strlen($title) > 30;
                         @endphp
                         
                         @if($isLongText)
                             <div class="relative group/title inline-block w-full">
                                 <h3 class="text-base font-bold text-gray-900 dark:text-white cursor-help line-clamp-2">
-                                    {{ Str::limit($title, 30) }}
+                                    {{ Str::limit($formattedTitle, 30) }}
                                 </h3>
                                 <div class="absolute z-50 invisible group-hover/title:visible opacity-0 group-hover/title:opacity-100 transition-all duration-200 bottom-full left-0 mb-2 pointer-events-none">
                                     <div class="bg-gray-900 dark:bg-gray-800 text-white rounded-lg shadow-lg px-3 py-2 text-sm whitespace-normal max-w-xs">
                                         <div class="font-semibold text-xs text-gray-300 mb-1">🎬 Title</div>
-                                        {{ $title }}
+                                        {{ $formattedTitle }}
                                     </div>
                                     <div class="absolute -bottom-1 left-4 w-2 h-2 bg-gray-900 dark:bg-gray-800 transform rotate-45"></div>
                                 </div>
                             </div>
                         @else
                             <h3 class="text-base font-bold text-gray-900 dark:text-white">
-                                {{ $title }}
+                                {{ $formattedTitle }}
                             </h3>
                         @endif
                     </div>

@@ -113,23 +113,103 @@
                     <table class="w-full whitespace-nowrap">
                         <thead>
                             <tr class="bg-zinc-50 dark:bg-zinc-800/50">
-                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[150px]">Line Number</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[150px]">Line #</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[200px]">Location / Area</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Machine Type</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Daily Type</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Status</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Daily Check</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Approval</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[80px]">Group</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[150px]">Last Check</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[150px]">PIC</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider w-24">Actions</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider w-32">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
                             @forelse($lines as $index => $line)
+                            @php
+                                // Get latest daily inspection based on machine type
+                                $latestDaily = null;
+                                $dailyCheckStatus = 'No Check';
+                                $dailyCheckApproval = 'No Check';
+                                $dailyCheckGroup = '-';
+                                $dailyCheckLastUpdate = '-';
+                                
+                                if ($line->machine_type === 'fuji') {
+                                    $latestDaily = $line->dailyFujis()->latest()->first();
+                                    if ($latestDaily) {
+                                        $dailyCheckStatus = $latestDaily->status ?? 'No Check';
+                                        $dailyCheckApproval = $latestDaily->approval ?? 'No Check';
+                                        $dailyCheckGroup = $latestDaily->group ?? '-';
+                                        $dailyCheckLastUpdate = $latestDaily->updated_at ? $latestDaily->updated_at->format('d M Y H:i') : '-';
+                                    }
+                                } elseif ($line->machine_type === 'panasonic') {
+                                    $latestDaily = $line->dailyPanasonics()->latest()->first();
+                                    if ($latestDaily) {
+                                        $dailyCheckStatus = $latestDaily->status ?? 'No Check';
+                                        $dailyCheckApproval = $latestDaily->approval ?? 'No Check';
+                                        $dailyCheckGroup = $latestDaily->group ?? '-';
+                                        $dailyCheckLastUpdate = $latestDaily->updated_at ? $latestDaily->updated_at->format('d M Y H:i') : '-';
+                                    }
+                                } elseif ($line->machine_type === 'both') {
+                                    // For both, get the latest from either fuji or panasonic
+                                    $latestFuji = $line->dailyFujis()->latest()->first();
+                                    $latestPanasonic = $line->dailyPanasonics()->latest()->first();
+                                    
+                                    if ($latestFuji && $latestPanasonic) {
+                                        $latestDaily = $latestFuji->updated_at > $latestPanasonic->updated_at ? $latestFuji : $latestPanasonic;
+                                    } elseif ($latestFuji) {
+                                        $latestDaily = $latestFuji;
+                                    } elseif ($latestPanasonic) {
+                                        $latestDaily = $latestPanasonic;
+                                    }
+                                    
+                                    if ($latestDaily) {
+                                        $dailyCheckStatus = $latestDaily->status ?? 'No Check';
+                                        $dailyCheckApproval = $latestDaily->approval ?? 'No Check';
+                                        $dailyCheckGroup = $latestDaily->group ?? '-';
+                                        $dailyCheckLastUpdate = $latestDaily->updated_at ? $latestDaily->updated_at->format('d M Y H:i') : '-';
+                                    }
+                                }
+                                
+                                // Status color classes
+                                $statusColors = [
+                                    'Running' => 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+                                    'Maintenance' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
+                                    'No Schedule' => 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+                                    'Trouble' => 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
+                                ];
+                                
+                                $machineTypeColors = [
+                                    'fuji' => 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
+                                    'panasonic' => 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+                                    'both' => 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+                                ];
+                                
+                                $dailyCheckColors = [
+                                    'Checked' => 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+                                    'On Progress' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
+                                    'Delay' => 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
+                                    'Holiday' => 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400',
+                                    'No Check' => 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400',
+                                ];
+                                
+                                $approvalColors = [
+                                    'Approved' => 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+                                    'Rejected' => 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
+                                    'Pending' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
+                                    'No Check' => 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400',
+                                ];
+                            @endphp
+                            <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
                                 <td class="px-4 py-3">
                                     <div class="min-w-0">
                                         <span class="text-sm font-semibold text-zinc-800 dark:text-white block truncate max-w-[300px]" title="{{ $line->line_number }}">
-                                                {{ $line->line_number }}
+                                            {{ $line->line_number }}
                                         </span>
                                     </div>
                                 </td>
+                                
                                 <td class="px-4 py-3">
                                     <div>
                                         <div class="text-sm font-medium text-zinc-800 dark:text-white">
@@ -140,30 +220,43 @@
                                         </div>
                                     </div>
                                 </td>
+                                
                                 <td class="px-4 py-3">
-                                    @php
-                                        $machineTypeColors = [
-                                            'fuji' => 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
-                                            'panasonic' => 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
-                                        ];
-                                    @endphp
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $machineTypeColors[$line->machine_type] ?? 'bg-gray-100 text-gray-800' }}">
                                         {{ ucfirst($line->machine_type) }}
                                     </span>
                                 </td>
+                                
                                 <td class="px-4 py-3">
-                                    @php
-                                        $statusColors = [
-                                            'Running' => 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-                                            'Maintenance' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
-                                            'No Schedule' => 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
-                                            'Trouble' => 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
-                                        ];
-                                    @endphp
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $statusColors[$line->status] ?? 'bg-gray-100 text-gray-800' }}">
                                         {{ $line->status }}
                                     </span>
                                 </td>
+                                
+                                <td class="px-4 py-3">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $dailyCheckColors[$dailyCheckStatus] ?? 'bg-gray-100 text-gray-800' }}">
+                                        {{ $dailyCheckStatus }}
+                                    </span>
+                                </td>
+                                
+                                <td class="px-4 py-3">
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {{ $approvalColors[$dailyCheckApproval] ?? 'bg-gray-100 text-gray-800' }}">
+                                        {{ $dailyCheckApproval }}
+                                    </span>
+                                </td>
+                                
+                                <td class="px-4 py-3">
+                                    <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 font-semibold text-sm">
+                                        {{ $dailyCheckGroup }}
+                                    </span>
+                                </td>
+                                
+                                <td class="px-4 py-3">
+                                    <div class="text-sm text-zinc-700 dark:text-zinc-300">
+                                        {{ $dailyCheckLastUpdate }}
+                                    </div>
+                                </td>
+                                
                                 <td class="px-4 py-3">
                                     <div class="text-sm">
                                         <div class="font-medium text-zinc-800 dark:text-white">
@@ -174,6 +267,7 @@
                                         </div>
                                     </div>
                                 </td>
+                                
                                 <td class="px-4 py-3 text-right">
                                     <div class="flex items-center justify-end gap-1 whitespace-nowrap">
                                         @can('view master line')
@@ -202,6 +296,28 @@
                                         />
                                         @endcan
 
+                                        <!-- Quick Status Update Button -->
+                                        <flux:button 
+                                            wire:click="quickStatusUpdate({{ $line->id }})"
+                                            size="sm"
+                                            icon="arrow-path"
+                                            variant="primary"
+                                            color="green"
+                                            class="!p-2 flex-shrink-0"
+                                            title="Quick status update"
+                                        />
+
+                                        <!-- Change Machine Type Button -->
+                                        <flux:button 
+                                            wire:click="changeMachineType({{ $line->id }})"
+                                            size="sm"
+                                            icon="arrows-right-left"
+                                            variant="primary"
+                                            color="info"
+                                            class="!p-2 flex-shrink-0"
+                                            title="Change machine type"
+                                        />
+
                                         @can('delete master line')
                                             <flux:button 
                                                 wire:click="confirmDelete({{ $line->id }})" 
@@ -219,7 +335,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="8" class="px-4 py-12 text-center">
+                                <td colspan="10" class="px-4 py-12 text-center">
                                     <div class="flex flex-col items-center gap-3">
                                         <div class="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
                                             <flux:icon name="queue-list" class="w-10 h-10 text-zinc-400 dark:text-zinc-500" />
@@ -433,6 +549,141 @@
                                     class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
                                 Yes, Delete
                             </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Change Machine Type Modal (Alpine.js version) -->
+            <div x-data="{ open: false }" 
+                x-show="open" 
+                @open-change-machine-modal.window="open = true; $wire.set('modalTitle', 'Change Machine Type')"
+                @close-change-machine-modal.window="open = false"
+                x-cloak>
+
+                <div class="fixed inset-0 bg-black/50 z-40" @click="open = false"></div>
+
+                <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-xl w-full max-w-md">
+                        <div class="p-6">
+                            <div class="flex justify-between items-center border-b border-zinc-200 dark:border-zinc-700 pb-3 mb-4">
+                                <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">
+                                    Change Machine Type
+                                </h3>
+                                <button @click="open = false" class="text-zinc-500 hover:text-zinc-700">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400">
+                                    Changing machine type will affect available daily inspection forms.
+                                </p>
+                                
+                                <div>
+                                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                                        Machine Type <span class="text-red-500">*</span>
+                                    </label>
+                                    <select 
+                                        wire:model="machine_type"
+                                        class="w-full rounded-lg border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
+                                    >
+                                        <option value="fuji">Fuji</option>
+                                        <option value="panasonic">Panasonic</option>
+                                    </select>
+                                    @error('machine_type') 
+                                        <span class="text-xs text-red-600 mt-1">{{ $message }}</span> 
+                                    @enderror
+                                </div>
+                            </div>
+                            
+                            <div class="flex justify-end gap-2 pt-4 mt-4 border-t border-zinc-200 dark:border-zinc-700">
+                                <button @click="open = false" 
+                                        class="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
+                                    Cancel
+                                </button>
+                                <button wire:click="saveMachineType" 
+                                        @click="open = false"
+                                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                                    Update Machine Type
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Status Update Modal (Alpine.js version) -->
+            <div x-data="{ open: false }" 
+                x-show="open" 
+                @open-quick-status-modal.window="open = true; $wire.set('modalTitle', 'Quick Status Update')"
+                @close-quick-status-modal.window="open = false"
+                x-cloak>
+
+                <div class="fixed inset-0 bg-black/50 z-40" @click="open = false"></div>
+
+                <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-xl w-full max-w-md">
+                        <div class="p-6">
+                            <div class="flex justify-between items-center border-b border-zinc-200 dark:border-zinc-700 pb-3 mb-4">
+                                <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">
+                                    Quick Status Update
+                                </h3>
+                                <button @click="open = false" class="text-zinc-500 hover:text-zinc-700">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                                        Status <span class="text-red-500">*</span>
+                                    </label>
+                                    <select 
+                                        wire:model.live="status"
+                                        class="w-full rounded-lg border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm focus:ring-2 focus:ring-green-500"
+                                    >
+                                        <option value="Running">Running</option>
+                                        <option value="Maintenance">Maintenance</option>
+                                        <option value="No Schedule">No Schedule</option>
+                                        <option value="Trouble">Trouble</option>
+                                    </select>
+                                    @error('status') 
+                                        <span class="text-xs text-red-600 mt-1">{{ $message }}</span> 
+                                    @enderror
+                                </div>
+                                
+                                <div x-show="$wire.get('status') === 'Trouble'" x-cloak>
+                                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                                        Trouble Description
+                                    </label>
+                                    <textarea 
+                                        wire:model="trouble_desc"
+                                        rows="3"
+                                        class="w-full rounded-lg border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm focus:ring-2 focus:ring-red-500"
+                                        placeholder="Brief description of the issue..."
+                                    ></textarea>
+                                    @error('trouble_desc') 
+                                        <span class="text-xs text-red-600 mt-1">{{ $message }}</span> 
+                                    @enderror
+                                </div>
+                            </div>
+                            
+                            <div class="flex justify-end gap-2 pt-4 mt-4 border-t border-zinc-200 dark:border-zinc-700">
+                                <button @click="open = false" 
+                                        class="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
+                                    Cancel
+                                </button>
+                                <button wire:click="saveQuickStatus" 
+                                        @click="open = false"
+                                        class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                                    Update Status
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
