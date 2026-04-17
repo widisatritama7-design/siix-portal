@@ -29,9 +29,6 @@
                         <h1 class="text-2xl sm:text-3xl font-bold text-zinc-800 dark:text-white">
                             Daily Monitoring
                         </h1>
-                        <p class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-                            Monitor all production lines with daily checks
-                        </p>
                     </div>
                     <div class="flex items-center gap-4">
                         <div class="text-sm text-zinc-500 whitespace-nowrap">

@@ -29,9 +29,6 @@
                         <h1 class="text-2xl sm:text-3xl font-bold text-zinc-800 dark:text-white">
                             Realtime Dashboard For Use Stencil
                         </h1>
-                        <p class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-                            Monitor stencil usage across all SMT lines
-                        </p>
                     </div>
                     <div class="flex items-center gap-4">
                         <div class="text-sm text-zinc-500 whitespace-nowrap">
@@ -275,7 +272,7 @@
                 activeData.forEach(jig => {
                     const updatedAt = jig.updated_at ? new Date(jig.updated_at).toLocaleString('id-ID') : '-';
                     // Tampilkan NIK dari employee, bukan ID
-                    const employeeNik = jig.employee?.nik || '-';
+                    const employeeNik = jig.employee?.name || '-';
                     html += `
                         <tr style="border-bottom: 1px solid #e5e7eb;" data-id="${jig.id}">
                             <td style="padding: 0.75rem 1rem; font-size: 0.875rem; font-weight: 600;">${escapeHtml(jig.register_no)}</td>

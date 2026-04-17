@@ -14,6 +14,7 @@ use App\Livewire\HR\Violation\ViolationEmployeeEdit;
 use App\Livewire\HR\Violation\ViolationEmployeeManagement;
 use App\Livewire\HR\Violation\ViolationReport;
 use App\Livewire\NotificationManager;
+use App\Livewire\PROD\Kaizen\KaizenManagement;
 use App\Livewire\Ticket\CategoryTicketManager;
 use App\Livewire\Ticket\TicketManager;
 use App\Livewire\Ticket\TicketView;
@@ -70,6 +71,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/ticket/categories', CategoryTicketManager::class)->name('ticket.categories');
     Route::get('/ticket/list', TicketManager::class)->name('ticket.list');
     Route::get('/ticket/list/{id}', TicketView::class)->name('ticket.show');
+
+    // Kaizen
+    Route::get('/prod/kaizens', KaizenManagement::class)->name('prod.kaizens');
 });
 
 require __DIR__.'/settings.php';

@@ -349,7 +349,7 @@
             <div class="lg:col-span-2 flex flex-col gap-4">
                 
                 <!-- Stats Overview Grid (3 cards) -->
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 flex-shrink-0">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-shrink-0">
 
                     <!-- Page Views Today -->
                     <flux:card class="p-4 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-purple-500 to-purple-600 dark:from-purple-700 dark:to-purple-800">
@@ -360,64 +360,6 @@
                             </div>
                             <div class="w-10 h-10 rounded-full bg-white/20 dark:bg-white/10 backdrop-blur-sm flex items-center justify-center">
                                 <flux:icon name="document-text" class="w-5 h-5 text-white dark:text-white" />
-                            </div>
-                        </div>
-                    </flux:card>
-
-                    <!-- Session Limit Time (Countdown Timer) -->
-                    <flux:card class="p-4 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-emerald-500 to-emerald-600 dark:from-emerald-700 dark:to-emerald-800">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-sm text-white/80 dark:text-white/70">Session Time Limit</p>
-                                <div x-data="{
-                                    remainingSeconds: {{ $sessionRemainingSeconds }},
-                                    expired: {{ $sessionExpired ? 'true' : 'false' }},
-                                    durationMinutes: {{ $sessionDurationMinutes }},
-                                    interval: null,
-                                    formatTime(seconds) {
-                                        if (seconds <= 0) return 'Expired';
-                                        const hours = Math.floor(seconds / 3600);
-                                        const minutes = Math.floor((seconds % 3600) / 60);
-                                        const secs = seconds % 60;
-                                        
-                                        if (hours > 0) {
-                                            return `${hours}h ${minutes}m ${secs}s`;
-                                        }
-                                        return `${minutes}m ${secs}s`;
-                                    },
-                                    init() {
-                                        if (!this.expired && this.remainingSeconds > 0) {
-                                            this.interval = setInterval(() => {
-                                                if (this.remainingSeconds > 0) {
-                                                    this.remainingSeconds--;
-                                                    this.durationMinutes++;
-                                                    if (this.remainingSeconds <= 0) {
-                                                        this.expired = true;
-                                                        clearInterval(this.interval);
-                                                    }
-                                                }
-                                            }, 1000);
-                                        }
-                                    },
-                                    destroy() {
-                                        if (this.interval) clearInterval(this.interval);
-                                    }
-                                }" class="mt-1">
-                                    <template x-if="!expired && remainingSeconds > 0">
-                                        <div>
-                                            <p class="text-2xl font-bold text-white dark:text-white font-mono" x-text="formatTime(Math.floor(remainingSeconds))"></p>
-                                            <p class="text-xs text-white/70 mt-1" x-text="formatDuration(durationMinutes)"></p>
-                                        </div>
-                                    </template>
-                                    <template x-if="expired || remainingSeconds <= 0">
-                                        <div>
-                                            <p class="text-2xl font-bold text-white dark:text-white">Session Expired</p>
-                                        </div>
-                                    </template>
-                                </div>
-                            </div>
-                            <div class="w-10 h-10 rounded-full bg-white/20 dark:bg-white/10 backdrop-blur-sm flex items-center justify-center">
-                                <flux:icon name="clock" class="w-5 h-5 text-white dark:text-white" />
                             </div>
                         </div>
                     </flux:card>
@@ -440,10 +382,10 @@
                 <flux:card class="p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 flex-1">
                     <div class="flex items-center justify-between mb-4">
                         <div>
-                            <flux:heading size="lg">Page Views by Session Duration</flux:heading>
-                            <flux:subheading>When do you view pages during your session? (max 60 min)</flux:subheading>
+                            <flux:heading size="lg">Page Views In 1 Hour</flux:heading>
+                            <flux:subheading>When do you see the page during Login?</flux:subheading>
                         </div>
-                        <flux:badge color="purple" size="sm">Per Session</flux:badge>
+                        <flux:badge color="purple" size="sm">In 60 Hours</flux:badge>
                     </div>
                     
                     <!-- 4 Speedometer Gauges -->
