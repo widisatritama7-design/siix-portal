@@ -17,6 +17,7 @@ use App\Models\HR\Employee;
 use App\Models\MTC\Daily\DailyFuji;
 use App\Models\MTC\Daily\DailyPanasonic;
 use App\Models\MTC\Master\MasterStencil;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -48,13 +49,76 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::livewire('mtc/stencils', StencilManagement::class)->name('mtc.stencils');
 
     // Daily Dashboard
-    Route::get('/mtc/daily-dashboard', DailyDashboard::class)->name('mtc.daily-dashboard');
+    Route::livewire('/mtc/daily-dashboard', DailyDashboard::class)->name('mtc.daily-dashboard');
 
     // Stencil Daschboard
     Route::get('/mtc/stencil-dashboard', StencilDashboard::class)->name('mtc.stencil-dashboard');
+    Route::post('/api/stencils/update-status', function (Request $request) {
+        try {
+            $validated = $request->validate([
+                'id' => 'required|exists:tb_esd_jigs,id',
+                'status' => 'required|in:Prepared,In Use,Stand By,Cleaning,Disposed',
+                'nik' => 'required|string',
+                'reset_rack' => 'boolean'
+            ]);
+            
+            // Cari employee berdasarkan NIK (string)
+            $employee = Employee::where('nik', $validated['nik'])->first();
+            
+            if (!$employee) {
+                return response()->json([
+                    'success' => false, 
+                    'message' => 'Employee with NIK ' . $validated['nik'] . ' not found'
+                ], 404);
+            }
+            
+            // Cari stencil
+            $stencil = MasterStencil::find($validated['id']);
+            
+            if (!$stencil) {
+                return response()->json([
+                    'success' => false, 
+                    'message' => 'Stencil not found'
+                ], 404);
+            }
+            
+            // Update data - simpan ID employee ke kolom nik
+            $stencil->nik = $employee->id;  // Simpan ID (integer)
+            $stencil->status = $validated['status'];
+            
+            if (auth()->check()) {
+                $stencil->updated_by = auth()->id();
+            }
+            
+            if ($validated['reset_rack'] ?? false) {
+                $stencil->rack_number = null;
+            }
+            
+            $stencil->save();
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Status updated successfully',
+                'data' => $stencil->load('employee')
+            ]);
+            
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json([
+                'success' => false, 
+                'message' => 'Validation error',
+                'errors' => $e->errors()
+            ], 422);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false, 
+                'message' => 'Failed to update status: ' . $e->getMessage()
+            ], 500);
+        }
+    })->name('api.stencils.update-status');
+
     Route::get('/api/stencils/latest', function () {
         try {
-            $allStencils = MasterStencil::with(['employee'])
+            $allStencils = App\Models\MTC\Master\MasterStencil::with(['employee'])
                 ->where('category', 'STENCIL')
                 ->get()
                 ->groupBy('line_name');
@@ -69,47 +133,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         } catch (\Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
         }
-    })->name('api.stencils.latest')->middleware('web');
-
-    Route::post('/api/stencils/update-status', function () {
-        try {
-            $data = request()->validate([
-                'id' => 'required|exists:tb_esd_jigs,id',
-                'status' => 'required|in:Prepared,In Use,Stand By,Cleaning,Disposed',
-                'nik' => 'required|string', // NIK dari input user
-                'reset_rack' => 'boolean'
-            ]);
-            
-            // Cari employee berdasarkan NIK (bukan ID)
-            $employee = Employee::where('nik', $data['nik'])->first();
-            
-            if (!$employee) {
-                return response()->json([
-                    'success' => false, 
-                    'message' => 'Employee with NIK ' . $data['nik'] . ' not found'
-                ], 404);
-            }
-            
-            $jig = Jig::find($data['id']);
-            
-            if (!$jig) {
-                return response()->json(['success' => false, 'message' => 'Stencil not found'], 404);
-            }
-            
-            // Simpan ID employee, bukan NIK
-            $jig->nik = $employee->ID;  // ID dari tabel employee
-            $jig->status = $data['status'];
-            
-            if ($data['reset_rack'] ?? false) {
-                $jig->rack_number = null;
-            }
-            
-            $jig->save();
-            
-            return response()->json(['success' => true]);
-        } catch (\Exception $e) {
-            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
-        }
-    })->name('api.stencils.update-status');
+    })->name('api.stencils.latest');
 
 });

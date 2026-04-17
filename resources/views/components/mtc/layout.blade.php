@@ -7,6 +7,7 @@
         mobileMenuOpen: false,
         masterOpen: true,
         metalOpen: true,
+        monitoringOpen: true,
 
         init() {
             // Load all saved states from localStorage
@@ -26,11 +27,17 @@
                 this.metalOpen = JSON.parse(savedMetaltate);
             }
 
+            const savedMonitoringtate = localStorage.getItem('monitoringOpen');
+            if (savedMonitoringtate !== null) {
+                this.monitoringOpen = JSON.parse(savedMonitoringtate);
+            }
+
         },
         saveToLocalStorage() {
             localStorage.setItem('sidebarOpen', JSON.stringify(this.sidebarPinned ? this.sidebarOpen : false));
             localStorage.setItem('masterOpen', JSON.stringify(this.masterOpen));
             localStorage.setItem('metalOpen', JSON.stringify(this.metalOpen));
+            localStorage.setItem('monitoringOpen', JSON.stringify(this.monitoringOpen));
         },
         toggleSidebar() {
             this.sidebarPinned = !this.sidebarPinned;
@@ -87,6 +94,49 @@
     >
         <div class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-lg p-3">
             <flux:navlist aria-label="Settings" class="w-full">
+
+                <!-- Monitoring Group Mobile -->
+                <div class="mb-1 relative">
+                    <button 
+                        @click="monitoringOpen = !monitoringOpen"
+                        class="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                    >
+                        <div class="flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                <path fill-rule="evenodd" d="M2.25 2.25a.75.75 0 0 0 0 1.5H3v10.5a3 3 0 0 0 3 3h1.21l-1.172 3.513a.75.75 0 0 0 1.424.474l.329-.987h8.418l.33.987a.75.75 0 0 0 1.422-.474l-1.17-3.513H18a3 3 0 0 0 3-3V3.75h.75a.75.75 0 0 0 0-1.5H2.25Zm6.54 15h6.42l.5 1.5H8.29l.5-1.5Zm8.085-8.995a.75.75 0 1 0-.75-1.299 12.81 12.81 0 0 0-3.558 3.05L11.03 8.47a.75.75 0 0 0-1.06 0l-3 3a.75.75 0 1 0 1.06 1.06l2.47-2.47 1.617 1.618a.75.75 0 0 0 1.146-.102 11.312 11.312 0 0 1 3.612-3.321Z" clip-rule="evenodd" />
+                            </svg>
+                            <span>Monitoring</span>
+                        </div>
+                        <svg 
+                            :class="{'rotate-180': monitoringOpen}"
+                            class="w-4 h-4 transition-transform duration-200"
+                            fill="none" 
+                            stroke="currentColor" 
+                            viewBox="0 0 24 24"
+                        >
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+                    
+                    <div x-show="monitoringOpen" x-collapse class="mt-1 relative">
+                        <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
+                        <div class="space-y-1 ml-[30px]">
+                            <a href="{{ route('mtc.daily-dashboard') }}" wire:navigate
+                                class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('mtc.daily-dashboard') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}"
+                                @click="mobileMenuOpen = false">
+                                <span class="w-2 h-2 rounded-full {{ request()->routeIs('mtc.daily-dashboard') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                <span class="truncate">Daily Check Monitoring</span>
+                            </a>
+                            <a href="{{ route('mtc.stencil-dashboard') }}" wire:navigate
+                                class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('mtc.stencil-dashboard') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}"
+                                @click="mobileMenuOpen = false">
+                                <span class="w-2 h-2 rounded-full {{ request()->routeIs('mtc.stencil-dashboard') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                <span class="truncate">Stencil Monitoring</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
                 @canany(['view master-maintenance'])
                 <!-- Master Group Mobile -->
                 <div class="mb-1 relative">
@@ -114,12 +164,6 @@
                     <div x-show="masterOpen" x-collapse class="mt-1 relative">
                         <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
                         <div class="space-y-1 ml-[30px]">
-                            <a href="{{ route('mtc.daily-dashboard') }}" wire:navigate
-                                class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('mtc.daily-dashboard') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}"
-                                @click="mobileMenuOpen = false">
-                                <span class="w-2 h-2 rounded-full {{ request()->routeIs('mtc.daily-dashboard') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
-                                <span class="truncate">Daily Check Monitoring</span>
-                            </a>
                             @can('view master area')
                             <a href="{{ route('mtc.master-areas') }}" wire:navigate
                                 class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('mtc.master-areas') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}"
@@ -185,12 +229,6 @@
                     <div x-show="metalOpen" x-collapse class="mt-1 relative">
                         <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
                         <div class="space-y-1 ml-[30px]">
-                            <a href="{{ route('mtc.stencil-dashboard') }}" wire:navigate
-                                class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('mtc.stencil-dashboard') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}"
-                                @click="mobileMenuOpen = false">
-                                <span class="w-2 h-2 rounded-full {{ request()->routeIs('mtc.stencil-dashboard') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
-                                <span class="truncate">Stencil Monitoring</span>
-                            </a>
                             <a href="{{ route('mtc.stencils') }}" wire:navigate
                                 class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('mtc.stencils') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}"
                                 @click="mobileMenuOpen = false">
@@ -231,6 +269,63 @@
                     </button>
                 </div>
                 <div class="space-y-2">
+
+                    <!-- Master Group Desktop -->
+                    <div class="relative">
+                        <!-- Button untuk collapsed mode (hanya icon) -->
+                        <button 
+                            x-show="!sidebarOpen"
+                            @click="monitoringOpen = !monitoringOpen"
+                            class="flex items-center justify-center w-full py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-zinc-600 dark:text-zinc-400"
+                            title="Yearly"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                <path fill-rule="evenodd" d="M2.25 2.25a.75.75 0 0 0 0 1.5H3v10.5a3 3 0 0 0 3 3h1.21l-1.172 3.513a.75.75 0 0 0 1.424.474l.329-.987h8.418l.33.987a.75.75 0 0 0 1.422-.474l-1.17-3.513H18a3 3 0 0 0 3-3V3.75h.75a.75.75 0 0 0 0-1.5H2.25Zm6.54 15h6.42l.5 1.5H8.29l.5-1.5Zm8.085-8.995a.75.75 0 1 0-.75-1.299 12.81 12.81 0 0 0-3.558 3.05L11.03 8.47a.75.75 0 0 0-1.06 0l-3 3a.75.75 0 1 0 1.06 1.06l2.47-2.47 1.617 1.618a.75.75 0 0 0 1.146-.102 11.312 11.312 0 0 1 3.612-3.321Z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+
+                        <!-- Expanded mode -->
+                        <div x-show="sidebarOpen">
+                            <button 
+                                @click="monitoringOpen = !monitoringOpen"
+                                class="flex items-center justify-between w-full px-3 py-2 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors"
+                            >
+                                <div class="flex items-center gap-2">
+                                    <!-- Icon Yearly (Calendar - same as collapsed mode) -->
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                        <path fill-rule="evenodd" d="M2.25 2.25a.75.75 0 0 0 0 1.5H3v10.5a3 3 0 0 0 3 3h1.21l-1.172 3.513a.75.75 0 0 0 1.424.474l.329-.987h8.418l.33.987a.75.75 0 0 0 1.422-.474l-1.17-3.513H18a3 3 0 0 0 3-3V3.75h.75a.75.75 0 0 0 0-1.5H2.25Zm6.54 15h6.42l.5 1.5H8.29l.5-1.5Zm8.085-8.995a.75.75 0 1 0-.75-1.299 12.81 12.81 0 0 0-3.558 3.05L11.03 8.47a.75.75 0 0 0-1.06 0l-3 3a.75.75 0 1 0 1.06 1.06l2.47-2.47 1.617 1.618a.75.75 0 0 0 1.146-.102 11.312 11.312 0 0 1 3.612-3.321Z" clip-rule="evenodd" />
+                                    </svg>
+                                    <span>Monitoring</span>
+                                </div>
+                                <svg 
+                                    :class="{'rotate-180': monitoringOpen}"
+                                    class="w-4 h-4 transition-transform duration-200"
+                                    fill="none" 
+                                    stroke="currentColor" 
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            
+                            <div x-show="monitoringOpen" x-collapse class="mt-1 relative">
+                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
+                                <div class="space-y-1 ml-[30px]">
+                                    <a href="{{ route('mtc.daily-dashboard') }}" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('mtc.daily-dashboard') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
+                                        <span class="w-2 h-2 rounded-full {{ request()->routeIs('mtc.daily-dashboard') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                        <span class="truncate">Daily Check Monitoring</span>
+                                    </a>
+                                    <a href="{{ route('mtc.stencil-dashboard') }}" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('mtc.stencil-dashboard') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
+                                        <span class="w-2 h-2 rounded-full {{ request()->routeIs('mtc.stencil-dashboard') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
+                                        <span class="truncate">Stencil Monitoring</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     @canany(['view master-maintenance'])
                     <!-- Master Group Desktop -->
                     <div class="relative">
@@ -273,11 +368,6 @@
                             <div x-show="masterOpen" x-collapse class="mt-1 relative">
                                 <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
                                 <div class="space-y-1 ml-[30px]">
-                                    <a href="#" wire:navigate
-                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('mtc.master-areas') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
-                                        <span class="w-2 h-2 rounded-full {{ request()->routeIs('mtc.master-areas') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
-                                        <span class="truncate">Daily Check Monitoring</span>
-                                    </a>
                                     @can('view master area')
                                     <a href="{{ route('mtc.master-areas') }}" wire:navigate
                                         class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('mtc.master-areas') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
@@ -355,11 +445,6 @@
                             <div x-show="metalOpen" x-collapse class="mt-1 relative">
                                 <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
                                 <div class="space-y-1 ml-[30px]">
-                                    <a href="{{ route('mtc.stencil-dashboard') }}" wire:navigate
-                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('mtc.stencil-dashboard') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
-                                        <span class="w-2 h-2 rounded-full {{ request()->routeIs('mtc.stencil-dashboard') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>
-                                        <span class="truncate">Stencil Monitoring</span>
-                                    </a>
                                     <a href="{{ route('mtc.stencils') }}" wire:navigate
                                         class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors {{ request()->routeIs('mtc.stencils') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800' }}">
                                         <span class="w-2 h-2 rounded-full {{ request()->routeIs('mtc.stencils') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500' }}"></span>

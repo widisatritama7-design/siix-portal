@@ -14,8 +14,8 @@ class DailyDashboard extends Component
         return MasterLine::with([
                 'location',
                 'employee',
-                'dailyFujis' => fn($q) => $q->latest()->with(['updater', 'approvedBy']),
-                'dailyPanasonics' => fn($q) => $q->latest()->with(['updater', 'approvedBy']),
+                'dailyFujis' => fn($q) => $q->latest()->limit(1)->with(['updater', 'approvedBy']),
+                'dailyPanasonics' => fn($q) => $q->latest()->limit(1)->with(['updater', 'approvedBy']),
             ])
             ->where(function($q) {
                 $q->whereHas('dailyFujis')->orWhereHas('dailyPanasonics');
@@ -34,8 +34,8 @@ class DailyDashboard extends Component
                     $line->daily_check_status = $latest->status ?? 'No Check';
                     $line->daily_check_approval = $latest->approval ?? 'Pending';
                     $line->daily_check_group = $latest->group ?? '-';
-                    $line->daily_check_by = $latest->updater->name ?? '-';
-                    $line->daily_approved_by = $latest->approvedBy->name ?? '-';
+                    $line->daily_check_by = $latest->updater?->name ?? '-';
+                    $line->daily_approved_by = $latest->approvedBy?->name ?? '-';
                     $line->last_check_time = $latest->updated_at;
                 } else {
                     $line->daily_check_status = 'No Check';

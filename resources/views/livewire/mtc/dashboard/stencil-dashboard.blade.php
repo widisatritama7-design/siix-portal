@@ -13,10 +13,10 @@
                         Dashboard
                     </flux:breadcrumbs.item>
                     <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
-                        MTC
+                        Maintenance
                     </flux:breadcrumbs.item>
                     <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
-                        Stencil Dashboard
+                        Stencil Monitoring
                     </flux:breadcrumbs.item>
                 </flux:breadcrumbs>
             </div>
@@ -96,9 +96,6 @@
                 <button onclick="closeStencilModal()" style="background: none; border: none; color: white; font-size: 1.75rem; cursor: pointer; padding: 0 0.5rem; line-height: 1; opacity: 0.8;">×</button>
             </div>
             <div id="stencilModalBody" style="padding: 1.5rem; overflow-y: auto; max-height: calc(85vh - 4rem);"></div>
-            <div style="padding: 1rem 1.5rem; border-top: 1px solid #e5e7eb; text-align: right;">
-                <button onclick="closeStencilModal()" style="padding: 0.5rem 1rem; background: #3b82f6; color: white; border: none; border-radius: 0.5rem; cursor: pointer;">Close</button>
-            </div>
         </div>
     </div>
 
@@ -290,8 +287,6 @@
                                     <option value="Prepared" ${jig.status === 'Prepared' ? 'selected' : ''}>Prepared</option>
                                     <option value="In Use" ${jig.status === 'In Use' ? 'selected' : ''}>In Use</option>
                                     <option value="Stand By" ${jig.status === 'Stand By' ? 'selected' : ''}>Stand By</option>
-                                    <option value="Cleaning" ${jig.status === 'Cleaning' ? 'selected' : ''}>Cleaning</option>
-                                    <option value="Disposed" ${jig.status === 'Disposed' ? 'selected' : ''}>Disposed</option>
                                 </select>
                             </td>
                             <td style="padding: 0.75rem 1rem;">
