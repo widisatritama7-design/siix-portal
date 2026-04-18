@@ -15,6 +15,16 @@ use App\Livewire\HR\Violation\ViolationEmployeeManagement;
 use App\Livewire\HR\Violation\ViolationReport;
 use App\Livewire\NotificationManager;
 use App\Livewire\PROD\Kaizen\KaizenManagement;
+use App\Livewire\PROD\MS\MasterSampleExpiredForm;
+use App\Livewire\PROD\MS\MasterSampleLoanForm;
+use App\Livewire\PROD\MS\MasterSampleManagement;
+use App\Livewire\PROD\MS\MasterSampleShow;
+use App\Livewire\PROD\WIP\HistoryWipTransaction;
+use App\Livewire\PROD\WIP\MasterModelManagement;
+use App\Livewire\PROD\WIP\MasterRackLosePack;
+use App\Livewire\PROD\WIP\MasterWipDetail;
+use App\Livewire\PROD\WIP\MasterWipManagement;
+use App\Livewire\PROD\WIP\MasterWipScan;
 use App\Livewire\Ticket\CategoryTicketManager;
 use App\Livewire\Ticket\TicketManager;
 use App\Livewire\Ticket\TicketView;
@@ -34,6 +44,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::view('hr-dashboard', 'home.hr_dashboard')->name('hr-dashboard');
     Route::view('ticket-dashboard', 'home.ticket_dashboard')->name('ticket-dashboard');
     Route::view('esd-dashboard', 'home.esd_dashboard')->name('esd-dashboard');
+    Route::view('kaizen-dashboard', 'home.kaizen_dashboard')->name('kaizen-dashboard');
 
     // Notification
     Route::get('/notifications', NotificationManager::class)->name('notifications.manager');
@@ -74,6 +85,25 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Kaizen
     Route::get('/prod/kaizens', KaizenManagement::class)->name('prod.kaizens');
+
+    // Master Model
+    Route::get('/prod/master-models', MasterModelManagement::class)->name('prod.master-models');
+
+    // Master WIP
+    Route::get('/prod/wip', MasterWipManagement::class)->name('prod.wip.index');
+    Route::get('/prod/wip/{id}', MasterWipDetail::class)->name('prod.wip.show');
+    Route::get('/prod/wip/{id}/scan', MasterWipScan::class)->name('prod.wip.scan');
+    Route::get('/prod/history', HistoryWipTransaction::class)->name('prod.history');
+    Route::get('/prod/rack-lose', MasterRackLosePack::class)->name('prod.rack-lose');
+
+    // Master Sample
+    Route::get('/prod/ms/master-sample', MasterSampleManagement::class)->name('prod.ms.master-sample');
+    Route::get('/prod/ms/master-sample/{id}/{tab?}', MasterSampleShow::class)->name('prod.ms.master-sample.show');
+    Route::get('/prod/ms/master-sample/{sampleId}/loan/create', MasterSampleLoanForm::class)->name('prod.ms.master-sample.loan.create');
+    Route::get('/prod/ms/master-sample/{sampleId}/loan/{id}/edit', MasterSampleLoanForm::class)->name('prod.ms.master-sample.loan.edit');
+    Route::get('/prod/ms/master-sample/{sampleId}/expired/create', MasterSampleExpiredForm::class)->name('prod.ms.master-sample.expired.create');
+    Route::get('/prod/ms/master-sample/{sampleId}/expired/{id}/edit', MasterSampleExpiredForm::class)->name('prod.ms.master-sample.expired.edit');
+
 });
 
 require __DIR__.'/settings.php';
