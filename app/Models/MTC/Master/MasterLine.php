@@ -6,6 +6,7 @@ use App\Models\HR\Employee;
 use App\Models\MTC\Daily\DailyFuji;
 use App\Models\MTC\Daily\DailyPanasonic;
 use App\Models\MTC\Master\MasterMachine;
+use App\Models\PROD\MS\HistoryMasterSample;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -38,10 +39,10 @@ class MasterLine extends Model
         return $this->belongsTo(MasterLocation::class);
     }
 
-    // public function historyMasterSamples()
-    // {
-    //     return $this->hasMany(HistoryMasterSample::class, 'master_line_id');
-    // }
+    public function historyMasterSamples()
+    {
+        return $this->hasMany(HistoryMasterSample::class, 'master_line_id');
+    }
 
     public function dailyFujis()
     {

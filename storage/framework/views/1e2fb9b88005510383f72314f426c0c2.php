@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>" class="dark">
+<head>
+    <?php echo $__env->make('partials.head', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="<?php echo e(asset('images/siix-portal.png')); ?>">
+</head>
+
+<body class="h-screen overflow-hidden bg-neutral-100 antialiased dark:bg-linear-to-b dark:from-neutral-950 dark:to-neutral-900">
+    <div class="flex h-full bg-white dark:bg-stone-950">
+        
+        <!-- Left side - 60% with image -->
+        <div class="hidden lg:block w-full lg:w-[60%] relative overflow-hidden bg-white dark:bg-stone-950">
+            <!-- Centered image shifted slightly to the right -->
+            <div class="flex items-center justify-center h-full">
+                <img 
+                    src="<?php echo e(asset('images/logo-left.png')); ?>" 
+                    alt="Login illustration"
+                    class="w-full h-full object-contain"
+                    style="transform: scale(0.7) translateX(5%);"
+                >
+            </div>
+        </div>
+
+        <!-- Right side - 40% with card -->
+        <div class="w-full lg:w-[40%] flex items-center justify-center p-4 md:p-6 bg-white dark:bg-stone-950">
+            <div class="w-full max-w-sm">
+                <!-- Logo SIIX di luar card (di atas card) -->
+                <div class="flex justify-center mb-6">
+                    <a href="<?php echo e(route('home')); ?>" class="block transition-transform hover:scale-105 duration-200" wire:navigate>
+                        <img 
+                            src="<?php echo e(asset('images/logo-siix.png')); ?>" 
+                            alt="SIIX Portal"
+                            class="h-16 w-auto"
+                        >
+                    </a>
+                </div>
+                
+                <!-- Card with form content (logo sudah dipindahkan ke luar) -->
+                <div class="rounded-2xl border bg-white dark:bg-stone-800 dark:border-stone-700 text-stone-800 dark:text-stone-200 shadow-[0_20px_50px_rgba(0,0,0,0.2)] hover:shadow-[0_25px_60px_rgba(0,0,0,0.25)] transition-shadow duration-300">
+                    <div class="px-6 py-6">
+                        <!-- Form content from slot -->
+                        <?php echo e($slot); ?>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <?php app('livewire')->forceAssetInjection(); ?>
+<?php echo app('flux')->scripts(); ?>
+
+</body>
+</html><?php /**PATH D:\laragon\www\siix-portal-new\resources\views\layouts\auth\card.blade.php ENDPATH**/ ?>

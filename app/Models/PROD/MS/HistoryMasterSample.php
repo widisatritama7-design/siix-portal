@@ -9,11 +9,13 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 class HistoryMasterSample extends Model
 {
     use HasFactory;
-    // use LogsActivity;
+    use LogsActivity;
 
     protected $table = 'tb_prod_history_master_samples';
 
@@ -51,25 +53,25 @@ class HistoryMasterSample extends Model
         return $this->belongsTo(Employee::class, 'nik', 'id');
     }
 
-    // public function getActivitylogOptions(): LogOptions
-    // {
-    //     return LogOptions::defaults()
-    //         ->logOnly([
-    //             'master_sample_id',
-    //             'type',
-    //             'out_date',
-    //             'in_date',
-    //             'qty',
-    //             'remarks',
-    //             'nik',
-    //             'verification_after_return',
-    //             'approval',
-    //             'status',
-    //             'line_name'
-    //         ])
-    //         ->useLogName('history-master-sample')
-    //         ->logOnlyDirty();
-    // }
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logOnly([
+                'master_sample_id',
+                'type',
+                'out_date',
+                'in_date',
+                'qty',
+                'remarks',
+                'nik',
+                'verification_after_return',
+                'approval',
+                'status',
+                'line_name'
+            ])
+            ->useLogName('history-master-sample')
+            ->logOnlyDirty();
+    }
 
     public function masterLine()
     {

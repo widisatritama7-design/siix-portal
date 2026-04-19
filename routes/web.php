@@ -15,10 +15,13 @@ use App\Livewire\HR\Violation\ViolationEmployeeManagement;
 use App\Livewire\HR\Violation\ViolationReport;
 use App\Livewire\NotificationManager;
 use App\Livewire\PROD\Kaizen\KaizenManagement;
-use App\Livewire\PROD\MS\MasterSampleExpiredForm;
-use App\Livewire\PROD\MS\MasterSampleLoanForm;
-use App\Livewire\PROD\MS\MasterSampleManagement;
-use App\Livewire\PROD\MS\MasterSampleShow;
+use App\Livewire\PROD\MS\Rack\MasterRackSampleCreate;
+use App\Livewire\PROD\MS\Rack\MasterRackSampleManagement;
+use App\Livewire\PROD\MS\Sample\MasterSampleDashboard;
+use App\Livewire\PROD\MS\Sample\MasterSampleExpiredForm;
+use App\Livewire\PROD\MS\Sample\MasterSampleLoanForm;
+use App\Livewire\PROD\MS\Sample\MasterSampleManagement;
+use App\Livewire\PROD\MS\Sample\MasterSampleShow;
 use App\Livewire\PROD\WIP\HistoryWipTransaction;
 use App\Livewire\PROD\WIP\MasterModelManagement;
 use App\Livewire\PROD\WIP\MasterRackLosePack;
@@ -97,12 +100,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/prod/rack-lose', MasterRackLosePack::class)->name('prod.rack-lose');
 
     // Master Sample
+    Route::get('/prod/ms/dashboard', MasterSampleDashboard::class)->name('prod.ms.dashboard');
     Route::get('/prod/ms/master-sample', MasterSampleManagement::class)->name('prod.ms.master-sample');
     Route::get('/prod/ms/master-sample/{id}/{tab?}', MasterSampleShow::class)->name('prod.ms.master-sample.show');
     Route::get('/prod/ms/master-sample/{sampleId}/loan/create', MasterSampleLoanForm::class)->name('prod.ms.master-sample.loan.create');
     Route::get('/prod/ms/master-sample/{sampleId}/loan/{id}/edit', MasterSampleLoanForm::class)->name('prod.ms.master-sample.loan.edit');
     Route::get('/prod/ms/master-sample/{sampleId}/expired/create', MasterSampleExpiredForm::class)->name('prod.ms.master-sample.expired.create');
     Route::get('/prod/ms/master-sample/{sampleId}/expired/{id}/edit', MasterSampleExpiredForm::class)->name('prod.ms.master-sample.expired.edit');
+    Route::get('/prod/master-sample/print/{idsParam}', function ($idsParam) {
+        $idsArray = explode(',', $idsParam);
+        $records = App\Models\PROD\MS\MasterSample::whereIn('id', $idsArray)->get();
+        
+        return view('livewire.prod.ms.master-sample-bulk-print', compact('records'));
+    })->name('prod.ms.master-sample.print');
+
+    // Master Rack Sample
+    Route::get('/prod/ms/master-rack', MasterRackSampleManagement::class)->name('prod.ms.master-rack');
+    Route::get('/prod/ms/master-rack/create', MasterRackSampleCreate::class)->name('prod.ms.master-rack.create');
 
 });
 

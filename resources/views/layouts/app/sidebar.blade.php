@@ -106,11 +106,13 @@
                     x-cloak
                     class="flex justify-center w-full"
                     :class="{'hidden': !sidebarOpen && !isHovering && !sidebarPinned}">
-                    <img 
-                        src="{{ asset('images/logo-siix.png') }}" 
-                        alt="SIIX Portal" 
-                        class="h-11 w-auto object-contain image-rendering-auto"
-                    />
+                    <a href="/" wire:navigate class="inline-block">
+                        <img 
+                            src="{{ asset('images/logo-siix.png') }}" 
+                            alt="SIIX Portal" 
+                            class="h-11 w-auto object-contain image-rendering-auto"
+                        />
+                    </a>
                 </div>
                 
                 <!-- Close button for mobile -->
@@ -207,6 +209,16 @@
                                 <path d="M3.34 19a10 10 0 1 1 17.32 0"/>
                             </svg>
                             <span class="truncate">Kaizen Dashboard</span>
+                        </a>
+                        @endcan
+                        @can('view ms-dashboard')
+                        <a href="{{ route('prod.ms.dashboard') }}" wire:navigate
+                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('prod.ms.dashboard') ? 'menu-active' : '' }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gauge-icon lucide-gauge w-4 h-4">
+                                <path d="m12 14 4-4"/>
+                                <path d="M3.34 19a10 10 0 1 1 17.32 0"/>
+                            </svg>
+                            <span class="truncate">MS Dashboard</span>
                         </a>
                         @endcan
                         @can('view ticket-dashboard')
@@ -447,9 +459,10 @@
                                     <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
                                     
                                     <div class="space-y-1 ml-[24px]">
+                                        
                                         <!-- Master Sample -->
                                         <a href="{{ route('prod.ms.master-sample') }}" wire:navigate
-                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors">
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('prod.ms.master-sample') ? 'menu-active' : '' }}">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
                                                 <path d="M3.375 3C2.339 3 1.5 3.84 1.5 4.875v.75c0 1.036.84 1.875 1.875 1.875h17.25c1.035 0 1.875-.84 1.875-1.875v-.75C22.5 3.839 21.66 3 20.625 3H3.375Z" />
                                                 <path fill-rule="evenodd" d="m3.087 9 .54 9.176A3 3 0 0 0 6.62 21h10.757a3 3 0 0 0 2.995-2.824L20.913 9H3.087Zm6.163 3.75A.75.75 0 0 1 10 12h4a.75.75 0 0 1 0 1.5h-4a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
@@ -458,8 +471,8 @@
                                         </a>
                                         
                                         <!-- Master Rack -->
-                                        <a href="#" wire:navigate
-                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors">
+                                        <a href="{{ route('prod.ms.master-rack') }}" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('prod.ms.master-rack') ? 'menu-active' : '' }}">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
                                                 <path fill-rule="evenodd" d="M9.75 6.75h-3a3 3 0 0 0-3 3v7.5a3 3 0 0 0 3 3h7.5a3 3 0 0 0 3-3v-7.5a3 3 0 0 0-3-3h-3V1.5a.75.75 0 0 0-1.5 0v5.25Zm0 0h1.5v5.69l1.72-1.72a.75.75 0 1 1 1.06 1.06l-3 3a.75.75 0 0 1-1.06 0l-3-3a.75.75 0 1 1 1.06-1.06l1.72 1.72V6.75Z" clip-rule="evenodd" />
                                                 <path d="M7.151 21.75a2.999 2.999 0 0 0 2.599 1.5h7.5a3 3 0 0 0 3-3v-7.5c0-1.11-.603-2.08-1.5-2.599v7.099a4.5 4.5 0 0 1-4.5 4.5H7.151Z" />
