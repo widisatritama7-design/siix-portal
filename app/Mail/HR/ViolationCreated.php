@@ -151,7 +151,7 @@ class ViolationCreated extends Mailable
         
         return $this
             ->subject('New Violation Report - ' . ($this->violation->employee?->name ?? $this->violation->name))
-            ->view('emails.HR.violation')
+            ->view('emails.hr.violation')
             ->with([
                 'violation' => $this->violation,
                 'receiver_name' => $this->receiver_name,

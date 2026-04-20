@@ -19,7 +19,8 @@ class InsulatifCheck extends Model
         'result_scientific',
         'judgement',
         'remarks',
-        'next_date'
+        'next_date',
+        'created_by',
     ];
 
     public function creator()

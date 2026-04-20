@@ -22,7 +22,8 @@ class MagazineDetail extends Model
         'm2',
         'judgement_m2',
         'remarks',
-        'next_date'
+        'next_date',
+        'created_by',
     ];
 
     public function magazine()

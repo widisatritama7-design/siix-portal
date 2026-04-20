@@ -26,7 +26,8 @@ class WorksurfaceDetail extends Model
         'judgement_a2',
         'remarks',
         'created_at',
-        'next_date'
+        'next_date',
+        'created_by',
     ];
 
     public function worksurface()

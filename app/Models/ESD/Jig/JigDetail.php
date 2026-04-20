@@ -24,7 +24,8 @@ class JigDetail extends Model
         'next_date',
         'created_by',
         'updated_by',
-        'remarks'
+        'remarks',
+        'created_by',
     ];
 
     public function jig()

@@ -22,7 +22,8 @@ class Patrol extends Model
         'judgement_v3',
         'v_4',
         'remarks',
-        'next_date'
+        'next_date',
+        'created_by',
     ];
 
     public function creator()

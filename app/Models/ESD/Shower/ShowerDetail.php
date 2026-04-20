@@ -23,6 +23,7 @@ class ShowerDetail extends Model
         'updated_by',
         'next_date',
         'remarks',
+        'created_by',
 
     ];
 

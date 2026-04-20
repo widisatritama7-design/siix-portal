@@ -79,13 +79,12 @@
             // Calculate session remaining time (1 hour limit)
             $sessionRemainingSeconds = 0;
             $sessionExpired = false;
-            $sessionDurationMinutes = 0; // Durasi session saat ini dalam menit
+            $sessionDurationMinutes = 0;
             if ($activeSession && $activeSession->login_at) {
                 $loginTime = \Carbon\Carbon::parse($activeSession->login_at)->setTimezone('Asia/Jakarta');
-                $sessionEndTime = $loginTime->copy()->addHours(1); // 1 hour limit
+                $sessionEndTime = $loginTime->copy()->addHours(1);
                 $now = now()->setTimezone('Asia/Jakarta');
                 
-                // Hitung durasi session saat ini
                 $sessionDurationMinutes = $loginTime->diffInMinutes($now);
                 
                 if ($now->gte($sessionEndTime)) {
@@ -117,18 +116,17 @@
             
             // Initialize counters for page views in each session duration category
             $pageViewsDistribution = [
-                '0_5' => 0,      // 0-5 menit
-                '5_10' => 0,     // 5-10 menit
-                '10_30' => 0,    // 10-30 menit
-                '30_60' => 0,    // 30-60 menit
+                '0_5' => 0,
+                '5_10' => 0,
+                '10_30' => 0,
+                '30_60' => 0,
             ];
             
             // For each session, get its page views and categorize by when they occurred
             foreach ($allSessions as $session) {
                 $loginTime = \Carbon\Carbon::parse($session->login_at)->setTimezone('Asia/Jakarta');
-                $sessionEndTime = $loginTime->copy()->addHours(1); // Max 1 hour
+                $sessionEndTime = $loginTime->copy()->addHours(1);
                 
-                // Get all page views for this session
                 $sessionPageViews = DB::table('page_views')
                     ->where('user_id', $userId)
                     ->whereBetween('created_at', [$loginTime, $sessionEndTime])
@@ -136,7 +134,6 @@
                     ->orderBy('created_at', 'asc')
                     ->get();
                 
-                // Categorize each page view based on when it occurred in the session
                 foreach ($sessionPageViews as $pageView) {
                     $viewTime = \Carbon\Carbon::parse($pageView->created_at)->setTimezone('Asia/Jakarta');
                     $minutesAfterLogin = $loginTime->diffInMinutes($viewTime);
@@ -169,7 +166,6 @@
             $totalPercent = $percent0_5 + $percent5_10 + $percent10_30 + $percent30_60;
             if ($totalPercent != 100 && $totalPercent > 0) {
                 $diff = 100 - $totalPercent;
-                // Add diff to the largest category
                 $percentages = [
                     '0_5' => &$percent0_5,
                     '5_10' => &$percent5_10,
@@ -197,41 +193,6 @@
                 }
             }
             
-            // ==================== USER ACTIVITIES ====================
-            // Get today's activities (filter out Livewire-related activities)
-            $todayActivities = DB::table('user_activities')
-                ->where('user_id', $userId)
-                ->whereDate('created_at', $today)
-                ->whereNotIn('action', ['livewire', 'wire:navigate', 'wire:submit', 'wire:click'])
-                ->whereNotIn('description', ['Livewire component update', 'Livewire navigation'])
-                ->whereNull('ip_address')
-                ->count();
-            
-            // Get activities by type today (filter out Livewire)
-            $activitiesByType = DB::table('user_activities')
-                ->where('user_id', $userId)
-                ->whereDate('created_at', $today)
-                ->whereNotIn('action', ['livewire', 'wire:navigate', 'wire:submit', 'wire:click'])
-                ->whereNotIn('description', ['Livewire component update', 'Livewire navigation'])
-                ->whereNull('ip_address')
-                ->select('action', DB::raw('COUNT(*) as count'))
-                ->groupBy('action')
-                ->get()
-                ->keyBy('action');
-            
-            // Get hourly activity data (filter out Livewire)
-            $hourlyActivity = DB::table('user_activities')
-                ->where('user_id', $userId)
-                ->whereDate('created_at', $today)
-                ->whereNotIn('action', ['livewire', 'wire:navigate', 'wire:submit', 'wire:click'])
-                ->whereNotIn('description', ['Livewire component update', 'Livewire navigation'])
-                ->whereNull('ip_address')
-                ->select(DB::raw('HOUR(created_at) as hour'), DB::raw('COUNT(*) as count'))
-                ->groupBy('hour')
-                ->orderBy('hour')
-                ->get()
-                ->keyBy('hour');
-            
             // ==================== PAGE VIEWS ====================
             // Get today's page views (filter out Livewire routes)
             $todayPageViews = DB::table('page_views')
@@ -239,14 +200,6 @@
                 ->whereDate('created_at', $today)
                 ->whereNotIn('page', ['livewire', 'livewire/*', 'livewire/update'])
                 ->count();
-            
-            // Get unique pages visited today (filter out Livewire)
-            $uniquePagesToday = DB::table('page_views')
-                ->where('user_id', $userId)
-                ->whereDate('created_at', $today)
-                ->whereNotIn('page', ['livewire', 'livewire/*', 'livewire/update'])
-                ->distinct('page')
-                ->count('page');
             
             // Get most visited pages (filter out Livewire)
             $topPages = DB::table('page_views')
@@ -259,274 +212,292 @@
                 ->orderBy('views', 'desc')
                 ->limit(5)
                 ->get();
-            
-            // Check if user is active now
-            $activeNow = DB::table('user_activities')
-                ->where('user_id', $userId)
-                ->where('created_at', '>=', $now->copy()->subMinutes(5))
-                ->whereNotIn('action', ['livewire', 'wire:navigate', 'wire:submit', 'wire:click'])
-                ->exists() || ($activeSession && $activeSession->login_at >= $now->copy()->subMinutes(5));
-            
-            // Generate data untuk chart (24 jam)
-            $hours = [];
-            $activityData = [];
-            
-            for ($hour = 0; $hour <= 23; $hour++) {
-                $hours[] = $hour . ':00';
-                $activityData[] = isset($hourlyActivity[$hour]) ? $hourlyActivity[$hour]->count : 0;
-            }
-            
-            $maxActivity = !empty($activityData) ? max($activityData) : 1;
         @endphp
 
-        <!-- Two Column Layout: Left (Most Visited Pages) and Right (Stats + Page Views Distribution) -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
+        <!-- Dashboard Container dengan Auto-refresh -->
+        <div id="dashboard-container" wire:ignore>
             
-            <!-- LEFT COLUMN: Most Visited Pages Today -->
-            <div class="lg:col-span-1 flex flex-col">
-                <flux:card class="p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 flex-1">
-                    <div class="flex items-center justify-between mb-4">
-                        <div>
-                            <flux:heading size="lg">Most Visited Pages Today</flux:heading>
-                            <flux:subheading>Pages you've visited the most</flux:subheading>
-                        </div>
-                        <flux:badge color="blue" size="sm">Top 5</flux:badge>
-                    </div>
-                    
-                    <div class="space-y-2">
-                        @forelse($topPages->take(5) as $index => $page)
-                            <a href="{{ url($page->page) }}" target="_blank" rel="noopener noreferrer" class="block group">
-                                <div class="flex items-center gap-3 p-3 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all duration-200">
-                                    
-                                    <!-- TIMELINE -->
-                                    <div class="relative flex flex-col items-center">
-                                        @php
-                                            $rankColors = ['bg-amber-500', 'bg-gray-400', 'bg-orange-600', 'bg-blue-500', 'bg-green-500'];
-                                            $rankColor = $rankColors[$index] ?? 'bg-purple-500';
-                                        @endphp
-
-                                        <!-- Circle -->
-                                        <div class="w-8 h-8 rounded-full {{ $rankColor }} flex items-center justify-center text-white font-bold text-sm z-10">
-                                            {{ $index + 1 }}
-                                        </div>
-
-                                        @if(!$loop->last)
-                                            <div class="absolute top-8 left-1/2 -translate-x-1/2 w-[2px] h-[calc(100%+8px)] bg-zinc-300 dark:bg-zinc-600"></div>
-                                        @endif
-                                    </div>
-                                    
-                                    <!-- Page Name -->
-                                    <div class="flex-1">
-                                        <div class="text-sm font-medium text-zinc-800 dark:text-zinc-200 truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                                            {{ $page->page }}
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- View Count -->
-                                    <div class="flex items-center gap-1">
-                                        <flux:icon.eye class="w-3.5 h-3.5 text-zinc-400" />
-                                        <span class="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-                                            {{ $page->views }}
-                                        </span>
-                                    </div>
-                                    
-                                    <!-- Arrow -->
-                                    <flux:icon.arrow-top-right-on-square class="w-4 h-4 text-zinc-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                </div>
-                            </a>
-                        @empty
-                            <div class="text-center py-12">
-                                <flux:icon.chart-bar class="w-12 h-12 text-zinc-400 mx-auto mb-3" />
-                                <p class="text-zinc-500 dark:text-zinc-400">No pages visited yet</p>
-                                <p class="text-xs text-zinc-400 dark:text-zinc-500 mt-1">Start exploring the dashboard</p>
-                            </div>
-                        @endforelse
-                    </div>
-                </flux:card>
-            </div>
-
-            <!-- RIGHT COLUMN: Stats Overview + Page Views Distribution -->
-            <div class="lg:col-span-2 flex flex-col gap-4">
+            <!-- Two Column Layout -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mt-4">
                 
-                <!-- Stats Overview Grid (3 cards) -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-shrink-0">
-
-                    <!-- Page Views Today -->
-                    <flux:card class="p-4 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-purple-500 to-purple-600 dark:from-purple-700 dark:to-purple-800">
-                        <div class="flex items-center justify-between">
+                <!-- LEFT COLUMN: Most Visited Pages Today -->
+                <div class="lg:col-span-1 flex flex-col">
+                    <flux:card class="p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 flex-1">
+                        <div class="flex items-center justify-between mb-4">
                             <div>
-                                <p class="text-sm text-white/80 dark:text-white/70">Page Views Today</p>
-                                <p class="text-2xl font-bold text-white dark:text-white mt-1">{{ number_format($todayPageViews) }}</p>
+                                <flux:heading size="lg">Most Visited Pages Today</flux:heading>
+                                <flux:subheading>Pages you've visited the most</flux:subheading>
                             </div>
-                            <div class="w-10 h-10 rounded-full bg-white/20 dark:bg-white/10 backdrop-blur-sm flex items-center justify-center">
-                                <flux:icon name="document-text" class="w-5 h-5 text-white dark:text-white" />
-                            </div>
+                            <flux:badge color="blue" size="sm">Top 5</flux:badge>
                         </div>
-                    </flux:card>
+                        
+                        <div id="top-pages-list" class="space-y-2">
+                            @php
+                                // Filter pages yang mengandung 'api' (case insensitive) - HAPUS dari collection
+                                $filteredTopPages = $topPages->reject(function($page) {
+                                    return str_contains(strtolower($page->page), 'api');
+                                })->values()->take(5);
+                            @endphp
+                            
+                            @forelse($filteredTopPages as $index => $page)
+                                <a href="{{ url($page->page) }}" target="_blank" rel="noopener noreferrer" class="block group">
+                                    <div class="flex items-center gap-3 p-3 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all duration-200">
+                                        
+                                        <!-- TIMELINE -->
+                                        <div class="relative flex flex-col items-center">
+                                            @php
+                                                $rankColors = ['bg-amber-500', 'bg-gray-400', 'bg-orange-600', 'bg-blue-500', 'bg-green-500'];
+                                                $rankColor = $rankColors[$index] ?? 'bg-purple-500';
+                                            @endphp
 
-                    <!-- Total Sessions -->
-                    <flux:card class="p-4 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-amber-500 to-amber-600 dark:from-amber-700 dark:to-amber-800">
-                        <div class="flex items-center justify-between">
-                            <div>
-                                <p class="text-sm text-white/80 dark:text-white/70">Total Sessions Today</p>
-                                <p class="text-2xl font-bold text-white dark:text-white mt-1">{{ number_format($todaySessions) }}</p>
-                            </div>
-                            <div class="w-10 h-10 rounded-full bg-white/20 dark:bg-white/10 backdrop-blur-sm flex items-center justify-center">
-                                <flux:icon name="arrow-path-rounded-square" class="w-5 h-5 text-white dark:text-white" />
-                            </div>
+                                            <div class="w-8 h-8 rounded-full {{ $rankColor }} flex items-center justify-center text-white font-bold text-sm z-10">
+                                                {{ $index + 1 }}
+                                            </div>
+
+                                            @if(!$loop->last)
+                                                <div class="absolute top-8 left-1/2 -translate-x-1/2 w-[2px] h-[calc(100%+8px)] bg-zinc-300 dark:bg-zinc-600"></div>
+                                            @endif
+                                        </div>
+                                        
+                                        <!-- Page Name -->
+                                        <div class="flex-1">
+                                            <div class="text-sm font-medium text-zinc-800 dark:text-zinc-200 truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                                {{ $page->page }}
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- View Count -->
+                                        <div class="flex items-center gap-1">
+                                            <flux:icon.eye class="w-3.5 h-3.5 text-zinc-400" />
+                                            <span class="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
+                                                {{ $page->views }}
+                                            </span>
+                                        </div>
+                                        
+                                        <!-- Arrow -->
+                                        <flux:icon.arrow-top-right-on-square class="w-4 h-4 text-zinc-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                    </div>
+                                </a>
+                            @empty
+                                <div class="text-center py-12">
+                                    <flux:icon.chart-bar class="w-12 h-12 text-zinc-400 mx-auto mb-3" />
+                                    <p class="text-zinc-500 dark:text-zinc-400">No pages visited yet</p>
+                                    <p class="text-xs text-zinc-400 dark:text-zinc-500 mt-1">Start exploring the dashboard</p>
+                                </div>
+                            @endforelse
                         </div>
                     </flux:card>
                 </div>
 
-                <!-- Page Views Distribution by Session Duration -->
-                <flux:card class="p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 flex-1">
-                    <div class="flex items-center justify-between mb-4">
-                        <div>
-                            <flux:heading size="lg">Page Views In 1 Hour</flux:heading>
-                            <flux:subheading>When do you see the page during Login?</flux:subheading>
-                        </div>
-                        <flux:badge color="purple" size="sm">In 60 Hours</flux:badge>
-                    </div>
+                <!-- RIGHT COLUMN: Stats Overview + Page Views Distribution -->
+                <div class="lg:col-span-2 flex flex-col gap-4">
                     
-                    <!-- 4 Speedometer Gauges -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        <!-- Gauge 1: 0-5 minutes -->
-                        <div class="flex flex-col items-center">
-                            <div class="relative w-32 h-20 mx-auto pageview-gauge-1" data-percentage="{{ $percent0_5 }}">
-                                <svg class="w-full h-full" viewBox="0 0 200 100">
-                                    <path d="M 30 85 A 70 70 0 0 1 170 85" fill="none" stroke="#e5e7eb" stroke-width="10" stroke-linecap="round" class="dark:stroke-zinc-700" />
-                                    <path class="pageview-arc-1" d="M 30 85 A 70 70 0 0 1 170 85" fill="none" stroke="#10b981" stroke-width="10" stroke-linecap="round" stroke-dasharray="0 220" />
-                                    <line class="pageview-needle-1" x1="100" y1="85" x2="100" y2="35" stroke="#4b5563" stroke-width="2.5" stroke-linecap="round" transform="rotate(-90, 100, 85)" />
-                                    <circle cx="100" cy="85" r="5" fill="#10b981" stroke="#fff" stroke-width="1.5" />
-                                </svg>
-                            </div>
-                            <div class="text-center mt-2">
-                                <span class="text-xl font-bold text-emerald-600 dark:text-emerald-400 pageview-percentage-1">{{ $percent0_5 }}%</span>
-                            </div>
-                            <div class="text-center mt-1">
-                                <div class="flex items-center gap-1 justify-center">
-                                    <span class="w-2 h-2 bg-emerald-500 rounded-full {{ $currentPageViewCategory == '0-5 minutes' ? 'animate-pulse' : '' }}"></span>
-                                    <span class="text-xs font-medium text-zinc-600 dark:text-zinc-400">0-5 minutes</span>
-                                </div>
-                                <span class="text-xs text-zinc-500 dark:text-zinc-400">{{ number_format($pageViewsDistribution['0_5']) }} views</span>
-                            </div>
-                        </div>
+                    <!-- Stats Overview Grid (2 cards) -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 flex-shrink-0">
 
-                        <!-- Gauge 2: 5-10 minutes -->
-                        <div class="flex flex-col items-center">
-                            <div class="relative w-32 h-20 mx-auto pageview-gauge-2" data-percentage="{{ $percent5_10 }}">
-                                <svg class="w-full h-full" viewBox="0 0 200 100">
-                                    <path d="M 30 85 A 70 70 0 0 1 170 85" fill="none" stroke="#e5e7eb" stroke-width="10" stroke-linecap="round" class="dark:stroke-zinc-700" />
-                                    <path class="pageview-arc-2" d="M 30 85 A 70 70 0 0 1 170 85" fill="none" stroke="#8b5cf6" stroke-width="10" stroke-linecap="round" stroke-dasharray="0 220" />
-                                    <line class="pageview-needle-2" x1="100" y1="85" x2="100" y2="35" stroke="#4b5563" stroke-width="2.5" stroke-linecap="round" transform="rotate(-90, 100, 85)" />
-                                    <circle cx="100" cy="85" r="5" fill="#8b5cf6" stroke="#fff" stroke-width="1.5" />
-                                </svg>
-                            </div>
-                            <div class="text-center mt-2">
-                                <span class="text-xl font-bold text-purple-600 dark:text-purple-400 pageview-percentage-2">{{ $percent5_10 }}%</span>
-                            </div>
-                            <div class="text-center mt-1">
-                                <div class="flex items-center gap-1 justify-center">
-                                    <span class="w-2 h-2 bg-purple-500 rounded-full {{ $currentPageViewCategory == '5-10 minutes' ? 'animate-pulse' : '' }}"></span>
-                                    <span class="text-xs font-medium text-zinc-600 dark:text-zinc-400">5-10 minutes</span>
+                        <!-- Page Views Today -->
+                        <flux:card class="p-4 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-purple-500 to-purple-600 dark:from-purple-700 dark:to-purple-800">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-white/80 dark:text-white/70">Page Views Today</p>
+                                    <p id="page-views-today" class="text-2xl font-bold text-white dark:text-white mt-1">{{ number_format($todayPageViews) }}</p>
                                 </div>
-                                <span class="text-xs text-zinc-500 dark:text-zinc-400">{{ number_format($pageViewsDistribution['5_10']) }} views</span>
+                                <div class="w-10 h-10 rounded-full bg-white/20 dark:bg-white/10 backdrop-blur-sm flex items-center justify-center">
+                                    <flux:icon name="document-text" class="w-5 h-5 text-white dark:text-white" />
+                                </div>
                             </div>
-                        </div>
+                        </flux:card>
 
-                        <!-- Gauge 3: 10-30 minutes -->
-                        <div class="flex flex-col items-center">
-                            <div class="relative w-32 h-20 mx-auto pageview-gauge-3" data-percentage="{{ $percent10_30 }}">
-                                <svg class="w-full h-full" viewBox="0 0 200 100">
-                                    <path d="M 30 85 A 70 70 0 0 1 170 85" fill="none" stroke="#e5e7eb" stroke-width="10" stroke-linecap="round" class="dark:stroke-zinc-700" />
-                                    <path class="pageview-arc-3" d="M 30 85 A 70 70 0 0 1 170 85" fill="none" stroke="#3b82f6" stroke-width="10" stroke-linecap="round" stroke-dasharray="0 220" />
-                                    <line class="pageview-needle-3" x1="100" y1="85" x2="100" y2="35" stroke="#4b5563" stroke-width="2.5" stroke-linecap="round" transform="rotate(-90, 100, 85)" />
-                                    <circle cx="100" cy="85" r="5" fill="#3b82f6" stroke="#fff" stroke-width="1.5" />
-                                </svg>
-                            </div>
-                            <div class="text-center mt-2">
-                                <span class="text-xl font-bold text-blue-600 dark:text-blue-400 pageview-percentage-3">{{ $percent10_30 }}%</span>
-                            </div>
-                            <div class="text-center mt-1">
-                                <div class="flex items-center gap-1 justify-center">
-                                    <span class="w-2 h-2 bg-blue-500 rounded-full {{ $currentPageViewCategory == '10-30 minutes' ? 'animate-pulse' : '' }}"></span>
-                                    <span class="text-xs font-medium text-zinc-600 dark:text-zinc-400">10-30 minutes</span>
+                        <!-- Total Sessions -->
+                        <flux:card class="p-4 shadow-lg hover:shadow-xl transition-all duration-300 bg-gradient-to-br from-amber-500 to-amber-600 dark:from-amber-700 dark:to-amber-800">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm text-white/80 dark:text-white/70">Total Sessions Today</p>
+                                    <p id="total-sessions" class="text-2xl font-bold text-white dark:text-white mt-1">{{ number_format($todaySessions) }}</p>
                                 </div>
-                                <span class="text-xs text-zinc-500 dark:text-zinc-400">{{ number_format($pageViewsDistribution['10_30']) }} views</span>
-                            </div>
-                        </div>
-
-                        <!-- Gauge 4: 30-60 minutes -->
-                        <div class="flex flex-col items-center">
-                            <div class="relative w-32 h-20 mx-auto pageview-gauge-4" data-percentage="{{ $percent30_60 }}">
-                                <svg class="w-full h-full" viewBox="0 0 200 100">
-                                    <path d="M 30 85 A 70 70 0 0 1 170 85" fill="none" stroke="#e5e7eb" stroke-width="10" stroke-linecap="round" class="dark:stroke-zinc-700" />
-                                    <path class="pageview-arc-4" d="M 30 85 A 70 70 0 0 1 170 85" fill="none" stroke="#f59e0b" stroke-width="10" stroke-linecap="round" stroke-dasharray="0 220" />
-                                    <line class="pageview-needle-4" x1="100" y1="85" x2="100" y2="35" stroke="#4b5563" stroke-width="2.5" stroke-linecap="round" transform="rotate(-90, 100, 85)" />
-                                    <circle cx="100" cy="85" r="5" fill="#f59e0b" stroke="#fff" stroke-width="1.5" />
-                                </svg>
-                            </div>
-                            <div class="text-center mt-2">
-                                <span class="text-xl font-bold text-amber-600 dark:text-amber-400 pageview-percentage-4">{{ $percent30_60 }}%</span>
-                            </div>
-                            <div class="text-center mt-1">
-                                <div class="flex items-center gap-1 justify-center">
-                                    <span class="w-2 h-2 bg-amber-500 rounded-full {{ $currentPageViewCategory == '30-60 minutes' ? 'animate-pulse' : '' }}"></span>
-                                    <span class="text-xs font-medium text-zinc-600 dark:text-zinc-400">30-60 minutes</span>
+                                <div class="w-10 h-10 rounded-full bg-white/20 dark:bg-white/10 backdrop-blur-sm flex items-center justify-center">
+                                    <flux:icon name="arrow-path-rounded-square" class="w-5 h-5 text-white dark:text-white" />
                                 </div>
-                                <span class="text-xs text-zinc-500 dark:text-zinc-400">{{ number_format($pageViewsDistribution['30_60']) }} views</span>
                             </div>
-                        </div>
+                        </flux:card>
                     </div>
-                </flux:card>
 
+                    <!-- Page Views Distribution by Session Duration -->
+                    <flux:card class="p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 flex-1">
+                        <div class="flex items-center justify-between mb-4">
+                            <div>
+                                <flux:heading size="lg">Page Views In 1 Hour</flux:heading>
+                                <flux:subheading>When do you see the page during Login?</flux:subheading>
+                            </div>
+                            <flux:badge color="purple" size="sm">Last 60 Minutes</flux:badge>
+                        </div>
+                        
+                        <!-- 4 Speedometer Gauges -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                            <!-- Gauge 1: 0-5 minutes -->
+                            <div class="flex flex-col items-center">
+                                <div class="relative w-32 h-20 mx-auto pageview-gauge-1" data-percentage="{{ $percent0_5 }}">
+                                    <svg class="w-full h-full" viewBox="0 0 200 100">
+                                        <path d="M 30 85 A 70 70 0 0 1 170 85" fill="none" stroke="#e5e7eb" stroke-width="10" stroke-linecap="round" class="dark:stroke-zinc-700" />
+                                        <path class="pageview-arc-1" d="M 30 85 A 70 70 0 0 1 170 85" fill="none" stroke="#10b981" stroke-width="10" stroke-linecap="round" stroke-dasharray="0 220" />
+                                        <line class="pageview-needle-1" x1="100" y1="85" x2="100" y2="35" stroke="#4b5563" stroke-width="2.5" stroke-linecap="round" transform="rotate(-90, 100, 85)" />
+                                        <circle cx="100" cy="85" r="5" fill="#10b981" stroke="#fff" stroke-width="1.5" />
+                                    </svg>
+                                </div>
+                                <div class="text-center mt-2">
+                                    <span class="text-xl font-bold text-emerald-600 dark:text-emerald-400 pageview-percentage-1">{{ $percent0_5 }}%</span>
+                                </div>
+                                <div class="text-center mt-1">
+                                    <div class="flex items-center gap-1 justify-center">
+                                        <span class="w-2 h-2 bg-emerald-500 rounded-full {{ $currentPageViewCategory == '0-5 minutes' ? 'animate-pulse' : '' }}"></span>
+                                        <span class="text-xs font-medium text-zinc-600 dark:text-zinc-400">0-5 minutes</span>
+                                    </div>
+                                    <span id="views-0_5" class="text-xs text-zinc-500 dark:text-zinc-400">{{ number_format($pageViewsDistribution['0_5']) }} views</span>
+                                </div>
+                            </div>
+
+                            <!-- Gauge 2: 5-10 minutes -->
+                            <div class="flex flex-col items-center">
+                                <div class="relative w-32 h-20 mx-auto pageview-gauge-2" data-percentage="{{ $percent5_10 }}">
+                                    <svg class="w-full h-full" viewBox="0 0 200 100">
+                                        <path d="M 30 85 A 70 70 0 0 1 170 85" fill="none" stroke="#e5e7eb" stroke-width="10" stroke-linecap="round" class="dark:stroke-zinc-700" />
+                                        <path class="pageview-arc-2" d="M 30 85 A 70 70 0 0 1 170 85" fill="none" stroke="#8b5cf6" stroke-width="10" stroke-linecap="round" stroke-dasharray="0 220" />
+                                        <line class="pageview-needle-2" x1="100" y1="85" x2="100" y2="35" stroke="#4b5563" stroke-width="2.5" stroke-linecap="round" transform="rotate(-90, 100, 85)" />
+                                        <circle cx="100" cy="85" r="5" fill="#8b5cf6" stroke="#fff" stroke-width="1.5" />
+                                    </svg>
+                                </div>
+                                <div class="text-center mt-2">
+                                    <span class="text-xl font-bold text-purple-600 dark:text-purple-400 pageview-percentage-2">{{ $percent5_10 }}%</span>
+                                </div>
+                                <div class="text-center mt-1">
+                                    <div class="flex items-center gap-1 justify-center">
+                                        <span class="w-2 h-2 bg-purple-500 rounded-full {{ $currentPageViewCategory == '5-10 minutes' ? 'animate-pulse' : '' }}"></span>
+                                        <span class="text-xs font-medium text-zinc-600 dark:text-zinc-400">5-10 minutes</span>
+                                    </div>
+                                    <span id="views-5_10" class="text-xs text-zinc-500 dark:text-zinc-400">{{ number_format($pageViewsDistribution['5_10']) }} views</span>
+                                </div>
+                            </div>
+
+                            <!-- Gauge 3: 10-30 minutes -->
+                            <div class="flex flex-col items-center">
+                                <div class="relative w-32 h-20 mx-auto pageview-gauge-3" data-percentage="{{ $percent10_30 }}">
+                                    <svg class="w-full h-full" viewBox="0 0 200 100">
+                                        <path d="M 30 85 A 70 70 0 0 1 170 85" fill="none" stroke="#e5e7eb" stroke-width="10" stroke-linecap="round" class="dark:stroke-zinc-700" />
+                                        <path class="pageview-arc-3" d="M 30 85 A 70 70 0 0 1 170 85" fill="none" stroke="#3b82f6" stroke-width="10" stroke-linecap="round" stroke-dasharray="0 220" />
+                                        <line class="pageview-needle-3" x1="100" y1="85" x2="100" y2="35" stroke="#4b5563" stroke-width="2.5" stroke-linecap="round" transform="rotate(-90, 100, 85)" />
+                                        <circle cx="100" cy="85" r="5" fill="#3b82f6" stroke="#fff" stroke-width="1.5" />
+                                    </svg>
+                                </div>
+                                <div class="text-center mt-2">
+                                    <span class="text-xl font-bold text-blue-600 dark:text-blue-400 pageview-percentage-3">{{ $percent10_30 }}%</span>
+                                </div>
+                                <div class="text-center mt-1">
+                                    <div class="flex items-center gap-1 justify-center">
+                                        <span class="w-2 h-2 bg-blue-500 rounded-full {{ $currentPageViewCategory == '10-30 minutes' ? 'animate-pulse' : '' }}"></span>
+                                        <span class="text-xs font-medium text-zinc-600 dark:text-zinc-400">10-30 minutes</span>
+                                    </div>
+                                    <span id="views-10_30" class="text-xs text-zinc-500 dark:text-zinc-400">{{ number_format($pageViewsDistribution['10_30']) }} views</span>
+                                </div>
+                            </div>
+
+                            <!-- Gauge 4: 30-60 minutes -->
+                            <div class="flex flex-col items-center">
+                                <div class="relative w-32 h-20 mx-auto pageview-gauge-4" data-percentage="{{ $percent30_60 }}">
+                                    <svg class="w-full h-full" viewBox="0 0 200 100">
+                                        <path d="M 30 85 A 70 70 0 0 1 170 85" fill="none" stroke="#e5e7eb" stroke-width="10" stroke-linecap="round" class="dark:stroke-zinc-700" />
+                                        <path class="pageview-arc-4" d="M 30 85 A 70 70 0 0 1 170 85" fill="none" stroke="#f59e0b" stroke-width="10" stroke-linecap="round" stroke-dasharray="0 220" />
+                                        <line class="pageview-needle-4" x1="100" y1="85" x2="100" y2="35" stroke="#4b5563" stroke-width="2.5" stroke-linecap="round" transform="rotate(-90, 100, 85)" />
+                                        <circle cx="100" cy="85" r="5" fill="#f59e0b" stroke="#fff" stroke-width="1.5" />
+                                    </svg>
+                                </div>
+                                <div class="text-center mt-2">
+                                    <span class="text-xl font-bold text-amber-600 dark:text-amber-400 pageview-percentage-4">{{ $percent30_60 }}%</span>
+                                </div>
+                                <div class="text-center mt-1">
+                                    <div class="flex items-center gap-1 justify-center">
+                                        <span class="w-2 h-2 bg-amber-500 rounded-full {{ $currentPageViewCategory == '30-60 minutes' ? 'animate-pulse' : '' }}"></span>
+                                        <span class="text-xs font-medium text-zinc-600 dark:text-zinc-400">30-60 minutes</span>
+                                    </div>
+                                    <span id="views-30_60" class="text-xs text-zinc-500 dark:text-zinc-400">{{ number_format($pageViewsDistribution['30_60']) }} views</span>
+                                </div>
+                            </div>
+                        </div>
+                    </flux:card>
+
+                </div>
             </div>
         </div>
     </div>
 
     @push('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Function to animate a single gauge
-            function animateGauge(gaugeNumber, percentage) {
-                const targetPercentage = Math.min(percentage, 100);
-                const radius = 70;
-                const halfCircumference = Math.PI * radius;
-                const arcLength = (targetPercentage / 100) * halfCircumference;
-                const dasharray = `${arcLength} ${halfCircumference * 2}`;
-                const targetAngle = -90 + (targetPercentage * 1.8);
-                
-                setTimeout(() => {
-                    const arcElement = document.querySelector(`.pageview-arc-${gaugeNumber}`);
-                    const needleElement = document.querySelector(`.pageview-needle-${gaugeNumber}`);
-                    const percentageElement = document.querySelector(`.pageview-percentage-${gaugeNumber}`);
-                    
-                    if (arcElement) {
-                        arcElement.style.transition = 'stroke-dasharray 1.5s ease-out';
-                        arcElement.setAttribute('stroke-dasharray', dasharray);
-                    }
-                    
-                    if (needleElement) {
-                        needleElement.style.transition = 'transform 1.5s ease-out';
-                        needleElement.setAttribute('transform', `rotate(${targetAngle}, 100, 85)`);
-                    }
-                    
-                    if (percentageElement) {
-                        let current = 0;
-                        const increment = percentage / 30;
-                        const timer = setInterval(() => {
-                            current += increment;
-                            if (current >= percentage) {
-                                current = percentage;
-                                clearInterval(timer);
-                            }
-                            percentageElement.textContent = Math.round(current) + '%';
-                        }, 50);
-                    }
-                }, 100);
+        // Global variable to store interval ID
+        let refreshInterval = null;
+        
+        // Function to update gauge
+        function updateGauge(gaugeNumber, percentage) {
+            const targetPercentage = Math.min(percentage, 100);
+            const radius = 70;
+            const halfCircumference = Math.PI * radius;
+            const arcLength = (targetPercentage / 100) * halfCircumference;
+            const dasharray = `${arcLength} ${halfCircumference * 2}`;
+            const targetAngle = -90 + (targetPercentage * 1.8);
+            
+            const arcElement = document.querySelector(`.pageview-arc-${gaugeNumber}`);
+            const needleElement = document.querySelector(`.pageview-needle-${gaugeNumber}`);
+            
+            if (arcElement) {
+                arcElement.style.transition = 'stroke-dasharray 0.5s ease-out';
+                arcElement.setAttribute('stroke-dasharray', dasharray);
             }
             
-            // Animate all four gauges
+            if (needleElement) {
+                needleElement.style.transition = 'transform 0.5s ease-out';
+                needleElement.setAttribute('transform', `rotate(${targetAngle}, 100, 85)`);
+            }
+        }
+        
+        // Function to animate gauge on initial load
+        function animateGauge(gaugeNumber, percentage) {
+            const targetPercentage = Math.min(percentage, 100);
+            const radius = 70;
+            const halfCircumference = Math.PI * radius;
+            const arcLength = (targetPercentage / 100) * halfCircumference;
+            const dasharray = `${arcLength} ${halfCircumference * 2}`;
+            const targetAngle = -90 + (targetPercentage * 1.8);
+            
+            setTimeout(() => {
+                const arcElement = document.querySelector(`.pageview-arc-${gaugeNumber}`);
+                const needleElement = document.querySelector(`.pageview-needle-${gaugeNumber}`);
+                const percentageElement = document.querySelector(`.pageview-percentage-${gaugeNumber}`);
+                
+                if (arcElement) {
+                    arcElement.style.transition = 'stroke-dasharray 1.5s ease-out';
+                    arcElement.setAttribute('stroke-dasharray', dasharray);
+                }
+                
+                if (needleElement) {
+                    needleElement.style.transition = 'transform 1.5s ease-out';
+                    needleElement.setAttribute('transform', `rotate(${targetAngle}, 100, 85)`);
+                }
+                
+                if (percentageElement) {
+                    let current = 0;
+                    const increment = percentage / 30;
+                    const timer = setInterval(() => {
+                        current += increment;
+                        if (current >= percentage) {
+                            current = percentage;
+                            clearInterval(timer);
+                        }
+                        percentageElement.textContent = Math.round(current) + '%';
+                    }, 50);
+                }
+            }, 100);
+        }
+        
+        // Function to initialize all gauges
+        function initializeGauges() {
             for (let i = 1; i <= 4; i++) {
                 const gauge = document.querySelector(`.pageview-gauge-${i}`);
                 if (gauge) {
@@ -536,6 +507,180 @@
                     }
                 }
             }
+        }
+        
+        // Auto-refresh function for dashboard data
+        function refreshDashboardData() {
+            fetch('{{ url("/dashboard/refresh") }}', {
+                method: 'GET',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update Page Views Today
+                    const pageViewsElement = document.getElementById('page-views-today');
+                    if (pageViewsElement) {
+                        pageViewsElement.textContent = data.todayPageViews.toLocaleString();
+                    }
+                    
+                    // Update Total Sessions
+                    const sessionsElement = document.getElementById('total-sessions');
+                    if (sessionsElement) {
+                        sessionsElement.textContent = data.todaySessions.toLocaleString();
+                    }
+                    
+                    // Update Page Views Distribution counts
+                    const views0_5 = document.getElementById('views-0_5');
+                    if (views0_5) views0_5.textContent = data.pageViewsDistribution['0_5'].toLocaleString() + ' views';
+                    
+                    const views5_10 = document.getElementById('views-5_10');
+                    if (views5_10) views5_10.textContent = data.pageViewsDistribution['5_10'].toLocaleString() + ' views';
+                    
+                    const views10_30 = document.getElementById('views-10_30');
+                    if (views10_30) views10_30.textContent = data.pageViewsDistribution['10_30'].toLocaleString() + ' views';
+                    
+                    const views30_60 = document.getElementById('views-30_60');
+                    if (views30_60) views30_60.textContent = data.pageViewsDistribution['30_60'].toLocaleString() + ' views';
+                    
+                    // Update percentages for gauges
+                    for (let i = 1; i <= 4; i++) {
+                        const percentageElement = document.querySelector(`.pageview-percentage-${i}`);
+                        const gaugeElement = document.querySelector(`.pageview-gauge-${i}`);
+                        
+                        if (percentageElement && gaugeElement) {
+                            let newPercentage;
+                            if (i === 1) newPercentage = data.percentages.percent0_5;
+                            else if (i === 2) newPercentage = data.percentages.percent5_10;
+                            else if (i === 3) newPercentage = data.percentages.percent10_30;
+                            else newPercentage = data.percentages.percent30_60;
+                            
+                            percentageElement.textContent = newPercentage + '%';
+                            gaugeElement.setAttribute('data-percentage', newPercentage);
+                            
+                            // Update gauge animation
+                            updateGauge(i, newPercentage);
+                        }
+                    }
+                    
+                    // Update Top Pages List
+                    const topPagesList = document.getElementById('top-pages-list');
+                    if (topPagesList && data.topPages) {
+                        if (data.topPages.length === 0) {
+                            topPagesList.innerHTML = `
+                                <div class="text-center py-12">
+                                    <svg class="w-12 h-12 text-zinc-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                    </svg>
+                                    <p class="text-zinc-500 dark:text-zinc-400">No pages visited yet</p>
+                                    <p class="text-xs text-zinc-400 dark:text-zinc-500 mt-1">Start exploring the dashboard</p>
+                                </div>
+                            `;
+                        } else {
+                            topPagesList.innerHTML = '';
+                            const rankColors = ['bg-amber-500', 'bg-gray-400', 'bg-orange-600', 'bg-blue-500', 'bg-green-500'];
+                            
+                            data.topPages.forEach((page, index) => {
+                                const rankColor = rankColors[index] || 'bg-purple-500';
+                                const isLast = index === data.topPages.length - 1;
+                                
+                                const pageItem = document.createElement('div');
+                                pageItem.className = 'block group';
+                                pageItem.innerHTML = `
+                                    <a href="${page.url}" target="_blank" rel="noopener noreferrer" class="block group">
+                                        <div class="flex items-center gap-3 p-3 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all duration-200">
+                                            <div class="relative flex flex-col items-center">
+                                                <div class="w-8 h-8 rounded-full ${rankColor} flex items-center justify-center text-white font-bold text-sm z-10">
+                                                    ${index + 1}
+                                                </div>
+                                                ${!isLast ? '<div class="absolute top-8 left-1/2 -translate-x-1/2 w-[2px] h-[calc(100%+8px)] bg-zinc-300 dark:bg-zinc-600"></div>' : ''}
+                                            </div>
+                                            <div class="flex-1">
+                                                <div class="text-sm font-medium text-zinc-800 dark:text-zinc-200 truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                                    ${escapeHtml(page.page)}
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center gap-1">
+                                                <svg class="w-3.5 h-3.5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                                </svg>
+                                                <span class="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
+                                                    ${page.views}
+                                                </span>
+                                            </div>
+                                            <svg class="w-4 h-4 text-zinc-400 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                                            </svg>
+                                        </div>
+                                    </a>
+                                `;
+                                topPagesList.appendChild(pageItem);
+                            });
+                        }
+                    }
+                }
+            })
+            .catch(error => console.error('Error refreshing dashboard:', error));
+        }
+        
+        // Helper function to escape HTML
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Function to start polling
+        function startPolling() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+            refreshInterval = setInterval(() => {
+                refreshDashboardData();
+            }, 5000);
+        }
+        
+        // Function to stop polling
+        function stopPolling() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+                refreshInterval = null;
+            }
+        }
+        
+        // Initialize dashboard when page is ready (for SPA navigation)
+        function initDashboard() {
+            // Initialize gauges
+            initializeGauges();
+            // Start polling
+            startPolling();
+        }
+        
+        // For Livewire SPA mode - menggunakan Livewire hooks
+        document.addEventListener('livewire:navigated', function() {
+            // Reset and reinitialize when navigating to this page
+            stopPolling();
+            setTimeout(() => {
+                initDashboard();
+            }, 100);
+        });
+        
+        // For normal page load
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initDashboard);
+        } else {
+            initDashboard();
+        }
+        
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', function() {
+            stopPolling();
         });
     </script>
     @endpush
@@ -586,11 +731,6 @@
             transition-property: all;
             transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
             transition-duration: 300ms;
-        }
-        
-        /* Hover effects */
-        .hover\:shadow-sm:hover {
-            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
         }
     </style>
 </x-layouts::app>

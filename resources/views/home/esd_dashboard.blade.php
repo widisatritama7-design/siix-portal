@@ -452,7 +452,8 @@
 
     @push('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        // Fungsi untuk animasi semua gauge
+        function animateAllGauges() {
             // ========== ANIMASI WEEKLY GAUGES ==========
             const gaugeContainers = document.querySelectorAll('.gauge-container');
             
@@ -468,6 +469,23 @@
                 const dasharray = `${arcLength} ${halfCircumference * 2}`;
                 const targetAngle = -90 + (targetPercentage * 1.8);
                 
+                // Reset dulu ke posisi awal
+                if (arcElement) {
+                    arcElement.style.transition = 'none';
+                    arcElement.setAttribute('stroke-dasharray', '0 220');
+                }
+                if (needleElement) {
+                    needleElement.style.transition = 'none';
+                    needleElement.setAttribute('transform', 'rotate(-90, 100, 85)');
+                }
+                if (percentageElement) {
+                    percentageElement.textContent = '0%';
+                }
+                
+                // Force reflow
+                void container.offsetHeight;
+                
+                // Mulai animasi
                 setTimeout(() => {
                     if (arcElement) {
                         arcElement.style.transition = 'stroke-dasharray 1.5s ease-out';
@@ -508,10 +526,25 @@
                 const halfCircumference = Math.PI * radius;
                 const arcLength = (targetPercentageGauge / 100) * halfCircumference;
                 const dasharray = `${arcLength} ${halfCircumference * 2}`;
-                
-                // SAMA PERSIS DENGAN WEEKLY: dari -90° ke 90°
                 const targetAngle = -90 + (targetPercentageGauge * 1.8);
                 
+                // Reset dulu ke posisi awal
+                if (arcElement) {
+                    arcElement.style.transition = 'none';
+                    arcElement.setAttribute('stroke-dasharray', '0 251');
+                }
+                if (needleElement) {
+                    needleElement.style.transition = 'none';
+                    needleElement.setAttribute('transform', 'rotate(-90, 100, 85)');
+                }
+                if (percentageElement) {
+                    percentageElement.textContent = '0%';
+                }
+                
+                // Force reflow
+                void achievementContainer.offsetHeight;
+                
+                // Mulai animasi
                 setTimeout(() => {
                     if (arcElement) {
                         arcElement.style.transition = 'stroke-dasharray 1.5s ease-out';
@@ -537,7 +570,30 @@
                     }
                 }, 100);
             }
+        }
+        
+        // Inisialisasi pertama kali
+        function initDashboard() {
+            // Delay sebentar untuk memastikan DOM benar-benar siap
+            setTimeout(() => {
+                animateAllGauges();
+            }, 200);
+        }
+        
+        // Untuk Livewire SPA mode - event navigasi
+        document.addEventListener('livewire:navigated', function() {
+            // Reset dan animasi ulang saat navigasi ke halaman ini
+            setTimeout(() => {
+                animateAllGauges();
+            }, 200);
         });
+        
+        // Untuk normal page load
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initDashboard);
+        } else {
+            initDashboard();
+        }
     </script>
     @endpush
 </x-layouts::app>

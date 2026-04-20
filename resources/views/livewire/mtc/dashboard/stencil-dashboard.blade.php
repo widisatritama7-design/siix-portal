@@ -34,6 +34,7 @@
                         <div class="text-xs text-zinc-500 whitespace-nowrap">
                             Total Active: <span id="totalActive" class="font-bold text-sm text-blue-600">0</span>
                         </div>
+                        <div class="text-xs text-zinc-400" id="lastUpdated"></div>
                         <button onclick="manualRefresh()" 
                                 class="inline-flex items-center gap-1 px-2 sm:px-3 py-1 text-xs font-medium text-zinc-700 bg-white border border-zinc-300 rounded-lg hover:bg-zinc-50 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-600 dark:hover:bg-zinc-700 transition-colors whitespace-nowrap">
                             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -72,7 +73,7 @@
         </div>
     </x-mtc.layout>
 
-    <!-- Modal - Keep same size -->
+    <!-- Modal -->
     <div id="stencilModal" style="display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); align-items: center; justify-content: center; z-index: 9999;">
         <div style="background: white; border-radius: 0.75rem; width: 90%; max-width: 1000px; max-height: 85vh; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);">
             <div style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: white; padding: 0.75rem 1.25rem; display: flex; align-items: center; justify-content: space-between;">
@@ -91,7 +92,6 @@
             border-color: #3b82f6 !important;
             transform: translateY(-1px);
         }
-        /* Smaller text in cards */
         .stencil-card .text-xs {
             font-size: 0.7rem !important;
         }
@@ -112,16 +112,22 @@
         document.addEventListener('DOMContentLoaded', function() {
             stencilData = JSON.parse(JSON.stringify(serverData));
             renderDashboard();
+            updateLastUpdated();
             startAutoRefresh();
         });
 
         function startAutoRefresh() {
-            if (refreshInterval) clearInterval(refreshInterval);
+            // Clear existing interval if any
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+            
+            // Set new interval for 5 seconds
             refreshInterval = setInterval(function() {
                 if (!isModalOpen) {
                     fetchLatestData();
                 }
-            }, 5000);
+            }, 5000); // 5000ms = 5 seconds
         }
 
         async function fetchLatestData() {
@@ -129,18 +135,37 @@
             
             try {
                 const response = await fetch('{{ url("/api/stencils/latest") }}');
+                if (!response.ok) throw new Error('Network response was not ok');
                 const data = await response.json();
                 stencilData = data;
                 renderDashboard();
                 updateLastUpdated();
             } catch (error) {
                 console.error('Auto refresh error:', error);
+                // Optional: Show error indicator in UI
+                const container = document.getElementById('stencilCardsContainer');
+                if (container && !container.innerHTML) {
+                    container.innerHTML = '<div class="text-center text-red-500 col-span-3">Error loading data. Please refresh the page.</div>';
+                }
             }
         }
 
         function manualRefresh() {
             if (!isModalOpen) {
-                fetchLatestData();
+                // Show loading state on button
+                const refreshBtn = document.querySelector('button[onclick="manualRefresh()"]');
+                if (refreshBtn) {
+                    const originalHtml = refreshBtn.innerHTML;
+                    refreshBtn.innerHTML = '<svg class="w-3 h-3 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>';
+                    refreshBtn.disabled = true;
+                    
+                    fetchLatestData().finally(() => {
+                        refreshBtn.innerHTML = originalHtml;
+                        refreshBtn.disabled = false;
+                    });
+                } else {
+                    fetchLatestData();
+                }
             }
         }
 
@@ -302,7 +327,7 @@
         function closeStencilModal() {
             isModalOpen = false;
             document.getElementById('stencilModal').style.display = 'none';
-            fetchLatestData();
+            fetchLatestData(); // Refresh data after closing modal
         }
 
         function showNikInput(button, id) {
@@ -370,6 +395,13 @@
                 button.textContent = '✓';
             }
         }
+
+        // Clean up interval when page is hidden/closed
+        window.addEventListener('beforeunload', function() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+            }
+        });
 
         window.onclick = function(event) {
             const modal = document.getElementById('stencilModal');

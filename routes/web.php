@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\DashboardRefreshController;
 use App\Http\Controllers\InboxController;
 use App\Livewire\DCC\DepartmentManagement;
 use App\Livewire\DCC\SubmissionManagement;
@@ -22,6 +23,7 @@ use App\Livewire\PROD\MS\Sample\MasterSampleExpiredForm;
 use App\Livewire\PROD\MS\Sample\MasterSampleLoanForm;
 use App\Livewire\PROD\MS\Sample\MasterSampleManagement;
 use App\Livewire\PROD\MS\Sample\MasterSampleShow;
+use App\Livewire\PROD\MS\Sample\SampleChecksManagement;
 use App\Livewire\PROD\WIP\HistoryWipTransaction;
 use App\Livewire\PROD\WIP\MasterModelManagement;
 use App\Livewire\PROD\WIP\MasterRackLosePack;
@@ -43,6 +45,7 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard
     Route::view('main-dashboard', 'home.dashboard')->name('dashboard');
+    Route::get('/dashboard/refresh', [DashboardRefreshController::class, 'refresh']);
     Route::view('dcc-dashboard', 'home.dcc_dashboard')->name('dcc-dashboard');
     Route::view('hr-dashboard', 'home.hr_dashboard')->name('hr-dashboard');
     Route::view('ticket-dashboard', 'home.ticket_dashboard')->name('ticket-dashboard');
@@ -101,6 +104,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Master Sample
     Route::get('/prod/ms/dashboard', MasterSampleDashboard::class)->name('prod.ms.dashboard');
+    Route::get('/prod/ms/sample-checks', SampleChecksManagement::class)->name('prod.ms.sample-checks');
     Route::get('/prod/ms/master-sample', MasterSampleManagement::class)->name('prod.ms.master-sample');
     Route::get('/prod/ms/master-sample/{id}/{tab?}', MasterSampleShow::class)->name('prod.ms.master-sample.show');
     Route::get('/prod/ms/master-sample/{sampleId}/loan/create', MasterSampleLoanForm::class)->name('prod.ms.master-sample.loan.create');
@@ -111,7 +115,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         $idsArray = explode(',', $idsParam);
         $records = App\Models\PROD\MS\MasterSample::whereIn('id', $idsArray)->get();
         
-        return view('livewire.prod.ms.master-sample-bulk-print', compact('records'));
+        return view('livewire.prod.ms.sample.master-sample-bulk-print', compact('records'));
     })->name('prod.ms.master-sample.print');
 
     // Master Rack Sample

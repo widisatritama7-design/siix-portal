@@ -20,7 +20,8 @@ class GloveDetail extends Model
         'c1_scientific',
         'judgement',
         'remarks',
-        'next_date'
+        'next_date',
+        'created_by',
     ];
 
     public function glove()

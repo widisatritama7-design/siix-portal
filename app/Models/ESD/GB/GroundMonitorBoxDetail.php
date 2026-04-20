@@ -19,7 +19,8 @@ class GroundMonitorBoxDetail extends Model
         'g_3',
         'g_4',
         'remarks',
-        'next_date'
+        'next_date',
+        'created_by',
     ];
 
     public function groundMonitorBox()

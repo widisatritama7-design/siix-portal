@@ -21,7 +21,7 @@ class SubmissionDistributedMail extends Mailable
     public function build()
     {
         return $this->subject("Document Distributed: {$this->submission->description}")
-                    ->view('emails.DCC.submission_distributed')
+                    ->view('emails.dcc.submission_distributed')
                     ->with([
                         'submission' => $this->submission,
                     ]);

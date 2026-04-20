@@ -24,7 +24,7 @@ class ComelateCreated extends Mailable
     {
         return $this
             ->subject('New Comelate Entry')
-            ->view('emails.HR.comelate')
+            ->view('emails.hr.comelate')
             ->with([
                 'comelate' => $this->comelate,
                 'hod_name' => $this->hod_name,

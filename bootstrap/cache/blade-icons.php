@@ -1,7 +1,7 @@
 <?php return array (
   'heroicons' => 
   array (
-    'D:\\laragon\\www\\siix-portal-new\\vendor\\blade-ui-kit\\blade-heroicons\\src/../resources/svg' => 
+    '/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/blade-ui-kit/blade-heroicons/src/../resources/svg' => 
     array (
       0 => 'c-academic-cap',
       1 => 'c-adjustments-horizontal',

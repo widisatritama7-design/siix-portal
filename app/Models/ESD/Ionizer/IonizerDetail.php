@@ -35,6 +35,7 @@ class IonizerDetail extends Model
         'judgement_c3',
         'remarks',
         'next_date',
+        'created_by',
     ];
 
     public function ionizer()

@@ -31,6 +31,7 @@ class GarmentDetail extends Model
         'judgement_d4',
         'next_date',
         'remarks',
+        'created_by',
     ];
 
     public function garment()

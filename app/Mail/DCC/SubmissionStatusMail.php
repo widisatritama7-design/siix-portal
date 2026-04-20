@@ -21,7 +21,7 @@ class SubmissionStatusMail extends Mailable
     public function build()
     {
         return $this->subject("Update Submission Status: {$this->submission->description}")
-                    ->view('emails.DCC.submission_status')
+                    ->view('emails.dcc.submission_status')
                     ->with([
                         'submission' => $this->submission,
                     ]);

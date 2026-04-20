@@ -39,113 +39,108 @@
 
     <!-- Advanced Filters -->
     @if($showFilters)
-    <div class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 p-6 mt-4 mb-6">
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <!-- Search -->
-            <div>
-                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Search</label>
-                <input
-                    type="text"
-                    wire:model.live.debounce.300ms="search"
-                    placeholder="Search..."
-                    class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white"
-                >
+    <div x-data="{ showFilters: true }" class="mt-4 mb-6">
+        <!-- Filters Section with Collapsible -->
+        <div x-show="showFilters" 
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 transform -translate-y-4 scale-95"
+            x-transition:enter-end="opacity-100 transform translate-y-0 scale-100"
+            x-transition:leave="transition ease-in duration-200"
+            x-transition:leave-start="opacity-100 transform translate-y-0 scale-100"
+            x-transition:leave-end="opacity-0 transform -translate-y-4 scale-95"
+            x-cloak
+            class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 p-6">
+            <div class="grid grid-cols-1 md:grid-cols-7 gap-4">
+                <!-- Search -->
+                <div>
+                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Search</label>
+                    <input
+                        type="text"
+                        wire:model.live.debounce.300ms="search"
+                        placeholder="Search..."
+                        class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white"
+                    >
+                </div>
+
+                <!-- Department Filter -->
+                <div>
+                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Department</label>
+                    <select wire:model.live="filterDept" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                        <option value="">All Departments</option>
+                        @foreach($allDepartments as $dept)
+                            <option value="{{ $dept->dept_name }}">{{ $dept->dept_name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Category Filter -->
+                <div>
+                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Category</label>
+                    <select wire:model.live="filterCategory" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                        <option value="">All Categories</option>
+                        @foreach($categories as $category)
+                            <option value="{{ $category }}">{{ $category }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Year Filter -->
+                <div>
+                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Year</label>
+                    <select wire:model.live="filterYear" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                        <option value="">All Years</option>
+                        @foreach($years as $year)
+                            <option value="{{ $year }}">{{ $year }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Month Filter -->
+                <div>
+                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Month</label>
+                    <select wire:model.live="filterMonth" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                        <option value="">All Months</option>
+                        @foreach($months as $num => $name)
+                            <option value="{{ $num }}">{{ $name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Date From -->
+                <div>
+                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Date From</label>
+                    <input type="date" wire:model.live="filterDateFrom" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                </div>
+
+                <!-- Date Until -->
+                <div>
+                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Date Until</label>
+                    <input type="date" wire:model.live="filterDateUntil" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                </div>
             </div>
 
-            <!-- Status Filter -->
-            <div>
-                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Status</label>
-                <select wire:model.live="filterStatus" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                    <option value="">All Status</option>
-                    <option value="Waiting Received">Waiting Received</option>
-                    <option value="Received">Received</option>
-                    <option value="Completed">Completed</option>
-                    <option value="Rejected">Rejected</option>
-                </select>
+            <!-- Clear Filters Button - Only show when any filter is active -->
+            @if($search || $filterDept || $filterCategory || $filterYear || $filterMonth || $filterDateFrom || $filterDateUntil)
+            <div class="flex justify-end mt-4">
+                <button wire:click="clearFilters" class="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-red-600 rounded-lg hover:bg-red-700 focus:ring-2 focus:ring-red-500 dark:bg-red-500 dark:hover:bg-red-600 dark:border-red-500 transition-all duration-200 ease-in-out transform hover:scale-105 active:scale-95">
+                    Clear All Filters
+                </button>
             </div>
-
-            <!-- Status Distribute Filter -->
-            <div>
-                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Status Distribute</label>
-                <select wire:model.live="filterDistributed" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                    <option value="">All Status</option>
-                    <option value="Distributed">Distributed</option>
-                    <option value="Waiting Distribute">Waiting Distribute</option>
-                </select>
-            </div>
-
-            <!-- Department Filter -->
-            <div>
-                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Department</label>
-                <select wire:model.live="filterDept" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                    <option value="">All Departments</option>
-                    @foreach($allDepartments as $dept)
-                        <option value="{{ $dept->dept_name }}">{{ $dept->dept_name }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <!-- Category Filter -->
-            <div>
-                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Category</label>
-                <select wire:model.live="filterCategory" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                    <option value="">All Categories</option>
-                    @foreach($categories as $category)
-                        <option value="{{ $category }}">{{ $category }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <!-- Year Filter -->
-            <div>
-                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Year</label>
-                <select wire:model.live="filterYear" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                    <option value="">All Years</option>
-                    @foreach($years as $year)
-                        <option value="{{ $year }}">{{ $year }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <!-- Month Filter -->
-            <div>
-                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Month</label>
-                <select wire:model.live="filterMonth" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                    <option value="">All Months</option>
-                    @foreach($months as $num => $name)
-                        <option value="{{ $num }}">{{ $name }}</option>
-                    @endforeach
-                </select>
-            </div>
-
-            <!-- Date From -->
-            <div>
-                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Date From</label>
-                <input type="date" wire:model.live="filterDateFrom" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-            </div>
-
-            <!-- Date Until -->
-            <div>
-                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Date Until</label>
-                <input type="date" wire:model.live="filterDateUntil" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-            </div>
-        </div>
-
-        <!-- Clear Filters Button -->
-        <div class="flex justify-end mt-4">
-            <button wire:click="clearFilters" class="px-4 py-2 text-sm font-medium text-zinc-700 bg-white border border-zinc-300 rounded-lg hover:bg-zinc-50 dark:bg-zinc-800 dark:text-zinc-400 dark:border-zinc-600 dark:hover:bg-zinc-700">
-                Clear All Filters
-            </button>
+            @endif
         </div>
     </div>
     @endif
+
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
 
     <!-- Tabs Navigation -->
     <div class="mt-6 border-b border-zinc-200 dark:border-zinc-700">
         <!-- Scrollable Tabs Container - Hidden scrollbar -->
         <div class="relative">
             <div class="overflow-x-auto scrollbar-hide">
-                <div class="flex flex-nowrap gap-1 min-w-max">
+                <div class="flex flex-nowrap gap-1 min-w-max justify-center">
                     <!-- All Tab -->
                     <button 
                         wire:click="setTab('all')"
@@ -320,11 +315,10 @@
                         <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Status</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Due Date</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Received By</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Received At</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Received Date</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Distributed By</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Distributed At</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Distributed Date</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">PIC</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Created By</th>
                         <th class="px-4 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Actions</th>
                     </tr>
                 </thead>
@@ -418,81 +412,84 @@
                         <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300 whitespace-nowrap">
                             {{ $submission->pic ?? 'N/A' }}
                         </td>
-                        <td class="px-4 py-3 whitespace-nowrap">
-                            <div class="text-sm">
-                                <div class="text-zinc-700 dark:text-zinc-300">{{ $submission->creator->name ?? 'N/A' }}</div>
-                                <div class="text-xs text-zinc-500 dark:text-zinc-400">{{ $submission->created_at->format('d M Y H:i') }}</div>
-                            </div>
-                        </td>
-                        <td class="px-4 py-3 text-right whitespace-nowrap">
+                        <td class="px-4 py-3 text-right">
                             <div class="flex items-center justify-end gap-1">
                                 <!-- View Button -->
-                                <button 
-                                    wire:click="goToShow({{ $submission->id }})"
-                                    class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors dark:text-blue-400 dark:hover:bg-blue-950/50"
-                                    title="View details"
-                                >
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                    </svg>
-                                </button>
+                                <flux:tooltip content="View Details" position="bottom">
+                                    <flux:button 
+                                        wire:click="goToShow({{ $submission->id }})"
+                                        size="sm"
+                                        icon="eye"
+                                        variant="primary"
+                                        color="blue"
+                                        class="!p-2"
+                                        title="View details"
+                                    />
+                                </flux:tooltip>
 
                                 <!-- Receive Button -->
                                 @can('receive submissions')
                                     @if($submission->canReceive())
-                                    <button 
-                                        wire:click="goToReceive({{ $submission->id }})"
-                                        class="p-2 text-yellow-600 hover:bg-yellow-50 rounded-lg transition-colors dark:text-yellow-400 dark:hover:bg-yellow-950/50"
-                                        title="Receive/Reject"
-                                    >
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                    </button>
+                                    <flux:tooltip content="Receive/Reject" position="bottom">
+                                        <flux:button 
+                                            wire:click="goToReceive({{ $submission->id }})"
+                                            size="sm"
+                                            icon="check-circle"
+                                            variant="primary"
+                                            color="yellow"
+                                            class="!p-2"
+                                            title="Receive or reject submission"
+                                        />
+                                    </flux:tooltip>
                                     @endif
                                 @endcan
 
                                 <!-- Mark Distributed Button -->
                                 @if($submission->canMarkDistributed())
-                                <button 
-                                    wire:click="goToDistribute({{ $submission->id }})"
-                                    class="p-2 text-purple-600 hover:bg-purple-50 rounded-lg transition-colors dark:text-purple-400 dark:hover:bg-purple-950/50"
-                                    title="Mark as Distributed"
-                                >
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                    </svg>
-                                </button>
+                                <flux:tooltip content="Mark as Distributed" position="bottom">
+                                    <flux:button 
+                                        wire:click="goToDistribute({{ $submission->id }})"
+                                        size="sm"
+                                        icon="check-circle"
+                                        variant="primary"
+                                        color="purple"
+                                        class="!p-2"
+                                        title="Mark as distributed"
+                                    />
+                                </flux:tooltip>
                                 @endif
 
                                 <!-- Edit Button -->
                                 @can('edit submissions')
                                     @if($submission->canEdit() && $submission->created_at->diffInHours(now()) <= 24)
-                                    <button 
-                                        wire:click="goToEdit({{ $submission->id }})"
-                                        class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors dark:text-blue-400 dark:hover:bg-blue-950/50"
-                                        title="Edit submission"
-                                    >
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                                        </svg>
-                                    </button>
+                                    <flux:tooltip content="Edit" position="bottom">
+                                        <flux:button 
+                                            wire:click="goToEdit({{ $submission->id }})"
+                                            size="sm"
+                                            icon="pencil-square"
+                                            variant="primary"
+                                            color="blue"
+                                            class="!p-2"
+                                            title="Edit submission"
+                                        />
+                                    </flux:tooltip>
                                     @endif
                                 @endcan
 
                                 <!-- Delete Button -->
                                 @can('delete submissions')
                                     @if($submission->canDelete() && $submission->created_at->diffInHours(now()) <= 24)
-                                    <button 
-                                        wire:click="goToDelete({{ $submission->id }})"
-                                        class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors dark:text-red-400 dark:hover:bg-red-950/50"
-                                        title="Delete submission"
-                                    >
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
-                                        </svg>
-                                    </button>
+                                    <flux:tooltip content="Delete" position="bottom">
+                                        <flux:button 
+                                            wire:click="goToDelete({{ $submission->id }})"
+                                            size="sm"
+                                            icon="trash"
+                                            variant="primary"
+                                            color="red"
+                                            class="!p-2"
+                                            title="Delete submission"
+                                        />
+                                    </flux:tooltip>
                                     @endif
                                 @endcan
                             </div>

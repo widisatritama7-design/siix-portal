@@ -20,7 +20,7 @@ class SolderingDetail extends Model
         'judgement',
         'next_date',
         'created_by',
-        'updated_by'
+        'updated_by',
     ];
 
     public function soldering()

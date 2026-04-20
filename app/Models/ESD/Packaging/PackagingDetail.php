@@ -15,7 +15,7 @@ class PackagingDetail extends Model
     protected $table = 'tb_esd_packaging_details';
     
     protected $fillable = [
-        'packaging_id','f1', 'f1_scientific', 'judgement_f1', 'f2', 'judgement_f2', 'next_date','remarks'
+        'packaging_id','f1', 'f1_scientific', 'judgement_f1', 'f2', 'judgement_f2', 'next_date','remarks', 'created_by',
     ];
 
     public function packaging()

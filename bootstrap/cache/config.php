@@ -1,7 +1,29 @@
 <?php return array (
-  'concurrency' => 
+  'hashing' => 
   array (
-    'default' => 'process',
+    'driver' => 'bcrypt',
+    'bcrypt' => 
+    array (
+      'rounds' => '12',
+      'verify' => true,
+      'limit' => NULL,
+    ),
+    'argon' => 
+    array (
+      'memory' => 65536,
+      'threads' => 1,
+      'time' => 4,
+      'verify' => true,
+    ),
+    'rehash_on_login' => true,
+  ),
+  'view' => 
+  array (
+    'paths' => 
+    array (
+      0 => '/www/wwwroot/test.siix-ems.co.id/siix-portal/resources/views',
+    ),
+    'compiled' => '/www/wwwroot/test.siix-ems.co.id/siix-portal/storage/framework/views',
   ),
   'cors' => 
   array (
@@ -31,38 +53,16 @@
     'max_age' => 0,
     'supports_credentials' => false,
   ),
-  'hashing' => 
+  'concurrency' => 
   array (
-    'driver' => 'bcrypt',
-    'bcrypt' => 
-    array (
-      'rounds' => '12',
-      'verify' => true,
-      'limit' => NULL,
-    ),
-    'argon' => 
-    array (
-      'memory' => 65536,
-      'threads' => 1,
-      'time' => 4,
-      'verify' => true,
-    ),
-    'rehash_on_login' => true,
-  ),
-  'view' => 
-  array (
-    'paths' => 
-    array (
-      0 => 'D:\\laragon\\www\\siix-portal-new\\resources\\views',
-    ),
-    'compiled' => 'D:\\laragon\\www\\siix-portal-new\\storage\\framework\\views',
+    'default' => 'process',
   ),
   'app' => 
   array (
-    'name' => 'SIIX PORTAL',
+    'name' => 'SIIX-PORTAL',
     'env' => 'local',
     'debug' => false,
-    'url' => 'http://localhost',
+    'url' => 'https://test.siix-ems.co.id',
     'frontend_url' => 'http://localhost:3000',
     'asset_url' => NULL,
     'timezone' => 'Asia/Jakarta',
@@ -70,7 +70,7 @@
     'fallback_locale' => 'en',
     'faker_locale' => 'en_US',
     'cipher' => 'AES-256-CBC',
-    'key' => 'base64:n97jwfhSyCIcGJG8mHNUf2Ng9uaFR3oPBbFxwBEurEA=',
+    'key' => 'base64:ouHtJ4/IehtmsbPBCX9zTEPmxyhGw3LwC6bn3QdNQCg=',
     'previous_keys' => 
     array (
     ),
@@ -194,21 +194,21 @@
   ),
   'broadcasting' => 
   array (
-    'default' => 'reverb',
+    'default' => 'log',
     'connections' => 
     array (
       'reverb' => 
       array (
         'driver' => 'reverb',
-        'key' => 'rw72qfnryragmcxje2t6',
-        'secret' => 'diy3htrxfxmibe7e385x',
-        'app_id' => '859273',
+        'key' => NULL,
+        'secret' => NULL,
+        'app_id' => NULL,
         'options' => 
         array (
-          'host' => 'localhost',
-          'port' => '8080',
-          'scheme' => 'http',
-          'useTLS' => false,
+          'host' => NULL,
+          'port' => 443,
+          'scheme' => 'https',
+          'useTLS' => true,
         ),
         'client_options' => 
         array (
@@ -274,8 +274,8 @@
       'file' => 
       array (
         'driver' => 'file',
-        'path' => 'D:\\laragon\\www\\siix-portal-new\\storage\\framework/cache/data',
-        'lock_path' => 'D:\\laragon\\www\\siix-portal-new\\storage\\framework/cache/data',
+        'path' => '/www/wwwroot/test.siix-ems.co.id/siix-portal/storage/framework/cache/data',
+        'lock_path' => '/www/wwwroot/test.siix-ems.co.id/siix-portal/storage/framework/cache/data',
       ),
       'memcached' => 
       array (
@@ -339,7 +339,7 @@
       array (
         'driver' => 'sqlite',
         'url' => NULL,
-        'database' => 'db_siix_portal',
+        'database' => 'db_siix-portal',
         'prefix' => '',
         'foreign_key_constraints' => true,
         'busy_timeout' => NULL,
@@ -351,11 +351,11 @@
       array (
         'driver' => 'mysql',
         'url' => NULL,
-        'host' => '127.0.0.1',
+        'host' => '192.168.62.35',
         'port' => '3306',
-        'database' => 'db_siix_portal',
-        'username' => 'root',
-        'password' => '',
+        'database' => 'db_siix-portal',
+        'username' => 'db_siix-portal',
+        'password' => 'portal',
         'unix_socket' => '',
         'charset' => 'utf8mb4',
         'collation' => 'utf8mb4_unicode_ci',
@@ -371,11 +371,11 @@
       array (
         'driver' => 'mariadb',
         'url' => NULL,
-        'host' => '127.0.0.1',
+        'host' => '192.168.62.35',
         'port' => '3306',
-        'database' => 'db_siix_portal',
-        'username' => 'root',
-        'password' => '',
+        'database' => 'db_siix-portal',
+        'username' => 'db_siix-portal',
+        'password' => 'portal',
         'unix_socket' => '',
         'charset' => 'utf8mb4',
         'collation' => 'utf8mb4_unicode_ci',
@@ -391,11 +391,11 @@
       array (
         'driver' => 'pgsql',
         'url' => NULL,
-        'host' => '127.0.0.1',
+        'host' => '192.168.62.35',
         'port' => '3306',
-        'database' => 'db_siix_portal',
-        'username' => 'root',
-        'password' => '',
+        'database' => 'db_siix-portal',
+        'username' => 'db_siix-portal',
+        'password' => 'portal',
         'charset' => 'utf8',
         'prefix' => '',
         'prefix_indexes' => true,
@@ -406,11 +406,11 @@
       array (
         'driver' => 'sqlsrv',
         'url' => NULL,
-        'host' => '127.0.0.1',
+        'host' => '192.168.62.35',
         'port' => '3306',
-        'database' => 'db_siix_portal',
-        'username' => 'root',
-        'password' => '',
+        'database' => 'db_siix-portal',
+        'username' => 'db_siix-portal',
+        'password' => 'portal',
         'charset' => 'utf8',
         'prefix' => '',
         'prefix_indexes' => true,
@@ -466,7 +466,7 @@
       'local' => 
       array (
         'driver' => 'local',
-        'root' => 'D:\\laragon\\www\\siix-portal-new\\storage\\app/private',
+        'root' => '/www/wwwroot/test.siix-ems.co.id/siix-portal/storage/app/private',
         'serve' => true,
         'throw' => false,
         'report' => false,
@@ -474,8 +474,8 @@
       'public' => 
       array (
         'driver' => 'local',
-        'root' => 'D:\\laragon\\www\\siix-portal-new\\storage\\app/public',
-        'url' => 'http://localhost/storage',
+        'root' => '/www/wwwroot/test.siix-ems.co.id/siix-portal/storage/app/public',
+        'url' => 'https://test.siix-ems.co.id/storage',
         'visibility' => 'public',
         'throw' => false,
         'report' => false,
@@ -496,7 +496,7 @@
     ),
     'links' => 
     array (
-      'D:\\laragon\\www\\siix-portal-new\\public\\storage' => 'D:\\laragon\\www\\siix-portal-new\\storage\\app/public',
+      '/www/wwwroot/test.siix-ems.co.id/siix-portal/public/storage' => '/www/wwwroot/test.siix-ems.co.id/siix-portal/storage/app/public',
     ),
   ),
   'fortify-options' => 
@@ -588,13 +588,13 @@
   array (
     'component_locations' => 
     array (
-      0 => 'D:\\laragon\\www\\siix-portal-new\\resources\\views/components',
-      1 => 'D:\\laragon\\www\\siix-portal-new\\resources\\views/livewire',
+      0 => '/www/wwwroot/test.siix-ems.co.id/siix-portal/resources/views/components',
+      1 => '/www/wwwroot/test.siix-ems.co.id/siix-portal/resources/views/livewire',
     ),
     'component_namespaces' => 
     array (
-      'layouts' => 'D:\\laragon\\www\\siix-portal-new\\resources\\views/layouts',
-      'pages' => 'D:\\laragon\\www\\siix-portal-new\\resources\\views/pages',
+      'layouts' => '/www/wwwroot/test.siix-ems.co.id/siix-portal/resources/views/layouts',
+      'pages' => '/www/wwwroot/test.siix-ems.co.id/siix-portal/resources/views/pages',
     ),
     'component_layout' => 'layouts::app',
     'component_placeholder' => NULL,
@@ -610,8 +610,8 @@
       ),
     ),
     'class_namespace' => 'App\\Livewire',
-    'class_path' => 'D:\\laragon\\www\\siix-portal-new\\app\\Livewire',
-    'view_path' => 'D:\\laragon\\www\\siix-portal-new\\resources\\views/livewire',
+    'class_path' => '/www/wwwroot/test.siix-ems.co.id/siix-portal/app/Livewire',
+    'view_path' => '/www/wwwroot/test.siix-ems.co.id/siix-portal/resources/views/livewire',
     'temporary_file_upload' => 
     array (
       'disk' => NULL,
@@ -683,14 +683,14 @@
       'single' => 
       array (
         'driver' => 'single',
-        'path' => 'D:\\laragon\\www\\siix-portal-new\\storage\\logs/laravel.log',
+        'path' => '/www/wwwroot/test.siix-ems.co.id/siix-portal/storage/logs/laravel.log',
         'level' => 'debug',
         'replace_placeholders' => true,
       ),
       'daily' => 
       array (
         'driver' => 'daily',
-        'path' => 'D:\\laragon\\www\\siix-portal-new\\storage\\logs/laravel.log',
+        'path' => '/www/wwwroot/test.siix-ems.co.id/siix-portal/storage/logs/laravel.log',
         'level' => 'debug',
         'days' => 14,
         'replace_placeholders' => true,
@@ -699,7 +699,7 @@
       array (
         'driver' => 'slack',
         'url' => NULL,
-        'username' => 'SIIX PORTAL',
+        'username' => 'SIIX-PORTAL',
         'emoji' => ':boom:',
         'level' => 'debug',
         'replace_placeholders' => true,
@@ -755,13 +755,13 @@
       ),
       'emergency' => 
       array (
-        'path' => 'D:\\laragon\\www\\siix-portal-new\\storage\\logs/laravel.log',
+        'path' => '/www/wwwroot/test.siix-ems.co.id/siix-portal/storage/logs/laravel.log',
       ),
     ),
   ),
   'mail' => 
   array (
-    'default' => 'smtp',
+    'default' => 'log',
     'mailers' => 
     array (
       'smtp' => 
@@ -769,12 +769,12 @@
         'transport' => 'smtp',
         'scheme' => NULL,
         'url' => NULL,
-        'host' => 'smtp.office365.com',
-        'port' => '587',
-        'username' => 'sek.apps-notification@siix-global.com',
-        'password' => 'Siixems2024!',
+        'host' => '127.0.0.1',
+        'port' => '2525',
+        'username' => NULL,
+        'password' => NULL,
         'timeout' => NULL,
-        'local_domain' => 'localhost',
+        'local_domain' => 'test.siix-ems.co.id',
       ),
       'ses' => 
       array (
@@ -825,15 +825,15 @@
     ),
     'from' => 
     array (
-      'address' => 'sek.apps-notification@siix-global.com',
-      'name' => 'SIIX PORTAL',
+      'address' => 'hello@example.com',
+      'name' => 'SIIX-PORTAL',
     ),
     'markdown' => 
     array (
       'theme' => 'default',
       'paths' => 
       array (
-        0 => 'D:\\laragon\\www\\siix-portal-new\\resources\\views/vendor/mail',
+        0 => '/www/wwwroot/test.siix-ems.co.id/siix-portal/resources/views/vendor/mail',
       ),
       'extensions' => 
       array (
@@ -969,7 +969,7 @@
         'host' => '0.0.0.0',
         'port' => 8080,
         'path' => '',
-        'hostname' => 'localhost',
+        'hostname' => NULL,
         'options' => 
         array (
           'tls' => 
@@ -1003,15 +1003,15 @@
       array (
         0 => 
         array (
-          'key' => 'rw72qfnryragmcxje2t6',
-          'secret' => 'diy3htrxfxmibe7e385x',
-          'app_id' => '859273',
+          'key' => NULL,
+          'secret' => NULL,
+          'app_id' => NULL,
           'options' => 
           array (
-            'host' => 'localhost',
-            'port' => '8080',
-            'scheme' => 'http',
-            'useTLS' => false,
+            'host' => NULL,
+            'port' => 443,
+            'scheme' => 'https',
+            'useTLS' => true,
           ),
           'allowed_origins' => 
           array (
@@ -1064,7 +1064,7 @@
     'lifetime' => 120,
     'expire_on_close' => false,
     'encrypt' => false,
-    'files' => 'D:\\laragon\\www\\siix-portal-new\\storage\\framework/sessions',
+    'files' => '/www/wwwroot/test.siix-ems.co.id/siix-portal/storage/framework/sessions',
     'connection' => NULL,
     'table' => 'sessions',
     'store' => NULL,
@@ -1088,10 +1088,10 @@
     'convert_entities' => true,
     'options' => 
     array (
-      'font_dir' => 'D:\\laragon\\www\\siix-portal-new\\storage\\fonts',
-      'font_cache' => 'D:\\laragon\\www\\siix-portal-new\\storage\\fonts',
-      'temp_dir' => 'C:\\Users\\widif\\AppData\\Local\\Temp',
-      'chroot' => 'D:\\laragon\\www\\siix-portal-new',
+      'font_dir' => '/www/wwwroot/test.siix-ems.co.id/siix-portal/storage/fonts',
+      'font_cache' => '/www/wwwroot/test.siix-ems.co.id/siix-portal/storage/fonts',
+      'temp_dir' => '/tmp',
+      'chroot' => '/www/wwwroot/test.siix-ems.co.id/siix-portal',
       'allowed_protocols' => 
       array (
         'data://' => 
