@@ -127,4 +127,4 @@
         </div>
     </div>
 </body>
-</html><?php /**PATH /www/wwwroot/test.siix-ems.co.id/siix-portal/resources/views/emails/HR/comelate.blade.php ENDPATH**/ ?>
+</html><?php /**PATH /www/wwwroot/test.siix-ems.co.id/siix-portal/resources/views/emails/hr/comelate.blade.php ENDPATH**/ ?>

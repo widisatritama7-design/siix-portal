@@ -134,14 +134,14 @@ class ComelateEmployeeEdit extends Component
     private function calculateCountJam($jam, $jamMasuk)
     {
         try {
-            $jamDatang = Carbon::parse($jam);
-            $jamHarusMasuk = Carbon::parse($jamMasuk);
+            $jamDatang = Carbon::parse($jam)->seconds(0);
+            $jamHarusMasuk = Carbon::parse($jamMasuk)->seconds(0);
             
             if ($jamDatang->lte($jamHarusMasuk)) {
                 return 0;
             }
             
-            return $jamDatang->diffInMinutes($jamHarusMasuk);
+            return $jamHarusMasuk->diffInMinutes($jamDatang); // <-- dibalik (AMAN)
         } catch (\Exception $e) {
             return 0;
         }

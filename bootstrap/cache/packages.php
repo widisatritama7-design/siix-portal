@@ -102,6 +102,17 @@
       0 => 'Milon\\Barcode\\BarcodeServiceProvider',
     ),
   ),
+  'mydnic/volet' => 
+  array (
+    'aliases' => 
+    array (
+      'Volet' => 'Mydnic\\Volet\\Facades\\Volet',
+    ),
+    'providers' => 
+    array (
+      0 => 'Mydnic\\Volet\\VoletServiceProvider',
+    ),
+  ),
   'nesbot/carbon' => 
   array (
     'providers' => 

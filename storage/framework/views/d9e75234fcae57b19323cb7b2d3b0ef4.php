@@ -5,6 +5,7 @@
 <!DOCTYPE html>
 <html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>" class="dark">
 <head>
+    <?php echo '<link rel="stylesheet" href="http://localhost/vendor/volet/volet-default.css">'; ?>
     <?php echo $__env->make('partials.head', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
     <style>
         [x-cloak] { display: none !important; }
@@ -73,6 +74,55 @@
         .x-collapse {
             transition: all 0.2s ease-out;
         }
+
+        /* Search input styling */
+        .search-input {
+            transition: all 0.2s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            ring: 2px solid #3b82f6;
+        }
+
+        /* Hide search when sidebar collapsed */
+        .search-collapsed {
+            display: none;
+        }
+
+        .search-expanded {
+            display: block;
+        }
+        /* Custom scrollbar for modal */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        .dark .custom-scrollbar::-webkit-scrollbar-track {
+            background: #1f1f1f;
+        }
+
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #3f3f46;
+        }
+
+        .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #52525b;
+        }
     </style>
 </head>
 
@@ -127,6 +177,122 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
                 </button>
+            </div>
+
+            <!-- Search Bar with dropdown results -->
+            <div x-show="sidebarOpen || !isMobile || (isHovering && !sidebarPinned && !sidebarOpen)"
+                x-cloak
+                class="px-3 mb-0 mt-2 relative"
+                :class="{'hidden': !sidebarOpen && !isHovering && !sidebarPinned}">
+                
+                <div class="relative">
+                    <input type="text"
+                        id="sidebar-search"
+                        placeholder="Search..."
+                        class="search-input w-full pl-9 pr-3 py-2 text-sm rounded-lg border border-zinc-200 dark:border-zinc-700 bg-zinc-100 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 placeholder:text-zinc-400 dark:placeholder:text-zinc-500 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        x-model="searchQuery"
+                        @input="handleSearchInput"
+                        @keydown.escape="clearSearch"
+                        @keydown.down.prevent="moveDown"
+                        @keydown.up.prevent="moveUp"
+                        @keydown.enter.prevent="selectResult">
+                    <svg class="absolute left-3 top-2.5 w-4 h-4 text-zinc-400 dark:text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    
+                    <!-- Loading indicator -->
+                    <div x-show="searchLoading" class="absolute right-3 top-2.5">
+                        <div class="animate-spin rounded-full h-4 w-4 border-2 border-blue-500 border-t-transparent"></div>
+                    </div>
+                </div>
+                
+                <!-- Dropdown Results - Scrollbar hidden tapi tetap bisa scroll -->
+                <div x-show="searchQuery.length >= 2 && (searchResults.length > 0 || searchLoading)" 
+                    x-cloak
+                    class="absolute left-3 right-3 mt-1 bg-white dark:bg-zinc-800 rounded-lg shadow-lg border border-zinc-200 dark:border-zinc-700 overflow-hidden z-50"
+                    style="max-height: 300px; overflow-y: auto; scrollbar-width: none; -ms-overflow-style: none;">
+                    
+                    <!-- Loading -->
+                    <div x-show="searchLoading" class="px-3 py-2 text-xs text-zinc-500 dark:text-zinc-400">
+                        <div class="flex items-center gap-2">
+                            <div class="animate-spin rounded-full h-3 w-3 border-2 border-blue-500 border-t-transparent"></div>
+                            Searching...
+                        </div>
+                    </div>
+                    
+                    <!-- Results - Support ESD Equipment & Master Sample -->
+                    <template x-for="(result, index) in searchResults" :key="result.id">
+                        <a :href="result.url" 
+                        @click="clearSearch"
+                        class="block px-3 py-2 hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors cursor-pointer border-b border-zinc-100 dark:border-zinc-700 last:border-0"
+                        :class="{'bg-blue-50 dark:bg-blue-900/30': selectedIndex === index}">
+                            <div class="flex items-start gap-2">
+                                <!-- Icon -->
+                                <div class="flex-shrink-0 mt-0.5">
+                                    <!-- Icon untuk Master Sample -->
+                                    <template x-if="result.type === 'master_sample'">
+                                        <div class="w-6 h-6 rounded-md bg-green-100 dark:bg-green-900/50 flex items-center justify-center">
+                                            <svg class="w-3 h-3 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                            </svg>
+                                        </div>
+                                    </template>
+                                    <!-- Icon untuk ESD Equipment -->
+                                    <template x-if="result.type !== 'master_sample'">
+                                        <div class="w-6 h-6 rounded-md bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center">
+                                            <svg class="w-3 h-3 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                            </svg>
+                                        </div>
+                                    </template>
+                                </div>
+                                
+                                <!-- Content -->
+                                <div class="flex-1 min-w-0">
+                                    <!-- Nama / Title -->
+                                    <span class="text-xs font-medium text-zinc-900 dark:text-zinc-100" x-text="result.machine_name"></span>
+                                    
+                                    <!-- Sample info untuk Master Sample (model_name, sample_ok, sample_ng) -->
+                                    <div x-show="result.type === 'master_sample'" class="flex flex-wrap gap-x-3 gap-y-1 mt-1.5">
+                                        <span x-show="result.sample_ok" class="text-[10px] px-2 py-0.5 rounded-full bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300">
+                                            ✓ OK: <span x-text="result.sample_ok"></span>
+                                        </span>
+                                        <span x-show="result.sample_ng" class="text-[10px] px-2 py-0.5 rounded-full bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300">
+                                            ✗ NG: <span x-text="result.sample_ng"></span>
+                                        </span>
+                                    </div>
+                                    
+                                    <!-- Type label untuk ESD Equipment -->
+                                    <div x-show="result.type !== 'master_sample'" class="text-[10px] text-zinc-400 dark:text-zinc-500 mt-0.5">
+                                        <span x-text="result.type?.replace('_', ' ')?.toUpperCase()"></span>
+                                    </div>
+                                </div>
+                                
+                                <!-- Arrow -->
+                                <div class="flex-shrink-0">
+                                    <svg class="w-3 h-3 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </a>
+                    </template>
+                    
+                    <!-- No results -->
+                    <div x-show="!searchLoading && searchResults.length === 0 && searchQuery.length >= 2" 
+                        class="px-3 py-4 text-center text-xs text-zinc-500 dark:text-zinc-400">
+                        <svg class="w-6 h-6 mx-auto mb-1 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <p>No results found</p>
+                    </div>
+                    
+                    <!-- Hint min characters -->
+                    <div x-show="searchQuery.length > 0 && searchQuery.length < 2 && !searchLoading" 
+                        class="px-3 py-2 text-center text-xs text-zinc-400">
+                        Type at least 2 characters
+                    </div>
+                </div>
             </div>
             
             <!-- Sidebar Navigation -->
@@ -287,7 +453,7 @@
                          class="mt-1 relative">
                         <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
                         <div class="space-y-1 ml-[30px]">
-                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view equipment grounds')): ?>
+                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view esd-monitoring')): ?>
                         <a href="<?php echo e(route('esd.calendar')); ?>" wire:navigate
                            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('esd.calendar') ? 'menu-active' : ''); ?>">
                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
@@ -296,6 +462,7 @@
                             <span class="truncate">ESD Monitoring</span>
                         </a>
                         <?php endif; ?>
+                         <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view mtc-monitoring')): ?>
                         <a href="<?php echo e(route('mtc.daily-dashboard')); ?>" wire:navigate
                            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('mtc.daily-dashboard') ? 'menu-active' : ''); ?>">
                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cog-icon lucide-cog w-4 h-4">
@@ -316,6 +483,7 @@
                             </svg>
                             <span class="truncate">MTC Monitoring</span>
                         </a>
+                        <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -354,6 +522,7 @@
                         class="mt-1 relative">
                         <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
                         <div class="space-y-1 ml-[30px]">
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view kaizen')): ?>
                             <!-- Kaizen Monitoring -->
                             <a href="<?php echo e(route('prod.kaizens')); ?>" wire:navigate
                             class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('prod.kaizens') ? 'menu-active' : ''); ?>">
@@ -362,7 +531,8 @@
                                 </svg>
                                 <span class="truncate">Kaizen Monitoring</span>
                             </a>
-                            
+                            <?php endif; ?>
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->any(['view wip'])): ?>
                             <!-- WIP Monitoring as SUB GROUP -->
                             <div class="relative w-full">
                                 <button @click="toggleGroup('wipMonitoring')" 
@@ -390,6 +560,7 @@
                                     <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
                                     
                                     <div class="space-y-1 ml-[24px]">
+                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view master models')): ?>
                                         <!-- Master Model -->
                                         <a href="<?php echo e(route('prod.master-models')); ?>" wire:navigate
                                         class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('prod.master-models') ? 'menu-active' : ''); ?>">
@@ -399,7 +570,8 @@
                                             </svg>
                                             <span class="truncate">Master Model</span>
                                         </a>
-                                        
+                                        <?php endif; ?>
+                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view wip')): ?>
                                         <!-- Master WIP -->
                                         <a href="<?php echo e(route('prod.wip.index')); ?>" wire:navigate
                                         class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('prod.wip.index') ? 'menu-active' : ''); ?>">
@@ -409,7 +581,7 @@
                                             </svg>
                                             <span class="truncate">Master WIP</span>
                                         </a>
-                                        
+                                        <?php endif; ?>
                                         <!-- Master Rack Lose -->
                                         <a href="<?php echo e(route('prod.rack-lose')); ?>" wire:navigate
                                         class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('prod.rack-lose') ? 'menu-active' : ''); ?>">
@@ -419,7 +591,6 @@
                                             </svg>
                                             <span class="truncate">Master Rack Lose</span>
                                         </a>
-                                        
                                         <!-- Report -->
                                         <a href="<?php echo e(route('prod.history')); ?>" wire:navigate
                                         class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('prod.history') ? 'menu-active' : ''); ?>">
@@ -431,7 +602,8 @@
                                     </div>
                                 </div>
                             </div>
-                            
+                            <?php endif; ?>
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->any(['view master sample'])): ?>
                             <!-- MS Monitoring as SUB GROUP -->
                             <div class="relative w-full">
                                 <button @click="toggleGroup('msMonitoring')" 
@@ -463,7 +635,7 @@
                                     <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
                                     
                                     <div class="space-y-1 ml-[24px]">
-                                        
+                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check(['view master sample'])): ?>
                                         <!-- Master Sample -->
                                         <a href="<?php echo e(route('prod.ms.master-sample')); ?>" wire:navigate
                                         class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('prod.ms.master-sample') ? 'menu-active' : ''); ?>">
@@ -473,7 +645,8 @@
                                             </svg>
                                             <span class="truncate">Master Sample</span>
                                         </a>
-                                        
+                                        <?php endif; ?>
+                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check(['view master sample rack'])): ?>
                                         <!-- Master Rack -->
                                         <a href="<?php echo e(route('prod.ms.master-rack')); ?>" wire:navigate
                                         class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('prod.ms.master-rack') ? 'menu-active' : ''); ?>">
@@ -483,7 +656,8 @@
                                             </svg>
                                             <span class="truncate">Master Rack</span>
                                         </a>
-
+                                        <?php endif; ?>
+                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check(['view master sample task'])): ?>
                                         <!--Approval -->
                                         <a href="<?php echo e(route('prod.ms.sample-checks')); ?>" wire:navigate
                                         class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('prod.ms.sample-checks') ? 'menu-active' : ''); ?>">
@@ -493,16 +667,18 @@
                                             </svg>
                                             <span class="truncate">Task</span>
                                         </a>
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
                 <?php endif; ?>
                 
                 <!-- Group: DCC -->
-                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->any(['view departments', 'view submissions'])): ?>
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->any(['view departments', 'view submissions', 'view submissions one user'])): ?>
                 <div class="mb-2">
                     <div class="relative w-full">
                         <button @click="toggleGroup('dcc')" 
@@ -544,7 +720,7 @@
                             <span class="truncate">Departments</span>
                         </a>
                         <?php endif; ?>
-                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view submissions')): ?>
+                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->any(['view submissions', 'view submissions one user'])): ?>
                         <a href="<?php echo e(route('dcc.submissions')); ?>" wire:navigate
                            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('dcc.submissions') ? 'menu-active' : ''); ?>">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
@@ -688,6 +864,50 @@
                     </div>
                 </div>
                 <?php endif; ?>
+
+                <!-- Group: QA/QC -->
+                <div class="mb-2">
+                    <div class="relative w-full">
+                        <button @click="toggleGroup('qaqc')" 
+                                class="w-full flex items-center px-3 py-2.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                                :class="{
+                                    'justify-center': (!sidebarOpen && !isMobile) && (!isHovering || sidebarPinned),
+                                    'justify-between': (sidebarOpen || isMobile) || (isHovering && !sidebarPinned)
+                                }">
+                            <div class="flex items-center gap-3" 
+                                :class="{'justify-center': (!sidebarOpen && !isMobile) && (!isHovering || sidebarPinned)}">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                    <path fill-rule="evenodd" d="M12.516 2.17a.75.75 0 0 0-1.032 0 11.209 11.209 0 0 1-7.877 3.08.75.75 0 0 0-.722.515A12.74 12.74 0 0 0 2.25 9.75c0 5.942 4.064 10.933 9.563 12.348a.749.749 0 0 0 .374 0c5.499-1.415 9.563-6.406 9.563-12.348 0-1.39-.223-2.73-.635-3.985a.75.75 0 0 0-.722-.516l-.143.001c-2.996 0-5.717-1.17-7.734-3.08Zm3.094 8.016a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
+                                </svg>
+                                <span x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)" 
+                                    class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">QA/QC</span>
+                            </div>
+                            <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)" 
+                                class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0 ml-auto"
+                                :class="{'rotate-180': groups.qaqc.open}"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.qaqc.open" 
+                        x-collapse 
+                        class="mt-1 relative">
+                        <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
+                        <div class="space-y-1 ml-[30px]">
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view ncp')): ?>
+                            <a href="<?php echo e(route('qaqc.ncp')); ?>" wire:navigate
+                            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('qaqc.ncp') ? 'menu-active' : ''); ?>">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                    <path fill-rule="evenodd" d="M1.5 6.375c0-1.036.84-1.875 1.875-1.875h17.25c1.035 0 1.875.84 1.875 1.875v3.026a.75.75 0 0 1-.375.65 2.249 2.249 0 0 0 0 3.898.75.75 0 0 1 .375.65v3.026c0 1.035-.84 1.875-1.875 1.875H3.375A1.875 1.875 0 0 1 1.5 17.625v-3.026a.75.75 0 0 1 .374-.65 2.249 2.249 0 0 0 0-3.898.75.75 0 0 1-.374-.65V6.375Zm15-1.125a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-1.5 0V6a.75.75 0 0 1 .75-.75Zm.75 4.5a.75.75 0 0 0-1.5 0v.75a.75.75 0 0 0 1.5 0v-.75Zm-.75 3a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-1.5 0v-.75a.75.75 0 0 1 .75-.75Zm.75 4.5a.75.75 0 0 0-1.5 0V18a.75.75 0 0 0 1.5 0v-.75ZM6 12a.75.75 0 0 1 .75-.75H12a.75.75 0 0 1 0 1.5H6.75A.75.75 0 0 1 6 12Zm.75 2.25a.75.75 0 0 0 0 1.5h3a.75.75 0 0 0 0-1.5h-3Z" clip-rule="evenodd" />
+                                </svg>
+                                <span class="truncate">NCP Management</span>
+                            </a>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </div>
                 
                 <!-- Group: TICKETING SUPPORT -->
                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->any(['view categories', 'view tickets'])): ?>
@@ -982,10 +1202,20 @@ unset($__split);
     <script>
         function sidebarPersistence() {
             return {
+                // Sidebar state
                 sidebarOpen: true,
                 sidebarPinned: true,
                 isMobile: window.innerWidth < 768,
                 isHovering: false,
+                
+                // Search state
+                searchQuery: '',
+                searchResults: [],
+                searchLoading: false,
+                searchDebounceTimer: null,
+                selectedIndex: -1,
+                
+                // Groups state
                 groups: {
                     home: { open: true },
                     maintenance: { open: true },
@@ -998,6 +1228,7 @@ unset($__split);
                     auth: { open: true },
                     wipMonitoring: { open: false },
                     msMonitoring: { open: false },
+                    qaqc: { open: true },
                 },
                 
                 init() {
@@ -1028,7 +1259,7 @@ unset($__split);
                     }
                     
                     // Load all group states
-                    const groupNames = ['home', 'maintenance', 'production', 'dcc', 'hr', 'hrReport', 'ticketing', 'settings', 'auth', 'wipMonitoring', 'msMonitoring'];
+                    const groupNames = ['home', 'maintenance', 'production', 'dcc', 'hr', 'hrReport', 'ticketing', 'settings', 'auth', 'wipMonitoring', 'msMonitoring', 'qaqc'];
                     groupNames.forEach(groupName => {
                         const saved = localStorage.getItem(`sidebar_group_${groupName}`);
                         if (saved !== null) {
@@ -1042,6 +1273,14 @@ unset($__split);
                             this.sidebarPinned = value;
                             localStorage.setItem('sidebar_open', JSON.stringify(value));
                             localStorage.setItem('sidebar_pinned', JSON.stringify(value));
+                        }
+                    });
+                    
+                    // Close dropdown when clicking outside
+                    document.addEventListener('click', (e) => {
+                        const searchContainer = document.querySelector('.relative');
+                        if (searchContainer && !searchContainer.contains(e.target)) {
+                            this.clearSearch();
                         }
                     });
                 },
@@ -1080,10 +1319,197 @@ unset($__split);
                 toggleGroup(groupName) {
                     this.groups[groupName].open = !this.groups[groupName].open;
                     localStorage.setItem(`sidebar_group_${groupName}`, JSON.stringify(this.groups[groupName].open));
+                },
+                
+                // ========== SEARCH METHODS ==========
+                
+                async handleSearchInput() {
+                    const query = this.searchQuery.trim();
+                    
+                    // Clear previous timer
+                    if (this.searchDebounceTimer) {
+                        clearTimeout(this.searchDebounceTimer);
+                    }
+                    
+                    // Reset results if query is too short
+                    if (query.length < 2) {
+                        this.searchResults = [];
+                        this.selectedIndex = -1;
+                        this.searchLoading = false;
+                        return;
+                    }
+                    
+                    // Set loading state
+                    this.searchLoading = true;
+                    
+                    // Debounce search
+                    this.searchDebounceTimer = setTimeout(() => {
+                        this.performSearch();
+                    }, 300);
+                },
+                
+                async performSearch() {
+                    const query = this.searchQuery.trim();
+                    
+                    if (query.length < 2) {
+                        this.searchResults = [];
+                        this.searchLoading = false;
+                        this.selectedIndex = -1;
+                        return;
+                    }
+                    
+                    try {
+                        const response = await fetch(`/search/type?q=${encodeURIComponent(query)}`);
+                        if (!response.ok) {
+                            throw new Error('Search request failed');
+                        }
+                        const data = await response.json();
+                        this.searchResults = data;
+                        this.selectedIndex = -1;
+                    } catch (error) {
+                        console.error('Search error:', error);
+                        this.searchResults = [];
+                    } finally {
+                        this.searchLoading = false;
+                    }
+                },
+                
+                clearSearch() {
+                    this.searchQuery = '';
+                    this.searchResults = [];
+                    this.searchLoading = false;
+                    this.selectedIndex = -1;
+                    if (this.searchDebounceTimer) {
+                        clearTimeout(this.searchDebounceTimer);
+                    }
+                },
+                
+                moveDown() {
+                    if (this.searchResults.length > 0) {
+                        this.selectedIndex = (this.selectedIndex + 1) % this.searchResults.length;
+                        this.scrollToSelected();
+                    }
+                },
+                
+                moveUp() {
+                    if (this.searchResults.length > 0) {
+                        this.selectedIndex = (this.selectedIndex - 1 + this.searchResults.length) % this.searchResults.length;
+                        this.scrollToSelected();
+                    }
+                },
+                
+                scrollToSelected() {
+                    this.$nextTick(() => {
+                        // Find the selected element by checking for bg-blue-50 class
+                        const selected = document.querySelector('.bg-blue-50');
+                        if (selected) {
+                            selected.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+                        }
+                    });
+                },
+                
+                selectResult() {
+                    if (this.selectedIndex >= 0 && this.searchResults[this.selectedIndex]) {
+                        const result = this.searchResults[this.selectedIndex];
+                        window.location.href = result.url;
+                        this.clearSearch();
+                    }
+                },
+                
+                // ========== MENU FILTER METHODS (optional) ==========
+                
+                filterMenu() {
+                    const query = this.searchQuery.toLowerCase().trim();
+                    
+                    if (!query) {
+                        const allLinks = document.querySelectorAll('nav a[href]');
+                        allLinks.forEach(link => {
+                            link.style.display = 'flex';
+                        });
+                        this.removeNoResultsMessage();
+                        return;
+                    }
+                    
+                    Object.keys(this.groups).forEach(group => {
+                        this.groups[group].open = false;
+                    });
+                    
+                    let hasMatches = false;
+                    const allGroups = document.querySelectorAll('.mb-2');
+                    
+                    allGroups.forEach(group => {
+                        const links = group.querySelectorAll('a[href]');
+                        let groupHasMatch = false;
+                        
+                        links.forEach(link => {
+                            const text = link.textContent.toLowerCase();
+                            if (text.includes(query)) {
+                                link.style.display = 'flex';
+                                groupHasMatch = true;
+                                hasMatches = true;
+                            } else {
+                                link.style.display = 'none';
+                            }
+                        });
+                        
+                        if (groupHasMatch) {
+                            const groupName = this.getGroupNameFromElement(group);
+                            if (groupName && this.groups[groupName]) {
+                                this.groups[groupName].open = true;
+                            }
+                        }
+                    });
+                    
+                    if (!hasMatches) {
+                        this.showNoResults();
+                    } else {
+                        this.removeNoResultsMessage();
+                    }
+                },
+                
+                getGroupNameFromElement(groupElement) {
+                    const buttonText = groupElement.querySelector('button span')?.textContent.toLowerCase() || '';
+                    if (buttonText.includes('home')) return 'home';
+                    if (buttonText.includes('maintenance')) return 'maintenance';
+                    if (buttonText.includes('production')) return 'production';
+                    if (buttonText.includes('dcc')) return 'dcc';
+                    if (buttonText.includes('hr')) return 'hr';
+                    if (buttonText.includes('ticketing')) return 'ticketing';
+                    if (buttonText.includes('setting')) return 'settings';
+                    if (buttonText.includes('qaqc') || buttonText.includes('qa/qc')) return 'qaqc';
+                    return null;
+                },
+                
+                showNoResults() {
+                    this.removeNoResultsMessage();
+                    const nav = document.querySelector('nav');
+                    if (!nav) return;
+                    
+                    const noResultMsg = document.createElement('div');
+                    noResultMsg.id = 'no-search-results';
+                    noResultMsg.className = 'text-center text-zinc-500 dark:text-zinc-400 text-sm py-8 px-4';
+                    noResultMsg.innerHTML = `
+                        <svg class="w-8 h-8 mx-auto mb-2 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <p>Menu tidak ditemukan</p>
+                        <p class="text-xs mt-1">Coba kata kunci lain</p>
+                    `;
+                    nav.appendChild(noResultMsg);
+                },
+                
+                removeNoResultsMessage() {
+                    const existingMsg = document.getElementById('no-search-results');
+                    if (existingMsg) existingMsg.remove();
                 }
             }
         }
     </script>
-
+    <?php echo '<div
+                id="volet"
+                data-icon="https://api.iconify.design/heroicons:chat-bubble-left-ellipsis.svg?color=%23FFFFFF"
+                data-close-icon="https://api.iconify.design/heroicons:x-mark.svg?color=%23FFFFFF"
+                data-labels="{&quot;bubble&quot;:{&quot;tooltip&quot;:&quot;Something to share ?&quot;},&quot;panel&quot;:{&quot;title&quot;:&quot;How can we help ?&quot;,&quot;close&quot;:&quot;Close&quot;,&quot;loading&quot;:&quot;Loading...&quot;,&quot;back&quot;:&quot;Back&quot;},&quot;feedback-messages&quot;:{&quot;placeholder&quot;:&quot;What&#039;s on your mind?&quot;,&quot;button&quot;:&quot;Send feedback&quot;,&quot;button-loading&quot;:&quot;Sending...&quot;,&quot;success-title&quot;:&quot;Thank you for your feedback!&quot;,&quot;success-subtitle&quot;:&quot;We appreciate your input and will review it shortly.&quot;,&quot;send-another&quot;:&quot;Send another feedback&quot;,&quot;error&quot;:&quot;Failed to submit feedback&quot;}}"
+                ></div>'; ?><?php echo '<script src="http://localhost/vendor/volet/volet-app.js"></script>'; ?>
 </body>
 </html><?php /**PATH /www/wwwroot/test.siix-ems.co.id/siix-portal/resources/views/layouts/app/sidebar.blade.php ENDPATH**/ ?>

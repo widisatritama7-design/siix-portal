@@ -106,6 +106,7 @@
       22 => 'Illuminate\\View\\ViewServiceProvider',
       23 => 'App\\Providers\\AppServiceProvider',
       24 => 'App\\Providers\\FortifyServiceProvider',
+      25 => 'App\\Providers\\VoletServiceProvider',
     ),
     'aliases' => 
     array (
@@ -1080,6 +1081,37 @@
     'http_only' => true,
     'same_site' => 'lax',
     'partitioned' => false,
+  ),
+  'volet' => 
+  array (
+    'icon' => 'https://api.iconify.design/heroicons:chat-bubble-left-ellipsis.svg?color=%23FFFFFF',
+    'close-icon' => 'https://api.iconify.design/heroicons:x-mark.svg?color=%23FFFFFF',
+    'feedback-messages' => 
+    array (
+      'table' => 'volet_feedback_messages',
+      'controller' => 'Mydnic\\Volet\\Http\\Controllers\\FeedbackMessageController',
+      'model' => 'Mydnic\\Volet\\Models\\FeedbackMessage',
+      'routes' => 
+      array (
+        'prefix' => 'feedback',
+        'middleware' => 
+        array (
+          0 => 'web',
+        ),
+      ),
+      'content' => 
+      array (
+        'success-icon' => 'https://api.iconify.design/heroicons:check-circle.svg?color=%2322c55e',
+      ),
+      'mail_notification' => 
+      array (
+        'enabled' => true,
+        'send_mails_to' => 
+        array (
+        ),
+        'class' => 'Mydnic\\Volet\\Notifications\\NewFeedbackMessageNotification',
+      ),
+    ),
   ),
   'dompdf' => 
   array (

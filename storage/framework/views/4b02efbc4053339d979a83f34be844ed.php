@@ -250,7 +250,7 @@
                 ->get();
         ?>
 
-        <!-- Dashboard Container dengan Auto-refresh -->
+        <!-- Dashboard Container -->
         <div id="dashboard-container" wire:ignore>
             
             <!-- Two Column Layout -->
@@ -525,33 +525,7 @@
 
     <?php $__env->startPush('scripts'); ?>
     <script>
-        // Global variable to store interval ID
-        let refreshInterval = null;
-        
-        // Function to update gauge
-        function updateGauge(gaugeNumber, percentage) {
-            const targetPercentage = Math.min(percentage, 100);
-            const radius = 70;
-            const halfCircumference = Math.PI * radius;
-            const arcLength = (targetPercentage / 100) * halfCircumference;
-            const dasharray = `${arcLength} ${halfCircumference * 2}`;
-            const targetAngle = -90 + (targetPercentage * 1.8);
-            
-            const arcElement = document.querySelector(`.pageview-arc-${gaugeNumber}`);
-            const needleElement = document.querySelector(`.pageview-needle-${gaugeNumber}`);
-            
-            if (arcElement) {
-                arcElement.style.transition = 'stroke-dasharray 0.5s ease-out';
-                arcElement.setAttribute('stroke-dasharray', dasharray);
-            }
-            
-            if (needleElement) {
-                needleElement.style.transition = 'transform 0.5s ease-out';
-                needleElement.setAttribute('transform', `rotate(${targetAngle}, 100, 85)`);
-            }
-        }
-        
-        // Function to animate gauge on initial load
+        // Function to update gauge with animation
         function animateGauge(gaugeNumber, percentage) {
             const targetPercentage = Math.min(percentage, 100);
             const radius = 70;
@@ -603,163 +577,13 @@
             }
         }
         
-        // Auto-refresh function for dashboard data
-        function refreshDashboardData() {
-            fetch('<?php echo e(url("/dashboard/refresh")); ?>', {
-                method: 'GET',
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Update Page Views Today
-                    const pageViewsElement = document.getElementById('page-views-today');
-                    if (pageViewsElement) {
-                        pageViewsElement.textContent = data.todayPageViews.toLocaleString();
-                    }
-                    
-                    // Update Total Sessions
-                    const sessionsElement = document.getElementById('total-sessions');
-                    if (sessionsElement) {
-                        sessionsElement.textContent = data.todaySessions.toLocaleString();
-                    }
-                    
-                    // Update Page Views Distribution counts
-                    const views0_5 = document.getElementById('views-0_5');
-                    if (views0_5) views0_5.textContent = data.pageViewsDistribution['0_5'].toLocaleString() + ' views';
-                    
-                    const views5_10 = document.getElementById('views-5_10');
-                    if (views5_10) views5_10.textContent = data.pageViewsDistribution['5_10'].toLocaleString() + ' views';
-                    
-                    const views10_30 = document.getElementById('views-10_30');
-                    if (views10_30) views10_30.textContent = data.pageViewsDistribution['10_30'].toLocaleString() + ' views';
-                    
-                    const views30_60 = document.getElementById('views-30_60');
-                    if (views30_60) views30_60.textContent = data.pageViewsDistribution['30_60'].toLocaleString() + ' views';
-                    
-                    // Update percentages for gauges
-                    for (let i = 1; i <= 4; i++) {
-                        const percentageElement = document.querySelector(`.pageview-percentage-${i}`);
-                        const gaugeElement = document.querySelector(`.pageview-gauge-${i}`);
-                        
-                        if (percentageElement && gaugeElement) {
-                            let newPercentage;
-                            if (i === 1) newPercentage = data.percentages.percent0_5;
-                            else if (i === 2) newPercentage = data.percentages.percent5_10;
-                            else if (i === 3) newPercentage = data.percentages.percent10_30;
-                            else newPercentage = data.percentages.percent30_60;
-                            
-                            percentageElement.textContent = newPercentage + '%';
-                            gaugeElement.setAttribute('data-percentage', newPercentage);
-                            
-                            // Update gauge animation
-                            updateGauge(i, newPercentage);
-                        }
-                    }
-                    
-                    // Update Top Pages List
-                    const topPagesList = document.getElementById('top-pages-list');
-                    if (topPagesList && data.topPages) {
-                        if (data.topPages.length === 0) {
-                            topPagesList.innerHTML = `
-                                <div class="text-center py-12">
-                                    <svg class="w-12 h-12 text-zinc-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-                                    </svg>
-                                    <p class="text-zinc-500 dark:text-zinc-400">No pages visited yet</p>
-                                    <p class="text-xs text-zinc-400 dark:text-zinc-500 mt-1">Start exploring the dashboard</p>
-                                </div>
-                            `;
-                        } else {
-                            topPagesList.innerHTML = '';
-                            const rankColors = ['bg-amber-500', 'bg-gray-400', 'bg-orange-600', 'bg-blue-500', 'bg-green-500'];
-                            
-                            data.topPages.forEach((page, index) => {
-                                const rankColor = rankColors[index] || 'bg-purple-500';
-                                const isLast = index === data.topPages.length - 1;
-                                
-                                const pageItem = document.createElement('div');
-                                pageItem.className = 'block group';
-                                pageItem.innerHTML = `
-                                    <a href="${page.url}" target="_blank" rel="noopener noreferrer" class="block group">
-                                        <div class="flex items-center gap-3 p-3 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all duration-200">
-                                            <div class="relative flex flex-col items-center">
-                                                <div class="w-8 h-8 rounded-full ${rankColor} flex items-center justify-center text-white font-bold text-sm z-10">
-                                                    ${index + 1}
-                                                </div>
-                                                ${!isLast ? '<div class="absolute top-8 left-1/2 -translate-x-1/2 w-[2px] h-[calc(100%+8px)] bg-zinc-300 dark:bg-zinc-600"></div>' : ''}
-                                            </div>
-                                            <div class="flex-1">
-                                                <div class="text-sm font-medium text-zinc-800 dark:text-zinc-200 truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
-                                                    ${escapeHtml(page.page)}
-                                                </div>
-                                            </div>
-                                            <div class="flex items-center gap-1">
-                                                <svg class="w-3.5 h-3.5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                                                </svg>
-                                                <span class="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
-                                                    ${page.views}
-                                                </span>
-                                            </div>
-                                            <svg class="w-4 h-4 text-zinc-400 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
-                                            </svg>
-                                        </div>
-                                    </a>
-                                `;
-                                topPagesList.appendChild(pageItem);
-                            });
-                        }
-                    }
-                }
-            })
-            .catch(error => console.error('Error refreshing dashboard:', error));
-        }
-        
-        // Helper function to escape HTML
-        function escapeHtml(text) {
-            if (!text) return '';
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-        
-        // Function to start polling
-        function startPolling() {
-            if (refreshInterval) {
-                clearInterval(refreshInterval);
-            }
-            refreshInterval = setInterval(() => {
-                refreshDashboardData();
-            }, 5000);
-        }
-        
-        // Function to stop polling
-        function stopPolling() {
-            if (refreshInterval) {
-                clearInterval(refreshInterval);
-                refreshInterval = null;
-            }
-        }
-        
-        // Initialize dashboard when page is ready (for SPA navigation)
+        // For Livewire SPA mode - using Livewire hooks
         function initDashboard() {
-            // Initialize gauges
             initializeGauges();
-            // Start polling
-            startPolling();
         }
         
-        // For Livewire SPA mode - menggunakan Livewire hooks
         document.addEventListener('livewire:navigated', function() {
-            // Reset and reinitialize when navigating to this page
-            stopPolling();
+            // Reinitialize gauges when navigating to this page
             setTimeout(() => {
                 initDashboard();
             }, 100);
@@ -771,11 +595,6 @@
         } else {
             initDashboard();
         }
-        
-        // Cleanup on page unload
-        window.addEventListener('beforeunload', function() {
-            stopPolling();
-        });
     </script>
     <?php $__env->stopPush(); ?>
 

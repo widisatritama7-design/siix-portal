@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\MTC;
 
 use App\Mail\MTC\DailyCheckReportMail;
 use App\Models\MTC\Daily\DailyFuji;

@@ -165,13 +165,14 @@
                         <td class="px-4 py-3 whitespace-nowrap">
                             @php
                                 $photos = is_array($kaizen->photo) ? $kaizen->photo : [];
-                                $photoUrls = array_map(fn($p) => Storage::disk('public')->url($p), $photos);
+                                // Menggunakan asset() helper untuk mendapatkan URL lengkap
+                                $photoUrls = array_map(fn($p) => asset('storage/' . $p), $photos);
                             @endphp
                             @if(count($photos) > 0)
                                 <div class="flex -space-x-2">
                                     @foreach(array_slice($photos, 0, 3) as $index => $photo)
                                         @php
-                                            $photoUrl = Storage::disk('public')->url($photo);
+                                            $photoUrl = asset('storage/' . $photo);
                                             $photoUrlsJson = json_encode($photoUrls);
                                         @endphp
                                         <div class="relative group cursor-pointer" 
@@ -197,7 +198,7 @@
                                     @endforeach
                                     @if(count($photos) > 3)
                                         @php
-                                            $firstPhotoUrl = Storage::disk('public')->url($photos[0]);
+                                            $firstPhotoUrl = asset('storage/' . $photos[0]);
                                         @endphp
                                         <div class="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center text-xs font-medium ring-2 ring-white dark:ring-zinc-900 flex-shrink-0 cursor-pointer hover:bg-blue-600 transition-colors"
                                             @click="$dispatch('open-photo-modal', { 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\ESD;
 
 use App\Models\ESD\Jig\JigDetail;
 use Carbon\Carbon;

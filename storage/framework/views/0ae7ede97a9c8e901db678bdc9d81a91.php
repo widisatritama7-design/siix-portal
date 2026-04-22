@@ -86,4 +86,4 @@
     </table>
 </body>
 </html>
-<?php /**PATH /www/wwwroot/test.siix-ems.co.id/siix-portal/resources/views/emails/DCC/submission_status.blade.php ENDPATH**/ ?>
+<?php /**PATH /www/wwwroot/test.siix-ems.co.id/siix-portal/resources/views/emails/dcc/submission_status.blade.php ENDPATH**/ ?>

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\MTC;
 
 use App\Models\MTC\Daily\DailyFuji;
 use App\Models\MTC\Daily\DailyPanasonic;

@@ -58,7 +58,7 @@ $resizeStyle = match ($resize) {
         rows="<?php echo e($rows); ?>"
         style="<?php echo e($resizeStyle); ?>; <?php echo e($rows === 'auto' ? 'field-sizing: content' : ''); ?>"
         <?php if(isset($name)): ?> name="<?php echo e($name); ?>" <?php endif; ?>
-        [STARTCOMPILEDUNBLAZE:tHQHmr5zrI]<?php \Livewire\Blaze\Unblaze::storeScope("tHQHmr5zrI", scope: ['name' => $name ?? null, 'invalid' => $invalid ?? false]) ?>[ENDCOMPILEDUNBLAZE:tHQHmr5zrI]
+        [STARTCOMPILEDUNBLAZE:6i9bDRHzUB]<?php \Livewire\Blaze\Unblaze::storeScope("6i9bDRHzUB", scope: ['name' => $name ?? null, 'invalid' => $invalid ?? false]) ?>[ENDCOMPILEDUNBLAZE:6i9bDRHzUB]
         data-flux-control
         data-flux-textarea
     ><?php echo e($slot); ?></textarea>

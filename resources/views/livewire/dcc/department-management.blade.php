@@ -1,4 +1,5 @@
 <div class="p-1 space-y-2">
+    @section('title', 'Department Management - DCC Control Panel')
     <!-- Breadcrumbs -->
     <flux:breadcrumbs>
         <flux:breadcrumbs.item href="{{ route('dashboard') }}" wire:navigate separator="slash">

@@ -356,4 +356,4 @@
 
 </div>
 </body>
-</html><?php /**PATH /www/wwwroot/test.siix-ems.co.id/siix-portal/resources/views/emails/HR/violation.blade.php ENDPATH**/ ?>
+</html><?php /**PATH /www/wwwroot/test.siix-ems.co.id/siix-portal/resources/views/emails/hr/violation.blade.php ENDPATH**/ ?>

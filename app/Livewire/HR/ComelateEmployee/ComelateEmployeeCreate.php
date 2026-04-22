@@ -127,7 +127,7 @@ class ComelateEmployeeCreate extends Component
                 return 0;
             }
             
-            return $jamDatang->diffInMinutes($jamHarusMasuk);
+            return $jamDatang->diffInMinutes($jamHarusMasuk, true); // <-- fix
         } catch (\Exception $e) {
             return 0;
         }

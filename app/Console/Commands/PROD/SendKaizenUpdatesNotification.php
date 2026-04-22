@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\PROD;
 
 use App\Mail\PROD\KaizenUpdatesEmail;
 use App\Models\PROD\Kaizen\Kaizen;

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DashboardRefreshController;
 use App\Http\Controllers\InboxController;
+use App\Http\Controllers\SearchController;
 use App\Livewire\DCC\DepartmentManagement;
 use App\Livewire\DCC\SubmissionManagement;
 use App\Livewire\HR\ComelateEmployee\ComelateEmployeeCreate;
@@ -30,6 +31,7 @@ use App\Livewire\PROD\WIP\MasterRackLosePack;
 use App\Livewire\PROD\WIP\MasterWipDetail;
 use App\Livewire\PROD\WIP\MasterWipManagement;
 use App\Livewire\PROD\WIP\MasterWipScan;
+use App\Livewire\QAQC\NCPManagement;
 use App\Livewire\Ticket\CategoryTicketManager;
 use App\Livewire\Ticket\TicketManager;
 use App\Livewire\Ticket\TicketView;
@@ -43,6 +45,10 @@ Route::get('/', function () {
 })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
+
+    // Search
+    Route::get('/search/type', [SearchController::class, 'searchEquipmentGrounds'])->name('search.equipment-grounds');
+
     // Dashboard
     Route::view('main-dashboard', 'home.dashboard')->name('dashboard');
     Route::get('/dashboard/refresh', [DashboardRefreshController::class, 'refresh']);
@@ -121,6 +127,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Master Rack Sample
     Route::get('/prod/ms/master-rack', MasterRackSampleManagement::class)->name('prod.ms.master-rack');
     Route::get('/prod/ms/master-rack/create', MasterRackSampleCreate::class)->name('prod.ms.master-rack.create');
+
+    // QA-QC
+    Route::get('/qaqc/ncp', NCPManagement::class)->name('qaqc.ncp');
 
 });
 
