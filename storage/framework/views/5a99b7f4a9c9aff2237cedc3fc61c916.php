@@ -2,7 +2,6 @@
 <?php # [BlazeFolded]:{flux::breadcrumbs.item}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/breadcrumbs/item.blade.php}:{1774988736} ?>
 <?php # [BlazeFolded]:{flux::breadcrumbs}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/breadcrumbs/index.blade.php}:{1774988736} ?>
 <?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1774988736} ?>
-<?php # [BlazeFolded]:{flux::input}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/input/index.blade.php}:{1774988736} ?>
 <?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1774988736} ?>
 <?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1774988736} ?>
 <?php # [BlazeFolded]:{flux::icon}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php}:{1774988736} ?>
@@ -35,11 +34,11 @@
 
                     </div>
     
-            <svg class="shrink-0 [:where(&amp;)]:size-5 mx-1 text-zinc-300 dark:text-white/80 group-last/breadcrumb:hidden rtl:-scale-x-100" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+    <!--[if BLOCK]><![endif]-->        <svg class="shrink-0 [:where(&amp;)]:size-5 mx-1 text-zinc-300 dark:text-white/80 group-last/breadcrumb:hidden rtl:-scale-x-100" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
   <path fill-rule="evenodd" d="M12.528 3.047a.75.75 0 0 1 .449.961L8.433 16.504a.75.75 0 1 1-1.41-.512l4.544-12.496a.75.75 0 0 1 .961-.449Z" clip-rule="evenodd"/>
 </svg>
 
-            </div>
+            <!--[if ENDBLOCK]><![endif]--></div>
 <?php echo ltrim(ob_get_clean()); ?>
         <?php ob_start(); ?><div class="flex items-center text-sm font-medium group/breadcrumb font-semibold text-blue-600 dark:text-blue-400" data-flux-breadcrumbs-item>
             <div class="text-gray-500 dark:text-white/80">
@@ -49,11 +48,11 @@
 
                     </div>
     
-            <svg class="shrink-0 [:where(&amp;)]:size-5 mx-1 text-zinc-300 dark:text-white/80 group-last/breadcrumb:hidden rtl:-scale-x-100" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+    <!--[if BLOCK]><![endif]-->        <svg class="shrink-0 [:where(&amp;)]:size-5 mx-1 text-zinc-300 dark:text-white/80 group-last/breadcrumb:hidden rtl:-scale-x-100" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
   <path fill-rule="evenodd" d="M12.528 3.047a.75.75 0 0 1 .449.961L8.433 16.504a.75.75 0 1 1-1.41-.512l4.544-12.496a.75.75 0 0 1 .961-.449Z" clip-rule="evenodd"/>
 </svg>
 
-            </div>
+            <!--[if ENDBLOCK]><![endif]--></div>
 <?php echo ltrim(ob_get_clean()); ?>
     <?php echo trim(ob_get_clean()); ?>
 
@@ -97,50 +96,10 @@
     <!-- Search -->
     <div class="flex justify-end">
         <div class="w-full sm:w-64">
-            <?php ob_start(); ?><div class="w-full relative block group/input" data-flux-input>
-                            <div class="pointer-events-none absolute top-0 bottom-0 border-s border-transparent flex items-center justify-center text-xs text-zinc-400/75 dark:text-white/60 ps-3 start-0">
-                    <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-  <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd"/>
-</svg>
-
-                        </div>
-            
-            <input
-                type="text"
-                
-                class="w-full border rounded-lg block disabled:shadow-none dark:shadow-none appearance-none text-base sm:text-sm py-2 h-10 leading-[1.375rem] ps-10 pe-10 bg-white dark:bg-white/10 dark:disabled:bg-white/[7%] text-zinc-700 disabled:text-zinc-500 placeholder-zinc-400 disabled:placeholder-zinc-400/70 dark:text-zinc-300 dark:disabled:text-zinc-400 dark:placeholder-zinc-400 dark:disabled:placeholder-zinc-500 shadow-xs border-zinc-200 border-b-zinc-300/80 disabled:border-b-zinc-200 dark:border-white/10 dark:disabled:border-white/5 data-invalid:shadow-none data-invalid:border-red-500 dark:data-invalid:border-red-500 disabled:data-invalid:border-red-500 dark:disabled:data-invalid:border-red-500" wire:model.live.debounce.300ms="search" placeholder="Search roles..."
-                 name="search"                                                 <?php if (isset($scope)) $__scope = $scope; ?><?php $scope = array (
-  'name' => 'search',
-  'invalid' => false,
-); ?>
-                <?php if ($scope['invalid'] || ($scope['name'] && $errors->has($scope['name']))): ?>
-                aria-invalid="true" data-invalid
-                <?php endif; ?>
-                <?php if (isset($__scope)) { $scope = $__scope; unset($__scope); } ?>
-                data-flux-control
-                data-flux-group-target
-                 wire:loading.class="pe-16"                  wire:target="search"             >
-
-                            <div class="absolute top-0 bottom-0 flex items-center gap-x-1.5 pe-2 border-e border-transparent end-0 text-xs text-zinc-400">
-                    
-                                            <svg class="shrink-0 [:where(&amp;)]:size-5 animate-spin" wire:loading="" wire:target="search" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true" data-slot="icon">
-    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-</svg>
-                            
-                                            <button type="button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-8 text-sm rounded-md w-8 inline-flex -ms-1.5 -me-1.5 bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white      -me-1 [[data-flux-input]:has(input:placeholder-shown)_&amp;]:hidden [[data-flux-input]:has(input[disabled])_&amp;]:hidden" data-flux-button="data-flux-button" x-data="fluxInputClearable" x-on:click="clear()" tabindex="-1" aria-label="Clear input" data-flux-clear-button="data-flux-clear-button">
-        <svg class="shrink-0 [:where(&amp;)]:size-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-  <path d="M5.28 4.22a.75.75 0 0 0-1.06 1.06L6.94 8l-2.72 2.72a.75.75 0 1 0 1.06 1.06L8 9.06l2.72 2.72a.75.75 0 1 0 1.06-1.06L9.06 8l2.72-2.72a.75.75 0 0 0-1.06-1.06L8 6.94 5.28 4.22Z"/>
-</svg>
-    </button>
-                    
-                    
-                    
-                    
-                    
-                                    </div>
-                    </div>
-<?php echo ltrim(ob_get_clean()); ?>
+            <?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/input/index.blade.php', $__blaze->compiledPath.'/f9ce25dced5c86c906351e8ca96b9cbb.php'); ?>
+<?php $__blaze->pushData(['wire:model.live.debounce.300ms' => 'search','placeholder' => 'Search roles...','icon' => 'magnifying-glass','clearable' => true]); ?>
+<?php _f9ce25dced5c86c906351e8ca96b9cbb($__blaze, ['wire:model.live.debounce.300ms' => 'search','placeholder' => 'Search roles...','icon' => 'magnifying-glass','clearable' => true], [], ['clearable'], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php $__blaze->popData(); ?>
         </div>
     </div>
 
@@ -328,75 +287,171 @@
 <?php echo ltrim(ob_get_clean()); ?>
 
     <!-- MODAL FORM ROLE -->
-    <div x-data="{ open: false }" 
-         x-show="open" 
-         @open-modal.window="if ($event.detail === 'role-form-modal') open = true"
-         @close-modal.window="if ($event.detail === 'role-form-modal') open = false"
-         x-cloak>
+    <div x-data="{ 
+        open: false,
+        searchPermission: ''
+    }" 
+        x-show="open" 
+        @open-modal.window="if ($event.detail === 'role-form-modal') open = true; searchPermission = ''"
+        @close-modal.window="if ($event.detail === 'role-form-modal') open = false"
+        x-cloak>
         
         <!-- Backdrop -->
         <div class="fixed inset-0 bg-black/50 z-40" @click="open = false"></div>
         
         <!-- Modal -->
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-                <div class="p-6">
-                    <h2 class="text-xl font-bold mb-4"><?php echo e($modalTitle); ?></h2>
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6">
+            <!-- Modal Container -->
+            <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-xl w-full max-w-2xl mx-auto flex flex-col" 
+                style="max-height: calc(100vh - 2rem);">
+                
+                <!-- Header -->
+                <div class="flex-shrink-0 p-4 sm:p-6 border-b dark:border-zinc-700">
+                    <h2 class="text-lg sm:text-xl font-bold"><?php echo e($modalTitle); ?></h2>
+                </div>
 
-                    <form wire:submit="save">
+                <!-- Form Body - scrollable dengan scrollbar hidden -->
+                <div class="flex-1 overflow-y-auto p-4 sm:p-6" 
+                    style="scrollbar-width: none; -ms-overflow-style: none;">
+                    <style>
+                        .flex-1::-webkit-scrollbar {
+                            display: none;
+                        }
+                    </style>
+                    
+                    <form wire:submit="save" id="role-form" class="space-y-5">
                         <!-- Role Name -->
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium mb-1">Role Name</label>
+                        <div>
+                            <label class="block text-sm font-medium mb-1.5">Role Name</label>
                             <input type="text" 
-                                   wire:model="name"
-                                   class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
+                                wire:model="name"
+                                class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base">
                             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['name'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> <span class="text-red-500 text-sm"><?php echo e($message); ?></span> <?php unset($message);
+$message = $__bag->first($__errorArgs[0]); ?> <span class="text-red-500 text-sm mt-1 block"><?php echo e($message); ?></span> <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </div>
 
-                        <!-- Permissions -->
-                        <div class="mb-6">
-                            <label class="block text-sm font-medium mb-2">Permissions</label>
-                            <div class="space-y-4 max-h-96 overflow-y-auto border rounded-lg p-4">
-                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $permissions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $group => $groupPermissions): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
-                                    <div>
-                                        <h3 class="font-medium mb-2 capitalize"><?php echo e($group); ?> Management</h3>
-                                        <div class="grid grid-cols-2 gap-2">
-                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $groupPermissions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $permission): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
-                                                <label class="flex items-center gap-2">
-                                                    <input type="checkbox" 
-                                                           wire:model="selectedPermissions" 
-                                                           value="<?php echo e($permission->name); ?>"
-                                                           class="rounded">
-                                                    <span class="text-sm"><?php echo e($permission->name); ?></span>
-                                                </label>
-                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
+                        <!-- Permissions Section -->
+                        <div>
+                            <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
+                                <label class="block text-sm font-medium">Permissions</label>
+                                <span class="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-zinc-800 px-2 py-0.5 rounded-full" 
+                                    x-text="`${$wire.selectedPermissions?.length || 0} selected`"></span>
+                            </div>
+                            
+                            <!-- Search Input -->
+                            <div class="relative mb-3">
+                                <input type="text" 
+                                    x-model="searchPermission"
+                                    placeholder="Search permissions..."
+                                    class="w-full px-3 py-2 pl-9 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                <svg class="absolute left-3 top-2.5 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                                <button type="button" 
+                                        x-show="searchPermission"
+                                        @click="searchPermission = ''"
+                                        class="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <!-- Permissions List with Scroll (scrollbar hidden) -->
+                            <div class="border rounded-lg overflow-y-auto" 
+                                style="max-height: min(400px, calc(100vh - 350px)); scrollbar-width: none; -ms-overflow-style: none;">
+                                <style>
+                                    .border.rounded-lg.overflow-y-auto::-webkit-scrollbar {
+                                        display: none;
+                                    }
+                                </style>
+                                <div class="space-y-4 p-3 sm:p-4">
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $permissions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $group => $groupPermissions): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                                        <?php
+                                            $permissionNames = $groupPermissions->pluck('name')->toArray();
+                                            $permissionNamesJson = json_encode($permissionNames);
+                                        ?>
+                                        
+                                        <!-- Group dengan filter pencarian -->
+                                        <div x-show="`<?php echo e($group); ?>`.toLowerCase().includes(searchPermission.toLowerCase()) || 
+                                                    <?php echo e(json_encode($groupPermissions->pluck('name')->toArray())); ?>.some(p => p.toLowerCase().includes(searchPermission.toLowerCase()))">
+                                            <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
+                                                <h3 class="font-medium capitalize text-sm"><?php echo e($group); ?> Management</h3>
+                                                <button type="button" 
+                                                        x-on:click="
+                                                            let currentSelected = $wire.selectedPermissions || [];
+                                                            let groupPerms = <?php echo e($permissionNamesJson); ?>;
+                                                            let allSelected = groupPerms.every(p => currentSelected.includes(p));
+                                                            
+                                                            if (allSelected) {
+                                                                $wire.selectedPermissions = currentSelected.filter(p => !groupPerms.includes(p));
+                                                            } else {
+                                                                let newPerms = [...currentSelected];
+                                                                groupPerms.forEach(p => {
+                                                                    if (!newPerms.includes(p)) newPerms.push(p);
+                                                                });
+                                                                $wire.selectedPermissions = newPerms;
+                                                            }
+                                                        "
+                                                        class="text-xs px-2 py-1 rounded bg-gray-100 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-blue-600 dark:text-blue-400 transition">
+                                                    <span x-text="(() => {
+                                                        let currentSelected = $wire.selectedPermissions || [];
+                                                        let groupPerms = <?php echo e($permissionNamesJson); ?>;
+                                                        return groupPerms.every(p => currentSelected.includes(p)) ? 'Uncheck All' : 'Check All';
+                                                    })()"></span>
+                                                </button>
+                                            </div>
+                                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $groupPermissions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $permission): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                                                    <label class="flex items-center gap-2 p-1.5 rounded hover:bg-gray-50 dark:hover:bg-zinc-800 cursor-pointer transition"
+                                                        x-show="`<?php echo e($permission->name); ?>`.toLowerCase().includes(searchPermission.toLowerCase()) || 
+                                                                    `<?php echo e($group); ?>`.toLowerCase().includes(searchPermission.toLowerCase())">
+                                                        <input type="checkbox" 
+                                                            wire:model.live="selectedPermissions" 
+                                                            value="<?php echo e($permission->name); ?>"
+                                                            class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 w-4 h-4">
+                                                        <span class="text-xs sm:text-sm break-words"><?php echo e($permission->name); ?></span>
+                                                    </label>
+                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
+                                            </div>
                                         </div>
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
+                                    
+                                    <!-- Empty state -->
+                                    <div x-show="searchPermission && ![...document.querySelectorAll('[x-show]')].some(el => el.style.display !== 'none')" 
+                                        class="text-center py-8 text-gray-500 dark:text-gray-400">
+                                        <svg class="w-12 h-12 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        <p class="text-sm">No permissions found for "<span x-text="searchPermission"></span>"</p>
                                     </div>
-                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
+                                </div>
                             </div>
                         </div>
-
-                        <!-- Buttons -->
-                        <div class="flex justify-end gap-2">
-                            <button type="button" 
-                                    @click="open = false"
-                                    class="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800">
-                                Cancel
-                            </button>
-                            <button type="submit" 
-                                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                                <?php echo e($role_id ? 'Update' : 'Create'); ?>
-
-                            </button>
-                        </div>
                     </form>
+                </div>
+
+                <!-- Footer -->
+                <div class="flex-shrink-0 p-4 sm:p-6 border-t dark:border-zinc-700 bg-white dark:bg-zinc-900 rounded-b-xl">
+                    <div class="flex justify-end gap-2">
+                        <button type="button" 
+                                @click="open = false"
+                                class="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 transition text-sm sm:text-base">
+                            Cancel
+                        </button>
+                        <button type="submit" 
+                                form="role-form"
+                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm sm:text-base">
+                            <?php echo e($role_id ? 'Update' : 'Create'); ?>
+
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

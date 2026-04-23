@@ -5,7 +5,7 @@
 <!DOCTYPE html>
 <html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>" class="dark">
 <head>
-    <?php echo '<link rel="stylesheet" href="http://localhost/vendor/volet/volet-default.css">'; ?>
+    <?php echo '<link rel="stylesheet" href="https://test.siix-ems.co.id/vendor/volet/volet-default.css">'; ?>
     <?php echo $__env->make('partials.head', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
     <style>
         [x-cloak] { display: none !important; }
@@ -137,7 +137,7 @@
         <aside x-ref="sidebar"
             @mouseenter="handleMouseEnter"
             @mouseleave="handleMouseLeave"
-            class="bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-700 shadow-lg h-screen overflow-hidden sidebar-transition"
+            class="bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-700 shadow-lg h-screen overflow-hidden sidebar-transition flex flex-col"
             :class="{
                 'fixed top-0 left-0 z-50': isMobile,
                 'sticky top-0': !isMobile,
@@ -296,7 +296,7 @@
             </div>
             
             <!-- Sidebar Navigation -->
-            <nav class="p-3 h-[calc(100%-4rem)] overflow-y-auto sidebar-scroll">
+            <nav class="p-3 h-[calc(100%-4rem)] overflow-y-auto sidebar-scroll" style="overflow-y: auto !important; max-height: calc(100vh - 4rem);">
                 
                 <!-- Group: HOME -->
                 <div class="mb-2">
@@ -1217,18 +1217,18 @@ unset($__split);
                 
                 // Groups state
                 groups: {
-                    home: { open: true },
-                    maintenance: { open: true },
-                    production: { open: true },
-                    dcc: { open: true },
-                    hr: { open: true },
+                    home: { open: false },
+                    maintenance: { open: false },
+                    production: { open: false },
+                    dcc: { open: false },
+                    hr: { open: false },
                     hrReport: { open: false },
-                    ticketing: { open: true },
-                    settings: { open: true },
-                    auth: { open: true },
+                    ticketing: { open: false },
+                    settings: { open: false },
+                    auth: { open: false },
                     wipMonitoring: { open: false },
                     msMonitoring: { open: false },
-                    qaqc: { open: true },
+                    qaqc: { open: false },
                 },
                 
                 init() {
@@ -1510,6 +1510,6 @@ unset($__split);
                 data-icon="https://api.iconify.design/heroicons:chat-bubble-left-ellipsis.svg?color=%23FFFFFF"
                 data-close-icon="https://api.iconify.design/heroicons:x-mark.svg?color=%23FFFFFF"
                 data-labels="{&quot;bubble&quot;:{&quot;tooltip&quot;:&quot;Something to share ?&quot;},&quot;panel&quot;:{&quot;title&quot;:&quot;How can we help ?&quot;,&quot;close&quot;:&quot;Close&quot;,&quot;loading&quot;:&quot;Loading...&quot;,&quot;back&quot;:&quot;Back&quot;},&quot;feedback-messages&quot;:{&quot;placeholder&quot;:&quot;What&#039;s on your mind?&quot;,&quot;button&quot;:&quot;Send feedback&quot;,&quot;button-loading&quot;:&quot;Sending...&quot;,&quot;success-title&quot;:&quot;Thank you for your feedback!&quot;,&quot;success-subtitle&quot;:&quot;We appreciate your input and will review it shortly.&quot;,&quot;send-another&quot;:&quot;Send another feedback&quot;,&quot;error&quot;:&quot;Failed to submit feedback&quot;}}"
-                ></div>'; ?><?php echo '<script src="http://localhost/vendor/volet/volet-app.js"></script>'; ?>
+                ></div>'; ?><?php echo '<script src="https://test.siix-ems.co.id/vendor/volet/volet-app.js"></script>'; ?>
 </body>
 </html><?php /**PATH /www/wwwroot/test.siix-ems.co.id/siix-portal/resources/views/layouts/app/sidebar.blade.php ENDPATH**/ ?>

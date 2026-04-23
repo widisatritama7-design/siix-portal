@@ -183,67 +183,163 @@
     </flux:card>
 
     <!-- MODAL FORM ROLE -->
-    <div x-data="{ open: false }" 
-         x-show="open" 
-         @open-modal.window="if ($event.detail === 'role-form-modal') open = true"
-         @close-modal.window="if ($event.detail === 'role-form-modal') open = false"
-         x-cloak>
+    <div x-data="{ 
+        open: false,
+        searchPermission: ''
+    }" 
+        x-show="open" 
+        @open-modal.window="if ($event.detail === 'role-form-modal') open = true; searchPermission = ''"
+        @close-modal.window="if ($event.detail === 'role-form-modal') open = false"
+        x-cloak>
         
         <!-- Backdrop -->
         <div class="fixed inset-0 bg-black/50 z-40" @click="open = false"></div>
         
         <!-- Modal -->
-        <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-                <div class="p-6">
-                    <h2 class="text-xl font-bold mb-4">{{ $modalTitle }}</h2>
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 md:p-6">
+            <!-- Modal Container -->
+            <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-xl w-full max-w-2xl mx-auto flex flex-col" 
+                style="max-height: calc(100vh - 2rem);">
+                
+                <!-- Header -->
+                <div class="flex-shrink-0 p-4 sm:p-6 border-b dark:border-zinc-700">
+                    <h2 class="text-lg sm:text-xl font-bold">{{ $modalTitle }}</h2>
+                </div>
 
-                    <form wire:submit="save">
+                <!-- Form Body - scrollable dengan scrollbar hidden -->
+                <div class="flex-1 overflow-y-auto p-4 sm:p-6" 
+                    style="scrollbar-width: none; -ms-overflow-style: none;">
+                    <style>
+                        .flex-1::-webkit-scrollbar {
+                            display: none;
+                        }
+                    </style>
+                    
+                    <form wire:submit="save" id="role-form" class="space-y-5">
                         <!-- Role Name -->
-                        <div class="mb-4">
-                            <label class="block text-sm font-medium mb-1">Role Name</label>
+                        <div>
+                            <label class="block text-sm font-medium mb-1.5">Role Name</label>
                             <input type="text" 
-                                   wire:model="name"
-                                   class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                            @error('name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                wire:model="name"
+                                class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm sm:text-base">
+                            @error('name') <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span> @enderror
                         </div>
 
-                        <!-- Permissions -->
-                        <div class="mb-6">
-                            <label class="block text-sm font-medium mb-2">Permissions</label>
-                            <div class="space-y-4 max-h-96 overflow-y-auto border rounded-lg p-4">
-                                @foreach($permissions as $group => $groupPermissions)
-                                    <div>
-                                        <h3 class="font-medium mb-2 capitalize">{{ $group }} Management</h3>
-                                        <div class="grid grid-cols-2 gap-2">
-                                            @foreach($groupPermissions as $permission)
-                                                <label class="flex items-center gap-2">
-                                                    <input type="checkbox" 
-                                                           wire:model="selectedPermissions" 
-                                                           value="{{ $permission->name }}"
-                                                           class="rounded">
-                                                    <span class="text-sm">{{ $permission->name }}</span>
-                                                </label>
-                                            @endforeach
+                        <!-- Permissions Section -->
+                        <div>
+                            <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
+                                <label class="block text-sm font-medium">Permissions</label>
+                                <span class="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-zinc-800 px-2 py-0.5 rounded-full" 
+                                    x-text="`${$wire.selectedPermissions?.length || 0} selected`"></span>
+                            </div>
+                            
+                            <!-- Search Input -->
+                            <div class="relative mb-3">
+                                <input type="text" 
+                                    x-model="searchPermission"
+                                    placeholder="Search permissions..."
+                                    class="w-full px-3 py-2 pl-9 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                <svg class="absolute left-3 top-2.5 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                </svg>
+                                <button type="button" 
+                                        x-show="searchPermission"
+                                        @click="searchPermission = ''"
+                                        class="absolute right-3 top-2.5 text-gray-400 hover:text-gray-600">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+
+                            <!-- Permissions List with Scroll (scrollbar hidden) -->
+                            <div class="border rounded-lg overflow-y-auto" 
+                                style="max-height: min(400px, calc(100vh - 350px)); scrollbar-width: none; -ms-overflow-style: none;">
+                                <style>
+                                    .border.rounded-lg.overflow-y-auto::-webkit-scrollbar {
+                                        display: none;
+                                    }
+                                </style>
+                                <div class="space-y-4 p-3 sm:p-4">
+                                    @foreach($permissions as $group => $groupPermissions)
+                                        @php
+                                            $permissionNames = $groupPermissions->pluck('name')->toArray();
+                                            $permissionNamesJson = json_encode($permissionNames);
+                                        @endphp
+                                        
+                                        <!-- Group dengan filter pencarian -->
+                                        <div x-show="`{{ $group }}`.toLowerCase().includes(searchPermission.toLowerCase()) || 
+                                                    {{ json_encode($groupPermissions->pluck('name')->toArray()) }}.some(p => p.toLowerCase().includes(searchPermission.toLowerCase()))">
+                                            <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
+                                                <h3 class="font-medium capitalize text-sm">{{ $group }} Management</h3>
+                                                <button type="button" 
+                                                        x-on:click="
+                                                            let currentSelected = $wire.selectedPermissions || [];
+                                                            let groupPerms = {{ $permissionNamesJson }};
+                                                            let allSelected = groupPerms.every(p => currentSelected.includes(p));
+                                                            
+                                                            if (allSelected) {
+                                                                $wire.selectedPermissions = currentSelected.filter(p => !groupPerms.includes(p));
+                                                            } else {
+                                                                let newPerms = [...currentSelected];
+                                                                groupPerms.forEach(p => {
+                                                                    if (!newPerms.includes(p)) newPerms.push(p);
+                                                                });
+                                                                $wire.selectedPermissions = newPerms;
+                                                            }
+                                                        "
+                                                        class="text-xs px-2 py-1 rounded bg-gray-100 hover:bg-gray-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-blue-600 dark:text-blue-400 transition">
+                                                    <span x-text="(() => {
+                                                        let currentSelected = $wire.selectedPermissions || [];
+                                                        let groupPerms = {{ $permissionNamesJson }};
+                                                        return groupPerms.every(p => currentSelected.includes(p)) ? 'Uncheck All' : 'Check All';
+                                                    })()"></span>
+                                                </button>
+                                            </div>
+                                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                                @foreach($groupPermissions as $permission)
+                                                    <label class="flex items-center gap-2 p-1.5 rounded hover:bg-gray-50 dark:hover:bg-zinc-800 cursor-pointer transition"
+                                                        x-show="`{{ $permission->name }}`.toLowerCase().includes(searchPermission.toLowerCase()) || 
+                                                                    `{{ $group }}`.toLowerCase().includes(searchPermission.toLowerCase())">
+                                                        <input type="checkbox" 
+                                                            wire:model.live="selectedPermissions" 
+                                                            value="{{ $permission->name }}"
+                                                            class="rounded border-gray-300 text-blue-600 focus:ring-blue-500 w-4 h-4">
+                                                        <span class="text-xs sm:text-sm break-words">{{ $permission->name }}</span>
+                                                    </label>
+                                                @endforeach
+                                            </div>
                                         </div>
+                                    @endforeach
+                                    
+                                    <!-- Empty state -->
+                                    <div x-show="searchPermission && ![...document.querySelectorAll('[x-show]')].some(el => el.style.display !== 'none')" 
+                                        class="text-center py-8 text-gray-500 dark:text-gray-400">
+                                        <svg class="w-12 h-12 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        <p class="text-sm">No permissions found for "<span x-text="searchPermission"></span>"</p>
                                     </div>
-                                @endforeach
+                                </div>
                             </div>
                         </div>
-
-                        <!-- Buttons -->
-                        <div class="flex justify-end gap-2">
-                            <button type="button" 
-                                    @click="open = false"
-                                    class="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800">
-                                Cancel
-                            </button>
-                            <button type="submit" 
-                                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                                {{ $role_id ? 'Update' : 'Create' }}
-                            </button>
-                        </div>
                     </form>
+                </div>
+
+                <!-- Footer -->
+                <div class="flex-shrink-0 p-4 sm:p-6 border-t dark:border-zinc-700 bg-white dark:bg-zinc-900 rounded-b-xl">
+                    <div class="flex justify-end gap-2">
+                        <button type="button" 
+                                @click="open = false"
+                                class="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 transition text-sm sm:text-base">
+                            Cancel
+                        </button>
+                        <button type="submit" 
+                                form="role-form"
+                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition text-sm sm:text-base">
+                            {{ $role_id ? 'Update' : 'Create' }}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

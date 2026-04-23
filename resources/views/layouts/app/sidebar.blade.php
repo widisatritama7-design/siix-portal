@@ -133,7 +133,7 @@
         <aside x-ref="sidebar"
             @mouseenter="handleMouseEnter"
             @mouseleave="handleMouseLeave"
-            class="bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-700 shadow-lg h-screen overflow-hidden sidebar-transition"
+            class="bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-700 shadow-lg h-screen overflow-hidden sidebar-transition flex flex-col"
             :class="{
                 'fixed top-0 left-0 z-50': isMobile,
                 'sticky top-0': !isMobile,
@@ -292,7 +292,7 @@
             </div>
             
             <!-- Sidebar Navigation -->
-            <nav class="p-3 h-[calc(100%-4rem)] overflow-y-auto sidebar-scroll">
+            <nav class="p-3 h-[calc(100%-4rem)] overflow-y-auto sidebar-scroll" style="overflow-y: auto !important; max-height: calc(100vh - 4rem);">
                 
                 <!-- Group: HOME -->
                 <div class="mb-2">
@@ -1158,18 +1158,18 @@
                 
                 // Groups state
                 groups: {
-                    home: { open: true },
-                    maintenance: { open: true },
-                    production: { open: true },
-                    dcc: { open: true },
-                    hr: { open: true },
+                    home: { open: false },
+                    maintenance: { open: false },
+                    production: { open: false },
+                    dcc: { open: false },
+                    hr: { open: false },
                     hrReport: { open: false },
-                    ticketing: { open: true },
-                    settings: { open: true },
-                    auth: { open: true },
+                    ticketing: { open: false },
+                    settings: { open: false },
+                    auth: { open: false },
                     wipMonitoring: { open: false },
                     msMonitoring: { open: false },
-                    qaqc: { open: true },
+                    qaqc: { open: false },
                 },
                 
                 init() {
