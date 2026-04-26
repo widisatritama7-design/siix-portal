@@ -22,7 +22,7 @@
         "livewire/livewire": "^4.0",
         "milon/barcode": "^13.1",
         "mydnic/volet": "^2.2",
-        "phpoffice/phpspreadsheet": "^5.6",
+        "phpoffice/phpspreadsheet": "^5.7",
         "spatie/laravel-activitylog": "5.0",
         "spatie/laravel-permission": "^7.2"
     },

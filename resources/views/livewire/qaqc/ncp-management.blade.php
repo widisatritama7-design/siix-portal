@@ -170,13 +170,15 @@
                         <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">#</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">NCP Number</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Employee</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Section</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Status</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Remarks</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Created At</th>
                         @if($activeTab === 'deleted')
                         <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Deleted By</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Deleted Reason</th>
                         @else
-                        <th class="px-4 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Actions</th>
+                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Actions</th>
                         @endif
                     </tr>
                 </thead>
@@ -207,6 +209,11 @@
                             </div>
                         </td>
                         <td class="px-4 py-3">
+                            <span class="text-sm text-zinc-700 dark:text-zinc-300">
+                                {{ $ncp->section ?? '-' }}
+                            </span>
+                        </td>
+                        <td class="px-4 py-3">
                             @php
                                 $statusColors = [
                                     'open' => 'yellow',
@@ -227,6 +234,9 @@
                         </td>
                         <td class="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400 max-w-md truncate" title="{{ $ncp->remarks }}">
                             {{ $ncp->remarks ?: '-' }}
+                        </td>
+                        <td class="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400">
+                            {{ $ncp->created_at ? \Carbon\Carbon::parse($ncp->created_at)->format('d/m/Y H:i') : '-' }}
                         </td>
                         
                         @if($activeTab === 'deleted')
@@ -285,7 +295,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="{{ $activeTab === 'deleted' ? '8' : '6' }}" class="px-4 py-12 text-center">
+                        <td colspan="{{ $activeTab === 'deleted' ? '9' : '8' }}" class="px-4 py-12 text-center">
                             <div class="flex flex-col items-center justify-center gap-3 min-h-[400px]">
                                 <div class="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
                                     <flux:icon name="document-text" class="w-10 h-10 text-zinc-400 dark:text-zinc-500" />

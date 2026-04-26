@@ -556,7 +556,6 @@
                                     <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
                                     
                                     <div class="space-y-1 ml-[24px]">
-                                        @can('view master models')
                                         <!-- Master Model -->
                                         <a href="{{ route('prod.master-models') }}" wire:navigate
                                         class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('prod.master-models') ? 'menu-active' : '' }}">
@@ -566,8 +565,6 @@
                                             </svg>
                                             <span class="truncate">Master Model</span>
                                         </a>
-                                        @endcan
-                                        @can('view wip')
                                         <!-- Master WIP -->
                                         <a href="{{ route('prod.wip.index') }}" wire:navigate
                                         class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('prod.wip.index') ? 'menu-active' : '' }}">
@@ -577,7 +574,6 @@
                                             </svg>
                                             <span class="truncate">Master WIP</span>
                                         </a>
-                                        @endcan
                                         <!-- Master Rack Lose -->
                                         <a href="{{ route('prod.rack-lose') }}" wire:navigate
                                         class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('prod.rack-lose') ? 'menu-active' : '' }}">
@@ -901,6 +897,13 @@
                                 <span class="truncate">NCP Management</span>
                             </a>
                             @endcan
+                            @can('view ncp all')
+                            <a href="{{ route('qaqc.ncp.report') }}" wire:navigate
+                            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('qaqc.ncp.report') ? 'menu-active' : '' }}">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sheet-icon lucide-sheet"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="3" x2="21" y1="9" y2="9"/><line x1="3" x2="21" y1="15" y2="15"/><line x1="9" x2="9" y1="9" y2="21"/><line x1="15" x2="15" y1="9" y2="21"/></svg>
+                                <span class="truncate">NCP Report</span>
+                            </a>
+                            @endcan
                         </div>
                     </div>
                 </div>
@@ -1132,7 +1135,7 @@
                 </flux:navbar>
             </flux:header>
             
-            <div class="p-1 lg:p-2">
+            <div class="p-0">
                 {{ $slot }}
             </div>
         </main>

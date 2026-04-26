@@ -254,13 +254,15 @@
                         <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">#</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">NCP Number</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Employee</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Section</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Status</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Remarks</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Created At</th>
                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($activeTab === 'deleted'): ?>
                         <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Deleted By</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Deleted Reason</th>
                         <?php else: ?>
-                        <th class="px-4 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Actions</th>
+                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Actions</th>
                         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </tr>
                 </thead>
@@ -292,6 +294,12 @@
                                 <div class="font-medium text-zinc-800 dark:text-white"><?php echo e($ncp->employee->name ?? 'N/A'); ?></div>
                                 <div class="text-xs text-zinc-500"><?php echo e($ncp->employee->department ?? '-'); ?></div>
                             </div>
+                        </td>
+                        <td class="px-4 py-3">
+                            <span class="text-sm text-zinc-700 dark:text-zinc-300">
+                                <?php echo e($ncp->section ?? '-'); ?>
+
+                            </span>
                         </td>
                         <td class="px-4 py-3">
                             <?php
@@ -326,6 +334,10 @@
                         </td>
                         <td class="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400 max-w-md truncate" title="<?php echo e($ncp->remarks); ?>">
                             <?php echo e($ncp->remarks ?: '-'); ?>
+
+                        </td>
+                        <td class="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400">
+                            <?php echo e($ncp->created_at ? \Carbon\Carbon::parse($ncp->created_at)->format('d/m/Y H:i') : '-'); ?>
 
                         </td>
                         
@@ -401,7 +413,7 @@
                     </tr>
                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
                     <tr>
-                        <td colspan="<?php echo e($activeTab === 'deleted' ? '8' : '6'); ?>" class="px-4 py-12 text-center">
+                        <td colspan="<?php echo e($activeTab === 'deleted' ? '9' : '8'); ?>" class="px-4 py-12 text-center">
                             <div class="flex flex-col items-center justify-center gap-3 min-h-[400px]">
                                 <div class="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
                                     <?php ob_start(); ?><svg class="shrink-0 [:where(&amp;)]:size-6 w-10 h-10 text-zinc-400 dark:text-zinc-500" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">

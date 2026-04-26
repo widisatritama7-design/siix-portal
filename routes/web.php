@@ -32,6 +32,7 @@ use App\Livewire\PROD\WIP\MasterWipDetail;
 use App\Livewire\PROD\WIP\MasterWipManagement;
 use App\Livewire\PROD\WIP\MasterWipScan;
 use App\Livewire\QAQC\NCPManagement;
+use App\Livewire\QAQC\NCPReport;
 use App\Livewire\Ticket\CategoryTicketManager;
 use App\Livewire\Ticket\TicketManager;
 use App\Livewire\Ticket\TicketView;
@@ -130,6 +131,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // QA-QC
     Route::get('/qaqc/ncp', NCPManagement::class)->name('qaqc.ncp');
+    Route::get('/qaqc/ncp/report', NCPReport::class)->name('qaqc.ncp.report');
 
 });
 

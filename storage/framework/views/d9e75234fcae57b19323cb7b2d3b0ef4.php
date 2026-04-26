@@ -560,7 +560,6 @@
                                     <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
                                     
                                     <div class="space-y-1 ml-[24px]">
-                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view master models')): ?>
                                         <!-- Master Model -->
                                         <a href="<?php echo e(route('prod.master-models')); ?>" wire:navigate
                                         class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('prod.master-models') ? 'menu-active' : ''); ?>">
@@ -570,8 +569,6 @@
                                             </svg>
                                             <span class="truncate">Master Model</span>
                                         </a>
-                                        <?php endif; ?>
-                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view wip')): ?>
                                         <!-- Master WIP -->
                                         <a href="<?php echo e(route('prod.wip.index')); ?>" wire:navigate
                                         class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('prod.wip.index') ? 'menu-active' : ''); ?>">
@@ -581,7 +578,6 @@
                                             </svg>
                                             <span class="truncate">Master WIP</span>
                                         </a>
-                                        <?php endif; ?>
                                         <!-- Master Rack Lose -->
                                         <a href="<?php echo e(route('prod.rack-lose')); ?>" wire:navigate
                                         class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('prod.rack-lose') ? 'menu-active' : ''); ?>">
@@ -905,6 +901,13 @@
                                 <span class="truncate">NCP Management</span>
                             </a>
                             <?php endif; ?>
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view ncp all')): ?>
+                            <a href="<?php echo e(route('qaqc.ncp.report')); ?>" wire:navigate
+                            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('qaqc.ncp.report') ? 'menu-active' : ''); ?>">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sheet-icon lucide-sheet"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="3" x2="21" y1="9" y2="9"/><line x1="3" x2="21" y1="15" y2="15"/><line x1="9" x2="9" y1="9" y2="21"/><line x1="15" x2="15" y1="9" y2="21"/></svg>
+                                <span class="truncate">NCP Report</span>
+                            </a>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
@@ -1188,7 +1191,7 @@ unset($__split);
     </header>
 <?php echo ltrim(ob_get_clean()); ?>
             
-            <div class="p-1 lg:p-2">
+            <div class="p-0">
                 <?php echo e($slot); ?>
 
             </div>
