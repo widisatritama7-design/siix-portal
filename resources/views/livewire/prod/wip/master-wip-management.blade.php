@@ -240,50 +240,6 @@
         @endcan
     </div>
 
-    <!-- Status Summary Cards - 1 Baris dengan Horizontal Scroll di Mobile -->
-    <div class="overflow-x-auto pb-2">
-        <div class="grid grid-cols-3 gap-3 min-w-[600px] md:min-w-0">
-            <!-- Open Card -->
-            <div class="status-card status-card-open">
-                <div>
-                    <div class="status-label status-label-open">Open</div>
-                    <div class="status-value status-value-open">{{ $statusCounts['Open'] ?? 0 }}</div>
-                </div>
-                <div class="status-icon status-icon-open">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                </div>
-            </div>
-
-            <!-- In Progress Card -->
-            <div class="status-card status-card-progress">
-                <div>
-                    <div class="status-label status-label-progress">In Progress</div>
-                    <div class="status-value status-value-progress">{{ $statusCounts['In Progress'] ?? 0 }}</div>
-                </div>
-                <div class="status-icon status-icon-progress">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                    </svg>
-                </div>
-            </div>
-
-            <!-- Finished Card -->
-            <div class="status-card status-card-finished">
-                <div>
-                    <div class="status-label status-label-finished">Finished</div>
-                    <div class="status-value status-value-finished">{{ $statusCounts['Finished'] ?? 0 }}</div>
-                </div>
-                <div class="status-icon status-icon-finished">
-                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <!-- Filter Section -->
     <flux:card class="p-3">
         <div class="flex flex-wrap items-center gap-2">

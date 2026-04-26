@@ -24,6 +24,13 @@ class UserManagement extends Component
     public $search = '';
     public $modalTitle = 'Add New User';
     public $userToDelete = null;
+    
+    // Bulk action properties
+    public $selectedUsers = [];
+    public $selectAll = false;
+    public $bulkSelectedRoles = []; // Array untuk multiple roles
+    public $bulkActionType = 'assign'; // 'assign' or 'remove'
+    public $showBulkModal = false;
 
     protected function rules()
     {
@@ -40,11 +47,9 @@ class UserManagement extends Component
     
         if ($this->user_id) {
             $rules['password'] = 'nullable|min:8|confirmed';
-            // Untuk edit, email harus unique kecuali dirinya sendiri
             $rules['email'] = 'nullable|email|max:255|unique:users,email,' . $this->user_id;
         } else {
             $rules['password'] = 'required|min:8|confirmed';
-            // Untuk create, email harus unique jika diisi
             $rules['email'] = 'nullable|email|max:255|unique:users,email';
         }
     
@@ -79,11 +84,188 @@ class UserManagement extends Component
     public function updatedSearch()
     {
         $this->resetPage();
+        $this->resetBulkSelection();
+    }
+
+    public function updatedSelectAll($value)
+    {
+        if ($value) {
+            $this->selectedUsers = $this->getUsers()->pluck('id')->map(fn($id) => (string) $id)->toArray();
+        } else {
+            $this->selectedUsers = [];
+        }
+    }
+
+    public function updatedSelectedUsers()
+    {
+        $this->selectAll = count($this->selectedUsers) === $this->getUsers()->count();
+    }
+
+    protected function getUsers()
+    {
+        return User::with('roles')
+            ->when($this->search, function ($query) {
+                $searchTerm = '%' . trim($this->search) . '%';
+                $query->where(function ($q) use ($searchTerm) {
+                    $q->where('name', 'like', $searchTerm)
+                      ->orWhere('nik', 'like', $searchTerm)
+                      ->orWhere('email', 'like', $searchTerm);
+                });
+            })
+            ->orderBy('created_at', 'asc')
+            ->get();
+    }
+
+    public function resetBulkSelection()
+    {
+        $this->selectedUsers = [];
+        $this->selectAll = false;
+        $this->bulkSelectedRoles = [];
+        $this->bulkActionType = 'assign';
+    }
+
+    public function openBulkModal()
+    {
+        if (empty($this->selectedUsers)) {
+            $this->dispatch('notify', message: 'Please select at least one user!', type: 'warning');
+            return;
+        }
+
+        if (!auth()->user()->can('edit users')) {
+            $this->dispatch('notify', message: 'You do not have permission to edit users!', type: 'error');
+            return;
+        }
+
+        $this->bulkSelectedRoles = [];
+        $this->bulkActionType = 'assign';
+        $this->showBulkModal = true;
+        $this->dispatch('open-modal', modal: 'bulk-action-modal');
+    }
+
+    public function assignBulkRoles()
+    {
+        if (empty($this->selectedUsers)) {
+            $this->dispatch('notify', message: 'No users selected!', type: 'warning');
+            return;
+        }
+
+        if (empty($this->bulkSelectedRoles)) {
+            $this->dispatch('notify', message: 'Please select at least one role to assign!', type: 'warning');
+            return;
+        }
+
+        try {
+            $users = User::whereIn('id', $this->selectedUsers)->get();
+            $count = 0;
+            $skipped = 0;
+            $assignedRoles = [];
+
+            foreach ($this->bulkSelectedRoles as $roleName) {
+                $role = Role::where('name', $roleName)->first();
+                if ($role) {
+                    $assignedRoles[] = $roleName;
+                }
+            }
+
+            foreach ($users as $user) {
+                $userAssignCount = 0;
+                
+                foreach ($assignedRoles as $roleName) {
+                    // Skip super admin if current user is not super admin
+                    if ($roleName === 'super-admin' && !auth()->user()->hasRole('super-admin')) {
+                        $skipped++;
+                        continue;
+                    }
+
+                    // Check if user already has the role
+                    if (!$user->hasRole($roleName)) {
+                        $user->assignRole($roleName);
+                        $count++;
+                        $userAssignCount++;
+                    }
+                }
+            }
+
+            $rolesList = implode(', ', $assignedRoles);
+            $message = "Roles [{$rolesList}] assigned to {$count} user(s)";
+            if ($skipped > 0) {
+                $message .= " (Skipped {$skipped} super-admin role assignments)";
+            }
+            
+            $this->dispatch('notify', message: $message, type: 'success');
+            
+            // Reset bulk selection
+            $this->resetBulkSelection();
+            $this->showBulkModal = false;
+            $this->dispatch('close-modal', modal: 'bulk-action-modal');
+            
+        } catch (\Exception $e) {
+            \Log::error('Bulk role assignment error: ' . $e->getMessage());
+            $this->dispatch('notify', message: 'Error assigning roles: ' . $e->getMessage(), type: 'error');
+        }
+    }
+
+    public function removeBulkRoles()
+    {
+        if (empty($this->selectedUsers)) {
+            $this->dispatch('notify', message: 'No users selected!', type: 'warning');
+            return;
+        }
+
+        if (empty($this->bulkSelectedRoles)) {
+            $this->dispatch('notify', message: 'Please select at least one role to remove!', type: 'warning');
+            return;
+        }
+
+        try {
+            $users = User::whereIn('id', $this->selectedUsers)->get();
+            $count = 0;
+            $skipped = 0;
+            $removedRoles = [];
+
+            foreach ($this->bulkSelectedRoles as $roleName) {
+                $role = Role::where('name', $roleName)->first();
+                if ($role) {
+                    $removedRoles[] = $roleName;
+                }
+            }
+
+            foreach ($users as $user) {
+                foreach ($removedRoles as $roleName) {
+                    // Prevent removing super-admin role from super admin users
+                    if ($user->hasRole('super-admin') && $roleName === 'super-admin') {
+                        $skipped++;
+                        continue;
+                    }
+
+                    if ($user->hasRole($roleName)) {
+                        $user->removeRole($roleName);
+                        $count++;
+                    }
+                }
+            }
+
+            $rolesList = implode(', ', $removedRoles);
+            $message = "Roles [{$rolesList}] removed from {$count} user(s)";
+            if ($skipped > 0) {
+                $message .= " (Skipped {$skipped} super-admin role removals)";
+            }
+            
+            $this->dispatch('notify', message: $message, type: 'success');
+            
+            // Reset bulk selection
+            $this->resetBulkSelection();
+            $this->showBulkModal = false;
+            $this->dispatch('close-modal', modal: 'bulk-action-modal');
+            
+        } catch (\Exception $e) {
+            \Log::error('Bulk role removal error: ' . $e->getMessage());
+            $this->dispatch('notify', message: 'Error removing roles: ' . $e->getMessage(), type: 'error');
+        }
     }
 
     public function save()
     {
-        // CEK AKSES
         if ($this->user_id) {
             if (!auth()->user()->can('edit users')) {
                 $this->dispatch('notify', message: 'You do not have permission to edit users!', type: 'error');
@@ -96,7 +278,6 @@ class UserManagement extends Component
             }
         }
 
-        // Validasi NIK secara manual untuk double check
         $existingUser = User::where('nik', trim($this->nik))
             ->when($this->user_id, function($query) {
                 $query->where('id', '!=', $this->user_id);
@@ -108,12 +289,10 @@ class UserManagement extends Component
             return;
         }
 
-        // Validasi data
         $this->validate();
 
         try {
             if ($this->user_id) {
-                // UPDATE USER
                 $user = User::findOrFail($this->user_id);
                 
                 $data = [
@@ -132,7 +311,6 @@ class UserManagement extends Component
                 $message = 'User berhasil diupdate!';
                 $type = 'success';
             } else {
-                // CREATE USER
                 $user = User::create([
                     'nik' => trim($this->nik),
                     'name' => trim($this->name),
@@ -149,6 +327,7 @@ class UserManagement extends Component
             }
 
             $this->resetForm();
+            $this->resetBulkSelection();
             $this->dispatch('notify', message: $message, type: $type);
             
         } catch (\Exception $e) {
@@ -159,7 +338,6 @@ class UserManagement extends Component
 
     public function edit($id)
     {
-        // CEK AKSES
         if (!auth()->user()->can('edit users')) {
             $this->dispatch('notify', message: 'You do not have permission to edit users!', type: 'error');
             return;
@@ -182,7 +360,6 @@ class UserManagement extends Component
 
     public function confirmDelete($id)
     {
-        // CEK AKSES
         if (!auth()->user()->can('delete users')) {
             $this->dispatch('notify', message: 'You do not have permission to delete users!', type: 'error');
             return;
@@ -212,6 +389,7 @@ class UserManagement extends Component
             $user->delete();
 
             $this->userToDelete = null;
+            $this->resetBulkSelection();
             
             $this->dispatch('notify', message: "User '{$userName}' has been deleted successfully!", type: 'success');
             $this->dispatch('close-modal', modal: 'delete-user-modal');
@@ -230,11 +408,10 @@ class UserManagement extends Component
 
     public function render()
     {
-        // CEK AKSES VIEW
         if (!auth()->user()->can('view users')) {
             abort(403, 'Unauthorized access.');
         }
-
+    
         $users = User::with('roles')
             ->when($this->search, function ($query) {
                 $searchTerm = '%' . trim($this->search) . '%';
@@ -244,11 +421,11 @@ class UserManagement extends Component
                       ->orWhere('email', 'like', $searchTerm);
                 });
             })
-            ->latest()
+            ->orderBy('created_at', 'asc')
             ->paginate(10);
-
-        $roles = Role::orderBy('name')->get();
-
+    
+        $roles = Role::orderBy('created_at', 'asc')->get();
+    
         return view('livewire.user.user-management', [
             'users' => $users,
             'roles' => $roles,

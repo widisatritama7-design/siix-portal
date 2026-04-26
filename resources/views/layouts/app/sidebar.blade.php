@@ -458,7 +458,7 @@
                             <span class="truncate">ESD Monitoring</span>
                         </a>
                         @endcan
-                         @can('view mtc-monitoring')
+                        @can('view mtc-monitoring')
                         <a href="{{ route('mtc.daily-dashboard') }}" wire:navigate
                            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('mtc.daily-dashboard') ? 'menu-active' : '' }}">
                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cog-icon lucide-cog w-4 h-4">
@@ -858,6 +858,7 @@
                 @endcanany
 
                 <!-- Group: QA/QC -->
+                @canany(['view qaqc'])
                 <div class="mb-2">
                     <div class="relative w-full">
                         <button @click="toggleGroup('qaqc')" 
@@ -907,6 +908,7 @@
                         </div>
                     </div>
                 </div>
+                @endcanany
                 
                 <!-- Group: TICKETING SUPPORT -->
                 @canany(['view categories', 'view tickets'])

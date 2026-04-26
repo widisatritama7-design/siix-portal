@@ -42,51 +42,138 @@
         
         <div class="-mt-2">
             <!-- Filters -->
-            <div class="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-6">
-                <div class="flex flex-wrap gap-2 flex-1">
-                    <flux:select wire:model.live="departmentFilter" class="w-40">
-                        <flux:select.option value="">All Departments</flux:select.option>
-                        @foreach($departments as $dept)
-                            <flux:select.option value="{{ $dept }}">{{ $dept }}</flux:select.option>
-                        @endforeach
-                    </flux:select>
+            <div class="space-y-4 mb-6">
+                <!-- Main Filter Bar -->
+                <div class="flex flex-col lg:flex-row gap-4">
+                    <!-- Filter Dropdowns -->
+                    <div class="flex flex-wrap gap-2 flex-1">
+                        <flux:select wire:model.live="departmentFilter" class="w-40">
+                            <flux:select.option value="">All Departments</flux:select.option>
+                            @foreach($departments as $dept)
+                                <flux:select.option value="{{ $dept }}">{{ $dept }}</flux:select.option>
+                            @endforeach
+                        </flux:select>
+                        
+                        <flux:select wire:model.live="statusFilter" class="w-40">
+                            <flux:select.option value="">All Status</flux:select.option>
+                            @foreach($statusOptions as $key => $value)
+                                <flux:select.option value="{{ $key }}">{{ $value }}</flux:select.option>
+                            @endforeach
+                        </flux:select>
+                        
+                        <flux:select wire:model.live="scheduleFilter" class="w-48">
+                            @foreach($scheduleOptions as $key => $value)
+                                <flux:select.option value="{{ $key }}">{{ $value }}</flux:select.option>
+                            @endforeach
+                        </flux:select>
+                    </div>
                     
-                    <flux:select wire:model.live="statusFilter" class="w-40">
-                        <flux:select.option value="">All Status</flux:select.option>
-                        @foreach($statusOptions as $key => $value)
-                            <flux:select.option value="{{ $key }}">{{ $value }}</flux:select.option>
-                        @endforeach
-                    </flux:select>
-                    
-                    <flux:select wire:model.live="perPage" class="w-40">
-                        <flux:select.option value="10">10 per page</flux:select.option>
-                        <flux:select.option value="25">25 per page</flux:select.option>
-                        <flux:select.option value="50">50 per page</flux:select.option>
-                        <flux:select.option value="100">100 per page</flux:select.option>
-                    </flux:select>
-                </div>
-                
-                <div class="flex gap-2 w-full lg:w-auto">
-                    <div class="flex-1 lg:flex-initial">
+                    <!-- Search & Action Buttons -->
+                    <div class="flex gap-2">
                         <flux:input
                             wire:model.live.debounce.300ms="search"
                             placeholder="Search..."
                             icon="magnifying-glass"
                             clearable
-                            class="w-full"
+                            class="w-64"
                         />
+                        <flux:button 
+                            href="{{ route('esd.garment-details') }}"
+                            wire:navigate
+                            icon="arrow-right"
+                            variant="primary"
+                            color="green"
+                            class="whitespace-nowrap"
+                        >
+                            View All History
+                        </flux:button>
                     </div>
+                </div>
+                
+                <!-- Date Range Picker - Hanya muncul ketika custom_range dipilih -->
+                @if($scheduleFilter === 'custom_range')
+                <div class="flex flex-col sm:flex-row gap-3 p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg border border-zinc-200 dark:border-zinc-700">
+                    <div class="flex items-center gap-2 min-w-fit">
+                        <flux:icon.calendar class="w-4 h-4 text-zinc-500" />
+                        <span class="text-sm font-medium">Date Range</span>
+                    </div>
+                    
+                    <div class="flex flex-col sm:flex-row gap-3 flex-1">
+                        <div class="flex-1">
+                            <flux:input 
+                                type="date"
+                                wire:model.live="dateFrom"
+                                placeholder="From"
+                                class="w-full"
+                            />
+                        </div>
+                        <div class="flex-1">
+                            <flux:input 
+                                type="date"
+                                wire:model.live="dateTo"
+                                placeholder="To"
+                                class="w-full"
+                            />
+                        </div>
+                        <flux:button 
+                            wire:click="applyDateRange"
+                            icon="check"
+                            variant="primary"
+                            color="blue"
+                            size="sm"
+                            class="self-end"
+                        >
+                            Apply
+                        </flux:button>
+                    </div>
+                </div>
+                @endif
+                
+                <!-- Active Filters -->
+                @if($search || $departmentFilter || $statusFilter || ($scheduleFilter !== 'all' && $scheduleFilter !== 'custom_range') || ($scheduleFilter === 'custom_range' && $dateFrom && $dateTo))
+                <div class="flex items-center gap-2 flex-wrap pt-1">
+                    <span class="text-xs text-zinc-500">Filters:</span>
+                    
+                    @if($search)
+                        <flux:badge color="blue" size="sm" variant="subtle" class="gap-1">
+                            <flux:icon.magnifying-glass class="w-3 h-3" />
+                            {{ $search }}
+                        </flux:badge>
+                    @endif
+                    
+                    @if($departmentFilter)
+                        <flux:badge color="blue" size="sm" variant="subtle">
+                            {{ $departmentFilter }}
+                        </flux:badge>
+                    @endif
+                    
+                    @if($statusFilter)
+                        <flux:badge color="blue" size="sm" variant="subtle">
+                            {{ $statusOptions[$statusFilter] ?? $statusFilter }}
+                        </flux:badge>
+                    @endif
+                    
+                    @if($scheduleFilter === 'this_week')
+                        <flux:badge color="green" size="sm" variant="subtle">
+                            This Week ({{ \Carbon\Carbon::parse($dateFrom)->format('M d') }} - {{ \Carbon\Carbon::parse($dateTo)->format('M d, Y') }})
+                        </flux:badge>
+                    @elseif($scheduleFilter === 'custom_range' && $dateFrom && $dateTo)
+                        <flux:badge color="green" size="sm" variant="subtle">
+                            {{ \Carbon\Carbon::parse($dateFrom)->format('M d') }} - {{ \Carbon\Carbon::parse($dateTo)->format('M d, Y') }}
+                        </flux:badge>
+                    @endif
+                    
                     <flux:button 
-                        href="{{ route('esd.garment-details') }}"
-                        wire:navigate
-                        icon="arrow-right"
-                        variant="primary"
-                        color="green"
-                        class="whitespace-nowrap"
+                        wire:click="resetFilters" 
+                        size="xs" 
+                        variant="subtle" 
+                        color="red"
+                        icon="x-mark"
                     >
-                        View All History
+                        Clear
                     </flux:button>
                 </div>
+                @endif
             </div>
 
             <!-- Garment Table -->

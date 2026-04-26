@@ -341,13 +341,6 @@
                             >
                                 Reset
                             </flux:button>
-                            <flux:button 
-                                wire:click="createDailyFuji"
-                                icon="plus"
-                                color="green"
-                            >
-                                New Inspection
-                            </flux:button>
                         </div>
                     </div>
                 </div>
@@ -615,13 +608,6 @@
                                 variant="subtle"
                             >
                                 Reset
-                            </flux:button>
-                            <flux:button 
-                                wire:click="createDailyPanasonic"
-                                icon="plus"
-                                color="green"
-                            >
-                                New Inspection
                             </flux:button>
                         </div>
                     </div>
