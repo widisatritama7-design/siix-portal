@@ -14,18 +14,18 @@ Schedule::command('submission:send-pending-alert')->dailyAt('08:30');
 
 // ESD
 Schedule::command('kaizen:send-updates-email')->fridays()->at('10:00');
-Schedule::command('equipment:duplicate-today')->dailyAt('07:00');
-Schedule::command('flooring:duplicate-today')->dailyAt('07:00');
-Schedule::command('garment:duplicate-today')->dailyAt('07:00');
-Schedule::command('groundmonitorbox:duplicate-today')->dailyAt('07:00');
-Schedule::command('ionizer:duplicate-today')->dailyAt('07:00');
-Schedule::command('jig:duplicate-today')->dailyAt('07:00');
-Schedule::command('magazine:duplicate-today')->dailyAt('07:00');
-Schedule::command('packaging:duplicate-today')->dailyAt('07:00');
-Schedule::command('soldering:duplicate-today')->dailyAt('07:00');
-Schedule::command('worksurface:duplicate-today')->dailyAt('07:00');
-Schedule::command('wriststrap:duplicate-today')->dailyAt('07:00');
-Schedule::command('glovedetail:duplicate-today')->dailyAt('07:00');
+Schedule::command('equipment:duplicate-today')->dailyAt('07:30');
+Schedule::command('flooring:duplicate-today')->dailyAt('07:30');
+Schedule::command('garment:duplicate-today')->dailyAt('07:30');
+Schedule::command('groundmonitorbox:duplicate-today')->dailyAt('07:30');
+Schedule::command('ionizer:duplicate-today')->dailyAt('07:30');
+Schedule::command('jig:duplicate-today')->dailyAt('07:30');
+Schedule::command('magazine:duplicate-today')->dailyAt('07:30');
+Schedule::command('packaging:duplicate-today')->dailyAt('07:30');
+Schedule::command('soldering:duplicate-today')->dailyAt('07:30');
+Schedule::command('worksurface:duplicate-today')->dailyAt('07:30');
+Schedule::command('wriststrap:duplicate-today')->dailyAt('07:30');
+Schedule::command('glovedetail:duplicate-today')->dailyAt('07:30');
 Schedule::command('schedule:update-remarks')->dailyAt('15:00');
 
 // Daily

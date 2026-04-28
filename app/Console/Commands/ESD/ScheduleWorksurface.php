@@ -25,8 +25,6 @@ class ScheduleWorksurface extends Command
         foreach ($records as $record) {
             WorksurfaceDetail::create([
                 'worksurface_id'    => $record->worksurface_id,
-                'area'             => $record->area,
-                'location'         => $record->location,
                 'item'             => $record->item,
                 'remarks'          => 'Schedule On',
                 'next_date'        => Carbon::parse($record->next_date)->addYear(),

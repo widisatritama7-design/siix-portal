@@ -398,10 +398,16 @@ class TicketManager extends Component
             $this->validate([
                 'title' => 'required|min:3|max:255',
                 'email_user' => 'required|email',
+                'registration_no' => 'nullable|string|max:50',
             ]);
         } elseif ($this->currentStep == 2) {
             $this->validate([
                 'description' => 'required|min:10',
+            ]);
+        } elseif ($this->currentStep == 3) {
+            $this->validate([
+                'priority' => 'required|in:Low,Medium,Urgent,Critical',
+                'category_id' => 'required|exists:tb_tc_category_tickets,id',
             ]);
         }
         
@@ -435,45 +441,71 @@ class TicketManager extends Component
     // Create Ticket
     public function createTicket()
     {
-        $this->validate();
-        
-        // Handle file uploads
-        $uploadedFiles = [];
-        foreach ($this->tempFiles as $file) {
-            $path = $file->store('tickets/' . date('Y/m/d'), 'public');
-            $uploadedFiles[] = $path;
-        }
-
-        $ticket = Ticket::create([
-            'ticket_number' => Ticket::generateTicketNumber(),
-            'title' => $this->title,
-            'description' => $this->description,
-            'file' => $uploadedFiles,
-            'status' => 'Open',
-            'priority' => $this->priority,
-            'category_id' => $this->category_id,
-            'assigned_role' => $this->assigned_role,
-            'email_user' => $this->email_user,
-            'registration_no' => $this->registration_no,
-            'approval' => 'Waiting Approval',
-            'approval_user' => 'Waiting Approval',
+        // Validasi hanya untuk field yang diperlukan saat create
+        $this->validate([
+            'title' => 'required|min:3|max:255',
+            'email_user' => 'required|email',
+            'registration_no' => 'nullable|string|max:50',
+            'description' => 'required|min:10',
+            'priority' => 'required|in:Low,Medium,Urgent,Critical',
+            'category_id' => 'required|exists:tb_tc_category_tickets,id',
+            'files.*' => 'nullable|image|max:10240',
         ]);
-
-        // Send emails
-        $this->sendTicketEmails($ticket);
-
-        // Reset form
-        $this->resetForm();
-        $this->showCreateModal = false;
         
-        $this->dispatch('notify', message: "Ticket #{$ticket->ticket_number} created successfully!", type: 'success');
+        try {
+            // Handle file uploads
+            $uploadedFiles = [];
+            if (!empty($this->tempFiles)) {
+                foreach ($this->tempFiles as $file) {
+                    $path = $file->store('tickets', 'public');
+                    $uploadedFiles[] = $path;
+                }
+            }
+
+            $ticket = Ticket::create([
+                'ticket_number' => $this->ticket_number, // Gunakan yang sudah digenerate
+                'title' => $this->title,
+                'description' => $this->description,
+                'file' => $uploadedFiles,
+                'status' => 'Open',
+                'priority' => $this->priority,
+                'category_id' => $this->category_id,
+                'assigned_role' => $this->assigned_role,
+                'email_user' => $this->email_user,
+                'registration_no' => $this->registration_no,
+                'approval' => 'Waiting Approval',
+                'approval_user' => 'Waiting Approval',
+                'created_by' => auth()->id(),
+            ]);
+
+            // Kirim email (wrap in try-catch)
+            try {
+                $this->sendTicketEmails($ticket);
+            } catch (\Exception $e) {
+                \Log::error('Failed to send email: ' . $e->getMessage());
+            }
+
+            // Reset form
+            $this->resetForm();
+            $this->showCreateModal = false;
+            
+            // Dispatch success message
+            $this->dispatch('notify', message: "Ticket #{$ticket->ticket_number} created successfully!", type: 'success');
+            
+            // Refresh data
+            $this->updateStatusCounts();
+            
+        } catch (\Exception $e) {
+            \Log::error('Ticket creation failed: ' . $e->getMessage());
+            $this->dispatch('notify', message: 'Failed to create ticket: ' . $e->getMessage(), type: 'error');
+        }
     }
 
     protected function sendTicketEmails($ticket)
     {
         try {
             // Send to default email
-            Mail::to('sek.esd@siix-global.com')->send(new TicketCreated($ticket));
+            Mail::to('bonizar@siix-global.com')->send(new TicketCreated($ticket));
             
             // Send based on assigned role
             $emailToSend = null;
@@ -669,7 +701,7 @@ class TicketManager extends Component
     {
         $this->reset([
             'title', 'description', 'priority', 'category_id', 'assigned_role',
-            'email_user', 'registration_no', 'files', 'tempFiles'
+            'email_user', 'registration_no', 'files', 'tempFiles', 'currentStep'
         ]);
         $this->currentStep = 1;
         $this->ticket_number = Ticket::generateTicketNumber();

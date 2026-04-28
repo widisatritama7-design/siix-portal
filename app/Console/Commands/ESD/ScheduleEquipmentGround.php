@@ -36,8 +36,6 @@ class ScheduleEquipmentGround extends Command
 
             EquipmentGroundDetail::create([
                 'equipment_ground_id'     => $record->equipment_ground_id,
-                'area'                    => $record->area,
-                'location'                => $record->location,
                 'measure_results_ohm'     => null,
                 'judgement_ohm'           => null,
                 'measure_results_volts'   => null,

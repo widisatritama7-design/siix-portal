@@ -19,7 +19,6 @@
     { number: 18, name: 'IONIZER', short_name: 'ION', complete: false },
     { number: 19, name: 'TIME & STATUS', short_name: 'TIME', complete: false }
 ]">
-    @include('partials.mtc-heading')
 
     <flux:heading class="sr-only">
         {{ __('MTC - Edit Daily Fuji Inspection') }}

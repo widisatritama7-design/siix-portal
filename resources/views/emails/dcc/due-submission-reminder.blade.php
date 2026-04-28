@@ -144,7 +144,7 @@
 
         <p><strong>Total: {{ count($submissions) }} submission</strong></p>
         
-        <a href="https://portal.siix-ems.co.id/mainMenu/submissions?activeTab=Due+This+Week" class="btn">
+        <a href="https://portal.siix-ems.co.id/dcc/submissions" class="btn">
             Lihat Semua Submission
         </a>
         

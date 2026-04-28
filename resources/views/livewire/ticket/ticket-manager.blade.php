@@ -676,12 +676,13 @@
                             </div>
                         @endif
 
-                        <!-- Navigation Buttons -->
+                    <!-- Navigation Buttons - MODIFIKASI INI -->
                         <div class="flex justify-between mt-6 pt-4 border-t dark:border-zinc-700">
                             @if($currentStep > 1)
                                 <button type="button" 
                                         wire:click="previousStep"
-                                        class="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 transition-all duration-200">
+                                        :disabled="processing"
+                                        class="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 transition-all duration-200 disabled:opacity-50">
                                     ← Previous
                                 </button>
                             @else
@@ -691,16 +692,18 @@
                             @if($currentStep < $totalSteps)
                                 <button type="button" 
                                         wire:click="nextStep"
-                                        class="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg">
+                                        :disabled="processing"
+                                        class="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50">
                                     Next →
                                 </button>
                             @else
                                 <button type="submit" 
                                         x-bind:disabled="processing"
-                                        class="px-6 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed relative">
-                                    <span x-show="!processing">Create Ticket</span>
-                                    <span x-show="processing" class="flex items-center gap-2">
-                                        <svg class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                        wire:loading.attr="disabled"
+                                        class="px-6 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg hover:from-green-600 hover:to-green-700 transition-all duration-200 shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <span wire:loading.remove>Create Ticket</span>
+                                    <span wire:loading class="flex items-center gap-2">
+                                        <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                         </svg>

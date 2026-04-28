@@ -129,16 +129,22 @@ class TicketView extends Component
             return;
         }
         
+        // Upload photos - LANGSUNG KE FOLDER FEEDBACK
         $uploadedPhotos = [];
-        foreach ($this->tempPhotos as $photo) {
-            $path = $photo->store('feedback/photos/' . date('Y/m/d'), 'public');
-            $uploadedPhotos[] = $path;
+        if (!empty($this->tempPhotos)) {
+            foreach ($this->tempPhotos as $photo) {
+                $path = $photo->store('feedback', 'public');
+                $uploadedPhotos[] = $path;
+            }
         }
         
+        // Upload files - LANGSUNG KE FOLDER FEEDBACK
         $uploadedFiles = [];
-        foreach ($this->tempFiles as $file) {
-            $path = $file->store('feedback/files/' . date('Y/m/d'), 'public');
-            $uploadedFiles[] = $path;
+        if (!empty($this->tempFiles)) {
+            foreach ($this->tempFiles as $file) {
+                $path = $file->store('feedback', 'public');
+                $uploadedFiles[] = $path;
+            }
         }
         
         $feedback = Feedback::create([
@@ -146,11 +152,12 @@ class TicketView extends Component
             'user_id' => Auth::id(),
             'status' => $this->status,
             'comments' => $this->comments,
-            'photo' => json_encode($uploadedPhotos),
-            'file' => json_encode($uploadedFiles),
+            'photo' => $uploadedPhotos,  // LANGSUNG ARRAY, BUKAN json_encode()
+            'file' => $uploadedFiles,    // LANGSUNG ARRAY, BUKAN json_encode()
             'email_user' => $this->ticket->email_user,
         ]);
         
+        // Update ticket status if changed
         if ($this->ticket->status !== $this->status) {
             $this->ticket->status = $this->status;
             if ($this->status === 'Closed') {
@@ -161,8 +168,10 @@ class TicketView extends Component
             $this->ticket->save();
         }
         
+        // Send emails
         $this->sendFeedbackEmails($feedback);
         
+        // Reset form and close modal
         $this->reset(['comments', 'photos', 'tempPhotos', 'files', 'tempFiles']);
         $this->showFeedbackModal = false;
         $this->refreshTicket();
@@ -209,6 +218,7 @@ class TicketView extends Component
         
         $feedback = $this->editingFeedback;
         
+        // Check if feedback can be edited (not older than 24 hours)
         if (Carbon::now()->diffInHours($feedback->created_at) >= 24) {
             $this->dispatch('notify', message: 'Cannot edit feedback older than 24 hours!', type: 'error');
             $this->closeEditFeedbackModal();
@@ -229,30 +239,34 @@ class TicketView extends Component
             }
         }
         
-        // Add new photos
+        // Add new photos - LANGSUNG KE FOLDER FEEDBACK
         $newPhotos = [];
-        foreach ($this->editTempPhotos as $photo) {
-            $path = $photo->store('feedback/photos/' . date('Y/m/d'), 'public');
-            $newPhotos[] = $path;
+        if (!empty($this->editTempPhotos)) {
+            foreach ($this->editTempPhotos as $photo) {
+                $path = $photo->store('feedback', 'public');
+                $newPhotos[] = $path;
+            }
         }
         
-        // Add new files
+        // Add new files - LANGSUNG KE FOLDER FEEDBACK
         $newFiles = [];
-        foreach ($this->editTempFiles as $file) {
-            $path = $file->store('feedback/files/' . date('Y/m/d'), 'public');
-            $newFiles[] = $path;
+        if (!empty($this->editTempFiles)) {
+            foreach ($this->editTempFiles as $file) {
+                $path = $file->store('feedback', 'public');
+                $newFiles[] = $path;
+            }
         }
         
         // Merge existing (that weren't deleted) and new
         $allPhotos = array_merge($this->existingPhotos, $newPhotos);
         $allFiles = array_merge($this->existingFiles, $newFiles);
         
-        // Update feedback
+        // Update feedback - LANGSUNG ARRAY, BUKAN json_encode()
         $feedback->update([
             'status' => $this->editStatus,
             'comments' => $this->editComments,
-            'photo' => json_encode($allPhotos),
-            'file' => json_encode($allFiles),
+            'photo' => $allPhotos,
+            'file' => $allFiles,
         ]);
         
         // Update ticket status if needed

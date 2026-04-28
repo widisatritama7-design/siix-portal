@@ -25,8 +25,6 @@ class ScheduleGroundMonitorBox extends Command
         foreach ($records as $record) {
             GroundMonitorBoxDetail::create([
                 'ground_monitor_box_id' => $record->ground_monitor_box_id,
-                'area'                  => $record->area,
-                'location'              => $record->location,
                 'remarks'               => 'Schedule On',
                 'next_date'             => Carbon::parse($record->next_date)->addYear(), // tahun depan
                 'created_by'            => 504,

@@ -25,8 +25,6 @@ class ScheduleFlooring extends Command
         foreach ($records as $record) {
             FlooringDetail::create([
                 'flooring_id'      => $record->flooring_id,
-                'area'             => $record->area,
-                'location'         => $record->location,
                 'b1'               => null,
                 'b1_scientific'    => null,
                 'judgement'        => null,

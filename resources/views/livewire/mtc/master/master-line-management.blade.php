@@ -1,5 +1,4 @@
 <section class="w-full">
-    @include('partials.mtc-heading')
 
     <flux:heading class="sr-only">
         {{ __('MTC - Master Line Management') }}
@@ -121,7 +120,6 @@
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Approval</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[80px]">Group</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[150px]">Last Check</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[150px]">PIC</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider w-32">Actions</th>
                             </tr>
                         </thead>
@@ -254,17 +252,6 @@
                                 <td class="px-4 py-3">
                                     <div class="text-sm text-zinc-700 dark:text-zinc-300">
                                         {{ $dailyCheckLastUpdate }}
-                                    </div>
-                                </td>
-                                
-                                <td class="px-4 py-3">
-                                    <div class="text-sm">
-                                        <div class="font-medium text-zinc-800 dark:text-white">
-                                            {{ $line->employee->name ?? 'Not Assigned' }}
-                                        </div>
-                                        <div class="text-xs text-zinc-500">
-                                            NIK: {{ $line->nik ?? '-' }}
-                                        </div>
                                     </div>
                                 </td>
                                 

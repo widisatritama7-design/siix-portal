@@ -1,5 +1,4 @@
 <section class="w-full">
-    @include('partials.mtc-heading')
 
     <flux:heading class="sr-only">
         {{ __('MTC - Master Line Detail') }}
@@ -123,7 +122,7 @@
 
                     <!-- Shift Information - Collapsible -->
                     <div class="mt-6 pt-4 border-t border-zinc-200 dark:border-zinc-700">
-                        <div x-data="{ open: true }" class="bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-950/20 dark:to-amber-950/20 rounded-xl border border-yellow-200 dark:border-yellow-800 overflow-hidden">
+                        <div x-data="{ open: false }" class="bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-950/20 dark:to-amber-950/20 rounded-xl border border-yellow-200 dark:border-yellow-800 overflow-hidden">
                             
                             <!-- Header (Click to toggle) -->
                             <button @click="open = !open" class="w-full flex items-center justify-between p-4 hover:bg-yellow-100/50 dark:hover:bg-yellow-900/20 transition-colors">
@@ -480,72 +479,69 @@
                                     <td class="px-4 py-3 text-right">
                                         <div class="flex items-center justify-end gap-1 whitespace-nowrap">
                                             <!-- View Activity Button -->
-                                            <flux:button 
-                                                wire:click="viewActivity({{ $dailyFuji->id }}, 'fuji')"
-                                                size="sm"
-                                                icon="document-text"
-                                                color="purple"
-                                                class="!p-2 flex-shrink-0"
-                                                title="View activity log"
-                                            />
+                                            <flux:tooltip content="View activity log" position="top">
+                                                <flux:button 
+                                                    wire:click="viewActivity({{ $dailyFuji->id }}, 'fuji')"
+                                                    size="sm"
+                                                    icon="document-text"
+                                                    color="purple"
+                                                    class="!p-2 flex-shrink-0"
+                                                />
+                                            </flux:tooltip>
 
                                             <!-- View Details Button -->
-                                            <flux:button 
-                                                wire:click="viewDailyFujiDetails({{ $dailyFuji->id }})"
-                                                size="sm"
-                                                icon="eye"
-                                                color="blue"
-                                                class="!p-2 flex-shrink-0"
-                                                title="View inspection details"
-                                            />
+                                            <flux:tooltip content="View inspection details" position="top">
+                                                <flux:button 
+                                                    wire:click="viewDailyFujiDetails({{ $dailyFuji->id }})"
+                                                    size="sm"
+                                                    icon="eye"
+                                                    color="blue"
+                                                    class="!p-2 flex-shrink-0"
+                                                />
+                                            </flux:tooltip>
                                             
-                                            <!-- Edit Button dengan validasi waktu -->
+                                            <!-- Edit Button - HIDDEN jika sudah melewati batas -->
                                             @php
                                                 $canEdit = now()->lessThanOrEqualTo($dailyFuji->getShiftEnd());
                                             @endphp
                                             
-                                            @if($canEdit)
-                                                <flux:button 
-                                                    wire:click="editDailyFuji({{ $dailyFuji->id }})"
-                                                    size="sm"
-                                                    icon="pencil-square"
-                                                    color="yellow"
-                                                    class="!p-2 flex-shrink-0"
-                                                    title="Edit inspection"
-                                                />
-                                            @else
-                                                <flux:button 
-                                                    size="sm"
-                                                    icon="pencil-square"
-                                                    color="gray"
-                                                    class="!p-2 flex-shrink-0 opacity-50 cursor-not-allowed"
-                                                    title="Cannot edit - Shift has ended"
-                                                    disabled
-                                                />
+                                            @if($canEdit && auth()->user()->can('edit daily fuji'))
+                                                <flux:tooltip content="Edit inspection (shift active)" position="top">
+                                                    <flux:button 
+                                                        wire:click="editDailyFuji({{ $dailyFuji->id }})"
+                                                        size="sm"
+                                                        icon="pencil-square"
+                                                        color="yellow"
+                                                        class="!p-2 flex-shrink-0"
+                                                    />
+                                                </flux:tooltip>
                                             @endif
                                             
-                                            <!-- Approval Button -->
+                                            <!-- Approval Button - HIDDEN jika sudah Approved atau bukan Checked -->
                                             @if($dailyFuji->approval !== 'Approved' && $dailyFuji->status === 'Checked' && auth()->user()->can('edit daily fuji'))
-                                                <flux:button 
-                                                    wire:click="openApprovalModal({{ $dailyFuji->id }})"
-                                                    size="sm"
-                                                    icon="check-badge"
-                                                    color="green"
-                                                    class="!p-2 flex-shrink-0"
-                                                    title="Approve/Reject inspection"
-                                                />
+                                                <flux:tooltip content="Approve/Reject inspection" position="top">
+                                                    <flux:button 
+                                                        wire:click="openApprovalModal({{ $dailyFuji->id }})"
+                                                        size="sm"
+                                                        icon="check-badge"
+                                                        color="green"
+                                                        class="!p-2 flex-shrink-0"
+                                                    />
+                                                </flux:tooltip>
                                             @endif
 
-                                            <a 
-                                                href="{{ route('print.daily-fuji', $dailyFuji->id) }}"
-                                                target="_blank"
-                                                class="inline-flex items-center justify-center p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors dark:text-gray-400 dark:hover:bg-gray-800"
-                                                title="Print checklist"
-                                            >
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
-                                                </svg>
-                                            </a>
+                                            <!-- Print Button -->
+                                            <flux:tooltip content="Print checklist" position="top">
+                                                <a 
+                                                    href="{{ route('print.daily-fuji', $dailyFuji->id) }}"
+                                                    target="_blank"
+                                                    class="inline-flex items-center justify-center p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors dark:text-gray-400 dark:hover:bg-gray-800"
+                                                >
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                                                    </svg>
+                                                </a>
+                                            </flux:tooltip>
                                         </div>
                                     </td>
                                 </tr>
@@ -749,72 +745,69 @@
                                         <div class="flex items-center justify-end gap-1 whitespace-nowrap">
 
                                             <!-- View Activity Button -->
-                                            <flux:button 
-                                                wire:click="viewActivity({{ $dailyPanasonic->id }}, 'panasonic')"
-                                                size="sm"
-                                                icon="document-text"
-                                                color="purple"
-                                                class="!p-2 flex-shrink-0"
-                                                title="View activity log"
-                                            />
+                                            <flux:tooltip content="View activity log" position="top">
+                                                <flux:button 
+                                                    wire:click="viewActivity({{ $dailyPanasonic->id }}, 'panasonic')"
+                                                    size="sm"
+                                                    icon="document-text"
+                                                    color="purple"
+                                                    class="!p-2 flex-shrink-0"
+                                                />
+                                            </flux:tooltip>
 
                                             <!-- View Button -->
-                                            <flux:button 
-                                                wire:click="viewDailyPanasonicDetails({{ $dailyPanasonic->id }})"
-                                                size="sm"
-                                                icon="eye"
-                                                color="blue"
-                                                class="!p-2 flex-shrink-0"
-                                                title="View inspection details"
-                                            />
+                                            <flux:tooltip content="View inspection details" position="top">
+                                                <flux:button 
+                                                    wire:click="viewDailyPanasonicDetails({{ $dailyPanasonic->id }})"
+                                                    size="sm"
+                                                    icon="eye"
+                                                    color="blue"
+                                                    class="!p-2 flex-shrink-0"
+                                                />
+                                            </flux:tooltip>
                                             
-                                            <!-- Edit Button -->
+                                            <!-- Edit Button - HIDDEN jika shift sudah berakhir -->
                                             @php
                                                 $canEditPanasonic = now()->lessThanOrEqualTo($dailyPanasonic->getShiftEnd());
                                             @endphp
                                             
-                                            @if($canEditPanasonic)
-                                                <flux:button 
-                                                    wire:click="editDailyPanasonic({{ $dailyPanasonic->id }})"
-                                                    size="sm"
-                                                    icon="pencil-square"
-                                                    color="yellow"
-                                                    class="!p-2 flex-shrink-0"
-                                                    title="Edit inspection"
-                                                />
-                                            @else
-                                                <flux:button 
-                                                    size="sm"
-                                                    icon="pencil-square"
-                                                    color="gray"
-                                                    class="!p-2 flex-shrink-0 opacity-50 cursor-not-allowed"
-                                                    title="Cannot edit - Shift has ended"
-                                                    disabled
-                                                />
+                                            @if($canEditPanasonic && auth()->user()->can('edit daily panasonic'))
+                                                <flux:tooltip content="Edit inspection (shift active)" position="top">
+                                                    <flux:button 
+                                                        wire:click="editDailyPanasonic({{ $dailyPanasonic->id }})"
+                                                        size="sm"
+                                                        icon="pencil-square"
+                                                        color="yellow"
+                                                        class="!p-2 flex-shrink-0"
+                                                    />
+                                                </flux:tooltip>
                                             @endif
                                             
                                             <!-- Approval Button -->
                                             @if($dailyPanasonic->approval !== 'Approved' && $dailyPanasonic->status === 'Checked' && auth()->user()->can('edit daily panasonic'))
-                                                <flux:button 
-                                                    wire:click="openPanasonicApprovalModal({{ $dailyPanasonic->id }})"
-                                                    size="sm"
-                                                    icon="check-badge"
-                                                    color="green"
-                                                    class="!p-2 flex-shrink-0"
-                                                    title="Approve/Reject inspection"
-                                                />
+                                                <flux:tooltip content="Approve/Reject inspection" position="top">
+                                                    <flux:button 
+                                                        wire:click="openPanasonicApprovalModal({{ $dailyPanasonic->id }})"
+                                                        size="sm"
+                                                        icon="check-badge"
+                                                        color="green"
+                                                        class="!p-2 flex-shrink-0"
+                                                    />
+                                                </flux:tooltip>
                                             @endif
 
-                                            <a 
-                                                href="{{ route('print.daily-panasonic', $dailyPanasonic->id) }}"
-                                                target="_blank"
-                                                class="inline-flex items-center justify-center p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors dark:text-gray-400 dark:hover:bg-gray-800"
-                                                title="Print checklist"
-                                            >
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
-                                                </svg>
-                                            </a>
+                                            <!-- Print Button -->
+                                            <flux:tooltip content="Print checklist" position="top">
+                                                <a 
+                                                    href="{{ route('print.daily-panasonic', $dailyPanasonic->id) }}"
+                                                    target="_blank"
+                                                    class="inline-flex items-center justify-center p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors dark:text-gray-400 dark:hover:bg-gray-800"
+                                                >
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                                                    </svg>
+                                                </a>
+                                            </flux:tooltip>
                                         </div>
                                     </td>
                                 </tr>   

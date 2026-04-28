@@ -320,28 +320,8 @@
                                 </div>
                                 <div>
                                     <div class="text-xs text-zinc-500 dark:text-zinc-400 mb-1">Loan Status</div>
-                                    @php
-                                        $latestHistory = $sample->historydDetails()->orderByDesc('out_date')->first();
-                                        $loanStatus = $latestHistory?->status ?? '-';
-                                        
-                                        $displayLoanStatus = match($loanStatus) {
-                                            'in_use' => 'In Use',
-                                            'loaning' => 'Loaning',
-                                            'ecr' => 'ECR',
-                                            'stand_by' => 'Stand By',
-                                            '-' => 'No History',
-                                            default => ucfirst($loanStatus),
-                                        };
-                                        
-                                        $badgeColor = match($loanStatus) {
-                                            'in_use' => 'green',
-                                            'loaning' => 'yellow',
-                                            'ecr', 'stand_by' => 'blue',
-                                            default => 'gray',
-                                        };
-                                    @endphp
-                                    <flux:badge size="sm" color="{{ $badgeColor }}">
-                                        {{ $displayLoanStatus }}
+                                    <flux:badge size="sm" color="{{ $sample->loan_status === 'In Use' ? 'green' : ($sample->loan_status === 'Loaning' ? 'yellow' : (in_array($sample->loan_status, ['ECR', 'Stand By']) ? 'blue' : 'gray')) }}">
+                                        {{ $sample->loan_status }}
                                     </flux:badge>
                                 </div>
                             </div>

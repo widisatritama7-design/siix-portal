@@ -676,46 +676,59 @@ class MasterSampleManagement extends Component
         $masterSamples->getCollection()->transform(function ($sample) {
             $latestDetail = $sample->details->sortByDesc('expired_date')->first();
             
-            // Latest Expired Date
+            // Latest Expired Date - HAPUS match, ganti dengan if else
             if ($latestDetail && $latestDetail->expired_date) {
                 $sample->latest_expired_date = Carbon::parse($latestDetail->expired_date)->format('Y-m-d');
             } else {
-                $sample->latest_expired_date = match ($sample->status) {
-                    'EOL' => 'EOL',
-                    'NOT USE' => 'Not Use',
-                    null => 'Expire Not Set',
-                    default => '-',
-                };
+                // Ganti match dengan if else
+                if ($sample->status === 'EOL') {
+                    $sample->latest_expired_date = 'EOL';
+                } elseif ($sample->status === 'NOT USE') {
+                    $sample->latest_expired_date = 'Not Use';
+                } elseif ($sample->status === null) {
+                    $sample->latest_expired_date = 'Expire Not Set';
+                } else {
+                    $sample->latest_expired_date = '-';
+                }
             }
             
-            // Status Expire
+            // Status Expire - HAPUS match
             if (!$latestDetail || !$latestDetail->expired_date) {
-                $sample->latest_status = match ($sample->status) {
-                    'EOL' => 'EOL',
-                    'NOT USE' => 'Not Use',
-                    default => 'Expire Not Set',
-                };
+                // Ganti match dengan if else
+                if ($sample->status === 'EOL') {
+                    $sample->latest_status = 'EOL';
+                } elseif ($sample->status === 'NOT USE') {
+                    $sample->latest_status = 'Not Use';
+                } else {
+                    $sample->latest_status = 'Expire Not Set';
+                }
             } else {
                 $sample->latest_status = Carbon::parse($latestDetail->expired_date)->isFuture() ? 'Active' : 'Expired';
             }
             
-            // Days Remaining
+            // Days Remaining - HAPUS match
             if (!$latestDetail || !$latestDetail->expired_date) {
-                $sample->days_remaining = match ($sample->status) {
-                    'EOL' => 'EOL',
-                    'NOT USE' => 'Not Use',
-                    default => '-',
-                };
+                // Ganti match dengan if else
+                if ($sample->status === 'EOL') {
+                    $sample->days_remaining = 'EOL';
+                } elseif ($sample->status === 'NOT USE') {
+                    $sample->days_remaining = 'Not Use';
+                } else {
+                    $sample->days_remaining = '-';
+                }
             } else {
                 $today = Carbon::today();
                 $expired = Carbon::parse($latestDetail->expired_date)->startOfDay();
                 $diff = $today->diffInDays($expired, false);
                 
-                $sample->days_remaining = match (true) {
-                    $diff > 0 => "$diff days",
-                    $diff === 0 => 'Today',
-                    $diff < 0 => 'Overdue ' . abs($diff) . ' days',
-                };
+                // Ganti match dengan if else
+                if ($diff > 0) {
+                    $sample->days_remaining = "$diff days";
+                } elseif ($diff === 0) {
+                    $sample->days_remaining = 'Today';
+                } else {
+                    $sample->days_remaining = 'Overdue ' . abs($diff) . ' days';
+                }
             }
             
             // Latest History (Loan) Info
@@ -724,8 +737,8 @@ class MasterSampleManagement extends Component
             $sample->latest_history_line = optional($latestHistory?->masterLine)->line_number ?? '-';
             $sample->latest_history_remarks = $latestHistory?->remarks ?? '-';
             
-            // Loan Status
-            $loanStatus = $latestHistory?->status ?? '-';
+            // Loan Status - Casting paksa ke string
+            $loanStatus = (string) ($latestHistory?->status ?? '-');
             $sample->loan_status = match ($loanStatus) {
                 'in_use' => 'In Use',
                 'loaning' => 'Loaning',

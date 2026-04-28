@@ -234,8 +234,8 @@ class SampleChecksManagement extends Component
 
     public function goToSample($masterSampleId)
     {
-        return redirect()->to("/mainMenu/master-samples/master-samples/{$masterSampleId}?activeRelationManager=1");
-    }
+        return redirect()->to("/prod/ms/master-sample/{$masterSampleId}/details");
+    }   
 
     public function getTabCounts()
     {

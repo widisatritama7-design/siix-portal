@@ -190,42 +190,6 @@ class MasterLineShow extends Component
         $this->approvalDailyPanasonicId = null;
     }
 
-    public function setPanasonicApproval($status)
-    {
-        if (!auth()->user()->can('edit daily panasonic')) {
-            $this->dispatch('notify', message: 'You do not have permission to approve!', type: 'error');
-            return;
-        }
-        
-        $dailyPanasonic = DailyPanasonic::find($this->approvalDailyPanasonicId);
-        
-        if (!$dailyPanasonic) {
-            $this->dispatch('notify', message: 'Record not found!', type: 'error');
-            $this->closePanasonicApprovalModal();
-            return;
-        }
-        
-        if ($dailyPanasonic->approval === 'Approved') {
-            $this->dispatch('notify', message: 'This record is already approved!', type: 'error');
-            $this->closePanasonicApprovalModal();
-            return;
-        }
-        
-        if ($dailyPanasonic->status !== 'Checked') {
-            $this->dispatch('notify', message: 'Cannot approve. Status must be "Checked" first!', type: 'error');
-            $this->closePanasonicApprovalModal();
-            return;
-        }
-        
-        $dailyPanasonic->approval = $status;
-        $dailyPanasonic->approved_by = auth()->id();
-        $dailyPanasonic->save();
-        
-        $this->dispatch('notify', message: "Inspection has been {$status}!", type: 'success');
-        $this->closePanasonicApprovalModal();
-        $this->dispatch('refreshDailyPanasonicTable');
-    }
-
     public function resetPanasonicFilters()
     {
         $this->panasonicSearch = '';
@@ -265,27 +229,65 @@ class MasterLineShow extends Component
             return;
         }
         
-        // Cek apakah sudah approved
         if ($dailyFuji->approval === 'Approved') {
             $this->dispatch('notify', message: 'This record is already approved!', type: 'error');
             $this->closeApprovalModal();
             return;
         }
         
-        // Cek status harus Checked dulu
         if ($dailyFuji->status !== 'Checked') {
             $this->dispatch('notify', message: 'Cannot approve. Status must be "Checked" first!', type: 'error');
             $this->closeApprovalModal();
             return;
         }
         
-        $dailyFuji->approval = $status;
-        $dailyFuji->approved_by = auth()->id();
-        $dailyFuji->save();
+        // ✅ UBAH INI - gunakan updateQuietly
+        $dailyFuji->updateQuietly([
+            'approval' => $status,
+            'approved_by' => auth()->id(),
+        ]);
         
         $this->dispatch('notify', message: "Inspection has been {$status}!", type: 'success');
         $this->closeApprovalModal();
         $this->dispatch('refreshDailyFujiTable');
+    }
+
+    public function setPanasonicApproval($status)
+    {
+        if (!auth()->user()->can('edit daily panasonic')) {
+            $this->dispatch('notify', message: 'You do not have permission to approve!', type: 'error');
+            return;
+        }
+        
+        $dailyPanasonic = DailyPanasonic::find($this->approvalDailyPanasonicId);
+        
+        if (!$dailyPanasonic) {
+            $this->dispatch('notify', message: 'Record not found!', type: 'error');
+            $this->closePanasonicApprovalModal();
+            return;
+        }
+        
+        if ($dailyPanasonic->approval === 'Approved') {
+            $this->dispatch('notify', message: 'This record is already approved!', type: 'error');
+            $this->closePanasonicApprovalModal();
+            return;
+        }
+        
+        if ($dailyPanasonic->status !== 'Checked') {
+            $this->dispatch('notify', message: 'Cannot approve. Status must be "Checked" first!', type: 'error');
+            $this->closePanasonicApprovalModal();
+            return;
+        }
+        
+        // ✅ UBAH INI - gunakan updateQuietly
+        $dailyPanasonic->updateQuietly([
+            'approval' => $status,
+            'approved_by' => auth()->id(),
+        ]);
+        
+        $this->dispatch('notify', message: "Inspection has been {$status}!", type: 'success');
+        $this->closePanasonicApprovalModal();
+        $this->dispatch('refreshDailyPanasonicTable');
     }
 
     public function updatingSearch()

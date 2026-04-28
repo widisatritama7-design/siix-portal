@@ -10,36 +10,34 @@ class VoletServiceProvider extends ServiceProvider
 {
     public function boot(FeatureManager $volet): void
     {
-        // Register and configure the Feedback Messages feature
-        $this->registerFeedbackMessagesFeature($volet);
-
-        // Example of registering a custom feature
-        // $volet->register(new YourCustomFeature());
+        $this->registerFiturMasukan($volet);
     }
 
-    private function registerFeedbackMessagesFeature(FeatureManager $volet): void
+    private function registerFiturMasukan(FeatureManager $volet): void
     {
         $volet->register(
             (new FeedbackMessages)
-                // Configure feature display
-                ->setLabel('Send us feedback')
-                ->setIcon('https://api.iconify.design/lucide:message-square.svg?color=%23888888')
+                // Tampilan utama fitur
+                ->setLabel('Masukan & Saran')
+                ->setIcon(
+                    'https://api.iconify.design/lucide:messages-square.svg?color=%234f46e5'
+                )
 
-                // Add feedback categories
+                // Kategori masukan
                 ->addCategory(
                     slug: 'bug',
-                    name: 'Bug Report',
-                    icon: 'https://api.iconify.design/lucide:bug.svg?color=%23888888'
+                    name: 'Laporan Bug',
+                    icon: 'https://api.iconify.design/lucide:bug.svg?color=%23ef4444'
                 )
                 ->addCategory(
                     slug: 'improvement',
-                    name: 'Improvement',
-                    icon: 'https://api.iconify.design/lucide:lightbulb.svg?color=%23888888'
+                    name: 'Permintaan Fitur',
+                    icon: 'https://api.iconify.design/lucide:sparkles.svg?color=%23f59e0b'
                 )
                 ->addCategory(
                     slug: 'general',
-                    name: 'General Feedback',
-                    icon: 'https://api.iconify.design/lucide:smile.svg?color=%23888888'
+                    name: 'Masukan Umum',
+                    icon: 'https://api.iconify.design/lucide:message-circle.svg?color=%2306b6d4'
                 )
         );
     }

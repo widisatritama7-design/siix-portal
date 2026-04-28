@@ -6,7 +6,6 @@ use App\Models\HR\ViolationEmployee;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Response;
 
 class ViolationEmployeeManagement extends Component
 {

@@ -306,21 +306,19 @@
             <table class="w-full table-auto">
                 <thead>
                     <tr class="bg-zinc-50 dark:bg-zinc-800/50">
-                        <th class="px-4 py-3 text-left sticky left-0 bg-zinc-50 dark:bg-zinc-700/50 z-10 whitespace-nowrap">
+                        <th class="px-4 py-3 text-center sticky left-0 bg-zinc-50 dark:bg-zinc-700/50 z-10 whitespace-nowrap">
                             <input type="checkbox" wire:model.live="selectAll" class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700">
                         </th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Category</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Description</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Department</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Status</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Due Date</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Received By</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Received Date</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Distributed By</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Distributed Date</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">PIC</th>
-                        <th class="px-4 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Actions</th>
-                    </tr>
+                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Category</th>
+                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Description</th>
+                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Department</th>
+                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Status</th>
+                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Due Date</th>
+                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Received Info</th>
+                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Distributed Info</th>
+                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">PIC</th>
+                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap md:sticky md:right-0 bg-zinc-50 dark:bg-zinc-800/50 md:z-20">Actions</th>
+                    <tr>
                 </thead>
                 <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
                     @forelse($submissions as $submission)
@@ -335,30 +333,30 @@
                     @endphp
                     <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors {{ $rowClass }}"
                         wire:key="submission-{{ $submission->id }}">
-                        <td class="px-4 py-3 sticky left-0 bg-inherit z-10 whitespace-nowrap">
+                        <td class="px-4 py-3 text-center sticky left-0 bg-inherit z-10 whitespace-nowrap">
                             <input type="checkbox" 
                                 wire:model.live="selectedSubmissions" 
                                 value="{{ $submission->id }}"
                                 class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700">
                         </td>
-                        <td class="px-4 py-3 whitespace-nowrap">
+                        <td class="px-4 py-3 text-center whitespace-nowrap">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
                                 {{ $submission->category_document }}
                             </span>
                         </td>
-                        <td class="px-4 py-3 whitespace-nowrap">
+                        <td class="px-4 py-3 text-center whitespace-nowrap">
                             <div class="text-sm">
-                                <div class="font-medium text-zinc-900 dark:text-white whitespace-nowrap">{{ $submission->description }}</div>
-                                <div class="text-xs text-zinc-500 dark:text-zinc-400">Rev: {{ $submission->revision }}</div>
+                                <div class="font-medium text-zinc-900 dark:text-white">{{ $submission->description }}</div>
+                                <div class="text-xs text-zinc-500 dark:text-zinc-400">Rev : {{ $submission->revision }}</div>
                                 @if($submission->remarks)
-                                <div class="text-xs text-zinc-500 dark:text-zinc-400 mt-1 whitespace-nowrap">{{ Str::limit($submission->remarks, 50) }}</div>
+                                <div class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">{{ Str::limit($submission->remarks, 50) }}</div>
                                 @endif
                             </div>
                         </td>
-                        <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300 whitespace-nowrap">
+                        <td class="px-4 py-3 text-center text-sm text-zinc-700 dark:text-zinc-300 whitespace-nowrap">
                             {{ $submission->department->dept_name ?? 'N/A' }}
                         </td>
-                        <td class="px-4 py-3 whitespace-nowrap">
+                        <td class="px-4 py-3 text-center whitespace-nowrap">
                             <div class="space-y-1">
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
                                     @if($submission->status === 'Waiting Received') bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300
@@ -376,7 +374,7 @@
                                 @endif
                             </div>
                         </td>
-                        <td class="px-4 py-3 whitespace-nowrap">
+                        <td class="px-4 py-3 text-center whitespace-nowrap">
                             <div class="text-sm">
                                 <div class="text-zinc-700 dark:text-zinc-300">{{ $submission->due_date?->format('d M Y') ?? '-' }}</div>
                                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium mt-1
@@ -389,31 +387,39 @@
                                 </span>
                             </div>
                         </td>
-                        <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300 whitespace-nowrap">
-                            {{ $submission->received_by ?? '-' }}
+                        <td class="px-4 py-3 text-center whitespace-nowrap">
+                            <div class="text-sm">
+                                @if($submission->received_by || $submission->received_at)
+                                    <div class="text-zinc-700 dark:text-zinc-300">
+                                        {{ $submission->received_by ?? '-' }}
+                                    </div>
+                                    <div class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+                                        {{ $submission->received_at ? \Carbon\Carbon::parse($submission->received_at)->format('d M Y H:i') : '-' }}
+                                    </div>
+                                @else
+                                    <span class="text-zinc-400 dark:text-zinc-500">-</span>
+                                @endif
+                            </div>
                         </td>
-                        <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300 whitespace-nowrap">
-                            @if($submission->received_at)
-                                {{ \Carbon\Carbon::parse($submission->received_at)->format('d M Y H:i') }}
-                            @else
-                                -
-                            @endif
+                        <td class="px-4 py-3 text-center whitespace-nowrap">
+                            <div class="text-sm">
+                                @if($submission->distributed_by || $submission->distributed_at)
+                                    <div class="text-zinc-700 dark:text-zinc-300">
+                                        {{ $submission->distributed_by ?? '-' }}
+                                    </div>
+                                    <div class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+                                        {{ $submission->distributed_at ? \Carbon\Carbon::parse($submission->distributed_at)->format('d M Y H:i') : '-' }}
+                                    </div>
+                                @else
+                                    <span class="text-zinc-400 dark:text-zinc-500">-</span>
+                                @endif
+                            </div>
                         </td>
-                        <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300 whitespace-nowrap">
-                            {{ $submission->distributed_by ?? '-' }}
-                        </td>
-                        <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300 whitespace-nowrap">
-                            @if($submission->distributed_at)
-                                {{ \Carbon\Carbon::parse($submission->distributed_at)->format('d M Y H:i') }}
-                            @else
-                                -
-                            @endif
-                        </td>
-                        <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300 whitespace-nowrap">
+                        <td class="px-4 py-3 text-center text-sm text-zinc-700 dark:text-zinc-300 whitespace-nowrap">
                             {{ $submission->pic ?? 'N/A' }}
                         </td>
-                        <td class="px-4 py-3 text-right">
-                            <div class="flex items-center justify-end gap-1">
+                        <td class="px-4 py-3 text-center md:sticky md:right-0 bg-white dark:bg-zinc-900 md:z-10 whitespace-nowrap">
+                            <div class="flex items-center justify-center gap-1">
                                 <!-- View Button -->
                                 <flux:tooltip content="View Details" position="bottom">
                                     <flux:button 
@@ -497,7 +503,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="13" class="px-4 py-12 text-center">
+                        <td colspan="10" class="px-4 py-12 text-center">
                             <div class="flex flex-col items-center gap-4">
                                 <div class="w-24 h-24 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
                                     <svg class="w-12 h-12 text-zinc-400 dark:text-zinc-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -546,6 +552,20 @@
     </flux:card>
 </div>
 <style>
+    .overflow-x-auto {
+        position: relative;
+        z-index: 1;
+    }
+    
+    thead tr th.sticky,
+    tbody tr td.sticky {
+        position: sticky;
+        z-index: 10;
+    }
+    
+    thead tr th.sticky {
+        z-index: 20;
+    }
     /* Hide scrollbar for Chrome, Safari and Opera */
     .scrollbar-hide::-webkit-scrollbar {
         display: none;

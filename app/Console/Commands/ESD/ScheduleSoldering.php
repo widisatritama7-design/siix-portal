@@ -25,8 +25,6 @@ class ScheduleSoldering extends Command
         foreach ($records as $record) {
             SolderingDetail::create([
                 'soldering_id'       => $record->soldering_id,
-                'area'               => $record->area,
-                'location'           => $record->location,
                 'remarks'            => 'Schedule On',
                 'problem'            => null,
                 'action'             => null,

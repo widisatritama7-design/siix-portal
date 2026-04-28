@@ -24,7 +24,7 @@
 
                 <!-- Tombol link -->
                 <p style="text-align: center; margin: 30px 0;">
-                    <a href="https://portal.siix-ems.co.id/mainMenu/master-samples/master-sample-tasks" 
+                    <a href="https://portal.siix-ems.co.id/prod/ms/sample-checks" 
                        style="background-color: #2563eb; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: bold; display: inline-block;">
                         View Task Master Sample
                     </a>

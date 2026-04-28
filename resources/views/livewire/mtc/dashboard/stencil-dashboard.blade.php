@@ -1,5 +1,4 @@
 <section class="w-full" x-data="stencilDashboard()" x-init="init()" x-on:livewire:navigated.window="handleNavigated">
-    @include('partials.mtc-heading')
 
     <flux:heading class="sr-only">
         {{ __('MTC - Stencil Dashboard') }}

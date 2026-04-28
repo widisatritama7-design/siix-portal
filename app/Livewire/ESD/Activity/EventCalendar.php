@@ -290,7 +290,9 @@ class EventCalendar extends Component
             'start_at' => $startDateTime,
             'end_at' => $endDateTime,
             'color' => $this->color,
-            'file' => json_encode(array_values($allFiles)), // Simpan sebagai JSON string
+            'file' => array_values(array_filter($allFiles, function ($file) {
+                return !empty($file) && str_contains($file, 'events/');
+            })), // Simpan sebagai JSON string
         ];
 
         if ($this->event_id) {

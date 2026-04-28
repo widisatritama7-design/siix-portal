@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\LockerStatusController;
 use App\Livewire\ESD\Activity\EsdCalendar;
 use App\Livewire\ESD\Activity\EventCalendar;
 use App\Livewire\ESD\EG\EquipmentGroundDetailManagement;
@@ -48,6 +49,7 @@ use App\Livewire\ESD\Worksurface\WorksurfaceDetailManagement;
 use App\Livewire\ESD\Worksurface\WorksurfaceManagement;
 use App\Livewire\ESD\Worksurface\WorksurfaceShow;
 use App\Livewire\ESD\WS\WristStrapManagement;
+use App\Models\HR\Employee;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -143,4 +145,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Print QR-Code
     Route::get('/esd/print', MultiModelQrPrinter::class)->name('esd.print');
 
+});
+
+Route::get('/locker-status', [LockerStatusController::class, 'index'])->name('locker-status.index');
+Route::post('/locker-status', [LockerStatusController::class, 'store'])->name('locker-status.store');
+Route::put('/locker-status/{lockerStatus}', [LockerStatusController::class, 'update'])->name('locker-status.update');
+Route::post('/locker/update', [LockerStatusController::class, 'update'])->name('locker.update');
+Route::get('/employee/{nik}', [App\Http\Controllers\LockerStatusController::class, 'getEmployee'])->name('employee.get');
+Route::get('/locker-status/data', [LockerStatusController::class, 'getLockerData'])->name('locker.status');
+Route::get('/employees', function () {
+    return Employee::select('nik as nik', 'name as name', 'department as dept')->get();
 });

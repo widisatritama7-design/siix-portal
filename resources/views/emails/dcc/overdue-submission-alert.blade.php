@@ -113,7 +113,7 @@
 
         <p><strong>Total: {{ count($submissions) }} OVERDUE submission</strong></p>
         
-        <a href="https://portal.siix-ems.co.id/mainMenu/submissions?activeTab=Waiting+Distribute" class="btn">
+        <a href="https://portal.siix-ems.co.id/dcc/submissions" class="btn">
             Lihat Semua Submission
         </a>
         

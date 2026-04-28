@@ -25,7 +25,6 @@ class SchedulePackaging extends Command
         foreach ($records as $record) {
             PackagingDetail::create([
                 'packaging_id'    => $record->packaging_id,
-                'type'            => $record->type,
                 'remarks'         => 'Schedule On',
                 'next_date'       => Carbon::parse($record->next_date)->addYear(), // bulan depan
                 'created_by'      => 504,

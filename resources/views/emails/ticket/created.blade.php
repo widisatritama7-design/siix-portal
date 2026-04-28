@@ -101,7 +101,7 @@
             </table>
             <p>You can view the ticket directly by clicking the link below:</p>
             <p><strong>Link to Ticket:</strong> 
-                <a href="http://portal.siix-ems.co.id/mainMenu/tickets/{{ $ticket->id }}">View Ticket</a>
+                <a href="http://portal.siix-ems.co.id/ticket/list/{{ $ticket->id }}">View Ticket</a>
             </p>
             <p>Please check it for the approval process.</p>
             <p>Thank you,</p>

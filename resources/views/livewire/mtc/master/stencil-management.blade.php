@@ -13,8 +13,6 @@
     showEmployeeDropdown: false,
     showLineDropdown: false
 }">
-    
-    @include('partials.mtc-heading')
 
     <flux:heading class="sr-only">
         {{ __('MTC - Stencil Management') }}

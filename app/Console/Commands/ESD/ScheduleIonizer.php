@@ -36,8 +36,6 @@ class ScheduleIonizer extends Command
 
             IonizerDetail::create([
                 'ionizer_id'     => $record->ionizer_id,
-                'area'           => $record->area,
-                'location'       => $record->location,
                 'remarks'        => 'Schedule On',
                 'next_date'      => Carbon::parse($record->next_date)->addMonth(), // bulan depan
                 'created_by'     => 504,

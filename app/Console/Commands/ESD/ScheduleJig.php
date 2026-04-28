@@ -25,7 +25,6 @@ class ScheduleJig extends Command
         foreach ($records as $record) {
             JigDetail::create([
                 'jigs_id'          => $record->jigs_id,
-                'location'         => $record->location,
                 'remarks'          => 'Schedule On',
                 'next_date'        => Carbon::parse($record->next_date)->addYear(), // tahun depan
                 'created_by'       => 504,
