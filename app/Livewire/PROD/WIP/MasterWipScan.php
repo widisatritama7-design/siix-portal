@@ -28,6 +28,13 @@ class MasterWipScan extends Component
     public $rackSearch = '';
     public $availableRacks = [];
     
+    // Modal Add Manual
+    public $showAddManualModal = false;
+    public $manualNoHu = '';
+    public $manualQty = 1;
+    public $manualPartNumber = '';
+    public $manualModel = '';
+    
     protected $queryString = [
         'search_hu' => ['except' => ''],
         'perPage' => ['except' => 10],
@@ -43,6 +50,10 @@ class MasterWipScan extends Component
             session()->flash('error', 'WIP not found!');
             return redirect()->route('prod.wip.index');
         }
+        
+        // Set default values for manual add
+        $this->manualPartNumber = $this->masterWip->part_number;
+        $this->manualModel = $this->masterWip->model;
     }
     
     public function getStatisticsProperty()
@@ -108,6 +119,7 @@ class MasterWipScan extends Component
         }
         
         $scannedPartNumber = trim($matches['part_number']);
+        $scannedNoHu = trim($matches['no_hu']);
         $scannedModel = trim($matches['model']);
         $qty = (int)$matches['qty'];
         
@@ -123,13 +135,13 @@ class MasterWipScan extends Component
             return;
         }
         
-        // Check duplicate
-        $exists = DetailWip::where('master_wips_id', $this->masterWip->id)
-            ->where('no_hu', $noHu)
+        // CEK DUPLICATE - TAMPILKAN ERROR DAN BATALKAN SCAN
+        $existingDetail = DetailWip::where('master_wips_id', $this->masterWip->id)
+            ->where('no_hu', 'like', "%{$scannedNoHu}%")
             ->exists();
             
-        if ($exists) {
-            $this->dispatch('notify', message: 'Duplicate No HU detected! This No HU has already been scanned.', type: 'error');
+        if ($existingDetail) {
+            $this->dispatch('notify', message: "Duplicate No HU detected! No HU '{$scannedNoHu}' has already been scanned in this WIP.", type: 'error');
             return;
         }
         
@@ -143,8 +155,26 @@ class MasterWipScan extends Component
             return;
         }
         
+        $this->processScan($scannedNoHu, $qty, $scannedPartNumber, $scannedModel);
+    }
+    
+    private function processScan($noHu, $qty, $partNumber, $model)
+    {
+        $lastDetail = DetailWip::where('master_wips_id', $this->masterWip->id)->latest()->first();
+        $currentAcm = $lastDetail->acm ?? 0;
+        
+        // Check if exceeds lot quantity
+        if (($currentAcm + $qty) > $this->masterWip->lot_qty) {
+            $remaining = $this->masterWip->lot_qty - $currentAcm;
+            $this->dispatch('notify', message: "Qty exceeds remaining lot quantity! Remaining: {$remaining}", type: 'error');
+            return;
+        }
+        
         try {
             DB::beginTransaction();
+            
+            // Construct the new no_hu string
+            $newNoHu = "@{$partNumber}@{$noHu}@{$model}@@{$qty}@@";
             
             $acm = $currentAcm + $qty;
             $balance = $this->masterWip->lot_qty - $acm;
@@ -152,7 +182,7 @@ class MasterWipScan extends Component
             
             DetailWip::create([
                 'master_wips_id' => $this->masterWip->id,
-                'no_hu' => $noHu,
+                'no_hu' => $newNoHu,
                 'qty' => $qty,
                 'acm' => $acm,
                 'balance' => $balance,
@@ -174,6 +204,130 @@ class MasterWipScan extends Component
             $this->dispatch('notify', message: 'Error processing scan: ' . $e->getMessage(), type: 'error');
         }
     }
+    
+    // ========== ADD MANUAL METHODS ==========
+    
+    public function openAddManualModal()
+    {
+        $this->showAddManualModal = true;
+        $this->manualNoHu = '';
+        $this->manualQty = 1;
+        $this->manualPartNumber = $this->masterWip->part_number;
+        $this->manualModel = $this->masterWip->model;
+    }
+    
+    public function closeAddManualModal()
+    {
+        $this->showAddManualModal = false;
+        $this->manualNoHu = '';
+        $this->manualQty = 1;
+    }
+    
+    public function addManualScan()
+    {
+        $this->validate([
+            'manualNoHu' => 'required|string|min:1',
+            'manualQty' => 'required|integer|min:1'
+        ]);
+        
+        if ($this->masterWip->isFinished()) {
+            $this->dispatch('notify', message: 'This WIP is already finished.', type: 'error');
+            $this->closeAddManualModal();
+            return;
+        }
+        
+        $inputText = trim($this->manualNoHu);
+        $newQty = (int)$this->manualQty;
+        
+        // Check if input is full format or just No HU
+        $pattern = '/^@(?P<part_number>[^@]+)@(?P<no_hu>[^@]+)@(?P<model>[^@]+)@@(?P<qty>\d+)@@$/';
+        
+        if (preg_match($pattern, $inputText, $matches)) {
+            // Input is full format, extract the No HU
+            $noHu = trim($matches['no_hu']);
+            $scannedPartNumber = trim($matches['part_number']);
+            $scannedModel = trim($matches['model']);
+            
+            // Validate part number
+            if ($scannedPartNumber !== $this->masterWip->part_number) {
+                $this->dispatch('notify', message: "Part Number mismatch! Scanned: {$scannedPartNumber}, Expected: {$this->masterWip->part_number}", type: 'error');
+                return;
+            }
+            
+            // Validate model
+            if ($scannedModel !== $this->masterWip->model) {
+                $this->dispatch('notify', message: "Model mismatch! Scanned: {$scannedModel}, Expected: {$this->masterWip->model}", type: 'error');
+                return;
+            }
+        } else {
+            // Input is just No HU
+            $noHu = $inputText;
+        }
+        
+        $lastDetail = DetailWip::where('master_wips_id', $this->masterWip->id)->latest()->first();
+        $currentAcm = $lastDetail->acm ?? 0;
+        
+        // Check if exceeds lot quantity
+        if (($currentAcm + $newQty) > $this->masterWip->lot_qty) {
+            $remaining = $this->masterWip->lot_qty - $currentAcm;
+            $this->dispatch('notify', message: "Qty exceeds remaining lot quantity! Remaining: {$remaining}", type: 'error');
+            return;
+        }
+        
+        // CEK DUPLICATE UNTUK ADD MANUAL - KHUSUS ADD MANUAL
+        // Jika No HU sudah ada, cek quantity nya
+        $existingDetail = DetailWip::where('master_wips_id', $this->masterWip->id)
+            ->where('no_hu', 'like', "%{$noHu}%")
+            ->first();
+            
+        if ($existingDetail) {
+            // Jika No HU sudah ada dengan quantity yang SAMA -> TOLAK
+            if ($existingDetail->qty == $newQty) {
+                $this->dispatch('notify', message: "Duplicate No HU detected! No HU '{$noHu}' with quantity {$newQty} already exists in this WIP.", type: 'error');
+                return;
+            } else {
+                // Jika No HU sudah ada dengan quantity BERBEDA -> BOLEH (warning aja)
+                $this->dispatch('notify', message: "Warning: No HU '{$noHu}' already exists with different quantity ({$existingDetail->qty}). Adding new record with quantity {$newQty}.", type: 'warning');
+            }
+        }
+        
+        try {
+            DB::beginTransaction();
+            
+            // Build the NO HU with NEW qty
+            $newNoHu = "@{$this->masterWip->part_number}@{$noHu}@{$this->masterWip->model}@@{$newQty}@@";
+            
+            $acm = $currentAcm + $newQty;
+            $balance = $this->masterWip->lot_qty - $acm;
+            $status = $balance > 0 ? 'In Progress' : 'Finished';
+            
+            DetailWip::create([
+                'master_wips_id' => $this->masterWip->id,
+                'no_hu' => $newNoHu,
+                'qty' => $newQty,
+                'acm' => $acm,
+                'balance' => $balance,
+                'status' => $status,
+                'ng_count' => 0,
+                'created_by' => Auth::id(),
+            ]);
+            
+            DB::commit();
+            
+            $this->dispatch('notify', message: "Manual add successful! No HU: {$noHu}, Qty: {$newQty}", type: 'success');
+            
+            // Refresh data
+            $this->masterWip = MasterWip::find($this->masterWipId);
+            $this->closeAddManualModal();
+            
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error manual add: ' . $e->getMessage());
+            $this->dispatch('notify', message: 'Error adding manual: ' . $e->getMessage(), type: 'error');
+        }
+    }
+    
+    // ========== EXISTING METHODS ==========
     
     public function updateNg($detailId, $ngCount)
     {

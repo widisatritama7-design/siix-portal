@@ -1,9 +1,15 @@
 {{-- resources/views/livewire/prod/wip/master-wip-scan.blade.php --}}
-<div class="p-4 space-y-4">
+<div class="p-1 space-y-2">
     <!-- Breadcrumbs -->
     <flux:breadcrumbs>
         <flux:breadcrumbs.item href="{{ route('dashboard') }}" wire:navigate separator="slash">
             Dashboard
+        </flux:breadcrumbs.item>
+        <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
+            PROD
+        </flux:breadcrumbs.item>
+        <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
+            WIP
         </flux:breadcrumbs.item>
         <flux:breadcrumbs.item href="{{ route('prod.wip.index') }}" wire:navigate separator="slash">
             Master WIP
@@ -63,7 +69,7 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-            <h1 class="text-2xl font-bold text-zinc-800 dark:text-white">
+            <h1 class="text-3xl font-bold text-zinc-800 dark:text-white">
                 Scan WIP | {{ $masterWip->model }}
             </h1>
             <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-0.5">
@@ -210,11 +216,6 @@
                 </div>
                 <div id="scan-loading" class="absolute right-3 top-1/2 -translate-y-1/2 hidden">
                     <div class="animate-spin rounded-full h-5 w-5 border-2 border-green-600 border-t-transparent"></div>
-                </div>
-            </div>
-            <div class="mt-3 text-center">
-                <div class="bg-green-50 dark:bg-green-900/20 inline-block px-4 py-2 rounded-lg text-xs font-mono text-green-700 dark:text-green-400">
-                    ⚡ Auto-scan active - Scan barcode and it will process automatically
                 </div>
             </div>
         </div>
@@ -503,6 +504,15 @@
                         <option value="50">50</option>
                         <option value="100">100</option>
                     </select>
+
+                    <!-- Tombol Add Manual - tambahkan di samping kanan header -->
+                    <button wire:click="openAddManualModal" 
+                        class="inline-flex items-center px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors">
+                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                        </svg>
+                        Add Manual
+                    </button>
                     
                     @if($search_hu)
                         <button wire:click="resetSearch" class="px-3 py-2 bg-red-500 text-white text-sm rounded-lg hover:bg-red-600 transition-colors">
@@ -771,6 +781,147 @@
         </div>
     </div>
     @endif
+
+    <!-- Modal Add Manual -->
+    @if($showAddManualModal)
+    <div class="fixed inset-0 z-50 overflow-y-auto" x-data="{ 
+        open: true,
+        manualNoHu: @entangle('manualNoHu'),
+        manualQty: @entangle('manualQty'),
+        partNumber: '{{ $masterWip->part_number }}',
+        model: '{{ $masterWip->model }}'
+    }" x-cloak>
+        <div class="flex items-center justify-center min-h-screen px-4 text-center">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 dark:bg-gray-900 dark:bg-opacity-75 transition-opacity" @click="$wire.closeAddManualModal()"></div>
+            
+            <div class="relative inline-block align-bottom bg-white dark:bg-zinc-900 rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                
+                <!-- Header Modal -->
+                <div class="px-6 py-4 bg-green-600 border-b border-green-700 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2 bg-white/20 rounded-lg">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-semibold text-white">Add Manual No HU</h3>
+                            <p class="text-xs text-green-100 mt-1">Input No HU or full format, adjust quantity</p>
+                        </div>
+                    </div>
+                    <button type="button" wire:click="closeAddManualModal" class="text-white/80 hover:text-white focus:outline-none hover:bg-white/20 rounded-lg p-1.5 transition-colors">
+                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Content -->
+                <div class="px-6 py-6">
+                    <div class="space-y-4">
+                        <!-- Info WIP -->
+                        <div class="bg-gray-50 dark:bg-zinc-800 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
+                            <div class="space-y-2">
+                                <div class="flex justify-between items-center text-sm">
+                                    <span class="text-gray-600 dark:text-gray-400">Part Number:</span>
+                                    <span class="font-mono font-medium text-gray-900 dark:text-white">{{ $masterWip->part_number }}</span>
+                                </div>
+                                <div class="flex justify-between items-center text-sm">
+                                    <span class="text-gray-600 dark:text-gray-400">Model:</span>
+                                    <span class="font-mono font-medium text-gray-900 dark:text-white">{{ $masterWip->model }}</span>
+                                </div>
+                                <div class="flex justify-between items-center text-sm">
+                                    <span class="text-gray-600 dark:text-gray-400">Remaining Qty:</span>
+                                    <span class="font-bold text-blue-600 dark:text-blue-400">{{ number_format($statistics['remaining_qty']) }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Input No HU -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                No HU <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" 
+                                x-model="manualNoHu"
+                                class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:border-green-500 focus:ring-4 focus:ring-green-100 dark:focus:ring-green-900/30 dark:bg-zinc-800 dark:text-white transition-all font-mono text-xs text-center"
+                                placeholder="Example: 00000050000010214972 or full format">
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 text-center">
+                                You can paste full format or just the No HU number
+                            </p>
+                        </div>
+
+                        <!-- Input Quantity -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Quantity <span class="text-red-500">*</span>
+                            </label>
+                            <input type="number" 
+                                x-model.number="manualQty"
+                                min="1"
+                                step="1"
+                                class="w-full px-4 py-3 border-2 border-gray-200 dark:border-gray-700 rounded-xl focus:border-green-500 focus:ring-4 focus:ring-green-100 dark:focus:ring-green-900/30 dark:bg-zinc-800 dark:text-white transition-all text-center text-lg font-semibold">
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                Enter quantity (1, 10, 20, 50, 100, etc.)
+                            </p>
+                        </div>
+
+                        <!-- Preview - fast update -->
+                        <div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                            <div class="text-sm text-gray-700 dark:text-gray-300 mb-1 text-center">Preview Format:</div>
+                            <div class="font-mono text-xs text-gray-600 dark:text-gray-400 break-all text-center" 
+                                x-text="(() => {
+                                    let input = manualNoHu;
+                                    let qty = manualQty;
+                                    let noHu = '';
+                                    
+                                    if (!input || input.trim() === '') {
+                                        return 'Waiting for input...';
+                                    }
+                                    
+                                    // Try to extract No HU from full format
+                                    const pattern = /^@[^@]+@([^@]+)@[^@]+@@\d+@@$/;
+                                    const match = input.match(pattern);
+                                    if (match) {
+                                        noHu = match[1];
+                                    } else {
+                                        noHu = input;
+                                    }
+                                    
+                                    if (noHu && noHu.trim() !== '') {
+                                        return '@' + partNumber + '@' + noHu + '@' + model + '@@' + qty + '@@';
+                                    }
+                                    return 'Invalid No HU format';
+                                })()">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer -->
+                <div class="bg-gray-50 dark:bg-zinc-800/50 px-6 py-4 flex flex-col sm:flex-row-reverse gap-3 border-t border-gray-200 dark:border-gray-700">
+                    <button type="button" wire:click="addManualScan" 
+                        class="inline-flex justify-center items-center px-6 py-3 bg-green-600 hover:bg-green-700 rounded-xl text-sm font-semibold text-white transition-all duration-200">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        Add to Scan History
+                    </button>
+                    <button type="button" wire:click="closeAddManualModal" 
+                        class="inline-flex justify-center items-center px-6 py-3 bg-white dark:bg-zinc-800 hover:bg-gray-100 dark:hover:bg-zinc-700 border-2 border-gray-200 dark:border-gray-700 rounded-xl text-sm font-semibold text-gray-700 dark:text-gray-300 transition-all duration-200">
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
+    {{-- Tambahkan CSS untuk modal jika belum ada --}}
+    @push('styles')
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
+    @endpush
 
     <!-- Notifikasi -->
     <div x-data="{ show: false, message: '', type: 'success' }" 

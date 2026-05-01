@@ -1,9 +1,15 @@
 {{-- resources/views/livewire/prod/wip/master-wip-detail.blade.php --}}
-<div class="p-4 space-y-4">
+<div class="p-1 space-y-2">
     <!-- Breadcrumbs -->
     <flux:breadcrumbs>
         <flux:breadcrumbs.item href="{{ route('dashboard') }}" wire:navigate separator="slash">
             Dashboard
+        </flux:breadcrumbs.item>
+        <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
+            PROD
+        </flux:breadcrumbs.item>
+        <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
+            WIP
         </flux:breadcrumbs.item>
         <flux:breadcrumbs.item href="{{ route('prod.wip.index') }}" wire:navigate separator="slash">
             Master WIP
@@ -44,7 +50,7 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-            <h1 class="text-2xl font-bold text-zinc-800 dark:text-white">
+            <h1 class="text-3xl font-bold text-zinc-800 dark:text-white">
                 View Master WIP | {{ $masterWip->model }}
             </h1>
             <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-0.5">
