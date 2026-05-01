@@ -520,7 +520,7 @@
     </div>
             </ui-tooltip>
 <?php echo ltrim(ob_get_clean()); ?>
-                                    <?php
+                                    <!-- <?php
                                         $lastHistory = $masterSample->historydDetails()
                                             ->latest('out_date')
                                             ->first();
@@ -534,9 +534,8 @@
                                                 \Carbon\Carbon::parse($detail->date_alarm)->startOfDay()
                                             );
                                         }
-                                    ?>
+                                    ?> -->
 
-                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($isVisible): ?>
                                         <?php ob_start(); ?><ui-tooltip position="bottom center"  data-flux-tooltip >
         <?php ob_start(); ?>
                                             <a href="<?php echo e(route('prod.ms.master-sample.expired.edit', ['sampleId' => $masterSample->id, 'id' => $detail->id])); ?>" 
@@ -558,7 +557,6 @@
     </div>
             </ui-tooltip>
 <?php echo ltrim(ob_get_clean()); ?>
-                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </div>
                             </td>
                         </tr>

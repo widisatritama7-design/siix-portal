@@ -17,9 +17,12 @@
 <?php # [BlazeFolded]:{flux::card}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/card/index.blade.php}:{1774988736} ?>
 <?php # [BlazeFolded]:{flux::heading}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/heading.blade.php}:{1774988736} ?>
 <?php # [BlazeFolded]:{flux::subheading}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/subheading.blade.php}:{1774988736} ?>
+<?php # [BlazeFolded]:{flux::icon}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php}:{1774988736} ?>
+<?php # [BlazeFolded]:{flux::icon}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php}:{1774988736} ?>
 <?php # [BlazeFolded]:{flux::badge}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/badge/index.blade.php}:{1774988736} ?>
 <?php # [BlazeFolded]:{flux::badge}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/badge/index.blade.php}:{1774988736} ?>
 <?php # [BlazeFolded]:{flux::badge}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/badge/index.blade.php}:{1774988736} ?>
+<?php # [BlazeFolded]:{flux::icon}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php}:{1774988736} ?>
 <?php # [BlazeFolded]:{flux::card}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/card/index.blade.php}:{1774988736} ?>
 <?php if (isset($component)) { $__componentOriginal81a506f898233b9e7d58286e6bea3c18 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal81a506f898233b9e7d58286e6bea3c18 = $attributes; } ?>
@@ -404,6 +407,17 @@
             $monthlyStartDate = request()->get('monthly_start_date', $now->copy()->startOfWeek(Carbon\Carbon::SUNDAY)->toDateString());
             $monthlyEndDate = request()->get('monthly_end_date', $now->copy()->endOfWeek(Carbon\Carbon::SATURDAY)->toDateString());
             
+            // Filter jenis measurement yang akan ditampilkan
+            $filterMode = request()->get('filter_mode', 'all'); // 'all', 'selected', 'except'
+            $selectedTypes = request()->get('selected_types', []);
+            if (!is_array($selectedTypes)) {
+                $selectedTypes = explode(',', $selectedTypes);
+            }
+            $exceptTypes = request()->get('except_types', []);
+            if (!is_array($exceptTypes)) {
+                $exceptTypes = explode(',', $exceptTypes);
+            }
+            
             $startOfWeek = Carbon\Carbon::parse($monthlyStartDate)->startOfWeek(Carbon\Carbon::SUNDAY);
             $endOfWeek = Carbon\Carbon::parse($monthlyEndDate)->endOfWeek(Carbon\Carbon::SATURDAY);
             
@@ -424,6 +438,14 @@
             $allTypes = array_unique(array_merge($allExistingTypes, $allTypesList));
             sort($allTypes);
             
+            // Terapkan filter berdasarkan mode
+            $filteredTypes = $allTypes;
+            if ($filterMode === 'selected' && !empty($selectedTypes)) {
+                $filteredTypes = array_intersect($allTypes, $selectedTypes);
+            } elseif ($filterMode === 'except' && !empty($exceptTypes)) {
+                $filteredTypes = array_diff($allTypes, $exceptTypes);
+            }
+            
             $createdCounts = App\Models\ESD\Activity\ViewAllMeasurement::select('measurement_type', DB::raw('COUNT(DISTINCT id_table) as total'))
                 ->whereBetween('created_at', [$startOfWeek, $endOfWeek])
                 ->groupBy('measurement_type')
@@ -437,12 +459,13 @@
             $chartData = [];
             $maxTarget = 0;
 
-            foreach ($allTypes as $type) {
+            foreach ($filteredTypes as $type) {
                 $created = $createdCounts->get($type, 0);
                 $next = $nextCounts->get($type, 0);
                 $percentage = $next > 0 ? round(($created / $next) * 100, 2) : 0;
                 
                 $chartData[] = [
+                    'type_key' => $type,
                     'type' => $typeLabels[$type] ?? $type,
                     'target' => $next,
                     'actual' => $created,
@@ -479,70 +502,146 @@
 </div>
 <?php echo ltrim(ob_get_clean()); ?>
                 </div>
-                <form method="GET" class="flex items-center gap-2">
+                <form method="GET" class="flex flex-wrap items-center gap-2" id="monthlyFilterForm">
                     <input type="hidden" name="yearly_year" value="<?php echo e(request()->get('yearly_year', $currentYear)); ?>">
                     <input type="hidden" name="weekly_year" value="<?php echo e(request()->get('weekly_year', $currentYear)); ?>">
                     <input type="hidden" name="weekly_month" value="<?php echo e(request()->get('weekly_month', $now->month)); ?>">
                     <input type="date" name="monthly_start_date" value="<?php echo e($monthlyStartDate); ?>" class="text-sm rounded-lg border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-2 py-1">
                     <span class="text-zinc-500">to</span>
                     <input type="date" name="monthly_end_date" value="<?php echo e($monthlyEndDate); ?>" class="text-sm rounded-lg border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-2 py-1">
-                    <button type="submit" class="text-sm bg-purple-600 hover:bg-purple-700 text-white rounded-lg px-3 py-1 transition-colors">Filter</button>
+                    
+                    <!-- Filter Mode Selection -->
+                    <div class="relative" x-data="{ open: false }">
+                        <button type="button" @click="open = !open" class="flex items-center gap-1 text-sm rounded-lg border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-1 hover:bg-zinc-50 dark:hover:bg-zinc-700">
+                            <?php ob_start(); ?><svg class="shrink-0 [:where(&amp;)]:size-6 w-4 h-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z"/>
+</svg>
+
+        <?php echo ltrim(ob_get_clean()); ?>
+                            Filter Types
+                            <?php ob_start(); ?><svg class="shrink-0 [:where(&amp;)]:size-6 w-3 h-3" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5"/>
+</svg>
+
+        <?php echo ltrim(ob_get_clean()); ?>
+                        </button>
+                        <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-80 bg-white dark:bg-zinc-800 rounded-lg shadow-lg border border-zinc-200 dark:border-zinc-700 z-10 p-3" style="display: none;">
+                            <div class="mb-2">
+                                <label class="flex items-center gap-2 text-sm">
+                                    <input type="radio" name="filter_mode" value="all" <?php echo e($filterMode == 'all' ? 'checked' : ''); ?> onchange="this.form.submit()">
+                                    <span>Show All Types</span>
+                                </label>
+                                <label class="flex items-center gap-2 text-sm mt-1">
+                                    <input type="radio" name="filter_mode" value="selected" <?php echo e($filterMode == 'selected' ? 'checked' : ''); ?> onchange="toggleFilterMode('selected')">
+                                    <span>Show Selected Only</span>
+                                </label>
+                                <label class="flex items-center gap-2 text-sm mt-1">
+                                    <input type="radio" name="filter_mode" value="except" <?php echo e($filterMode == 'except' ? 'checked' : ''); ?> onchange="toggleFilterMode('except')">
+                                    <span>Show All Except</span>
+                                </label>
+                            </div>
+                            
+                            <div id="selectedTypesPanel" class="mt-2 border-t border-zinc-200 dark:border-zinc-700 pt-2 <?php echo e($filterMode != 'selected' ? 'hidden' : ''); ?>">
+                                <p class="text-xs text-zinc-500 mb-1">Select types to display:</p>
+                                <div class="max-h-40 overflow-y-auto space-y-1">
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $allTypes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $type): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                                        <label class="flex items-center gap-2 text-xs">
+                                            <input type="checkbox" name="selected_types[]" value="<?php echo e($type); ?>" 
+                                                <?php echo e(in_array($type, $selectedTypes) ? 'checked' : ''); ?>
+
+                                                onchange="this.form.submit()">
+                                            <span><?php echo e($typeLabels[$type] ?? $type); ?></span>
+                                        </label>
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
+                                </div>
+                            </div>
+                            
+                            <div id="exceptTypesPanel" class="mt-2 border-t border-zinc-200 dark:border-zinc-700 pt-2 <?php echo e($filterMode != 'except' ? 'hidden' : ''); ?>">
+                                <p class="text-xs text-zinc-500 mb-1">Select types to hide:</p>
+                                <div class="max-h-40 overflow-y-auto space-y-1">
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $allTypes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $type): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                                        <label class="flex items-center gap-2 text-xs">
+                                            <input type="checkbox" name="except_types[]" value="<?php echo e($type); ?>" 
+                                                <?php echo e(in_array($type, $exceptTypes) ? 'checked' : ''); ?>
+
+                                                onchange="this.form.submit()">
+                                            <span><?php echo e($typeLabels[$type] ?? $type); ?></span>
+                                        </label>
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="text-sm bg-purple-600 hover:bg-purple-700 text-white rounded-lg px-3 py-1 transition-colors">Apply</button>
                 </form>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
-                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $columns; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $colIndex => $columnData): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
-                    <div class="space-y-4">
-                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $columnData; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $data): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
-                            <?php
-                                $progressPercent = $data['target'] > 0 ? ($data['actual'] / $data['target']) * 100 : 0;
-                                $progressPercent = min($progressPercent, 100);
-                            ?>
-                            <div>
-                                <div class="flex justify-between items-center mb-1">
-                                    <span class="text-xs font-semibold text-zinc-700 dark:text-zinc-300"><?php echo e($data['type']); ?></span>
-                                    <div class="flex gap-1">
-                                        <?php ob_start(); ?><div data-flux-badge="data-flux-badge" class="inline-flex items-center font-medium whitespace-nowrap  [print-color-adjust:exact] text-sm py-1 **:data-flux-badge-icon:me-1.5 rounded-md px-2 text-blue-800 [&amp;_button]:text-blue-800! dark:text-blue-200 dark:[&amp;_button]:text-blue-200! bg-blue-400/20 dark:bg-blue-400/40 [&amp;:is(button)]:hover:bg-blue-400/30 dark:[button]:hover:bg-blue-400/50 text-[10px] px-1.5 py-0.5">
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(count($chartData) > 0): ?>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $columns; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $colIndex => $columnData): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                        <div class="space-y-4">
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $columnData; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $data): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                                <?php
+                                    $progressPercent = $data['target'] > 0 ? ($data['actual'] / $data['target']) * 100 : 0;
+                                    $progressPercent = min($progressPercent, 100);
+                                ?>
+                                <div>
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-xs font-semibold text-zinc-700 dark:text-zinc-300"><?php echo e($data['type']); ?></span>
+                                        <div class="flex gap-1">
+                                            <?php ob_start(); ?><div data-flux-badge="data-flux-badge" class="inline-flex items-center font-medium whitespace-nowrap  [print-color-adjust:exact] text-sm py-1 **:data-flux-badge-icon:me-1.5 rounded-md px-2 text-blue-800 [&amp;_button]:text-blue-800! dark:text-blue-200 dark:[&amp;_button]:text-blue-200! bg-blue-400/20 dark:bg-blue-400/40 [&amp;:is(button)]:hover:bg-blue-400/30 dark:[button]:hover:bg-blue-400/50 text-[10px] px-1.5 py-0.5">
         <?php ob_start(); ?>Target: <?php echo e($data['target']); ?><?php echo trim(ob_get_clean()); ?>
 
     </div>
 <?php echo ltrim(ob_get_clean()); ?>
-                                        <?php ob_start(); ?><div data-flux-badge="data-flux-badge" class="inline-flex items-center font-medium whitespace-nowrap  [print-color-adjust:exact] text-sm py-1 **:data-flux-badge-icon:me-1.5 rounded-md px-2 text-green-800 [&amp;_button]:text-green-800! dark:text-green-200 dark:[&amp;_button]:text-green-200! bg-green-400/20 dark:bg-green-400/40 [&amp;:is(button)]:hover:bg-green-400/30 dark:[button]:hover:bg-green-400/50 text-[10px] px-1.5 py-0.5">
+                                            <?php ob_start(); ?><div data-flux-badge="data-flux-badge" class="inline-flex items-center font-medium whitespace-nowrap  [print-color-adjust:exact] text-sm py-1 **:data-flux-badge-icon:me-1.5 rounded-md px-2 text-green-800 [&amp;_button]:text-green-800! dark:text-green-200 dark:[&amp;_button]:text-green-200! bg-green-400/20 dark:bg-green-400/40 [&amp;:is(button)]:hover:bg-green-400/30 dark:[button]:hover:bg-green-400/50 text-[10px] px-1.5 py-0.5">
         <?php ob_start(); ?>Actual: <?php echo e($data['actual']); ?><?php echo trim(ob_get_clean()); ?>
 
     </div>
 <?php echo ltrim(ob_get_clean()); ?>
-                                        <?php ob_start(); ?><div data-flux-badge="data-flux-badge" class="inline-flex items-center font-medium whitespace-nowrap  [print-color-adjust:exact] text-sm py-1 **:data-flux-badge-icon:me-1.5 rounded-md px-2 text-yellow-800 [&amp;_button]:text-yellow-800! dark:text-yellow-200 dark:[&amp;_button]:text-yellow-200! bg-yellow-400/25 dark:bg-yellow-400/40 [&amp;:is(button)]:hover:bg-yellow-400/40 dark:[button]:hover:bg-yellow-400/50 text-[10px] px-1.5 py-0.5 font-bold">
+                                            <?php ob_start(); ?><div data-flux-badge="data-flux-badge" class="inline-flex items-center font-medium whitespace-nowrap  [print-color-adjust:exact] text-sm py-1 **:data-flux-badge-icon:me-1.5 rounded-md px-2 text-yellow-800 [&amp;_button]:text-yellow-800! dark:text-yellow-200 dark:[&amp;_button]:text-yellow-200! bg-yellow-400/25 dark:bg-yellow-400/40 [&amp;:is(button)]:hover:bg-yellow-400/40 dark:[button]:hover:bg-yellow-400/50 text-[10px] px-1.5 py-0.5 font-bold">
         <?php ob_start(); ?><?php echo e($data['percentage']); ?>%<?php echo trim(ob_get_clean()); ?>
 
     </div>
 <?php echo ltrim(ob_get_clean()); ?>
+                                        </div>
                                     </div>
-                                </div>
-                                
-                                <div>
-                                    <div class="w-full bg-zinc-200 dark:bg-zinc-700 rounded-full h-7 overflow-hidden">
-                                        <div class="h-full bg-gradient-to-r from-green-500 to-green-600 rounded-full transition-all duration-500 flex items-center justify-end px-2 text-white text-xs font-medium"
-                                            style="width: <?php echo e($progressPercent); ?>%">
-                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($progressPercent > 15): ?>
-                                                <?php echo e($data['actual']); ?> / <?php echo e($data['target']); ?>
+                                    
+                                    <div>
+                                        <div class="w-full bg-zinc-200 dark:bg-zinc-700 rounded-full h-7 overflow-hidden">
+                                            <div class="h-full bg-gradient-to-r from-green-500 to-green-600 rounded-full transition-all duration-500 flex items-center justify-end px-2 text-white text-xs font-medium"
+                                                style="width: <?php echo e($progressPercent); ?>%">
+                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($progressPercent > 15): ?>
+                                                    <?php echo e($data['actual']); ?> / <?php echo e($data['target']); ?>
 
-                                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
-                        
-                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php for($i = count($columnData); $i < $itemsPerColumn; $i++): ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
-                            <div class="opacity-0">
-                                <div class="h-6 mb-1"></div>
-                                <div class="h-7"></div>
-                            </div>
-                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endfor; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
-                    </div>
-                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
-            </div>
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
+                            
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php for($i = count($columnData); $i < $itemsPerColumn; $i++): ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                                <div class="opacity-0">
+                                    <div class="h-6 mb-1"></div>
+                                    <div class="h-7"></div>
+                                </div>
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endfor; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
+                        </div>
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
+                </div>
+            <?php else: ?>
+                <div class="text-center py-12">
+                    <?php ob_start(); ?><svg class="shrink-0 [:where(&amp;)]:size-6 w-12 h-12 mx-auto text-zinc-400 mb-3" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c2.755 0 5.455.232 8.083.678.533.09.917.556.917 1.096v1.044a2.25 2.25 0 0 1-.659 1.591l-5.432 5.432a2.25 2.25 0 0 0-.659 1.591v2.927a2.25 2.25 0 0 1-1.244 2.013L9.75 21v-6.568a2.25 2.25 0 0 0-.659-1.591L3.659 7.409A2.25 2.25 0 0 1 3 5.818V4.774c0-.54.384-1.006.917-1.096A48.32 48.32 0 0 1 12 3Z"/>
+</svg>
+
+        <?php echo ltrim(ob_get_clean()); ?>
+                    <p class="text-zinc-500">No data available for the selected filters</p>
+                    <p class="text-xs text-zinc-400 mt-1">Try changing your filter settings or date range</p>
+                </div>
+            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
             
             <div class="flex justify-center gap-6 pt-4 mt-4 border-t border-zinc-200 dark:border-zinc-700">
                 <div class="flex items-center gap-2"><div class="w-3 h-3 bg-green-500 rounded-full"></div><span class="text-xs">Actual Progress</span></div>
@@ -556,6 +655,37 @@
 
     <?php $__env->startPush('scripts'); ?>
     <script>
+        function toggleFilterMode(mode) {
+            const selectedPanel = document.getElementById('selectedTypesPanel');
+            const exceptPanel = document.getElementById('exceptTypesPanel');
+            
+            if (mode === 'selected') {
+                selectedPanel.classList.remove('hidden');
+                exceptPanel.classList.add('hidden');
+            } else if (mode === 'except') {
+                selectedPanel.classList.add('hidden');
+                exceptPanel.classList.remove('hidden');
+            } else {
+                selectedPanel.classList.add('hidden');
+                exceptPanel.classList.add('hidden');
+            }
+            
+            // Submit form immediately when radio changes
+            const form = document.getElementById('monthlyFilterForm');
+            if (form) form.submit();
+        }
+
+        // Initialize panel visibility based on current filter mode
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterMode = '<?php echo e($filterMode); ?>';
+            if (filterMode === 'selected') {
+                document.getElementById('selectedTypesPanel')?.classList.remove('hidden');
+                document.getElementById('exceptTypesPanel')?.classList.add('hidden');
+            } else if (filterMode === 'except') {
+                document.getElementById('selectedTypesPanel')?.classList.add('hidden');
+                document.getElementById('exceptTypesPanel')?.classList.remove('hidden');
+            }
+        });
         // Fungsi untuk animasi semua gauge
         function animateAllGauges() {
             // ========== ANIMASI WEEKLY GAUGES ==========

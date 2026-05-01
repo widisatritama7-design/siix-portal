@@ -322,6 +322,17 @@
             $monthlyStartDate = request()->get('monthly_start_date', $now->copy()->startOfWeek(Carbon\Carbon::SUNDAY)->toDateString());
             $monthlyEndDate = request()->get('monthly_end_date', $now->copy()->endOfWeek(Carbon\Carbon::SATURDAY)->toDateString());
             
+            // Filter jenis measurement yang akan ditampilkan
+            $filterMode = request()->get('filter_mode', 'all'); // 'all', 'selected', 'except'
+            $selectedTypes = request()->get('selected_types', []);
+            if (!is_array($selectedTypes)) {
+                $selectedTypes = explode(',', $selectedTypes);
+            }
+            $exceptTypes = request()->get('except_types', []);
+            if (!is_array($exceptTypes)) {
+                $exceptTypes = explode(',', $exceptTypes);
+            }
+            
             $startOfWeek = Carbon\Carbon::parse($monthlyStartDate)->startOfWeek(Carbon\Carbon::SUNDAY);
             $endOfWeek = Carbon\Carbon::parse($monthlyEndDate)->endOfWeek(Carbon\Carbon::SATURDAY);
             
@@ -342,6 +353,14 @@
             $allTypes = array_unique(array_merge($allExistingTypes, $allTypesList));
             sort($allTypes);
             
+            // Terapkan filter berdasarkan mode
+            $filteredTypes = $allTypes;
+            if ($filterMode === 'selected' && !empty($selectedTypes)) {
+                $filteredTypes = array_intersect($allTypes, $selectedTypes);
+            } elseif ($filterMode === 'except' && !empty($exceptTypes)) {
+                $filteredTypes = array_diff($allTypes, $exceptTypes);
+            }
+            
             $createdCounts = App\Models\ESD\Activity\ViewAllMeasurement::select('measurement_type', DB::raw('COUNT(DISTINCT id_table) as total'))
                 ->whereBetween('created_at', [$startOfWeek, $endOfWeek])
                 ->groupBy('measurement_type')
@@ -355,12 +374,13 @@
             $chartData = [];
             $maxTarget = 0;
 
-            foreach ($allTypes as $type) {
+            foreach ($filteredTypes as $type) {
                 $created = $createdCounts->get($type, 0);
                 $next = $nextCounts->get($type, 0);
                 $percentage = $next > 0 ? round(($created / $next) * 100, 2) : 0;
                 
                 $chartData[] = [
+                    'type_key' => $type,
                     'type' => $typeLabels[$type] ?? $type,
                     'target' => $next,
                     'actual' => $created,
@@ -391,57 +411,119 @@
                     <flux:heading size="lg">Measurement Progress By Type</flux:heading>
                     <flux:subheading>{{ $startOfWeek->format('d M Y') }} - {{ $endOfWeek->format('d M Y') }}</flux:subheading>
                 </div>
-                <form method="GET" class="flex items-center gap-2">
+                <form method="GET" class="flex flex-wrap items-center gap-2" id="monthlyFilterForm">
                     <input type="hidden" name="yearly_year" value="{{ request()->get('yearly_year', $currentYear) }}">
                     <input type="hidden" name="weekly_year" value="{{ request()->get('weekly_year', $currentYear) }}">
                     <input type="hidden" name="weekly_month" value="{{ request()->get('weekly_month', $now->month) }}">
                     <input type="date" name="monthly_start_date" value="{{ $monthlyStartDate }}" class="text-sm rounded-lg border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-2 py-1">
                     <span class="text-zinc-500">to</span>
                     <input type="date" name="monthly_end_date" value="{{ $monthlyEndDate }}" class="text-sm rounded-lg border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-2 py-1">
-                    <button type="submit" class="text-sm bg-purple-600 hover:bg-purple-700 text-white rounded-lg px-3 py-1 transition-colors">Filter</button>
+                    
+                    <!-- Filter Mode Selection -->
+                    <div class="relative" x-data="{ open: false }">
+                        <button type="button" @click="open = !open" class="flex items-center gap-1 text-sm rounded-lg border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-1 hover:bg-zinc-50 dark:hover:bg-zinc-700">
+                            <flux:icon name="funnel" class="w-4 h-4" />
+                            Filter Types
+                            <flux:icon name="chevron-down" class="w-3 h-3" />
+                        </button>
+                        <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-80 bg-white dark:bg-zinc-800 rounded-lg shadow-lg border border-zinc-200 dark:border-zinc-700 z-10 p-3" style="display: none;">
+                            <div class="mb-2">
+                                <label class="flex items-center gap-2 text-sm">
+                                    <input type="radio" name="filter_mode" value="all" {{ $filterMode == 'all' ? 'checked' : '' }} onchange="this.form.submit()">
+                                    <span>Show All Types</span>
+                                </label>
+                                <label class="flex items-center gap-2 text-sm mt-1">
+                                    <input type="radio" name="filter_mode" value="selected" {{ $filterMode == 'selected' ? 'checked' : '' }} onchange="toggleFilterMode('selected')">
+                                    <span>Show Selected Only</span>
+                                </label>
+                                <label class="flex items-center gap-2 text-sm mt-1">
+                                    <input type="radio" name="filter_mode" value="except" {{ $filterMode == 'except' ? 'checked' : '' }} onchange="toggleFilterMode('except')">
+                                    <span>Show All Except</span>
+                                </label>
+                            </div>
+                            
+                            <div id="selectedTypesPanel" class="mt-2 border-t border-zinc-200 dark:border-zinc-700 pt-2 {{ $filterMode != 'selected' ? 'hidden' : '' }}">
+                                <p class="text-xs text-zinc-500 mb-1">Select types to display:</p>
+                                <div class="max-h-40 overflow-y-auto space-y-1">
+                                    @foreach($allTypes as $type)
+                                        <label class="flex items-center gap-2 text-xs">
+                                            <input type="checkbox" name="selected_types[]" value="{{ $type }}" 
+                                                {{ in_array($type, $selectedTypes) ? 'checked' : '' }}
+                                                onchange="this.form.submit()">
+                                            <span>{{ $typeLabels[$type] ?? $type }}</span>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            </div>
+                            
+                            <div id="exceptTypesPanel" class="mt-2 border-t border-zinc-200 dark:border-zinc-700 pt-2 {{ $filterMode != 'except' ? 'hidden' : '' }}">
+                                <p class="text-xs text-zinc-500 mb-1">Select types to hide:</p>
+                                <div class="max-h-40 overflow-y-auto space-y-1">
+                                    @foreach($allTypes as $type)
+                                        <label class="flex items-center gap-2 text-xs">
+                                            <input type="checkbox" name="except_types[]" value="{{ $type }}" 
+                                                {{ in_array($type, $exceptTypes) ? 'checked' : '' }}
+                                                onchange="this.form.submit()">
+                                            <span>{{ $typeLabels[$type] ?? $type }}</span>
+                                        </label>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="text-sm bg-purple-600 hover:bg-purple-700 text-white rounded-lg px-3 py-1 transition-colors">Apply</button>
                 </form>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
-                @foreach($columns as $colIndex => $columnData)
-                    <div class="space-y-4">
-                        @foreach($columnData as $data)
-                            @php
-                                $progressPercent = $data['target'] > 0 ? ($data['actual'] / $data['target']) * 100 : 0;
-                                $progressPercent = min($progressPercent, 100);
-                            @endphp
-                            <div>
-                                <div class="flex justify-between items-center mb-1">
-                                    <span class="text-xs font-semibold text-zinc-700 dark:text-zinc-300">{{ $data['type'] }}</span>
-                                    <div class="flex gap-1">
-                                        <flux:badge color="blue" size="xs" class="text-[10px] px-1.5 py-0.5">Target: {{ $data['target'] }}</flux:badge>
-                                        <flux:badge color="green" size="xs" class="text-[10px] px-1.5 py-0.5">Actual: {{ $data['actual'] }}</flux:badge>
-                                        <flux:badge color="yellow" size="xs" class="text-[10px] px-1.5 py-0.5 font-bold">{{ $data['percentage'] }}%</flux:badge>
-                                    </div>
-                                </div>
-                                
+            @if(count($chartData) > 0)
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
+                    @foreach($columns as $colIndex => $columnData)
+                        <div class="space-y-4">
+                            @foreach($columnData as $data)
+                                @php
+                                    $progressPercent = $data['target'] > 0 ? ($data['actual'] / $data['target']) * 100 : 0;
+                                    $progressPercent = min($progressPercent, 100);
+                                @endphp
                                 <div>
-                                    <div class="w-full bg-zinc-200 dark:bg-zinc-700 rounded-full h-7 overflow-hidden">
-                                        <div class="h-full bg-gradient-to-r from-green-500 to-green-600 rounded-full transition-all duration-500 flex items-center justify-end px-2 text-white text-xs font-medium"
-                                            style="width: {{ $progressPercent }}%">
-                                            @if($progressPercent > 15)
-                                                {{ $data['actual'] }} / {{ $data['target'] }}
-                                            @endif
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-xs font-semibold text-zinc-700 dark:text-zinc-300">{{ $data['type'] }}</span>
+                                        <div class="flex gap-1">
+                                            <flux:badge color="blue" size="xs" class="text-[10px] px-1.5 py-0.5">Target: {{ $data['target'] }}</flux:badge>
+                                            <flux:badge color="green" size="xs" class="text-[10px] px-1.5 py-0.5">Actual: {{ $data['actual'] }}</flux:badge>
+                                            <flux:badge color="yellow" size="xs" class="text-[10px] px-1.5 py-0.5 font-bold">{{ $data['percentage'] }}%</flux:badge>
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <div class="w-full bg-zinc-200 dark:bg-zinc-700 rounded-full h-7 overflow-hidden">
+                                            <div class="h-full bg-gradient-to-r from-green-500 to-green-600 rounded-full transition-all duration-500 flex items-center justify-end px-2 text-white text-xs font-medium"
+                                                style="width: {{ $progressPercent }}%">
+                                                @if($progressPercent > 15)
+                                                    {{ $data['actual'] }} / {{ $data['target'] }}
+                                                @endif
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        @endforeach
-                        
-                        @for($i = count($columnData); $i < $itemsPerColumn; $i++)
-                            <div class="opacity-0">
-                                <div class="h-6 mb-1"></div>
-                                <div class="h-7"></div>
-                            </div>
-                        @endfor
-                    </div>
-                @endforeach
-            </div>
+                            @endforeach
+                            
+                            @for($i = count($columnData); $i < $itemsPerColumn; $i++)
+                                <div class="opacity-0">
+                                    <div class="h-6 mb-1"></div>
+                                    <div class="h-7"></div>
+                                </div>
+                            @endfor
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <div class="text-center py-12">
+                    <flux:icon name="funnel" class="w-12 h-12 mx-auto text-zinc-400 mb-3" />
+                    <p class="text-zinc-500">No data available for the selected filters</p>
+                    <p class="text-xs text-zinc-400 mt-1">Try changing your filter settings or date range</p>
+                </div>
+            @endif
             
             <div class="flex justify-center gap-6 pt-4 mt-4 border-t border-zinc-200 dark:border-zinc-700">
                 <div class="flex items-center gap-2"><div class="w-3 h-3 bg-green-500 rounded-full"></div><span class="text-xs">Actual Progress</span></div>
@@ -452,6 +534,37 @@
 
     @push('scripts')
     <script>
+        function toggleFilterMode(mode) {
+            const selectedPanel = document.getElementById('selectedTypesPanel');
+            const exceptPanel = document.getElementById('exceptTypesPanel');
+            
+            if (mode === 'selected') {
+                selectedPanel.classList.remove('hidden');
+                exceptPanel.classList.add('hidden');
+            } else if (mode === 'except') {
+                selectedPanel.classList.add('hidden');
+                exceptPanel.classList.remove('hidden');
+            } else {
+                selectedPanel.classList.add('hidden');
+                exceptPanel.classList.add('hidden');
+            }
+            
+            // Submit form immediately when radio changes
+            const form = document.getElementById('monthlyFilterForm');
+            if (form) form.submit();
+        }
+
+        // Initialize panel visibility based on current filter mode
+        document.addEventListener('DOMContentLoaded', function() {
+            const filterMode = '{{ $filterMode }}';
+            if (filterMode === 'selected') {
+                document.getElementById('selectedTypesPanel')?.classList.remove('hidden');
+                document.getElementById('exceptTypesPanel')?.classList.add('hidden');
+            } else if (filterMode === 'except') {
+                document.getElementById('selectedTypesPanel')?.classList.add('hidden');
+                document.getElementById('exceptTypesPanel')?.classList.remove('hidden');
+            }
+        });
         // Fungsi untuk animasi semua gauge
         function animateAllGauges() {
             // ========== ANIMASI WEEKLY GAUGES ==========

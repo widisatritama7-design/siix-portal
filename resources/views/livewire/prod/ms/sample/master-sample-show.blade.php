@@ -335,7 +335,7 @@
                                             </svg>
                                         </button>
                                     </flux:tooltip>
-                                    @php
+                                    <!-- @php
                                         $lastHistory = $masterSample->historydDetails()
                                             ->latest('out_date')
                                             ->first();
@@ -349,9 +349,8 @@
                                                 \Carbon\Carbon::parse($detail->date_alarm)->startOfDay()
                                             );
                                         }
-                                    @endphp
+                                    @endphp -->
 
-                                    @if($isVisible)
                                         <flux:tooltip content="Edit" position="bottom">
                                             <a href="{{ route('prod.ms.master-sample.expired.edit', ['sampleId' => $masterSample->id, 'id' => $detail->id]) }}" 
                                             class="inline-flex items-center justify-center p-2 text-yellow-600 hover:bg-yellow-100 dark:hover:bg-yellow-900/30 rounded-lg transition-colors">
@@ -364,7 +363,6 @@
 
                                             </a>
                                         </flux:tooltip>
-                                    @endif
                                 </div>
                             </td>
                         </tr>

@@ -450,7 +450,7 @@
                                 </td>
                                 <td class="px-4 py-3 whitespace-nowrap">
                                     <span class="font-mono text-xs text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded">
-                                        {{ $item->no_hu ?? '-' }}
+                                        {{ $item->no_hu_text ?: '-' }}
                                     </span>
                                 </td>
                                 <td class="px-4 py-3 whitespace-nowrap">

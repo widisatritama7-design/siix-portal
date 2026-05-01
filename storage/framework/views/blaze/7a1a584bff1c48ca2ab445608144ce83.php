@@ -140,7 +140,7 @@ if (! $overflow) {
         <?php if ($name): ?> data-modal="<?php echo e($name); ?>" <?php endif; ?>
         <?php if ($flyout): ?> data-flux-flyout <?php endif; ?>
         <?php if ($overflow): ?> data-flux-modal-overflow <?php endif; ?>
-        [STARTCOMPILEDUNBLAZE:O3Xdjs42nk]<?php \Livewire\Blaze\Unblaze::storeScope("O3Xdjs42nk", scope: ['name' => $name]) ?>[ENDCOMPILEDUNBLAZE:O3Xdjs42nk]
+        [STARTCOMPILEDUNBLAZE:5GY8YCEZjU]<?php \Livewire\Blaze\Unblaze::storeScope("5GY8YCEZjU", scope: ['name' => $name]) ?>[ENDCOMPILEDUNBLAZE:5GY8YCEZjU]
         x-on:modal-show.document="handleShow($event)"
         x-on:modal-close.document="handleClose($event)"
     >
