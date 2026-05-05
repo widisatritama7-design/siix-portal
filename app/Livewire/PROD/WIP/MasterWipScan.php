@@ -222,6 +222,24 @@ class MasterWipScan extends Component
         $this->manualNoHu = '';
         $this->manualQty = 1;
     }
+
+    private function validateNoHuFormat($noHu)
+    {
+        $pattern = '#^@[^@]+@[^@]+@[^@]+@@\d+@@$#';
+        
+        if (!preg_match($pattern, $noHu)) {
+            return false;
+        }
+        
+        $invalidPatterns = ['/\[/', '/\)/', '/>/', '/\x1B/', '/\x1D/', '/\x1E/', '/\x1F/'];
+        foreach ($invalidPatterns as $pattern) {
+            if (preg_match($pattern, $noHu)) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
     
     public function addManualScan()
     {
@@ -239,6 +257,12 @@ class MasterWipScan extends Component
         $inputText = trim($this->manualNoHu);
         $newQty = (int)$this->manualQty;
         
+        // VALIDASI FORMAT - CEK APAKAH FORMATNYA STANDARD ATAU MENGANDUNG KARAKTER INVALID
+        if (!$this->validateNoHuFormat($inputText)) {
+            $this->dispatch('notify', message: 'Invalid No HU format! Format harus standard: @part_number@no_hu@model@@qty@@ (tanpa karakter khusus seperti [)> )', type: 'error');
+            return;
+        }
+        
         // Check if input is full format or just No HU
         $pattern = '/^@(?P<part_number>[^@]+)@(?P<no_hu>[^@]+)@(?P<model>[^@]+)@@(?P<qty>\d+)@@$/';
         
@@ -247,6 +271,7 @@ class MasterWipScan extends Component
             $noHu = trim($matches['no_hu']);
             $scannedPartNumber = trim($matches['part_number']);
             $scannedModel = trim($matches['model']);
+            $scannedQty = (int)$matches['qty'];
             
             // Validate part number
             if ($scannedPartNumber !== $this->masterWip->part_number) {
@@ -259,8 +284,20 @@ class MasterWipScan extends Component
                 $this->dispatch('notify', message: "Model mismatch! Scanned: {$scannedModel}, Expected: {$this->masterWip->model}", type: 'error');
                 return;
             }
+            
+            // Gunakan qty dari scan jika ada, tapi tetap validasi dengan manual qty
+            if ($scannedQty != $newQty) {
+                $this->dispatch('notify', message: "Warning: Qty in format ({$scannedQty}) berbeda dengan manual qty ({$newQty}). Menggunakan qty: {$newQty}", type: 'warning');
+            }
         } else {
-            // Input is just No HU
+            // Input is just No HU - Cek apakah No HU mengandung karakter invalid
+            $invalidChars = ['[', ']', ')', '>', '<', '(', '{', '}', '|', '\\'];
+            foreach ($invalidChars as $char) {
+                if (strpos($noHu, $char) !== false) {
+                    $this->dispatch('notify', message: "Invalid No HU! Tidak boleh mengandung karakter: " . implode(' ', $invalidChars), type: 'error');
+                    return;
+                }
+            }
             $noHu = $inputText;
         }
         
@@ -274,19 +311,16 @@ class MasterWipScan extends Component
             return;
         }
         
-        // CEK DUPLICATE UNTUK ADD MANUAL - KHUSUS ADD MANUAL
-        // Jika No HU sudah ada, cek quantity nya
+        // CEK DUPLICATE UNTUK ADD MANUAL
         $existingDetail = DetailWip::where('master_wips_id', $this->masterWip->id)
             ->where('no_hu', 'like', "%{$noHu}%")
             ->first();
             
         if ($existingDetail) {
-            // Jika No HU sudah ada dengan quantity yang SAMA -> TOLAK
             if ($existingDetail->qty == $newQty) {
                 $this->dispatch('notify', message: "Duplicate No HU detected! No HU '{$noHu}' with quantity {$newQty} already exists in this WIP.", type: 'error');
                 return;
             } else {
-                // Jika No HU sudah ada dengan quantity BERBEDA -> BOLEH (warning aja)
                 $this->dispatch('notify', message: "Warning: No HU '{$noHu}' already exists with different quantity ({$existingDetail->qty}). Adding new record with quantity {$newQty}.", type: 'warning');
             }
         }
@@ -294,8 +328,9 @@ class MasterWipScan extends Component
         try {
             DB::beginTransaction();
             
-            // Build the NO HU with NEW qty
-            $newNoHu = "@{$this->masterWip->part_number}@{$noHu}@{$this->masterWip->model}@@{$newQty}@@";
+            // Build the NO HU dengan format STANDARD (clean)
+            $cleanNoHu = preg_replace('/[^A-Za-z0-9\-]/', '', $noHu);
+            $newNoHu = "@{$this->masterWip->part_number}@{$cleanNoHu}@{$this->masterWip->model}@@{$newQty}@@";
             
             $acm = $currentAcm + $newQty;
             $balance = $this->masterWip->lot_qty - $acm;
@@ -314,7 +349,7 @@ class MasterWipScan extends Component
             
             DB::commit();
             
-            $this->dispatch('notify', message: "Manual add successful! No HU: {$noHu}, Qty: {$newQty}", type: 'success');
+            $this->dispatch('notify', message: "Manual add successful! No HU: {$cleanNoHu}, Qty: {$newQty}", type: 'success');
             
             // Refresh data
             $this->masterWip = MasterWip::find($this->masterWipId);
