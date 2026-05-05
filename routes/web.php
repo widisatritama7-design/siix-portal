@@ -106,6 +106,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/prod/wip', MasterWipManagement::class)->name('prod.wip.index');
     Route::get('/prod/wip/{id}', MasterWipDetail::class)->name('prod.wip.show');
     Route::get('/prod/wip/{id}/scan', MasterWipScan::class)->name('prod.wip.scan');
+    Route::get('/prod/wip/check-rack/{model}', [MasterWipManagement::class, 'checkWipInRackByModel']);
     Route::get('/prod/history', HistoryWipTransaction::class)->name('prod.history');
     Route::get('/prod/rack-lose', MasterRackLosePack::class)->name('prod.rack-lose');
 

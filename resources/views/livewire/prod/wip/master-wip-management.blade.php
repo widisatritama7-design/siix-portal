@@ -517,13 +517,20 @@
 
     <!-- MODAL FORM WIP -->
     <div x-data="{ 
-        open: false, 
-        searchModel: '',
-        selectedModel: @entangle('model'),
-        models: @js($availableModels->toArray())
+        open: false,
+        showRackWarning: false,
+        rackWarningMessage: '',
+        rackDetails: []
     }" 
     x-show="open" 
-    @open-modal.window="if ($event.detail === 'wip-form-modal') open = true; searchModel = '';"
+    @open-modal.window="
+        if ($event.detail === 'wip-form-modal') {
+            open = true;
+            showRackWarning = false;
+            rackWarningMessage = '';
+            rackDetails = [];
+        }
+    "
     @close-modal.window="if ($event.detail === 'wip-form-modal') open = false"
     x-cloak>
 
@@ -534,31 +541,69 @@
                 <div class="p-6">
                     <h2 class="text-xl font-bold mb-4">{{ $modalTitle }}</h2>
 
+                    <!-- WARNING: ADA WIP DI RACK -->
+                    <div x-show="showRackWarning" x-cloak class="mb-4 p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg">
+                        <div class="flex gap-2">
+                            <svg class="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                            </svg>
+                            <div class="flex-1">
+                                <p class="text-sm font-semibold text-red-800 dark:text-red-300">
+                                    Ada WIP Yang Terdaftar Di Rack!
+                                </p>
+                                <p class="text-xs text-red-700 dark:text-red-400 mt-1" x-text="rackWarningMessage"></p>
+                                
+                                <!-- Detail Rack -->
+                                <div class="mt-2 space-y-2">
+                                    <template x-for="(rack, idx) in rackDetails" :key="idx">
+                                        <div class="text-xs bg-red-100 dark:bg-red-900/20 p-2 rounded">
+                                            <div><strong>PrdOrd:</strong> <span x-text="rack.dj"></span></div>
+                                            <div><strong>Rack:</strong> <span x-text="rack.no_rack"></span></div>
+                                        </div>
+                                    </template>
+                                </div>
+                                
+                                <p class="text-xs text-red-600 dark:text-red-500 mt-2">
+                                    Harap selesaikan atau hapus WIP di Rack tersebut terlebih dahulu!
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
                     <form wire:submit="save">
                         <!-- Model dengan Search -->
                         <div class="mb-4">
                             <label class="block text-sm font-medium mb-1">Model <span class="text-red-500">*</span></label>
                             <div class="relative" x-data="{ 
                                 showDropdown: false,
-                                filteredModels: [],
-                                init() {
-                                    this.filteredModels = this.models;
-                                },
+                                searchModel: '',
+                                filteredModels: @js($availableModels->toArray()),
                                 filterModels() {
                                     if (!this.searchModel) {
-                                        this.filteredModels = this.models;
+                                        this.filteredModels = @js($availableModels->toArray());
                                     } else {
-                                        this.filteredModels = this.models.filter(model => 
+                                        this.filteredModels = @js($availableModels->toArray()).filter(model => 
                                             model.model.toLowerCase().includes(this.searchModel.toLowerCase()) ||
                                             (model.customer && model.customer.toLowerCase().includes(this.searchModel.toLowerCase()))
                                         );
                                     }
                                 },
-                                selectModel(model) {
+                                async selectModel(model) {
                                     this.searchModel = model.model + ' - ' + (model.customer || '');
-                                    this.selectedModel = model.model;
-                                    showDropdown = false;
                                     @this.set('model', model.model);
+                                    this.showDropdown = false;
+                                    
+                                    // CEK WIP DI RACK
+                                    const result = await @this.checkRackByModel(model.model);
+                                    if (result.hasWip) {
+                                        showRackWarning = true;
+                                        rackWarningMessage = `Ditemukan ${result.count} WIP yang terdaftar di Rack:`;
+                                        rackDetails = result.racks;
+                                    } else {
+                                        showRackWarning = false;
+                                        rackWarningMessage = '';
+                                        rackDetails = [];
+                                    }
                                 }
                             }">
                                 <input type="text"
@@ -571,7 +616,6 @@
                                     class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     autocomplete="off">
                                 
-                                <!-- Dropdown -->
                                 <div x-show="showDropdown && filteredModels.length > 0"
                                     x-cloak
                                     class="absolute z-50 w-full mt-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-lg max-h-60 overflow-y-auto">
@@ -584,7 +628,6 @@
                                     </template>
                                 </div>
                                 
-                                <!-- No results -->
                                 <div x-show="showDropdown && filteredModels.length === 0"
                                     x-cloak
                                     class="absolute z-50 w-full mt-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-lg p-3 text-center text-sm text-zinc-500">
@@ -595,7 +638,7 @@
                             @error('model') <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span> @enderror
                         </div>
 
-                        <!-- Part Number (Auto-filled) -->
+                        <!-- Part Number -->
                         <div class="mb-4">
                             <label class="block text-sm font-medium mb-1">Part Number</label>
                             <input type="text" 
@@ -633,7 +676,8 @@
                                 Cancel
                             </button>
                             <button type="submit" 
-                                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                                    x-bind:disabled="showRackWarning"
+                                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                                 {{ $wip_id ? 'Update' : 'Create' }}
                             </button>
                         </div>

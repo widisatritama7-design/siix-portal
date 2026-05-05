@@ -2,11 +2,12 @@
 
 namespace App\Livewire\PROD\WIP;
 
+use App\Models\PROD\WIP\DetailWip;
+use App\Models\PROD\WIP\MasterModel;
+use App\Models\PROD\WIP\MasterWip;
+use Carbon\Carbon;
 use Livewire\Component;
 use Livewire\WithPagination;
-use App\Models\PROD\WIP\MasterWip;
-use App\Models\PROD\WIP\MasterModel;
-use Carbon\Carbon;
 
 class MasterWipManagement extends Component
 {
@@ -94,6 +95,7 @@ class MasterWipManagement extends Component
 
     public function save()
     {
+        // 1. CEK PERMISSION
         if ($this->wip_id) {
             if (!auth()->user()->can('edit wip')) {
                 $this->dispatch('notify', message: 'You do not have permission!', type: 'error');
@@ -106,8 +108,22 @@ class MasterWipManagement extends Component
             }
         }
 
+        // 2. CEK APAKAH ADA DETAIL WIP YANG SUDAH TERDAFTAR DI RACK
+        $hasWipInRack = DetailWip::whereNotNull('rack_lose_pack_id')
+                                ->whereNotNull('master_wips_id')
+                                ->exists();
+        
+        if ($hasWipInRack) {
+            // TAMBAHKAN ERROR BAG AGAR WARNING TAMPIL DI MODAL
+            $this->addError('rack_warning', 'Tidak bisa menambah/mengubah WIP karena ada WIP yang sudah terdaftar di Rack!');
+            $this->dispatch('notify', message: 'Tidak bisa menambah/mengubah WIP karena ada WIP yang sudah terdaftar di Rack!', type: 'error');
+            return;
+        }
+
+        // 3. VALIDASI FORM
         $this->validate();
 
+        // 4. PERSIAPAN DATA
         $data = [
             'model' => $this->model,
             'part_number' => $this->part_number,
@@ -117,6 +133,7 @@ class MasterWipManagement extends Component
             'approval' => $this->approval,
         ];
 
+        // 5. SIMPAN DATA
         if ($this->wip_id) {
             $wip = MasterWip::find($this->wip_id);
             if (!$wip) {
@@ -131,9 +148,100 @@ class MasterWipManagement extends Component
             $message = 'WIP created successfully!';
         }
 
+        // 6. RESET FORM
         $this->resetForm();
-        $this->dispatch('notify', message: $message);
-        $this->dispatch('close-modal', 'wip-form-modal');
+        
+        // 7. SIMPAN MESSAGE KE SESSION (untuk ditampilkan setelah redirect)
+        session()->flash('success', $message);
+        
+        // 8. REDIRECT
+        return redirect()->to('/prod/wip');
+    }
+
+    // Tambahkan method untuk cek WIP di Rack berdasarkan model
+    public function checkWipInRackByModel($model)
+    {
+        if (empty($model)) {
+            return response()->json(['hasWip' => false]);
+        }
+
+        // Cari MasterWip berdasarkan model
+        $masterWip = MasterWip::where('model', $model)->first();
+        
+        if (!$masterWip) {
+            return response()->json(['hasWip' => false]);
+        }
+
+        // Cek DetailWip dari MasterWip tersebut yang ada di Rack
+        $detailsInRack = DetailWip::with(['rackLosePack', 'masterWip'])
+                                ->where('master_wips_id', $masterWip->id)
+                                ->whereNotNull('rack_lose_pack_id')
+                                ->get();
+
+        if ($detailsInRack->isEmpty()) {
+            return response()->json(['hasWip' => false]);
+        }
+
+        // Format data rack info
+        $rackInfo = [];
+        foreach ($detailsInRack as $detail) {
+            $rackInfo[] = [
+                'no_rack' => $detail->rackLosePack->display_name ?? 'Unknown Rack',
+                'no_hu' => $detail->no_hu_text,
+                'qty' => $detail->qty_text,
+                'status' => $detail->status,
+                'dj' => $detail->masterWip->dj,
+            ];
+        }
+
+        return response()->json([
+            'hasWip' => true,
+            'count' => $detailsInRack->count(),
+            'racks' => $rackInfo
+        ]);
+    }
+
+    // Method untuk cek WIP di Rack berdasarkan model
+    public function checkRackByModel($model)
+    {
+        // 1. Cari semua MasterWip berdasarkan model yang dipilih
+        $masterWips = MasterWip::where('model', $model)->get();
+        
+        if ($masterWips->isEmpty()) {
+            return ['hasWip' => false];
+        }
+        
+        // 2. Ambil semua master_wips_id dari MasterWip tersebut
+        $masterWipIds = $masterWips->pluck('id')->toArray();
+        
+        // 3. Cek di tabel DetailWip, apakah ada yang memiliki rack_lose_pack_id
+        //    dan master_wips_id nya termasuk dalam daftar di atas
+        $detailsInRack = DetailWip::whereIn('master_wips_id', $masterWipIds)
+                                ->whereNotNull('rack_lose_pack_id')
+                                ->with(['rackLosePack', 'masterWip'])
+                                ->get();
+        
+        if ($detailsInRack->isEmpty()) {
+            return ['hasWip' => false];
+        }
+        
+        // 4. Format informasi rack
+        $rackInfo = [];
+        foreach ($detailsInRack as $detail) {
+            $rackInfo[] = [
+                'dj' => $detail->masterWip->dj,
+                'no_rack' => $detail->rackLosePack->display_name ?? 'Unknown',
+                'no_hu' => $detail->no_hu_text,
+                'qty' => $detail->qty_text,
+                'status' => $detail->status
+            ];
+        }
+        
+        return [
+            'hasWip' => true,
+            'count' => $detailsInRack->count(),
+            'racks' => $rackInfo
+        ];
     }
 
     public function edit($id)
