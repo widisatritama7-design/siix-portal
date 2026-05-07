@@ -1,5 +1,5 @@
 <section class="w-full">
-    @include('partials.esd-heading')
+    
 
     <flux:heading class="sr-only">
         {{ __('Electrostatic Discharge - Event Calendar') }}
@@ -156,7 +156,7 @@
 
                     <!-- Event List - Scroll hanya di sini -->
                     <div class="mt-3">
-                        <div class="max-h-[130px] overflow-y-auto space-y-1.5 pr-0.5">
+                        <div class="space-y-1.5 pr-0.5 max-h-[200px] overflow-y-auto scrollbar-hide">
                             @php
                                 $selectedDateForCard = $selectedDate[$type] ?? date('Y-m-d');
                                 $dayEvents = $this->getEventsForDate($type, $selectedDateForCard);
@@ -172,9 +172,9 @@
                                         $detailUrl = $this->getDetailUrl($type, $event['detail_foreign_key']);
                                     @endphp
                                     <a href="{{ $detailUrl }}" 
-                                       target="_blank"
-                                       class="block transition-all duration-200 hover:translate-x-0.5">
-                                       <div class="flex items-center justify-between p-1.5 rounded-xl text-[10px] sm:text-xs
+                                    target="_blank"
+                                    class="block transition-all duration-200 hover:translate-x-0.5">
+                                    <div class="flex items-center justify-between p-1.5 rounded-xl text-[10px] sm:text-xs
                                             {{ $event['hasActual'] ? 'bg-green-50 dark:bg-green-900/20 border-l-2 border-green-500' : 'bg-red-50 dark:bg-red-900/20 border-l-2 border-red-500' }}">
                                             
                                             <span class="flex-1 truncate mr-1 font-medium">
@@ -210,107 +210,114 @@
 
 @push('styles')
 <style>
-    /* Fully responsive grid - auto adjust */
+
+    /* ================= SCROLLBAR HIDE (GLOBAL FIX) ================= */
+    .overflow-y-auto {
+        overflow-y: auto;
+        -ms-overflow-style: none;   /* IE & Edge */
+        scrollbar-width: none;      /* Firefox */
+    }
+
+    .overflow-y-auto::-webkit-scrollbar {
+        display: none;              /* Chrome, Safari, Opera */
+        width: 0;
+        height: 0;
+        background: transparent;
+    }
+
+    /* Optional class tambahan kalau mau reuse */
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+
+
+    /* ================= GRID ================= */
     .grid {
         display: grid !important;
         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)) !important;
         gap: 1rem !important;
     }
-    
-    /* Card styling */
+
+
+    /* ================= CARD ================= */
     .rounded-2xl {
         border-radius: 0.5rem !important;
     }
-    
-    /* Hover effect card */
+
     .bg-white, .dark\:bg-zinc-800 {
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
-    
+
     .bg-white:hover, .dark\:bg-zinc-800:hover {
         transform: translateY(-2px);
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.02);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1),
+                    0 8px 10px -6px rgba(0, 0, 0, 0.02);
     }
-    
-    /* Button rounded full */
+
+
+    /* ================= BUTTON ================= */
     button {
         border-radius: 9999px !important;
         display: inline-flex;
         align-items: center;
         justify-content: center;
     }
-    
-    /* Badge timbul */
+
+    button:active {
+        transform: scale(0.96);
+    }
+
+
+    /* ================= BADGE ================= */
     .absolute {
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         z-index: 10;
     }
-    
-    /* Table spacing */
+
+
+    /* ================= TABLE ================= */
     table {
         border-collapse: separate;
         border-spacing: 3px;
         width: 100%;
     }
-    
-    /* Scroll hanya untuk event list */
-    .overflow-y-auto {
-        overflow-y: auto;
-        scrollbar-width: thin;
-    }
-    
-    .overflow-y-auto::-webkit-scrollbar {
-        width: 4px;
-    }
-    
-    .overflow-y-auto::-webkit-scrollbar-track {
-        background: #e2e8f0;
-        border-radius: 10px;
-    }
-    
-    .overflow-y-auto::-webkit-scrollbar-thumb {
-        background: #94a3b8;
-        border-radius: 10px;
-    }
-    
-    .dark .overflow-y-auto::-webkit-scrollbar-track {
-        background: #1e293b;
-    }
-    
-    .dark .overflow-y-auto::-webkit-scrollbar-thumb {
-        background: #475569;
-    }
-    
-    /* Truncate */
+
+
+    /* ================= TEXT ================= */
     .truncate {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
     }
-    
-    /* Animasi spin */
+
+
+    /* ================= ANIMATION ================= */
     @keyframes spin {
         from { transform: rotate(0deg); }
         to { transform: rotate(360deg); }
     }
+
     .animate-spin {
         animation: spin 1s linear infinite;
     }
-    
-    /* Responsive */
+
+
+    /* ================= RESPONSIVE ================= */
     @media (max-width: 640px) {
         .grid {
             gap: 0.75rem !important;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)) !important;
         }
+
         table {
             border-spacing: 2px;
         }
     }
-    
-    /* Animasi klik */
-    button:active {
-        transform: scale(0.96);
-    }
+
 </style>
 @endpush

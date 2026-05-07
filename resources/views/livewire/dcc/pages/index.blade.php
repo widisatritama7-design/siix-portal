@@ -415,8 +415,19 @@
                                 @endif
                             </div>
                         </td>
-                        <td class="px-4 py-3 text-center text-sm text-zinc-700 dark:text-zinc-300 whitespace-nowrap">
-                            {{ $submission->pic ?? 'N/A' }}
+                        <td class="px-4 py-3 text-center whitespace-nowrap">
+                            <div class="text-sm">
+                                @if($submission->pic || $submission->created_at)
+                                    <div class="text-zinc-700 dark:text-zinc-300">
+                                        {{ $submission->pic ?? 'N/A' }}
+                                    </div>
+                                    <div class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+                                        {{ $submission->created_at ? \Carbon\Carbon::parse($submission->created_at)->format('d M Y H:i') : '-' }}
+                                    </div>
+                                @else
+                                    <span class="text-zinc-400 dark:text-zinc-500">-</span>
+                                @endif
+                            </div>
                         </td>
                         <td class="px-4 py-3 text-center md:sticky md:right-0 bg-white dark:bg-zinc-900 md:z-10 whitespace-nowrap">
                             <div class="flex items-center justify-center gap-1">

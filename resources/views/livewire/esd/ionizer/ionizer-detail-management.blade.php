@@ -1,6 +1,6 @@
 {{-- resources/views/livewire/esd/ionizer/ionizer-detail-management.blade.php --}}
 <section class="w-full">
-    @include('partials.esd-heading')
+    
 
     <flux:heading class="sr-only">
         {{ __('Electrostatic Discharge - Ionizer Measurement') }}

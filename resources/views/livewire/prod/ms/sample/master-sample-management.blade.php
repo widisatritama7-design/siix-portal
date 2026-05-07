@@ -609,8 +609,21 @@
                                     @if($currentRackInfo)
                                     <div>
                                         <label class="block text-sm font-medium mb-1">Current Rack</label>
-                                        <div class="px-3 py-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-sm border border-blue-200 dark:border-blue-800">
-                                            {{ $currentRackInfo }}
+                                        <div class="flex items-center gap-2">
+                                            <div class="flex-1 px-3 py-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-sm border border-blue-200 dark:border-blue-800">
+                                                {{ $currentRackInfo }}
+                                            </div>
+                                            @if($master_sample_id && $rack_id)
+                                            <button type="button" 
+                                                    wire:click="clearRackSelection"
+                                                    class="px-3 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors flex items-center gap-1"
+                                                    title="Remove rack selection">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                </svg>
+                                                Remove
+                                            </button>
+                                            @endif
                                         </div>
                                     </div>
                                     @endif

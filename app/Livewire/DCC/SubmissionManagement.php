@@ -78,6 +78,7 @@ class SubmissionManagement extends Component
     // For bulk actions
     public $selectedSubmissions = [];
     public $selectAll = false;
+    public $selectedPages = [];
     public $perPage = 10;
 
     // Page management
@@ -142,11 +143,13 @@ class SubmissionManagement extends Component
         $this->updateTabCounts();
     }
 
-    // Tambahkan method setTab
     public function setTab($tab)
     {
         $this->activeTab = $tab;
-        $this->resetPage(); // Reset pagination saat ganti tab
+        $this->resetPage();
+        $this->selectedSubmissions = [];
+        $this->selectAll = false;
+        $this->selectedPages = []; // TAMBAHKAN
         $this->updateTabCounts();
     }
 
@@ -237,22 +240,55 @@ class SubmissionManagement extends Component
     public function updatedSearch()
     {
         $this->resetPage();
+        $this->selectedSubmissions = [];
+        $this->selectAll = false;
+        $this->selectedPages = []; // TAMBAHKAN
     }
 
     public function updatedSelectAll($value)
     {
+        // Gunakan $this->page dari Livewire (karena pakai WithPagination)
+        $currentPage = $this->page ?? 1;
+        
         if ($value) {
-            // Get only the submissions on the current page
-            $currentPageSubmissions = $this->getFilteredQuery()
+            // Add current page to selected pages
+            if (!in_array($currentPage, $this->selectedPages)) {
+                $this->selectedPages[] = $currentPage;
+            }
+            
+            // Get IDs on current page
+            $currentPageIds = $this->getFilteredQuery()
                 ->latest()
-                ->paginate(10) // Must match the pagination count in render()
+                ->paginate($this->perPage)
+                ->getCollection()
                 ->pluck('id')
+                ->map(fn($id) => (string) $id)
                 ->toArray();
             
-            $this->selectedSubmissions = $currentPageSubmissions;
+            // Merge with existing selections
+            $this->selectedSubmissions = array_unique(array_merge($this->selectedSubmissions, $currentPageIds));
+            $this->selectedSubmissions = array_values($this->selectedSubmissions);
         } else {
-            $this->selectedSubmissions = [];
+            // Remove current page from selected pages
+            $this->selectedPages = array_diff($this->selectedPages, [$currentPage]);
+            
+            // Remove current page IDs from selected submissions
+            $currentPageIds = $this->getFilteredQuery()
+                ->latest()
+                ->paginate($this->perPage)
+                ->getCollection()
+                ->pluck('id')
+                ->map(fn($id) => (string) $id)
+                ->toArray();
+            
+            $this->selectedSubmissions = array_diff($this->selectedSubmissions, $currentPageIds);
+            $this->selectedSubmissions = array_values($this->selectedSubmissions);
         }
+    }
+
+    public function getPage()
+    {
+        return (int) request()->get('page', 1);
     }
 
     protected function getFilteredQuery()
@@ -725,8 +761,10 @@ class SubmissionManagement extends Component
                 }
             }
 
+            // Reset selections setelah bulk action
             $this->selectedSubmissions = [];
             $this->selectAll = false;
+            $this->selectedPages = []; // TAMBAHKAN
 
             $this->dispatch('notify', message: "{$count} submissions marked as received!", type: 'success');
             
@@ -760,8 +798,10 @@ class SubmissionManagement extends Component
                 }
             }
 
+            // Reset selections setelah bulk action
             $this->selectedSubmissions = [];
             $this->selectAll = false;
+            $this->selectedPages = []; // TAMBAHKAN
 
             $this->dispatch('notify', message: "{$count} submissions marked as distributed!", type: 'success');
             
@@ -795,8 +835,11 @@ class SubmissionManagement extends Component
         $this->filterDateFrom = '';
         $this->filterDateUntil = '';
         $this->search = '';
-        $this->activeTab = 'all'; // Reset ke tab All
+        $this->activeTab = 'all';
         $this->resetPage();
+        $this->selectedSubmissions = [];
+        $this->selectAll = false;
+        $this->selectedPages = []; // TAMBAHKAN
         $this->updateTabCounts();
     }
 
@@ -808,35 +851,35 @@ class SubmissionManagement extends Component
         ) {
             abort(403, 'Unauthorized access.');
         }
-    
+
         $submissions = $this->getFilteredQuery()
             ->latest()
             ->paginate($this->perPage);
-    
+
         $allDepartments = Department::with('creator')
             ->latest('id')
             ->get();
-    
+
         $users = User::orderBy('name')->get();
-    
+
         $years = Submission::selectRaw('YEAR(created_at) as year')
             ->distinct()
             ->orderByDesc('year')
             ->pluck('year')
             ->toArray();
-    
+
         $months = [
-            '01' => 'January','02' => 'February','03' => 'March',
-            '04' => 'April','05' => 'May','06' => 'June',
-            '07' => 'July','08' => 'August','09' => 'September',
-            '10' => 'October','11' => 'November','12' => 'December',
+            '01' => 'January', '02' => 'February', '03' => 'March',
+            '04' => 'April', '05' => 'May', '06' => 'June',
+            '07' => 'July', '08' => 'August', '09' => 'September',
+            '10' => 'October', '11' => 'November', '12' => 'December',
         ];
-    
+
         $categories = Submission::distinct()
             ->whereNotNull('category_document')
             ->pluck('category_document')
             ->toArray();
-    
+
         return view('livewire.dcc.submission-management', [
             'submissions' => $submissions,
             'allDepartments' => $allDepartments,
@@ -844,9 +887,11 @@ class SubmissionManagement extends Component
             'years' => $years,
             'months' => $months,
             'categories' => $categories,
-    
-            // 🔥 TAMBAHKAN INI
             'distributingSubmission' => $this->distributingSubmission,
+            
+            // 🔥 TAMBAHKAN INI UNTUK BULK ACTION MULTI-PAGE
+            'selectedPagesCount' => count($this->selectedPages),
+            'totalSelected' => count($this->selectedSubmissions),
         ]);
     }
 }

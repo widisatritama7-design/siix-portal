@@ -207,18 +207,36 @@
                                     <span class="text-zinc-400">|</span> Line {{ $history->masterLine->line_number }} 
                                 @endif
                             </td>
-                            <td class="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-300 text-center">{{ $history->remarks ?? '-' }}</td>
+                            <td class="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-300 text-center">
+                                @php
+                                    $remarks = $history->remarks ?? '-';
+                                    $maxLength = 30; // Batasi 50 karakter
+                                    $truncatedRemarks = Str::length($remarks) > $maxLength ? Str::limit($remarks, $maxLength) : $remarks;
+                                @endphp
+                                
+                                @if($remarks !== '-' && Str::length($remarks) > $maxLength)
+                                    <flux:tooltip content="{{ $remarks }}" position="top">
+                                        <span class="cursor-help">{{ $truncatedRemarks }}</span>
+                                    </flux:tooltip>
+                                @else
+                                    {{ $remarks }}
+                                @endif
+                            </td>
                             <td class="px-4 py-3 text-right">
                                 <div class="flex items-center justify-end gap-1">
-                                <!-- View Ac    tivity Button -->
+                                    <!-- View Activity Button -->
                                     <flux:tooltip content="View Activity Log" position="bottom">
-                                        <button wire:click="viewActivity({{ $history->id }}, 'history')"
-                                                class="inline-flex items-center justify-center p-2 text-purple-600 hover:bg-purple-100 dark:hover:bg-purple-900/30 rounded-lg transition-colors">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                            </svg>
-                                        </button>
+                                        <flux:button 
+                                            wire:click="viewActivity({{ $history->id }}, 'history')"
+                                            size="sm"
+                                            icon="clock"
+                                            variant="primary"
+                                            color="purple"
+                                            class="!p-2"
+                                            title="View Activity Log"
+                                        />
                                     </flux:tooltip>
+                                    
                                     <!-- Update In Date Button -->
                                     @php
                                         $showUpdateInDateButton = false;
@@ -230,16 +248,19 @@
                                             }
                                         }
                                     @endphp
+                                    
                                     @if($showUpdateInDateButton)
                                     <flux:tooltip content="Update In Date" position="bottom">
-                                        <button wire:click="openUpdateInDateModal({{ $history->id }})"
-                                                x-on:click="$dispatch('open-update-in-date-modal')"
-                                                class="inline-flex items-center justify-center p-2 text-green-600 hover:bg-green-100 dark:hover:bg-green-900/30 rounded-lg transition-colors">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 16.5v.008M12 16.5v.008M15 16.5v.008" />
-                                            </svg>
-                                        </button>
+                                        <flux:button 
+                                            wire:click="openUpdateInDateModal({{ $history->id }})"
+                                            x-on:click="$dispatch('open-update-in-date-modal')"
+                                            size="sm"
+                                            icon="calendar"
+                                            variant="primary"
+                                            color="green"
+                                            class="!p-2"
+                                            title="Update In Date"
+                                        />
                                     </flux:tooltip>
                                     @endif
                                 </div>
@@ -328,41 +349,29 @@
                                 <div class="flex items-center justify-end gap-1">
                                     <!-- View Activity Button -->
                                     <flux:tooltip content="View Activity Log" position="bottom">
-                                        <button wire:click="viewActivity({{ $detail->id }}, 'detail')"
-                                                class="inline-flex items-center justify-center p-2 text-purple-600 hover:bg-purple-100 dark:hover:bg-purple-900/30 rounded-lg transition-colors">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
-                                            </svg>
-                                        </button>
+                                        <flux:button 
+                                            wire:click="viewActivity({{ $detail->id }}, 'detail')"
+                                            size="sm"
+                                            icon="clock"
+                                            variant="primary"
+                                            color="purple"
+                                            class="!p-2"
+                                            title="View Activity Log"
+                                        />
                                     </flux:tooltip>
-                                    <!-- @php
-                                        $lastHistory = $masterSample->historydDetails()
-                                            ->latest('out_date')
-                                            ->first();
-
-                                        $isVisible = false;
-
-                                        if ($lastHistory && $lastHistory->status === 'ecr') {
-                                            $isVisible = true;
-                                        } elseif ($detail->date_alarm) {
-                                            $isVisible = \Carbon\Carbon::today()->greaterThanOrEqualTo(
-                                                \Carbon\Carbon::parse($detail->date_alarm)->startOfDay()
-                                            );
-                                        }
-                                    @endphp -->
-
-                                        <flux:tooltip content="Edit" position="bottom">
-                                            <a href="{{ route('prod.ms.master-sample.expired.edit', ['sampleId' => $masterSample->id, 'id' => $detail->id]) }}" 
-                                            class="inline-flex items-center justify-center p-2 text-yellow-600 hover:bg-yellow-100 dark:hover:bg-yellow-900/30 rounded-lg transition-colors">
-
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                                    stroke="currentColor" class="w-4 h-4">
-                                                    <path stroke-linecap="round" stroke-linejoin="round"
-                                                        d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
-                                                </svg>
-
-                                            </a>
-                                        </flux:tooltip>
+                                    
+                                    <!-- Edit Button -->
+                                    <flux:tooltip content="Edit" position="bottom">
+                                        <flux:button 
+                                            href="{{ route('prod.ms.master-sample.expired.edit', ['sampleId' => $masterSample->id, 'id' => $detail->id]) }}"
+                                            size="sm"
+                                            icon="pencil-square"
+                                            variant="primary"
+                                            color="yellow"
+                                            class="!p-2"
+                                            title="Edit"
+                                        />
+                                    </flux:tooltip>
                                 </div>
                             </td>
                         </tr>

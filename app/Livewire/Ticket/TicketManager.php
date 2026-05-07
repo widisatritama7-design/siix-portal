@@ -213,7 +213,7 @@ class TicketManager extends Component
         
         // If approved, update status to In Progress automatically
         if ($this->approval_status === 'Approved') {
-            $ticket->status = 'In Progress';
+            // $ticket->status = 'In Progress';
         }
         
         $ticket->save();

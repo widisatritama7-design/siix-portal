@@ -1,6 +1,6 @@
 {{-- resources/views/livewire/esd/gb/ground-monitor-box-management.blade.php --}}
 <section class="w-full">
-    @include('partials.esd-heading')
+    
 
     <flux:heading class="sr-only">
         {{ __('Electrostatic Discharge - Ground Monitor Box') }}

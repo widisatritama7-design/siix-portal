@@ -1,6 +1,6 @@
 <div>
     <section class="w-full">
-        @include('partials.esd-heading')
+        
 
         <flux:heading class="sr-only">
             {{ __('Electrostatic Discharge - QR Code Printer') }}

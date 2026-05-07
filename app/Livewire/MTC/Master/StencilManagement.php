@@ -47,6 +47,9 @@ class StencilManagement extends Component
     // Loading state
     public $isSaving = false;
 
+    protected $cachedEmployees = null;
+    protected $cachedCustomers = null;
+
     public $activeTab = 'in_use_with_line';
     public $tabCounts = [];
 
@@ -85,33 +88,40 @@ class StencilManagement extends Component
 
     public function updateTabCounts()
     {
-        $baseQuery = MasterStencil::query();
-        
-        $this->tabCounts = [
-            'all' => (clone $baseQuery)->count(),
-            'in_use' => (clone $baseQuery)->where('status', 'In Use')->count(),
-            'in_use_with_line' => (clone $baseQuery)
-                ->where('status', 'In Use')
-                ->whereNotNull('line_name')
-                ->where('line_name', '!=', '')
-                ->count(),
-            'prepared' => (clone $baseQuery)->where('status', 'Prepared')->count(),
-            'cleaning' => (clone $baseQuery)->where('status', 'Cleaning')->count(),
-            'stand_by' => (clone $baseQuery)->where('status', 'Stand By')->count(),
-            'disposed' => (clone $baseQuery)->where('status', 'Disposed')->count(),
-        ];
+        // UBAH SELURUH ISI METHOD INI
+        $this->tabCounts = cache()->remember('stencil_tab_counts', 300, function() {
+            $baseQuery = MasterStencil::query();
+            
+            return [
+                'all' => (clone $baseQuery)->count(),
+                'in_use' => (clone $baseQuery)->where('status', 'In Use')->count(),
+                'in_use_with_line' => (clone $baseQuery)
+                    ->where('status', 'In Use')
+                    ->whereNotNull('line_name')
+                    ->where('line_name', '!=', '')
+                    ->count(),
+                'prepared' => (clone $baseQuery)->where('status', 'Prepared')->count(),
+                'cleaning' => (clone $baseQuery)->where('status', 'Cleaning')->count(),
+                'stand_by' => (clone $baseQuery)->where('status', 'Stand By')->count(),
+                'disposed' => (clone $baseQuery)->where('status', 'Disposed')->count(),
+            ];
+        });
     }
 
     public function getEmployeesProperty()
     {
-        return Employee::query()
-            ->select('ID', 'nik', 'name')
-            ->orderBy('nik')
-            ->orderBy('name')
-            ->get()
-            ->mapWithKeys(fn ($employee) => [
-                $employee->ID => $employee->nik . ' - ' . $employee->name
-            ]);
+        // UBAH SELURUH ISI METHOD INI
+        if ($this->cachedEmployees === null) {
+            $this->cachedEmployees = Employee::query()
+                ->select('id', 'nik', 'name')
+                ->orderBy('nik')
+                ->orderBy('name')
+                ->get()
+                ->mapWithKeys(fn ($employee) => [
+                    $employee->id => $employee->nik . ' - ' . $employee->name
+                ]);
+        }
+        return $this->cachedEmployees;
     }
 
     public function getLineOptionsProperty()
@@ -244,6 +254,7 @@ class StencilManagement extends Component
             $message = "Status changed from '{$oldStatus}' to '{$this->status}' successfully!";
             $this->dispatch('notify', message: $message, type: 'success');
             $this->dispatch('refreshStencilTable');
+            cache()->forget('stencil_tab_counts');
             $this->updateTabCounts();
             
         } catch (\Exception $e) {
@@ -338,11 +349,11 @@ class StencilManagement extends Component
         if (!auth()->user()->can('view stencil')) {
             abort(403, 'You do not have permission to view stencil.');
         }
-    
+
         $employees = $this->employees;
         $lineOptions = $this->lineOptions;
-    
-        $stencils = MasterStencil::with(['employee', 'creator', 'updater'])
+
+        $query = MasterStencil::with(['employee:id,name,nik', 'creator:id,name', 'updater:id,name'])
             ->when($this->activeTab !== 'all', function ($query) {
                 $statusMap = [
                     'in_use' => 'In Use',
@@ -358,36 +369,61 @@ class StencilManagement extends Component
                     
                     if ($this->activeTab === 'in_use_with_line') {
                         $query->whereNotNull('line_name')
-                              ->where('line_name', '!=', '');
+                            ->where('line_name', '!=', '');
                     }
                 }
             })
             ->when($this->search, function ($query) {
-                $query->where('register_no', 'like', '%' . $this->search . '%')
-                    ->orWhere('customer', 'like', '%' . $this->search . '%')
-                    ->orWhere('rack_number', 'like', '%' . $this->search . '%');
+                $search = '%' . $this->search . '%';
+                $query->where(function($q) use ($search) {
+                    $q->where('register_no', 'like', $search)
+                      ->orWhere('customer', 'like', $search)
+                      ->orWhere('rack_number', 'like', $search);
+                });
             })
             ->when($this->selectedStatus, function ($query) {
                 $query->where('status', $this->selectedStatus);
             })
             ->when($this->selectedCustomer, function ($query) {
                 $query->where('customer', 'like', '%' . $this->selectedCustomer . '%');
-            })
-            ->orderBy('id', 'desc')
-            ->paginate(10);
-    
-        $customers = MasterStencil::select('customer')
-            ->distinct()
-            ->whereNotNull('customer')
-            ->where('customer', '!=', '')
-            ->pluck('customer')
-            ->toArray();
-    
+            });
+
+        // SORTING
+        if ($this->activeTab === 'in_use_with_line' || $this->activeTab === 'prepared') {
+            $query->orderByRaw("
+                CASE 
+                    WHEN line_name IS NULL OR line_name = '' OR line_name = '-' THEN 1 
+                    ELSE 0 
+                END ASC
+            ");
+            $query->orderByRaw("CAST(SUBSTRING_INDEX(line_name, ' ', -1) AS UNSIGNED) ASC");
+        } else {
+            $query->orderByRaw("
+                CASE 
+                    WHEN rack_number IS NULL OR rack_number = '' OR rack_number = '-' THEN 1 
+                    ELSE 0 
+                END ASC
+            ");
+            $query->orderByRaw("CAST(rack_number AS UNSIGNED) ASC");
+        }
+
+        $stencils = $query->paginate(10);
+
+        // Cache customers
+        if ($this->cachedCustomers === null) {
+            $this->cachedCustomers = MasterStencil::select('customer')
+                ->distinct()
+                ->whereNotNull('customer')
+                ->where('customer', '!=', '')
+                ->pluck('customer')
+                ->toArray();
+        }
+
         return view('livewire.mtc.master.stencil-management', [
             'stencils' => $stencils,
             'employees' => $employees,
             'lineOptions' => $lineOptions,
-            'customers' => $customers,
+            'customers' => $this->cachedCustomers,
             'activities' => $this->activities,
         ]);
     }

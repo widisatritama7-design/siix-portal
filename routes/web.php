@@ -25,6 +25,8 @@ use App\Livewire\PROD\MS\Sample\MasterSampleLoanForm;
 use App\Livewire\PROD\MS\Sample\MasterSampleManagement;
 use App\Livewire\PROD\MS\Sample\MasterSampleShow;
 use App\Livewire\PROD\MS\Sample\SampleChecksManagement;
+use App\Livewire\PROD\WIP\AddColumn;
+use App\Livewire\PROD\WIP\AddSheet;
 use App\Livewire\PROD\WIP\HistoryWipTransaction;
 use App\Livewire\PROD\WIP\MasterModelManagement;
 use App\Livewire\PROD\WIP\MasterRackLosePack;
@@ -109,6 +111,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/prod/wip/check-rack/{model}', [MasterWipManagement::class, 'checkWipInRackByModel']);
     Route::get('/prod/history', HistoryWipTransaction::class)->name('prod.history');
     Route::get('/prod/rack-lose', MasterRackLosePack::class)->name('prod.rack-lose');
+    Route::get('/prod/add-sheet', AddSheet::class)->name('prod.wip.add-sheet');
+    Route::get('/prod/add-column', AddColumn::class)->name('prod.wip.add-column');
 
     // Master Sample
     Route::get('/prod/ms/dashboard', MasterSampleDashboard::class)->name('prod.ms.dashboard');

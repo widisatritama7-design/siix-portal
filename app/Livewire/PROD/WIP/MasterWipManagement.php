@@ -233,7 +233,8 @@ class MasterWipManagement extends Component
                 'no_rack' => $detail->rackLosePack->display_name ?? 'Unknown',
                 'no_hu' => $detail->no_hu_text,
                 'qty' => $detail->qty_text,
-                'status' => $detail->status
+                'status' => $detail->status,
+                'master_wip_id' => $detail->master_wips_id  // Tambahkan ini
             ];
         }
         

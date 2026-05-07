@@ -1,6 +1,6 @@
 {{-- resources/views/livewire/esd/garment/garment-show.blade.php --}}
 <section class="w-full">
-    @include('partials.esd-heading')
+    
 
     <flux:heading class="sr-only">
         {{ __('Electrostatic Discharge - Garment Detail') }}

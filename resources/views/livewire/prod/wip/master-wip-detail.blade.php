@@ -485,11 +485,6 @@
                 </div>
                 <h3 class="text-base font-medium text-zinc-900 dark:text-white mb-1">No scans yet</h3>
                 <p class="text-sm text-zinc-500 mb-4">Start scanning to track your WIP progress</p>
-                @if(!$masterWip->isFinished())
-                    <flux:button icon="camera" variant="primary" color="green">
-                        Start Scanning
-                    </flux:button>
-                @endif
             </div>
         @endif
     </div>

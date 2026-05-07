@@ -32,6 +32,20 @@ class MasterRackLosePack extends Component
     public $showDetailModal = false;
     public $selectedRack = null;
     
+    // Modal Add Sheet
+    public $showAddSheetModal = false;
+    public $selectedRackForAddSheet = null;
+    public $newSheetName = '';
+    public $availableRacksForAddSheet = [];
+    
+    // Modal Add Column
+    public $showAddColumnModal = false;
+    public $selectedRackForAddColumn = null;
+    public $selectedSheetForAddColumn = null;
+    public $newColumnName = '';
+    public $availableRacksForAddColumn = [];
+    public $availableSheetsForAddColumn = [];
+    
     // Alerts
     public $showSuccessAlert = false;
     public $successMessage = '';
@@ -47,6 +61,302 @@ class MasterRackLosePack extends Component
     public function mount()
     {
         $this->loadAvailableRacksForDelete();
+        $this->loadAvailableRacksForAddSheet();
+        $this->loadAvailableRacksForAddColumn();
+    }
+
+    // Load racks for add sheet
+    public function loadAvailableRacksForAddSheet()
+    {
+        $this->availableRacksForAddSheet = RackLosePack::select('no_rack')
+            ->groupBy('no_rack')
+            ->orderBy('no_rack')
+            ->get();
+    }
+
+    // Load racks for add column
+    public function loadAvailableRacksForAddColumn()
+    {
+        $this->availableRacksForAddColumn = RackLosePack::select('no_rack')
+            ->groupBy('no_rack')
+            ->orderBy('no_rack')
+            ->get();
+    }
+
+    // Load sheets for add column - PASTIKAN METHOD INI BERJALAN
+    public function loadSheetsForAddColumn()
+    {
+        \Log::info('loadSheetsForAddColumn called with rack: ' . $this->selectedRackForAddColumn);
+        
+        if ($this->selectedRackForAddColumn) {
+            $this->availableSheetsForAddColumn = RackLosePack::where('no_rack', $this->selectedRackForAddColumn)
+                ->select('sheet_rack')
+                ->groupBy('sheet_rack')
+                ->orderBy('sheet_rack')
+                ->get();
+            
+            \Log::info('Sheets found: ' . $this->availableSheetsForAddColumn->count());
+        } else {
+            $this->availableSheetsForAddColumn = collect();
+            \Log::info('No rack selected, sheets cleared');
+        }
+    }
+
+    // Open Add Sheet Modal
+    public function openAddSheetModal()
+    {
+        $this->reset(['selectedRackForAddSheet', 'newSheetName']);
+        $this->loadAvailableRacksForAddSheet();
+        $this->showAddSheetModal = true;
+    }
+
+    // Close Add Sheet Modal
+    public function closeAddSheetModal()
+    {
+        $this->showAddSheetModal = false;
+        $this->reset(['selectedRackForAddSheet', 'newSheetName']);
+    }
+
+    // Tambahkan method ini untuk debugging dan memastikan data ada
+    public function getAvailableRacksForAddColumnProperty()
+    {
+        return RackLosePack::select('no_rack')
+            ->groupBy('no_rack')
+            ->orderBy('no_rack')
+            ->get();
+    }
+
+    // Panggil ini di mount dan openAddColumnModal
+    public function openAddColumnModal()
+    {
+        $this->reset(['selectedRackForAddColumn', 'selectedSheetForAddColumn', 'newColumnName']);
+        
+        // Load data segar dari database
+        $this->availableRacksForAddColumn = RackLosePack::select('no_rack')
+            ->groupBy('no_rack')
+            ->orderBy('no_rack')
+            ->get();
+        
+        $this->availableSheetsForAddColumn = collect();
+        $this->showAddColumnModal = true;
+        
+        // Debug: Log ke browser console
+        $this->dispatch('racks-loaded', racks: $this->availableRacksForAddColumn->toArray());
+    }
+
+    // Update method updatedSelectedRackForAddColumn
+    public function updatedSelectedRackForAddColumn($value)
+    {
+        \Log::info('Rack selected: ' . $value);
+        
+        $this->selectedSheetForAddColumn = null;
+        
+        if ($value) {
+            $this->availableSheetsForAddColumn = RackLosePack::where('no_rack', $value)
+                ->select('sheet_rack')
+                ->groupBy('sheet_rack')
+                ->orderBy('sheet_rack')
+                ->get();
+                
+            \Log::info('Sheets found: ' . $this->availableSheetsForAddColumn->count());
+        } else {
+            $this->availableSheetsForAddColumn = collect();
+        }
+    }
+
+    // Close Add Column Modal
+    public function closeAddColumnModal()
+    {
+        $this->showAddColumnModal = false;
+        $this->reset(['selectedRackForAddColumn', 'selectedSheetForAddColumn', 'newColumnName']);
+    }
+
+    // Add Sheet method - PERBAIKAN
+    public function addSheet()
+    {
+        // Debug: cek apakah method dipanggil
+        \Log::info('addSheet dipanggil', [
+            'selectedRackForAddSheet' => $this->selectedRackForAddSheet,
+            'newSheetName' => $this->newSheetName
+        ]);
+        
+        $validated = $this->validate([
+            'selectedRackForAddSheet' => 'required|string',
+            'newSheetName' => 'required|string|max:255|regex:/^[a-zA-Z0-9\s]+$/',
+        ], [
+            'selectedRackForAddSheet.required' => 'Pilih rack terlebih dahulu!',
+            'newSheetName.required' => 'Nama sheet harus diisi!',
+            'newSheetName.regex' => 'Nama sheet hanya boleh berisi huruf, angka, dan spasi!',
+        ]);
+
+        // Cek apakah sheet sudah ada
+        $exists = RackLosePack::where('no_rack', $this->selectedRackForAddSheet)
+            ->where('sheet_rack', $this->newSheetName)
+            ->exists();
+
+        if ($exists) {
+            $this->errorMessage = "Sheet '{$this->newSheetName}' sudah ada pada rack '{$this->selectedRackForAddSheet}'!";
+            $this->showErrorAlert = true;
+            return;
+        }
+
+        // Dapatkan jumlah column dari sheet pertama yang ada di rack ini
+        $firstSheet = RackLosePack::where('no_rack', $this->selectedRackForAddSheet)
+            ->select('sheet_rack')
+            ->groupBy('sheet_rack')
+            ->first();
+        
+        $maxColumns = 4; // default
+        
+        if ($firstSheet) {
+            $maxColumns = RackLosePack::where('no_rack', $this->selectedRackForAddSheet)
+                ->where('sheet_rack', $firstSheet->sheet_rack)
+                ->count();
+        }
+
+        // Buat column untuk sheet baru
+        for ($i = 1; $i <= $maxColumns; $i++) {
+            RackLosePack::create([
+                'no_rack' => $this->selectedRackForAddSheet,
+                'sheet_rack' => $this->newSheetName,
+                'column_rack' => 'Column ' . $i,
+            ]);
+        }
+
+        $sheetNameAdded = $this->newSheetName;
+        
+        // Refresh semua data
+        $this->refreshAllData();
+        
+        // Reset form
+        $this->selectedRackForAddSheet = null;
+        $this->newSheetName = '';
+        
+        // Tutup modal
+        $this->showAddSheetModal = false;
+        
+        $this->successMessage = "Sheet '{$sheetNameAdded}' berhasil ditambahkan dengan {$maxColumns} column!";
+        $this->showSuccessAlert = true;
+        
+        // Auto hide alert after 3 seconds
+        $this->dispatch('hide-alert');
+    }
+
+    // Add Column method - VERSI PALAMING SIMPLE UNTUK TEST
+    public function addColumn()
+    {
+        try {
+            // Debug ke log
+            \Log::info('=== ADD COLUMN START ===');
+            \Log::info('selectedRackForAddColumn: ' . $this->selectedRackForAddColumn);
+            \Log::info('selectedSheetForAddColumn: ' . $this->selectedSheetForAddColumn);
+            \Log::info('newColumnName: ' . $this->newColumnName);
+            
+            // Validasi manual
+            if (empty($this->selectedRackForAddColumn)) {
+                $this->errorMessage = 'Pilih rack terlebih dahulu!';
+                $this->showErrorAlert = true;
+                \Log::error('Rack is empty');
+                return;
+            }
+            
+            if (empty($this->selectedSheetForAddColumn)) {
+                $this->errorMessage = 'Pilih sheet terlebih dahulu!';
+                $this->showErrorAlert = true;
+                \Log::error('Sheet is empty');
+                return;
+            }
+            
+            if (empty($this->newColumnName)) {
+                $this->errorMessage = 'Nama column harus diisi!';
+                $this->showErrorAlert = true;
+                \Log::error('Column name is empty');
+                return;
+            }
+            
+            // Cek apakah column sudah ada
+            $exists = RackLosePack::where('no_rack', $this->selectedRackForAddColumn)
+                ->where('sheet_rack', $this->selectedSheetForAddColumn)
+                ->where('column_rack', $this->newColumnName)
+                ->exists();
+                
+            \Log::info('Column exists: ' . ($exists ? 'YES' : 'NO'));
+            
+            if ($exists) {
+                $this->errorMessage = "Column '{$this->newColumnName}' sudah ada pada sheet '{$this->selectedSheetForAddColumn}'!";
+                $this->showErrorAlert = true;
+                return;
+            }
+            
+            // Tambah column baru
+            $newColumn = RackLosePack::create([
+                'no_rack' => $this->selectedRackForAddColumn,
+                'sheet_rack' => $this->selectedSheetForAddColumn,
+                'column_rack' => $this->newColumnName,
+            ]);
+            
+            \Log::info('Column created with ID: ' . ($newColumn ? $newColumn->id : 'FAILED'));
+            
+            $sheetName = $this->selectedSheetForAddColumn;
+            $columnNameAdded = $this->newColumnName;
+            
+            // Refresh semua data
+            $this->refreshAllData();
+            
+            // Reset form
+            $this->selectedRackForAddColumn = null;
+            $this->selectedSheetForAddColumn = null;
+            $this->newColumnName = '';
+            
+            // Tutup modal
+            $this->showAddColumnModal = false;
+            
+            $this->successMessage = "Column '{$columnNameAdded}' berhasil ditambahkan ke sheet '{$sheetName}'!";
+            $this->showSuccessAlert = true;
+            
+            // Dispatch event untuk hide alert
+            $this->dispatch('alert-shown');
+            
+            \Log::info('=== ADD COLUMN END ===');
+            
+        } catch (\Exception $e) {
+            \Log::error('Error in addColumn: ' . $e->getMessage());
+            $this->errorMessage = 'Terjadi kesalahan: ' . $e->getMessage();
+            $this->showErrorAlert = true;
+        }
+    }
+
+    // Refresh all data method
+    public function refreshAllData()
+    {
+        $this->loadAvailableRacksForDelete();
+        $this->loadAvailableRacksForAddSheet();
+        $this->loadAvailableRacksForAddColumn();
+        $this->loadSheetsForAddColumn();
+        $this->availableSlotsForDelete = collect();
+        
+        // Reset pagination
+        $this->resetPage();
+    }
+
+    // Tambahkan method ini di akhir class, sebelum render()
+    public function debugCheckData()
+    {
+        // Cek data via Query Builder langsung
+        $racks = \DB::table('tb_prod_rack_lose_packs')
+            ->select('no_rack')
+            ->distinct()
+            ->orderBy('no_rack')
+            ->get();
+        
+        \Log::info('Total racks in DB: ' . $racks->count());
+        \Log::info('Racks: ' . $racks->toJson());
+        
+        $this->availableRacksForAddColumn = $racks;
+        $this->dispatch('racks-loaded', racks: $racks->toArray());
+        
+        $this->successMessage = 'Found ' . $racks->count() . ' racks: ' . $racks->pluck('no_rack')->implode(', ');
+        $this->showSuccessAlert = true;
     }
     
     public function getRacksProperty()
@@ -235,8 +545,7 @@ class MasterRackLosePack extends Component
         $this->newRackSheetCount = 1;
         $this->newRackColumnCount = 4;
         
-        $this->loadAvailableRacksForDelete();
-        $this->availableSlotsForDelete = collect();
+        $this->refreshAllData();
         
         $this->successMessage = "Rack berhasil ditambahkan dengan {$totalSlots} slot!";
         $this->showSuccessAlert = true;
@@ -276,8 +585,7 @@ class MasterRackLosePack extends Component
         $this->selectedSheetForDelete = null;
         $this->selectedRackNo = null;
         
-        $this->loadAvailableRacksForDelete();
-        $this->availableSlotsForDelete = collect();
+        $this->refreshAllData();
         
         if ($count > 0) {
             $this->successMessage = "$count column berhasil dihapus!";
@@ -311,7 +619,7 @@ class MasterRackLosePack extends Component
             
             $this->showDetailModal = false;
             $this->selectedRack = null;
-            $this->loadAvailableRacksForDelete();
+            $this->refreshAllData();
             
             $this->successMessage = 'WIP berhasil dilepas dari rack!';
             $this->showSuccessAlert = true;

@@ -185,7 +185,6 @@
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Line Name</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Count</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Last Update</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Last Update By</th>
                                 <th class="px-4 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Actions</th>
                             </tr>
                         </thead>
@@ -226,18 +225,17 @@
                                     <span class="text-sm text-zinc-700 dark:text-zinc-300">
                                         {{ $stencil->count_stencil ?? '-' }}
                                     </span>
-                                
     
-                                <td class="px-4 py-3">
-                                    <span class="text-sm text-zinc-700 dark:text-zinc-300">
-                                        {{ $stencil->updated_at ? $stencil->updated_at->format('d/m/Y H:i') : '-' }}
-                                    </span>
-                                
-    
-                                <td class="px-4 py-3">
-                                    <span class="text-sm text-zinc-700 dark:text-zinc-300">
-                                        {{ $stencil->employee->name ?? '-' }}
-                                    </span>
+                                <td class="px-4 py-3 text-center">
+                                    <div class="flex flex-col items-center">
+                                        <span class="text-sm text-zinc-700 dark:text-zinc-300">
+                                            {{ $stencil->employee->name ?? '-' }}
+                                        </span>
+                                        <span class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+                                            {{ $stencil->updated_at ? $stencil->updated_at->format('d/m/Y H:i') : '-' }}
+                                        </span>
+                                    </div>
+                                </td>
                                 
     
                                 <td class="px-4 py-3 text-right">

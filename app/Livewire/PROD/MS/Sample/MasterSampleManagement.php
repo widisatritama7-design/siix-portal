@@ -61,6 +61,8 @@ class MasterSampleManagement extends Component
     public $selectAll = false;
     public $selectedPages = []; // Track which pages are selected
 
+    public $rackSearch = '';
+
     protected function rules()
     {
         return [
@@ -99,6 +101,13 @@ class MasterSampleManagement extends Component
         $this->loadOptions();
         $this->initDetail();
         $this->updateTabCounts();
+    }
+
+    public function clearRackSelection()
+    {
+        $this->rack_id = null;
+        $this->currentRackInfo = '';
+        $this->dispatch('notify', message: 'Rack selection cleared!');
     }
 
     public function setTab($tab)
