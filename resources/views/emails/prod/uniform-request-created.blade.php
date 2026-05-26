@@ -135,7 +135,7 @@
             
             <p>You can view the complete request details by clicking the link below:</p>
             <p>
-                <a href="https://test.siix-ems.co.id/prod/uniform/request/show/{{ $request->id }}" class="btn">
+                <a href="https://portal.siix-ems.co.id/prod/uniform/request/show/{{ $request->id }}" class="btn">
                     View Request Details
                 </a>
             </p>

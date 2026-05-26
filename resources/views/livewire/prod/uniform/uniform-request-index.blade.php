@@ -179,25 +179,37 @@
                         <td class="px-4 py-3 text-center">
                             @php
                                 $statusColors = [
-                                    'draft' => 'gray',
-                                    'checked' => 'blue',
-                                    'approved' => 'yellow',
-                                    'accepted' => 'green',
+                                    'Waiting' => 'gray',
+                                    'On Process' => 'yellow',
+                                    'Accepted' => 'green',
                                 ];
                                 
                                 $statusIcons = [
-                                    'draft' => 'M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z',
-                                    'checked' => 'M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z',
-                                    'approved' => 'M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z',
-                                    'accepted' => 'M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z',
+                                    'Waiting' => 'M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z',
+                                    'On Process' => 'M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z',
+                                    'Accepted' => 'M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z',
                                 ];
+                                
+                                // Get status with fallback
+                                $status = $request->missc_status ?? 'Waiting';
+                                $statusColor = $statusColors[$status] ?? 'gray';
+                                $statusIcon = $statusIcons[$status] ?? $statusIcons['Waiting'];
                             @endphp
-                            <span class="inline-flex items-center gap-1 px-2 py-1 text-sm font-medium rounded-full bg-{{ $statusColors[$report->status] }}-100 text-{{ $statusColors[$report->status] }}-700 dark:bg-{{ $statusColors[$report->status] }}-900/30 dark:text-{{ $statusColors[$report->status] }}-300">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
-                                    <path fill-rule="evenodd" d="{{ $statusIcons[$report->status] }}" clip-rule="evenodd" />
-                                </svg>
-                                {{ ucfirst($report->status) }}
-                            </span>
+                            
+                            <div class="flex flex-col items-center gap-1">
+                                <span class="inline-flex items-center gap-1 px-2 py-1 text-sm font-medium rounded-full bg-{{ $statusColor }}-100 text-{{ $statusColor }}-700 dark:bg-{{ $statusColor }}-900/30 dark:text-{{ $statusColor }}-300">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                        <path fill-rule="evenodd" d="{{ $statusIcon }}" clip-rule="evenodd" />
+                                    </svg>
+                                    {{ $status }}
+                                </span>
+                                
+                                @if($status == 'Accepted' && $request->missc_accept_at)
+                                    <span class="text-xs text-gray-500 dark:text-gray-400">
+                                        {{ $request->missc_accept_at->format('d M Y H:i') }}
+                                    </span>
+                                @endif
+                            </div>
                         </td>
                         
                         <td class="px-4 py-3 text-center">
@@ -213,8 +225,7 @@
                         
                         <td class="px-4 py-3 text-center">
                             <div class="text-sm">
-                                <div>{{ $request->created_at ? $request->created_at->format('d M Y') : '-' }}</div>
-                                <div class="text-xs text-zinc-500">{{ $request->created_at ? $request->created_at->format('H:i') : '' }}</div>
+                                <div>{{ $request->created_at ? $request->created_at->format('d M Y H:i') : '-' }}</div>
                             </div>
                         </td>
                         
@@ -234,7 +245,7 @@
                                 </flux:tooltip>
 
                                 @can('update uniform request missc status')
-                                    @if($request->missc_status != 'Accepted')
+                                    @if($request->missc_status != 'Accepted' && $adminStatus['status'] == 'Checked' && $costingStatus['status'] == 'Checked')
                                         <flux:tooltip content="Update MISSC Status" position="bottom">
                                             <flux:button 
                                                 wire:click="openMisscModal({{ $request->id }})"
@@ -244,6 +255,14 @@
                                                 color="green"
                                                 class="!p-1.5"
                                             />
+                                        </flux:tooltip>
+                                    @elseif($request->missc_status != 'Accepted')
+                                        <flux:tooltip content="Cannot update MISSC Status - Admin and Costing feedback must be checked first" position="bottom">
+                                            <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-600 cursor-not-allowed">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                                </svg>
+                                            </span>
                                         </flux:tooltip>
                                     @endif
                                 @endcan

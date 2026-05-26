@@ -437,14 +437,86 @@
                 </flux:card>
             </div>
 
-            <!-- MODAL FORM MEASUREMENT DETAIL -->
-            <div x-data="{ open: false }" 
-                x-show="open" 
-                @open-modal.window="if ($event.detail === 'detail-form-modal') open = true"
-                @close-modal.window="if ($event.detail === 'detail-form-modal') open = false"
-                x-cloak>
+            <div x-data="{ 
+                open: false,
+                showCamera: false,
+                capturedPhoto: null,
+                videoStream: null,
+                isSaving: false,
+                
+                initCamera() {
+                    // initialization jika diperlukan
+                },
+                
+                async startCamera() {
+                    try {
+                        const constraints = {
+                            video: {
+                                facingMode: 'environment'
+                            }
+                        };
+                        
+                        this.videoStream = await navigator.mediaDevices.getUserMedia(constraints);
+                        const videoElement = this.$refs.video;
+                        videoElement.srcObject = this.videoStream;
+                        this.showCamera = true;
+                        this.capturedPhoto = null;
+                    } catch (error) {
+                        console.error('Error accessing camera:', error);
+                        alert('Tidak dapat mengakses kamera. Pastikan Anda telah memberikan izin kamera.');
+                    }
+                },
+                
+                capturePhoto() {
+                    const video = this.$refs.video;
+                    const canvas = this.$refs.canvas;
+                    
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    
+                    const context = canvas.getContext('2d');
+                    context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    
+                    this.capturedPhoto = canvas.toDataURL('image/jpeg', 0.8);
+                    this.stopCamera();
+                },
+                
+                async savePhoto() {
+                    if (this.capturedPhoto && !this.isSaving) {
+                        this.isSaving = true;
+                        
+                        try {
+                            await @this.call('addCapturedPhoto', this.capturedPhoto);
+                            this.capturedPhoto = null;
+                            this.showCamera = false;
+                        } catch (error) {
+                            console.error('Error saving photo:', error);
+                            alert('Failed to save photo: ' + error.message);
+                        } finally {
+                            this.isSaving = false;
+                        }
+                    }
+                },
+                
+                retakePhoto() {
+                    this.capturedPhoto = null;
+                    this.startCamera();
+                },
+                
+                stopCamera() {
+                    if (this.videoStream) {
+                        this.videoStream.getTracks().forEach(track => track.stop());
+                        this.videoStream = null;
+                    }
+                    this.showCamera = false;
+                }
+            }"
+            x-show="open" 
+            @open-modal.window="if ($event.detail === 'detail-form-modal') { open = true; }"
+            @close-modal.window="if ($event.detail === 'detail-form-modal') { open = false; stopCamera(); }"
+            x-cloak>
 
-                <div class="fixed inset-0 bg-black/50 z-40" @click="open = false"></div>
+                <div class="fixed inset-0 bg-black/50 z-40" @click="open = false; stopCamera();"></div>
 
                 <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
                     <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
@@ -611,9 +683,9 @@
                                     @error('remarks') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                 </div>
 
-                                <!-- Photo Upload Section -->
+                                <!-- Photo Section - Camera Only -->
                                 <div class="mb-4">
-                                    <label class="block text-sm font-medium mb-2">Verification Photos</label>
+                                    <label class="block text-sm font-medium mb-2">Verification Photos (Camera Only)</label>
                                     
                                     <!-- Existing Photos Display -->
                                     @if(!empty($existingPhotos) && count($existingPhotos) > 0)
@@ -621,40 +693,27 @@
                                             <label class="block text-xs font-medium text-gray-500 mb-2">Existing Photos:</label>
                                             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                                                 @foreach($existingPhotos as $index => $photo)
-                                                    <div class="relative group border rounded-lg p-2 bg-gray-50 dark:bg-zinc-800">
+                                                    <div class="relative border rounded-lg p-2 bg-gray-50 dark:bg-zinc-800">
                                                         <div class="relative">
-                                                            @php
-                                                                $extension = pathinfo($photo, PATHINFO_EXTENSION);
-                                                                $isImage = in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif', 'webp']);
-                                                            @endphp
+                                                            <a href="{{ Storage::url($photo) }}" target="_blank">
+                                                                <img src="{{ Storage::url($photo) }}" 
+                                                                    alt="Verification Photo" 
+                                                                    class="w-full h-32 object-cover rounded cursor-pointer hover:opacity-90 transition-opacity">
+                                                            </a>
                                                             
-                                                            @if($isImage)
-                                                                <a href="{{ Storage::url($photo) }}" target="_blank">
-                                                                    <img src="{{ Storage::url($photo) }}" 
-                                                                        alt="Verification Photo" 
-                                                                        class="w-full h-32 object-cover rounded cursor-pointer hover:opacity-90 transition-opacity">
-                                                                </a>
-                                                            @else
-                                                                <div class="w-full h-32 flex items-center justify-center bg-gray-100 dark:bg-zinc-700 rounded">
-                                                                    <flux:icon name="document-text" class="w-8 h-8 text-gray-400" />
-                                                                </div>
-                                                            @endif
-                                                            
+                                                            <!-- Tombol Remove SELALU terlihat -->
                                                             <button type="button" 
                                                                     wire:click="removeExistingPhoto({{ $index }})"
-                                                                    class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                                <flux:icon name="x-mark" class="w-4 h-4" />
+                                                                    class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors shadow-lg">
+                                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                                </svg>
                                                             </button>
                                                         </div>
                                                         <div class="mt-2">
                                                             <p class="text-xs text-gray-600 dark:text-gray-400 truncate" title="{{ basename($photo) }}">
                                                                 {{ Str::limit(basename($photo), 20) }}
                                                             </p>
-                                                            @if($isImage)
-                                                                <a href="{{ Storage::url($photo) }}" target="_blank" class="text-xs text-blue-600 hover:underline">View Full Size</a>
-                                                            @else
-                                                                <a href="{{ Storage::url($photo) }}" target="_blank" class="text-xs text-blue-600 hover:underline">Download</a>
-                                                            @endif
                                                         </div>
                                                     </div>
                                                 @endforeach
@@ -662,62 +721,98 @@
                                         </div>
                                     @endif
                                     
-                                    <!-- New Photos Upload Area -->
-                                    <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 hover:border-blue-500 transition-colors">
-                                        <div class="flex flex-col items-center justify-center gap-2">
-                                            <flux:icon name="cloud-arrow-up" class="w-10 h-10 text-gray-400" />
-                                            <p class="text-sm text-gray-600 dark:text-gray-400 text-center">
-                                                Click to upload or drag and drop
-                                            </p>
-                                            <p class="text-xs text-gray-500 text-center">
-                                                Support: JPG, JPEG, PNG (Max 5MB per file)
-                                            </p>
-                                            
-                                            <div class="flex gap-2 mt-2">
-                                                <label class="cursor-pointer">
-                                                    <div class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
-                                                        Choose Files
-                                                    </div>
-                                                    <input type="file" 
-                                                        wire:model="photos" 
-                                                        multiple 
-                                                        accept="image/jpeg,image/jpg,image/png"
-                                                        class="hidden">
-                                                </label>
+                                    <!-- Camera Capture Area -->
+                                    <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4">
+                                        <!-- Camera Preview -->
+                                        <div x-show="!showCamera && !capturedPhoto" class="text-center py-8">
+                                            <flux:icon name="camera" class="w-16 h-16 text-gray-400 mx-auto mb-3" />
+                                            <p class="text-gray-600 dark:text-gray-400 mb-4">Take a photo using your camera</p>
+                                            <button type="button" 
+                                                    @click="startCamera()"
+                                                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                                                Open Camera
+                                            </button>
+                                        </div>
+                                        
+                                        <!-- Camera View -->
+                                        <div x-show="showCamera" x-cloak>
+                                            <div class="relative">
+                                                <video x-ref="video" 
+                                                    autoplay 
+                                                    playsinline
+                                                    class="w-full rounded-lg bg-black"
+                                                    style="max-height: 400px;"></video>
+                                                
+                                                <canvas x-ref="canvas" class="hidden"></canvas>
+                                                
+                                                <!-- Camera Controls -->
+                                                <div class="flex gap-3 justify-center mt-4">
+                                                    <button type="button" 
+                                                            @click="capturePhoto()"
+                                                            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                                                        <flux:icon name="camera" class="w-5 h-5 inline mr-1" />
+                                                        Take Photo
+                                                    </button>
+                                                    <button type="button" 
+                                                            @click="stopCamera()"
+                                                            class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+                                                        Cancel
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Captured Photo Preview -->
+                                        <div x-show="capturedPhoto" x-cloak>
+                                            <div class="relative">
+                                                <img :src="capturedPhoto" 
+                                                    alt="Captured photo" 
+                                                    class="w-full rounded-lg"
+                                                    style="max-height: 400px; object-fit: contain;">
+                                                
+                                                <!-- Captured Photo Controls -->
+                                                <div class="flex gap-3 justify-center mt-4">
+                                                    <button type="button" 
+                                                            @click="retakePhoto()"
+                                                            class="px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 transition-colors">
+                                                        <flux:icon name="arrow-path" class="w-5 h-5 inline mr-1" />
+                                                        Retake
+                                                    </button>
+                                                    <button type="button" 
+                                                            @click="savePhoto()"
+                                                            class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+                                                        <flux:icon name="check" class="w-5 h-5 inline mr-1" />
+                                                        Save Photo
+                                                    </button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
                                     
-                                    <!-- New Photos Preview -->
-                                    @if(!empty($photos) && count($photos) > 0)
-                                        <div class="mt-4" wire:key="photos-preview-{{ count($photos) }}-{{ md5(json_encode($photos)) }}">
-                                            <label class="block text-xs font-medium text-gray-500 mb-2">New Photos ({{ count($photos) }}):</label>
+                                    <!-- Captured Photos List -->
+                                    @if(!empty($capturedPhotos) && count($capturedPhotos) > 0)
+                                        <div class="mt-4">
+                                            <label class="block text-xs font-medium text-gray-500 mb-2">New Photos ({{ count($capturedPhotos) }}):</label>
                                             <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                                                @foreach($photos as $index => $photo)
-                                                    <div class="relative group border rounded-lg p-2 bg-gray-50 dark:bg-zinc-800">
+                                                @foreach($capturedPhotos as $index => $photo)
+                                                    <div class="relative border rounded-lg p-2 bg-gray-50 dark:bg-zinc-800">
                                                         <div class="relative">
-                                                            @if(in_array(strtolower($photo->getClientOriginalExtension()), ['jpg', 'jpeg', 'png', 'gif', 'webp']))
-                                                                <img src="{{ $photo->temporaryUrl() }}" 
-                                                                    alt="Preview {{ $index + 1 }}" 
-                                                                    class="w-full h-32 object-cover rounded">
-                                                            @else
-                                                                <div class="w-full h-32 flex items-center justify-center bg-gray-100 dark:bg-zinc-700 rounded">
-                                                                    <flux:icon name="document-text" class="w-8 h-8 text-gray-400" />
-                                                                </div>
-                                                            @endif
+                                                            <img src="{{ $photo['preview'] }}" 
+                                                                alt="Captured {{ $index + 1 }}" 
+                                                                class="w-full h-32 object-cover rounded">
                                                             
+                                                            <!-- Tombol Remove SELALU terlihat -->
                                                             <button type="button" 
-                                                                    wire:click="removePhoto({{ $index }})"
-                                                                    class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                                                <flux:icon name="x-mark" class="w-4 h-4" />
+                                                                    wire:click="removeCapturedPhoto({{ $index }})"
+                                                                    class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors shadow-lg">
+                                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                                                </svg>
                                                             </button>
                                                         </div>
                                                         <div class="mt-2">
-                                                            <p class="text-xs text-gray-600 dark:text-gray-400 truncate" title="{{ $photo->getClientOriginalName() }}">
-                                                                {{ Str::limit($photo->getClientOriginalName(), 20) }}
-                                                            </p>
-                                                            <p class="text-xs text-gray-500">
-                                                                {{ number_format($photo->getSize() / 1024, 2) }} KB
+                                                            <p class="text-xs text-gray-600 dark:text-gray-400">
+                                                                Photo {{ $index + 1 }}
                                                             </p>
                                                         </div>
                                                     </div>
@@ -726,13 +821,13 @@
                                         </div>
                                     @endif
                                     
-                                    @error('photos.*') 
+                                    @error('capturedPhotos') 
                                         <span class="text-red-500 text-sm mt-2 block">{{ $message }}</span> 
                                     @enderror
                                     
                                     <p class="text-xs text-gray-500 mt-2">
                                         <flux:icon name="information-circle" class="w-3 h-3 inline" /> 
-                                        You can upload multiple files. Maximum 5MB per file.
+                                        Take photos directly using your device camera. Maximum 5 photos.
                                     </p>
                                 </div>
 
@@ -746,7 +841,7 @@
                                 <!-- Buttons -->
                                 <div class="flex justify-end gap-2 mt-6">
                                     <button type="button" 
-                                            @click="open = false"
+                                            @click="open = false; stopCamera()"
                                             class="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
                                         Cancel
                                     </button>
