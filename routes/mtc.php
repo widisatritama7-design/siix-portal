@@ -46,7 +46,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('print/daily-panasonic/{dailyPanasonic}', function ($id) {$dailyPanasonic = DailyPanasonic::with(['masterLine', 'creator', 'updater', 'approvedBy'])->findOrFail($id); return view('mtc.daily.panasonic.daily-panasonic-print', compact('dailyPanasonic')); })->name('print.daily-panasonic');
 
     // Stencil
-    Route::livewire('mtc/stencils', StencilManagement::class)->name('mtc.stencils');
+    Route::get('/mtc/stencils', StencilManagement::class)->name('mtc.stencil.index');
+    Route::get('/mtc/stencils/create', StencilManagement::class)->name('mtc.stencil.create');
+    Route::get('/mtc/stencils/{id}/edit', StencilManagement::class)->name('mtc.stencil.edit');
+    Route::get('/mtc/stencils/{id}/update-status', StencilManagement::class)->name('mtc.stencil.update-status');
 
     // Daily Dashboard
     Route::livewire('/mtc/daily-dashboard', DailyDashboard::class)->name('mtc.daily-dashboard');

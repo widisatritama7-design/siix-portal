@@ -4,21 +4,28 @@ namespace App\Livewire\HR\Violation;
 
 use App\Models\HR\ViolationEmployee;
 use Livewire\Component;
+use Livewire\WithPagination;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\DB;
 
 class ViolationReport extends Component
 {
+    use WithPagination;
+    
     public $dateFrom = '';
     public $dateUntil = '';
     public $yearFilter = '';
     public $monthFilter = '';
     public $departmentFilter = '';
     public $categoryFilter = '';
+    public $repeatViolationFilter = false;
     
-    public $previewData = [];
     public $totalRecords = 0;
     public $hasFiltered = false;
+    public $violationCounts = [];
+    
+    protected $paginationTheme = 'tailwind';
     
     // For sub category modal
     public $showSubCategoryModal = false;
@@ -42,7 +49,16 @@ class ViolationReport extends Component
         'monthFilter' => 'nullable|string',
         'departmentFilter' => 'nullable|string',
         'categoryFilter' => 'nullable|string',
+        'repeatViolationFilter' => 'nullable|boolean',
     ];
+    
+    // Reset pagination when filters change
+    public function updated($property)
+    {
+        if (in_array($property, ['dateFrom', 'dateUntil', 'yearFilter', 'monthFilter', 'departmentFilter', 'categoryFilter', 'repeatViolationFilter'])) {
+            $this->resetPage();
+        }
+    }
     
     public function getDepartmentsProperty()
     {
@@ -110,16 +126,78 @@ class ViolationReport extends Component
     public function applyFilter()
     {
         $this->validate();
+        $this->resetPage(); // Reset to first page when applying filter
         $this->hasFiltered = true;
         $this->loadPreview();
-        $this->dispatch('notify', message: 'Data found: ' . $this->totalRecords . ' records', type: 'success');
+        
+        $message = 'Data found: ' . $this->totalRecords . ' records';
+        
+        if ($this->repeatViolationFilter) {
+            $repeatCount = $this->getRepeatViolatorCount();
+            $message .= ' | Repeat violators (6+ times): ' . $repeatCount . ' employees';
+        }
+        
+        $this->dispatch('notify', message: $message, type: 'success');
+    }
+    
+    protected function getRepeatViolatorCount()
+    {
+        $subQuery = $this->getFilteredQuery()
+            ->select('nik', DB::raw('COUNT(*) as total'))
+            ->groupBy('nik')
+            ->having('total', '>=', 6);
+        
+        return $subQuery->count();
     }
     
     public function loadPreview()
     {
         $query = $this->getFilteredQuery();
+        
+        // Apply repeat violation filter if enabled
+        if ($this->repeatViolationFilter) {
+            // Get violation counts and sort by highest
+            $repeatNikWithCount = $this->getFilteredQuery()
+                ->select('nik', DB::raw('COUNT(*) as violation_count'))
+                ->groupBy('nik')
+                ->having('violation_count', '>=', 6)
+                ->orderBy('violation_count', 'desc')
+                ->get();
+            
+            $repeatNik = $repeatNikWithCount->pluck('nik');
+            
+            // Store for view
+            $this->violationCounts = [];
+            foreach ($repeatNikWithCount as $item) {
+                $this->violationCounts[$item->nik] = $item->violation_count;
+            }
+            
+            if ($repeatNik->isNotEmpty()) {
+                $query->whereIn('nik', $repeatNik);
+                
+                // Custom ordering to sort by violation count
+                $orderRaw = 'CASE ';
+                foreach ($repeatNikWithCount as $index => $item) {
+                    $orderRaw .= "WHEN nik = '{$item->nik}' THEN {$index} ";
+                }
+                $orderRaw .= 'END';
+                $query->orderByRaw($orderRaw);
+            }
+        }
+        
+        // Get total count for badge
         $this->totalRecords = $query->count();
-        $this->previewData = $query->limit(20)->get();
+        
+        // Return paginated results (10 per page)
+        return $query->paginate(10);
+    }
+    
+    public function getPreviewDataProperty()
+    {
+        if (!$this->hasFiltered) {
+            return collect();
+        }
+        return $this->loadPreview();
     }
     
     protected function getFilteredQuery()
@@ -143,9 +221,7 @@ class ViolationReport extends Component
             })
             ->when($this->categoryFilter, function ($query) {
                 $query->where('category', $this->categoryFilter);
-            })
-            ->orderBy('date', 'desc')
-            ->orderBy('created_at', 'desc');
+            });
     }
     
     protected function parseSubCategories($subCategory)
@@ -175,7 +251,20 @@ class ViolationReport extends Component
             return;
         }
         
-        $records = $this->getFilteredQuery()->get();
+        $query = $this->getFilteredQuery();
+        
+        // Apply repeat violation filter for export if enabled
+        if ($this->repeatViolationFilter) {
+            $repeatNik = $this->getFilteredQuery()
+                ->select('nik', DB::raw('COUNT(*) as total'))
+                ->groupBy('nik')
+                ->having('total', '>=', 6)
+                ->pluck('nik');
+            
+            $query->whereIn('nik', $repeatNik);
+        }
+        
+        $records = $query->get();
         
         if ($records->isEmpty()) {
             $this->dispatch('notify', message: 'No data available to export.', type: 'warning');
@@ -282,9 +371,9 @@ class ViolationReport extends Component
     
     public function resetFilters()
     {
-        $this->reset(['dateFrom', 'dateUntil', 'yearFilter', 'monthFilter', 'departmentFilter', 'categoryFilter']);
+        $this->reset(['dateFrom', 'dateUntil', 'yearFilter', 'monthFilter', 'departmentFilter', 'categoryFilter', 'repeatViolationFilter', 'violationCounts']);
+        $this->resetPage();
         $this->hasFiltered = false;
-        $this->previewData = [];
         $this->totalRecords = 0;
         $this->dispatch('notify', message: 'Filters reset', type: 'info');
     }
@@ -296,6 +385,7 @@ class ViolationReport extends Component
             'years' => $this->years,
             'months' => $this->months,
             'categories' => $this->categories,
+            'previewData' => $this->previewData,
         ])->layout('layouts.app');
     }
 }

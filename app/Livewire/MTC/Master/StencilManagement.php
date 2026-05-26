@@ -4,265 +4,313 @@ namespace App\Livewire\MTC\Master;
 
 use App\Models\HR\Employee;
 use App\Models\MTC\Master\MasterStencil;
-use App\Models\User;
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Livewire\Attributes\Url;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 use Spatie\Activitylog\Models\Activity;
 
 class StencilManagement extends Component
 {
-    use WithPagination;
+    use WithPagination, WithFileUploads;
 
-    protected $paginationTheme = 'tailwind';
-
-    // Properties untuk form update status
+    // Form properties
+    public $isEditMode = false;
     public $stencil_id;
     public $register_no;
     public $customer;
-    public $rack_number;
+    public $category;
+    public $tooling_type;
+    public $location;
     public $status;
     public $line_name;
     public $count_stencil;
     public $nik;
-    public $input_count_stencil;
+    public $input_count_stencil; // <-- TAMBAHKAN PROPERTY INI
+    public $received_date;
+    public $registration_date;
+    public $sek_cust_id;
+    public $fabricator;
+    public $model;
+    public $description;
+    public $application;
+    public $pin_qty;
+    public $jig_qty;
+    public $design_by;
+    public $qualified_date;
+    public $results;
+    public $amount_solder;
+    public $rack;
+    public $rack_number;
+    public $bit_size;
+    public $remarks;
+    public $photo = [];
+    public $existing_photos = [];
     
-    // Employee info
-    public $employee_name = '';
-    public $employee_nik = '';
-    
-    // Properties untuk search dan filter
+    // Filter properties
     public $search = '';
     public $selectedStatus = '';
     public $selectedCustomer = '';
     
-    // Properties untuk modal
-    public $showUpdateModal = false;
+    // Activity modal
     public $showActivityModal = false;
     public $selectedStencilForActivity = null;
     public $activityPage = 1;
     public $perPageActivities = 10;
     
-    // Loading state
+    #[Url(as: 'tab', history: true)]
+    public $activeTab = 'in_use_with_line';
+    
+    public $tabCounts = [];
     public $isSaving = false;
 
-    protected $cachedEmployees = null;
-    protected $cachedCustomers = null;
-
-    public $activeTab = 'in_use_with_line';
-    public $tabCounts = [];
+    public $stencilToDelete = null;
 
     protected $rules = [
-        'status' => 'required|in:In Use,Prepared,Cleaning,Stand By,Disposed',
-        'nik' => 'required',
-        'line_name' => 'required_if:status,In Use,Prepared',
-        'input_count_stencil' => 'required_if:status,Cleaning|nullable|numeric|min:1',
+        'register_no' => 'required|string|max:255',
+        'customer' => 'required|string|max:255',
+        'category' => 'required',
+        'tooling_type' => 'required',
+        'location' => 'required',
+        'status' => 'required',
+        'nik' => 'nullable|exists:tb_hr_employee,id',
+        'input_count_stencil' => 'nullable|numeric|min:0', // <-- TAMBAHKAN RULE
     ];
 
-    protected $messages = [
-        'status.required' => 'Status is required.',
-        'nik.required' => 'NIK is required.',
-        'line_name.required_if' => 'Line name is required for In Use or Prepared status.',
-        'input_count_stencil.required_if' => 'Count is required for Cleaning status.',
-        'input_count_stencil.numeric' => 'Count must be a number.',
-        'input_count_stencil.min' => 'Count must be at least 1.',
-    ];
-
-    // Listeners untuk refresh data
-    protected $listeners = [
-        'refreshStencilTable' => '$refresh'
-    ];
-
-    public function mount()
+    public function mount($id = null)
     {
-        $this->updateTabCounts();
+        if ($id && request()->routeIs('mtc.stencil.edit')) {
+            $this->loadStencilForEdit($id);
+        }
+        if ($id && request()->routeIs('mtc.stencil.update-status')) {
+            $this->loadStencilForUpdateStatus($id);
+        }
+        $this->loadInitialData();
+    }
+
+    public function loadStencilForEdit($id)
+    {
+        $stencil = MasterStencil::find($id);
+        if ($stencil) {
+            $this->isEditMode = true;
+            $this->stencil_id = $stencil->id;
+            $this->register_no = $stencil->register_no;
+            $this->customer = $stencil->customer;
+            $this->category = $stencil->category;
+            $this->tooling_type = $stencil->tooling_type;
+            $this->location = $stencil->location;
+            $this->status = $stencil->status;
+            $this->line_name = $stencil->line_name;
+            $this->count_stencil = $stencil->count_stencil;
+            $this->nik = $stencil->nik;
+            $this->received_date = $stencil->received_date;
+            $this->registration_date = $stencil->registration_date;
+            $this->sek_cust_id = $stencil->sek_cust_id;
+            $this->fabricator = $stencil->fabricator;
+            $this->model = $stencil->model;
+            $this->description = $stencil->description;
+            $this->application = $stencil->application;
+            $this->pin_qty = $stencil->pin_qty;
+            $this->jig_qty = $stencil->jig_qty;
+            $this->design_by = $stencil->design_by;
+            $this->qualified_date = $stencil->qualified_date;
+            $this->results = $stencil->results;
+            $this->amount_solder = $stencil->amount_solder;
+            $this->rack = $stencil->rack;
+            $this->rack_number = $stencil->rack_number;
+            $this->bit_size = $stencil->bit_size;
+            $this->remarks = $stencil->remarks;
+            $this->existing_photos = $stencil->photo ?? [];
+        }
+    }
+
+    public function loadStencilForUpdateStatus($id)
+    {
+        $stencil = MasterStencil::find($id);
+        if ($stencil) {
+            $this->stencil_id = $stencil->id;
+            $this->register_no = $stencil->register_no;
+            $this->status = $stencil->status;
+            $this->line_name = $stencil->line_name;
+            $this->nik = $stencil->nik;
+            $this->input_count_stencil = null; // <-- RESET
+        }
+    }
+
+    public function loadInitialData()
+    {
+        $this->tabCounts = $this->calculateTabCounts();
+    }
+
+    private function calculateTabCounts()
+    {
+        $counts = MasterStencil::select([
+            DB::raw("COUNT(*) as total"),
+            DB::raw("SUM(CASE WHEN status = 'In Use' THEN 1 ELSE 0 END) as in_use"),
+            DB::raw("SUM(CASE WHEN status = 'In Use' AND line_name IS NOT NULL AND line_name != '' AND line_name != '-' THEN 1 ELSE 0 END) as in_use_with_line"),
+            DB::raw("SUM(CASE WHEN status = 'Prepared' AND line_name IS NOT NULL AND line_name != '' AND line_name != '-' THEN 1 ELSE 0 END) as prepared"),
+            DB::raw("SUM(CASE WHEN status = 'Cleaning' THEN 1 ELSE 0 END) as cleaning"),
+            DB::raw("SUM(CASE WHEN status = 'Stand By' THEN 1 ELSE 0 END) as stand_by"),
+            DB::raw("SUM(CASE WHEN status = 'Disposed' THEN 1 ELSE 0 END) as disposed"),
+        ])->first();
+        
+        return [
+            'all' => $counts->total,
+            'in_use' => $counts->in_use,
+            'in_use_with_line' => $counts->in_use_with_line,
+            'prepared' => $counts->prepared,
+            'cleaning' => $counts->cleaning,
+            'stand_by' => $counts->stand_by,
+            'disposed' => $counts->disposed,
+        ];
     }
 
     public function setTab($tab)
     {
         $this->activeTab = $tab;
         $this->resetPage();
-        $this->updateTabCounts();
     }
 
     public function updateTabCounts()
     {
-        // UBAH SELURUH ISI METHOD INI
-        $this->tabCounts = cache()->remember('stencil_tab_counts', 300, function() {
-            $baseQuery = MasterStencil::query();
-            
-            return [
-                'all' => (clone $baseQuery)->count(),
-                'in_use' => (clone $baseQuery)->where('status', 'In Use')->count(),
-                'in_use_with_line' => (clone $baseQuery)
-                    ->where('status', 'In Use')
-                    ->whereNotNull('line_name')
-                    ->where('line_name', '!=', '')
-                    ->count(),
-                'prepared' => (clone $baseQuery)->where('status', 'Prepared')->count(),
-                'cleaning' => (clone $baseQuery)->where('status', 'Cleaning')->count(),
-                'stand_by' => (clone $baseQuery)->where('status', 'Stand By')->count(),
-                'disposed' => (clone $baseQuery)->where('status', 'Disposed')->count(),
-            ];
-        });
+        $this->tabCounts = $this->calculateTabCounts();
     }
 
-    public function getEmployeesProperty()
+    public function saveStencil()
     {
-        // UBAH SELURUH ISI METHOD INI
-        if ($this->cachedEmployees === null) {
-            $this->cachedEmployees = Employee::query()
-                ->select('id', 'nik', 'name')
-                ->orderBy('nik')
-                ->orderBy('name')
-                ->get()
-                ->mapWithKeys(fn ($employee) => [
-                    $employee->id => $employee->nik . ' - ' . $employee->name
-                ]);
-        }
-        return $this->cachedEmployees;
-    }
-
-    public function getLineOptionsProperty()
-    {
-        return collect(range(1, 17))
-            ->mapWithKeys(fn ($n) => ["SMT $n" => "SMT $n"]);
-    }
-
-    public function getStatusColorClass($status)
-    {
-        $colors = [
-            'In Use'   => 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-            'Prepared' => 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
-            'Cleaning' => 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
-            'Stand By' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
-            'Disposed' => 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400',
-        ];
-        return $colors[$status] ?? 'bg-gray-100 text-gray-800';
-    }
-
-    public function updatingSearch()
-    {
-        $this->resetPage();
-    }
-
-    public function updatingSelectedStatus()
-    {
-        $this->resetPage();
-    }
-
-    public function updatingSelectedCustomer()
-    {
-        $this->resetPage();
-    }
-
-    public function resetFilters()
-    {
-        $this->search = '';
-        $this->selectedStatus = '';
-        $this->selectedCustomer = '';
-        $this->resetPage();
-        $this->dispatch('notify', message: 'Filters reset successfully!', type: 'success');
-    }
-
-    public function updatedNik($value)
-    {
-        if ($value) {
-            $employee = Employee::find($value);
-            if ($employee) {
-                $this->employee_name = $employee->name;
-                $this->employee_nik = $employee->nik;
-            }
-        } else {
-            $this->employee_name = '';
-            $this->employee_nik = '';
-        }
-    }
-
-    public function updateStatus($id)
-    {
-        if (!auth()->user()->can('edit stencil')) {
-            $this->dispatch('notify', message: 'You do not have permission to update status!', type: 'error');
-            return;
-        }
-
+        $this->validate();
+        
         try {
-            $stencil = MasterStencil::findOrFail($id);
-            $this->stencil_id = $stencil->id;
-            $this->register_no = $stencil->register_no;
-            $this->customer = $stencil->customer;
-            $this->rack_number = $stencil->rack_number;
-            $this->status = $stencil->status;
-            $this->line_name = $stencil->line_name;
-            $this->count_stencil = $stencil->count_stencil;
-            $this->nik = $stencil->nik;
-            
-            if ($this->nik) {
-                $employee = Employee::find($this->nik);
-                if ($employee) {
-                    $this->employee_name = $employee->name;
-                    $this->employee_nik = $employee->nik;
-                }
+            $photoPaths = $this->existing_photos;
+            foreach ($this->photo as $p) {
+                $photoPaths[] = $p->store('stencil-photos', 'public');
             }
             
-            $this->input_count_stencil = null;
-            $this->resetValidation();
+            $data = [
+                'register_no' => $this->register_no,
+                'customer' => $this->customer,
+                'category' => $this->category,
+                'tooling_type' => $this->tooling_type,
+                'location' => $this->location,
+                'status' => $this->status,
+                'line_name' => $this->line_name,
+                'count_stencil' => $this->count_stencil,
+                'nik' => $this->nik,
+                'received_date' => $this->received_date,
+                'registration_date' => $this->registration_date,
+                'sek_cust_id' => $this->sek_cust_id,
+                'fabricator' => $this->fabricator,
+                'model' => $this->model,
+                'description' => $this->description,
+                'application' => $this->application,
+                'pin_qty' => $this->pin_qty,
+                'jig_qty' => $this->jig_qty,
+                'design_by' => $this->design_by,
+                'qualified_date' => $this->qualified_date,
+                'results' => $this->results,
+                'amount_solder' => $this->amount_solder,
+                'rack' => $this->rack,
+                'rack_number' => $this->rack_number,
+                'bit_size' => $this->bit_size,
+                'remarks' => $this->remarks,
+                'photo' => $photoPaths,
+            ];
             
-            $this->showUpdateModal = true;
+            if ($this->isEditMode) {
+                MasterStencil::where('id', $this->stencil_id)->update($data);
+                session()->flash('success', 'Stencil updated successfully!');
+            } else {
+                MasterStencil::create($data);
+                session()->flash('success', 'Stencil created successfully!');
+            }
+            
+            return redirect()->route('mtc.stencil.index');
+            
         } catch (\Exception $e) {
-            Log::error('Error opening update modal: ' . $e->getMessage());
-            $this->dispatch('notify', message: 'Stencil not found!', type: 'error');
+            session()->flash('error', 'Error: ' . $e->getMessage());
+            return redirect()->back();
         }
     }
 
     public function saveStatusUpdate()
     {
-        $this->isSaving = true;
+        $rules = [
+            'status' => 'required|in:In Use,Prepared,Cleaning,Stand By,Disposed',
+            'nik' => 'required|exists:tb_hr_employee,id',
+        ];
         
-        if (!auth()->user()->can('edit stencil')) {
-            $this->dispatch('notify', message: 'You do not have permission to update status!', type: 'error');
-            $this->isSaving = false;
-            return;
+        if (in_array($this->status, ['In Use', 'Prepared'])) {
+            $rules['line_name'] = 'required|string';
         }
-    
-        $this->validate();
-    
+        
+        if ($this->status === 'Cleaning') {
+            $rules['input_count_stencil'] = 'required|numeric|min:1';
+        }
+        
+        $this->validate($rules);
+        
         try {
             $stencil = MasterStencil::findOrFail($this->stencil_id);
             $oldStatus = $stencil->status;
             
             $updateData = [
-                'nik' => $this->nik,
                 'status' => $this->status,
-                'line_name' => in_array($this->status, ['In Use', 'Prepared']) ? $this->line_name : null,
+                'nik' => $this->nik,
             ];
-    
-            if ($this->status === 'Cleaning' && isset($this->input_count_stencil)) {
+            
+            if (in_array($this->status, ['In Use', 'Prepared'])) {
+                $updateData['line_name'] = $this->line_name;
+            } else {
+                $updateData['line_name'] = null;
+            }
+            
+            if ($this->status === 'Cleaning' && !empty($this->input_count_stencil)) {
                 $updateData['count_stencil'] = $this->input_count_stencil;
             }
-    
+            
             if ($oldStatus === 'Cleaning' && $this->status !== 'Cleaning') {
                 $updateData['count_stencil'] = null;
             }
-    
-            $stencil->update($updateData);
-    
-            $this->showUpdateModal = false;
-            $this->resetForm();
             
-            $message = "Status changed from '{$oldStatus}' to '{$this->status}' successfully!";
-            $this->dispatch('notify', message: $message, type: 'success');
-            $this->dispatch('refreshStencilTable');
-            cache()->forget('stencil_tab_counts');
-            $this->updateTabCounts();
+            // Update dan pastikan ada perubahan
+            $stencil->update($updateData);
+            
+            // Force log jika perlu
+            activity()
+                ->performedOn($stencil)
+                ->causedBy(auth()->user())
+                ->withProperties([
+                    'old' => ['status' => $oldStatus],
+                    'attributes' => ['status' => $this->status]
+                ])
+                ->log("Status changed from '{$oldStatus}' to '{$this->status}'");
+            
+            session()->flash('success', "Status changed from '{$oldStatus}' to '{$this->status}' successfully!");
+            
+            return redirect()->route('mtc.stencil.index');
             
         } catch (\Exception $e) {
-            Log::error('Error updating stencil status: ' . $e->getMessage());
-            $this->dispatch('notify', message: 'Failed to update status: ' . $e->getMessage(), type: 'error');
-        } finally {
-            $this->isSaving = false;
+            session()->flash('error', 'Error: ' . $e->getMessage());
+            return redirect()->back();
         }
+    }
+
+    public function deleteStencil()
+    {
+        if ($this->stencilToDelete) {
+            $this->stencilToDelete->delete();
+            session()->flash('success', 'Stencil deleted successfully!');
+            $this->refreshData();
+            $this->stencilToDelete = null;
+        }
+    }
+
+    public function refreshData()
+    {
+        $this->tabCounts = $this->calculateTabCounts();
+        $this->resetPage();
     }
 
     public function viewActivity($id)
@@ -272,6 +320,12 @@ class StencilManagement extends Component
         $this->showActivityModal = true;
     }
 
+    // PERBAIKAN: Method setActivityPage (HARUS ADA untuk pagination)
+    public function setActivityPage($page)
+    {
+        $this->activityPage = max(1, $page);
+    }
+
     public function closeActivityModal()
     {
         $this->showActivityModal = false;
@@ -279,35 +333,75 @@ class StencilManagement extends Component
         $this->activityPage = 1;
     }
 
-    public function setActivityPage($page)
+    public function removePhoto($index)
     {
-        $this->activityPage = $page;
+        if (isset($this->existing_photos[$index])) {
+            Storage::disk('public')->delete($this->existing_photos[$index]);
+            unset($this->existing_photos[$index]);
+            $this->existing_photos = array_values($this->existing_photos);
+        }
     }
 
-    /**
-     * Get employee name by ID
-     */
-    public function getEmployeeName($id)
+    public function resetFilters()
     {
-        if (empty($id)) {
-            return '-';
-        }
-        
-        $employee = Employee::where('id', $id)->first();
-        return $employee ? $employee->name . ' (' . $employee->nik . ')' : $id;
+        $this->search = '';
+        $this->selectedStatus = '';
+        $this->selectedCustomer = '';
+        $this->resetPage();
     }
 
-    /**
-     * Get user name by ID
-     */
-    public function getUserName($id)
+    public function getStatusColorClass($status)
     {
-        if (empty($id)) {
-            return '-';
+        $colors = [
+            'In Use' => 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+            'Prepared' => 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+            'Cleaning' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
+            'Stand By' => 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
+            'Disposed' => 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400',
+            'Not in Use' => 'bg-gray-100 text-gray-800',
+            'Damaged' => 'bg-red-100 text-red-800',
+            'Under Repair' => 'bg-orange-100 text-orange-800',
+        ];
+        return $colors[$status] ?? 'bg-gray-100 text-gray-800';
+    }
+
+    public function getEmployeesProperty()
+    {
+        return Employee::whereIn('status', [1, 2, 3])
+            ->orWhereNull('status')
+            ->get()
+            ->mapWithKeys(function($employee) {
+                return [$employee->id => $employee->nik . ' - ' . $employee->name];
+            })
+            ->toArray();
+    }
+
+    public function getLineOptionsProperty()
+    {
+        $options = [];
+        for ($i = 1; $i <= 17; $i++) {
+            $options["SMT $i"] = "SMT $i";
         }
-        
-        $user = User::find($id);
-        return $user ? $user->name : $id;
+        return $options;
+    }
+
+    public function getCustomersProperty()
+    {
+        return MasterStencil::whereNotNull('customer')->distinct()->pluck('customer')->toArray();
+    }
+
+    public function getCategoriesProperty()
+    {
+        return ['STENCIL' => 'STENCIL', 'JIG' => 'JIG', 'MACHINE' => 'MACHINE'];
+    }
+
+    public function getToolingTypesProperty()
+    {
+        $types = MasterStencil::whereNotNull('tooling_type')->distinct()->pluck('tooling_type')->toArray();
+        if (empty($types)) {
+            return ['METAL MASK' => 'METAL MASK', 'JIG ASSY' => 'JIG ASSY'];
+        }
+        return array_combine($types, $types);
     }
 
     public function getActivitiesProperty()
@@ -316,32 +410,26 @@ class StencilManagement extends Component
             return collect();
         }
         
+        // Pastikan menggunakan nama class yang benar
         $activities = Activity::where(function($query) {
                 $query->where('subject_type', 'App\Models\MTC\Master\MasterStencil')
-                      ->orWhere('subject_type', 'App\Models\MasterStencil')
-                      ->orWhere('subject_type', 'like', '%MasterStencil%')
-                      ->orWhere('subject_type', 'App\Models\Jig');
+                    ->orWhere('subject_type', 'App\Models\MasterStencil')
+                    ->orWhere('subject_type', 'App\Models\MTC\Master\Jig');
             })
             ->where('subject_id', $this->selectedStencilForActivity->id)
             ->orderBy('created_at', 'desc')
             ->paginate($this->perPageActivities, ['*'], 'page', $this->activityPage);
+        
+        // Debug: cek apakah ada data
+        \Log::info('Activity count for stencil ID ' . $this->selectedStencilForActivity->id . ': ' . $activities->total());
             
         return $activities;
     }
 
-    public function closeUpdateModal()
+    public function confirmDelete($id)
     {
-        $this->showUpdateModal = false;
-        $this->resetForm();
-    }
-
-    public function resetForm()
-    {
-        $this->reset([
-            'stencil_id', 'register_no', 'customer', 'rack_number', 'status', 'line_name', 
-            'count_stencil', 'nik', 'input_count_stencil', 'employee_name', 'employee_nik'
-        ]);
-        $this->resetValidation();
+        $this->stencilToDelete = MasterStencil::find($id);
+        $this->dispatch('open-modal', 'delete-stencil-modal');
     }
 
     public function render()
@@ -350,11 +438,28 @@ class StencilManagement extends Component
             abort(403, 'You do not have permission to view stencil.');
         }
 
-        $employees = $this->employees;
-        $lineOptions = $this->lineOptions;
+        // Jika ini halaman edit, render view edit
+        if (request()->routeIs('mtc.stencil.edit') || request()->routeIs('mtc.stencil.create')) {
+            return view('livewire.mtc.master.stencil-management.edit', [
+                'employees' => $this->employees,
+                'lineOptions' => $this->lineOptions,
+                'customers' => $this->customers,
+                'categories' => $this->categories,
+                'toolingTypes' => $this->toolingTypes,
+            ]);
+        }
+        
+        // Jika ini halaman update status
+        if (request()->routeIs('mtc.stencil.update-status')) {
+            return view('livewire.mtc.master.stencil-management.update-status', [
+                'employees' => $this->employees,
+                'lineOptions' => $this->lineOptions,
+            ]);
+        }
 
-        $query = MasterStencil::with(['employee:id,name,nik', 'creator:id,name', 'updater:id,name'])
-            ->when($this->activeTab !== 'all', function ($query) {
+        // Halaman index (list)
+        $query = MasterStencil::with('employee')
+            ->when($this->activeTab !== 'all', function ($q) {
                 $statusMap = [
                     'in_use' => 'In Use',
                     'in_use_with_line' => 'In Use',
@@ -365,39 +470,36 @@ class StencilManagement extends Component
                 ];
                 
                 if (isset($statusMap[$this->activeTab])) {
-                    $query->where('status', $statusMap[$this->activeTab]);
+                    $q->where('status', $statusMap[$this->activeTab]);
                     
-                    if ($this->activeTab === 'in_use_with_line') {
-                        $query->whereNotNull('line_name')
-                            ->where('line_name', '!=', '');
+                    // Untuk tab 'in_use_with_line' dan 'prepared', hanya tampilkan yang line_name terisi
+                    if (in_array($this->activeTab, ['in_use_with_line', 'prepared'])) {
+                        $q->whereNotNull('line_name')
+                          ->where('line_name', '!=', '')
+                          ->where('line_name', '!=', '-');
                     }
                 }
             })
-            ->when($this->search, function ($query) {
-                $search = '%' . $this->search . '%';
-                $query->where(function($q) use ($search) {
-                    $q->where('register_no', 'like', $search)
-                      ->orWhere('customer', 'like', $search)
-                      ->orWhere('rack_number', 'like', $search);
+            ->when($this->search, function ($q) {
+                $q->where(function($query) {
+                    $query->where('register_no', 'like', '%' . $this->search . '%')
+                        ->orWhere('customer', 'like', '%' . $this->search . '%');
                 });
             })
-            ->when($this->selectedStatus, function ($query) {
-                $query->where('status', $this->selectedStatus);
+            ->when($this->selectedStatus, function ($q) {
+                $q->where('status', $this->selectedStatus);
             })
-            ->when($this->selectedCustomer, function ($query) {
-                $query->where('customer', 'like', '%' . $this->selectedCustomer . '%');
+            ->when($this->selectedCustomer, function ($q) {
+                $q->where('customer', 'like', '%' . $this->selectedCustomer . '%');
             });
-
-        // SORTING
-        if ($this->activeTab === 'in_use_with_line' || $this->activeTab === 'prepared') {
-            $query->orderByRaw("
-                CASE 
-                    WHEN line_name IS NULL OR line_name = '' OR line_name = '-' THEN 1 
-                    ELSE 0 
-                END ASC
-            ");
+        
+        // Sorting
+        if (in_array($this->activeTab, ['in_use_with_line', 'prepared'])) {
+            // Sort by line_name (SMT 1, SMT 2, ...)
             $query->orderByRaw("CAST(SUBSTRING_INDEX(line_name, ' ', -1) AS UNSIGNED) ASC");
-        } else {
+        } 
+        else {
+            // Sort by rack_number
             $query->orderByRaw("
                 CASE 
                     WHEN rack_number IS NULL OR rack_number = '' OR rack_number = '-' THEN 1 
@@ -406,24 +508,11 @@ class StencilManagement extends Component
             ");
             $query->orderByRaw("CAST(rack_number AS UNSIGNED) ASC");
         }
-
+        
         $stencils = $query->paginate(10);
-
-        // Cache customers
-        if ($this->cachedCustomers === null) {
-            $this->cachedCustomers = MasterStencil::select('customer')
-                ->distinct()
-                ->whereNotNull('customer')
-                ->where('customer', '!=', '')
-                ->pluck('customer')
-                ->toArray();
-        }
-
-        return view('livewire.mtc.master.stencil-management', [
+        
+        return view('livewire.mtc.master.stencil-management.index', [
             'stencils' => $stencils,
-            'employees' => $employees,
-            'lineOptions' => $lineOptions,
-            'customers' => $this->cachedCustomers,
             'activities' => $this->activities,
         ]);
     }

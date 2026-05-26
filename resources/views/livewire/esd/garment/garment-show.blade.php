@@ -275,6 +275,7 @@
                                     <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Date</th>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Next Date</th>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[120px]">Checked By</th>
+                                    <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Photos</th>
                                     <th class="px-4 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider w-24">Actions</th>
                                 </tr>
                             </thead>
@@ -340,6 +341,23 @@
                                     </td>
                                     <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
                                         {{ $detail->creator->name ?? 'N/A' }}
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        @php
+                                            $photos = is_string($detail->photo_verification) ? json_decode($detail->photo_verification, true) : $detail->photo_verification;
+                                        @endphp
+                                        @if(!empty($photos) && count($photos) > 0)
+                                            <div class="flex items-center gap-1">
+                                                <button type="button" 
+                                                        x-on:click="$dispatch('open-photo-modal', { photos: {{ json_encode($photos) }} })"
+                                                        class="text-blue-600 hover:text-blue-800 dark:text-blue-400">
+                                                    <flux:icon name="photo" class="w-5 h-5" />
+                                                </button>
+                                                <span class="text-xs text-gray-500">{{ count($photos) }} file(s)</span>
+                                            </div>
+                                        @else
+                                            <span class="text-gray-400 text-sm">-</span>
+                                        @endif
                                     </td>
                                     <td class="px-4 py-3 text-right">
                                         <div class="flex items-center justify-end gap-1 whitespace-nowrap">
@@ -421,10 +439,10 @@
 
             <!-- MODAL FORM MEASUREMENT DETAIL -->
             <div x-data="{ open: false }" 
-                 x-show="open" 
-                 @open-modal.window="if ($event.detail === 'detail-form-modal') open = true"
-                 @close-modal.window="if ($event.detail === 'detail-form-modal') open = false"
-                 x-cloak>
+                x-show="open" 
+                @open-modal.window="if ($event.detail === 'detail-form-modal') open = true"
+                @close-modal.window="if ($event.detail === 'detail-form-modal') open = false"
+                x-cloak>
 
                 <div class="fixed inset-0 bg-black/50 z-40" @click="open = false"></div>
 
@@ -450,15 +468,15 @@
                                         <div>
                                             <label class="block text-sm font-medium mb-1">D1 Measurement (Ohm)</label>
                                             <input type="number" step="0.01" wire:model="d1" wire:keyup="resetJudgements"
-                                                   class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700"
-                                                   placeholder="Enter value in Ohm">
+                                                class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700"
+                                                placeholder="Enter value in Ohm">
                                             @error('d1') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                         </div>
                                         <div>
                                             <label class="block text-sm font-medium mb-1">D1 Scientific</label>
                                             <input type="text" wire:model="d1_scientific" readonly 
-                                                   class="w-full px-3 py-2 border rounded-lg bg-gray-100 dark:bg-zinc-800 dark:border-zinc-700 font-mono"
-                                                   placeholder="-">
+                                                class="w-full px-3 py-2 border rounded-lg bg-gray-100 dark:bg-zinc-800 dark:border-zinc-700 font-mono"
+                                                placeholder="-">
                                         </div>
                                         <div>
                                             <label class="block text-sm font-medium mb-1">Judgement D1</label>
@@ -487,15 +505,15 @@
                                         <div>
                                             <label class="block text-sm font-medium mb-1">D2 Measurement (Ohm)</label>
                                             <input type="number" step="0.01" wire:model="d2" wire:keyup="resetJudgements"
-                                                   class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700"
-                                                   placeholder="Enter value in Ohm">
+                                                class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700"
+                                                placeholder="Enter value in Ohm">
                                             @error('d2') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                         </div>
                                         <div>
                                             <label class="block text-sm font-medium mb-1">D2 Scientific</label>
                                             <input type="text" wire:model="d2_scientific" readonly 
-                                                   class="w-full px-3 py-2 border rounded-lg bg-gray-100 dark:bg-zinc-800 dark:border-zinc-700 font-mono"
-                                                   placeholder="-">
+                                                class="w-full px-3 py-2 border rounded-lg bg-gray-100 dark:bg-zinc-800 dark:border-zinc-700 font-mono"
+                                                placeholder="-">
                                         </div>
                                         <div>
                                             <label class="block text-sm font-medium mb-1">Judgement D2</label>
@@ -524,15 +542,15 @@
                                         <div>
                                             <label class="block text-sm font-medium mb-1">D3 Measurement (Ohm)</label>
                                             <input type="number" step="0.01" wire:model="d3" wire:keyup="resetJudgements"
-                                                   class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700"
-                                                   placeholder="Enter value in Ohm">
+                                                class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700"
+                                                placeholder="Enter value in Ohm">
                                             @error('d3') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                         </div>
                                         <div>
                                             <label class="block text-sm font-medium mb-1">D3 Scientific</label>
                                             <input type="text" wire:model="d3_scientific" readonly 
-                                                   class="w-full px-3 py-2 border rounded-lg bg-gray-100 dark:bg-zinc-800 dark:border-zinc-700 font-mono"
-                                                   placeholder="-">
+                                                class="w-full px-3 py-2 border rounded-lg bg-gray-100 dark:bg-zinc-800 dark:border-zinc-700 font-mono"
+                                                placeholder="-">
                                         </div>
                                         <div>
                                             <label class="block text-sm font-medium mb-1">Judgement D3</label>
@@ -561,15 +579,15 @@
                                         <div>
                                             <label class="block text-sm font-medium mb-1">D4 Measurement (Ohm)</label>
                                             <input type="number" step="0.01" wire:model="d4" wire:keyup="resetJudgements"
-                                                   class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700"
-                                                   placeholder="Enter value in Ohm">
+                                                class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700"
+                                                placeholder="Enter value in Ohm">
                                             @error('d4') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                         </div>
                                         <div>
                                             <label class="block text-sm font-medium mb-1">D4 Scientific</label>
                                             <input type="text" wire:model="d4_scientific" readonly 
-                                                   class="w-full px-3 py-2 border rounded-lg bg-gray-100 dark:bg-zinc-800 dark:border-zinc-700 font-mono"
-                                                   placeholder="-">
+                                                class="w-full px-3 py-2 border rounded-lg bg-gray-100 dark:bg-zinc-800 dark:border-zinc-700 font-mono"
+                                                placeholder="-">
                                         </div>
                                         <div>
                                             <label class="block text-sm font-medium mb-1">Judgement D4</label>
@@ -593,6 +611,131 @@
                                     @error('remarks') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                 </div>
 
+                                <!-- Photo Upload Section -->
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium mb-2">Verification Photos</label>
+                                    
+                                    <!-- Existing Photos Display -->
+                                    @if(!empty($existingPhotos) && count($existingPhotos) > 0)
+                                        <div class="mb-4">
+                                            <label class="block text-xs font-medium text-gray-500 mb-2">Existing Photos:</label>
+                                            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                                                @foreach($existingPhotos as $index => $photo)
+                                                    <div class="relative group border rounded-lg p-2 bg-gray-50 dark:bg-zinc-800">
+                                                        <div class="relative">
+                                                            @php
+                                                                $extension = pathinfo($photo, PATHINFO_EXTENSION);
+                                                                $isImage = in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+                                                            @endphp
+                                                            
+                                                            @if($isImage)
+                                                                <a href="{{ Storage::url($photo) }}" target="_blank">
+                                                                    <img src="{{ Storage::url($photo) }}" 
+                                                                        alt="Verification Photo" 
+                                                                        class="w-full h-32 object-cover rounded cursor-pointer hover:opacity-90 transition-opacity">
+                                                                </a>
+                                                            @else
+                                                                <div class="w-full h-32 flex items-center justify-center bg-gray-100 dark:bg-zinc-700 rounded">
+                                                                    <flux:icon name="document-text" class="w-8 h-8 text-gray-400" />
+                                                                </div>
+                                                            @endif
+                                                            
+                                                            <button type="button" 
+                                                                    wire:click="removeExistingPhoto({{ $index }})"
+                                                                    class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                <flux:icon name="x-mark" class="w-4 h-4" />
+                                                            </button>
+                                                        </div>
+                                                        <div class="mt-2">
+                                                            <p class="text-xs text-gray-600 dark:text-gray-400 truncate" title="{{ basename($photo) }}">
+                                                                {{ Str::limit(basename($photo), 20) }}
+                                                            </p>
+                                                            @if($isImage)
+                                                                <a href="{{ Storage::url($photo) }}" target="_blank" class="text-xs text-blue-600 hover:underline">View Full Size</a>
+                                                            @else
+                                                                <a href="{{ Storage::url($photo) }}" target="_blank" class="text-xs text-blue-600 hover:underline">Download</a>
+                                                            @endif
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endif
+                                    
+                                    <!-- New Photos Upload Area -->
+                                    <div class="border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg p-4 hover:border-blue-500 transition-colors">
+                                        <div class="flex flex-col items-center justify-center gap-2">
+                                            <flux:icon name="cloud-arrow-up" class="w-10 h-10 text-gray-400" />
+                                            <p class="text-sm text-gray-600 dark:text-gray-400 text-center">
+                                                Click to upload or drag and drop
+                                            </p>
+                                            <p class="text-xs text-gray-500 text-center">
+                                                Support: JPG, JPEG, PNG (Max 5MB per file)
+                                            </p>
+                                            
+                                            <div class="flex gap-2 mt-2">
+                                                <label class="cursor-pointer">
+                                                    <div class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm">
+                                                        Choose Files
+                                                    </div>
+                                                    <input type="file" 
+                                                        wire:model="photos" 
+                                                        multiple 
+                                                        accept="image/jpeg,image/jpg,image/png"
+                                                        class="hidden">
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- New Photos Preview -->
+                                    @if(!empty($photos) && count($photos) > 0)
+                                        <div class="mt-4" wire:key="photos-preview-{{ count($photos) }}-{{ md5(json_encode($photos)) }}">
+                                            <label class="block text-xs font-medium text-gray-500 mb-2">New Photos ({{ count($photos) }}):</label>
+                                            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                                                @foreach($photos as $index => $photo)
+                                                    <div class="relative group border rounded-lg p-2 bg-gray-50 dark:bg-zinc-800">
+                                                        <div class="relative">
+                                                            @if(in_array(strtolower($photo->getClientOriginalExtension()), ['jpg', 'jpeg', 'png', 'gif', 'webp']))
+                                                                <img src="{{ $photo->temporaryUrl() }}" 
+                                                                    alt="Preview {{ $index + 1 }}" 
+                                                                    class="w-full h-32 object-cover rounded">
+                                                            @else
+                                                                <div class="w-full h-32 flex items-center justify-center bg-gray-100 dark:bg-zinc-700 rounded">
+                                                                    <flux:icon name="document-text" class="w-8 h-8 text-gray-400" />
+                                                                </div>
+                                                            @endif
+                                                            
+                                                            <button type="button" 
+                                                                    wire:click="removePhoto({{ $index }})"
+                                                                    class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                                <flux:icon name="x-mark" class="w-4 h-4" />
+                                                            </button>
+                                                        </div>
+                                                        <div class="mt-2">
+                                                            <p class="text-xs text-gray-600 dark:text-gray-400 truncate" title="{{ $photo->getClientOriginalName() }}">
+                                                                {{ Str::limit($photo->getClientOriginalName(), 20) }}
+                                                            </p>
+                                                            <p class="text-xs text-gray-500">
+                                                                {{ number_format($photo->getSize() / 1024, 2) }} KB
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            </div>
+                                        </div>
+                                    @endif
+                                    
+                                    @error('photos.*') 
+                                        <span class="text-red-500 text-sm mt-2 block">{{ $message }}</span> 
+                                    @enderror
+                                    
+                                    <p class="text-xs text-gray-500 mt-2">
+                                        <flux:icon name="information-circle" class="w-3 h-3 inline" /> 
+                                        You can upload multiple files. Maximum 5MB per file.
+                                    </p>
+                                </div>
+
                                 <!-- Next Date -->
                                 <div class="mb-4">
                                     <label class="block text-sm font-medium mb-1">Next Date</label>
@@ -614,6 +757,50 @@
                                 </div>
                             </form>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODAL IMAGE VIEWER (untuk preview gambar besar) -->
+            <div x-data="{ openImageViewer: false, imageUrl: '' }" 
+                x-on:open-image-viewer.window="openImageViewer = true; imageUrl = $event.detail.image"
+                x-cloak>
+                
+                <!-- Overlay -->
+                <div x-show="openImageViewer" 
+                    class="fixed inset-0 bg-black/90 z-50" 
+                    @click="openImageViewer = false">
+                </div>
+                
+                <!-- Modal Content -->
+                <div x-show="openImageViewer" 
+                    class="fixed inset-0 z-50 flex items-center justify-center p-4"
+                    x-transition:enter="transition ease-out duration-300"
+                    x-transition:enter-start="opacity-0 scale-95"
+                    x-transition:enter-end="opacity-100 scale-100"
+                    x-transition:leave="transition ease-in duration-200"
+                    x-transition:leave-start="opacity-100 scale-100"
+                    x-transition:leave-end="opacity-0 scale-95">
+                    
+                    <div class="relative max-w-4xl max-h-[90vh]">
+                        <!-- Close button -->
+                        <button @click="openImageViewer = false" 
+                                class="absolute -top-12 right-0 text-white hover:text-gray-300 transition-colors">
+                            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                        
+                        <!-- Image -->
+                        <img :src="imageUrl" 
+                            alt="Full size image" 
+                            class="max-w-full max-h-[90vh] object-contain rounded-lg shadow-2xl">
+                        
+                        <!-- Tombol Close di bawah (opsional) -->
+                        <button @click="openImageViewer = false" 
+                                class="mt-4 px-4 py-2 bg-white/20 hover:bg-white/30 text-white rounded-lg transition-colors w-full">
+                            Close
+                        </button>
                     </div>
                 </div>
             </div>

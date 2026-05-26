@@ -16,6 +16,7 @@ class GarmentManagement extends Component
     public $departmentFilter = '';
     public $statusFilter = '';
     public $scheduleFilter = ''; // 'this_week', 'custom_range'
+    public $measurementFilter = ''; // 'all', 'has_records', 'no_records'
     public $dateFrom = '';
     public $dateTo = '';
     public $perPage = 10;
@@ -30,6 +31,12 @@ class GarmentManagement extends Component
         '' => 'All Schedules',
         'this_week' => 'Jadwal Minggu Ini',
         'custom_range' => 'Custom Date Range',
+    ];
+    
+    public $measurementOptions = [
+        '' => 'All Measurements',
+        'has_records' => 'Has Records (>0)',
+        'no_records' => 'No Records (0)',
     ];
     
     public $departments = [];
@@ -58,6 +65,11 @@ class GarmentManagement extends Component
     }
 
     public function updatedStatusFilter()
+    {
+        $this->resetPage();
+    }
+    
+    public function updatedMeasurementFilter()
     {
         $this->resetPage();
     }
@@ -138,12 +150,24 @@ class GarmentManagement extends Component
         
         return $query;
     }
+    
+    protected function applyMeasurementFilter($query)
+    {
+        if ($this->measurementFilter === 'has_records') {
+            $query->has('garmentDetails', '>', 0);
+        } elseif ($this->measurementFilter === 'no_records') {
+            $query->doesntHave('garmentDetails');
+        }
+        
+        return $query;
+    }
 
     public function resetFilters()
     {
         $this->search = '';
         $this->departmentFilter = '';
         $this->statusFilter = '';
+        $this->measurementFilter = '';
         $this->scheduleFilter = '';
         $this->dateFrom = '';
         $this->dateTo = '';
@@ -181,6 +205,9 @@ class GarmentManagement extends Component
             ->when($this->statusFilter, function ($query) {
                 $query->where('status', $this->statusFilter);
             })
+            ->when($this->measurementFilter, function ($query) {
+                $this->applyMeasurementFilter($query);
+            })
             ->when($this->search, function ($query) {
                 $query->where(function ($q) {
                     $q->where('nik', 'like', '%' . $this->search . '%')
@@ -192,6 +219,7 @@ class GarmentManagement extends Component
             ->when($this->scheduleFilter || ($this->dateFrom && $this->dateTo), function ($query) {
                 $this->applyScheduleFilter($query);
             })
+            ->withCount('garmentDetails') // Add count for sorting/display
             ->orderBy('department', 'asc')
             ->orderBy('nik', 'asc')
             ->paginate($this->perPage);
@@ -201,6 +229,7 @@ class GarmentManagement extends Component
             'departments' => $this->departments,
             'statusOptions' => $this->statusOptions,
             'scheduleOptions' => $this->scheduleOptions,
+            'measurementOptions' => $this->measurementOptions,
         ]);
     }
 }

@@ -4,13 +4,15 @@ namespace App\Livewire\ESD\Garment;
 
 use Livewire\Component;
 use Livewire\WithPagination;
+use Livewire\WithFileUploads;
 use App\Models\ESD\Garment\Garment;
 use App\Models\ESD\Garment\GarmentDetail;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 
 class GarmentShow extends Component
 {
-    use WithPagination;
+    use WithPagination, WithFileUploads;
 
     public $garment;
     
@@ -42,6 +44,11 @@ class GarmentShow extends Component
     public $modalTitle = 'Add New Measurement';
     public $detailToDelete = null;
     
+    // Photo properties
+    public $photos = [];
+    public $existingPhotos = [];
+    public $photosToDelete = [];
+    
     // Garment list for dropdown
     public $garmentsList;
 
@@ -55,6 +62,7 @@ class GarmentShow extends Component
             'd4' => 'nullable|numeric|min:0',
             'remarks' => 'nullable|string',
             'next_date' => 'nullable|date',
+            'photos.*' => 'nullable|image|max:5120|mimes:jpg,jpeg,png,pdf', // Max 5MB per file
         ];
     }
     
@@ -68,6 +76,9 @@ class GarmentShow extends Component
             'd3.numeric' => 'D3 measurement must be a number.',
             'd4.numeric' => 'D4 measurement must be a number.',
             'next_date.date' => 'Next date must be a valid date.',
+            'photos.*.image' => 'File must be an image.',
+            'photos.*.max' => 'File size cannot exceed 5MB.',
+            'photos.*.mimes' => 'File must be of type: jpg, jpeg, png, pdf.',
         ];
     }
 
@@ -80,6 +91,11 @@ class GarmentShow extends Component
         }
         
         $this->loadGarments();
+        
+        // Inisialisasi array untuk photos
+        $this->existingPhotos = [];
+        $this->photos = [];
+        $this->photosToDelete = [];
     }
 
     public function loadGarments()
@@ -163,14 +179,37 @@ class GarmentShow extends Component
         }
     }
 
+    // Remove temporary photo
+    public function removePhoto($index)
+    {
+        unset($this->photos[$index]);
+        $this->photos = array_values($this->photos);
+    }
+
+    // Remove existing photo
+    public function removeExistingPhoto($index)
+    {
+        if (isset($this->existingPhotos[$index])) {
+            $this->photosToDelete[] = $this->existingPhotos[$index];
+            unset($this->existingPhotos[$index]);
+            $this->existingPhotos = array_values($this->existingPhotos);
+        }
+    }
+
     public function resetForm()
     {
         $this->reset(['detail_id', 'nik', 'name', 
-                      'd1', 'd1_scientific', 'judgement_d1',
-                      'd2', 'd2_scientific', 'judgement_d2',
-                      'd3', 'd3_scientific', 'judgement_d3',
-                      'd4', 'd4_scientific', 'judgement_d4',
-                      'remarks', 'next_date']);
+                    'd1', 'd1_scientific', 'judgement_d1',
+                    'd2', 'd2_scientific', 'judgement_d2',
+                    'd3', 'd3_scientific', 'judgement_d3',
+                    'd4', 'd4_scientific', 'judgement_d4',
+                    'remarks', 'next_date', 'photos', 'existingPhotos', 'photosToDelete']);
+        
+        // Inisialisasi dengan array kosong
+        $this->existingPhotos = [];
+        $this->photos = [];
+        $this->photosToDelete = [];
+        
         $this->modalTitle = 'Add New Measurement';
         $this->resetValidation();
     }
@@ -194,22 +233,62 @@ class GarmentShow extends Component
                 return;
             }
         }
-    
+
         // Set nik from the current garment
         $this->nik = $this->garment->id;
         $this->name = $this->garment->name;
-    
-        $this->validate([
+
+        // Validasi - hanya jika ada file yang diupload
+        $rules = [
             'd1' => 'nullable|numeric|min:0',
             'd2' => 'nullable|numeric|min:0',
             'd3' => 'nullable|numeric|min:0',
             'd4' => 'nullable|numeric|min:0',
             'remarks' => 'nullable|string',
             'next_date' => 'nullable|date',
-        ]);
-    
+        ];
+        
+        // Tambahkan validasi photos hanya jika ada file yang diupload
+        if (!empty($this->photos)) {
+            $rules['photos.*'] = 'image|max:5120|mimes:jpg,jpeg,png';
+        }
+        
+        $this->validate($rules);
+
         $this->resetJudgements();
-    
+
+        // Handle photo uploads
+        $photoPaths = [];
+        
+        if ($this->detail_id) {
+            // UPDATE MODE: Keep existing photos that are not marked for deletion
+            if (!empty($this->existingPhotos)) {
+                $photoPaths = $this->existingPhotos;
+            }
+            
+            // Delete photos marked for removal
+            if (!empty($this->photosToDelete)) {
+                foreach ($this->photosToDelete as $oldPhoto) {
+                    if (Storage::disk('public')->exists($oldPhoto)) {
+                        Storage::disk('public')->delete($oldPhoto);
+                    }
+                }
+            }
+        }
+        
+        // Upload new photos (for both CREATE and UPDATE)
+        if (!empty($this->photos)) {
+            foreach ($this->photos as $photo) {
+                try {
+                    $path = $photo->store('garment-photos/' . $this->nik, 'public');
+                    $photoPaths[] = $path;
+                } catch (\Exception $e) {
+                    $this->dispatch('notify', message: 'Failed to upload photo: ' . $e->getMessage(), type: 'error');
+                    return;
+                }
+            }
+        }
+
         $data = [
             'nik' => $this->nik,
             'name' => $this->name,
@@ -227,25 +306,31 @@ class GarmentShow extends Component
             'judgement_d4' => $this->judgement_d4,
             'remarks' => $this->remarks,
             'next_date' => $this->next_date,
+            'photo_verification' => !empty($photoPaths) ? json_encode($photoPaths) : null,
         ];
-    
-        if ($this->detail_id) {
-            $detail = GarmentDetail::find($this->detail_id);
-            if (!$detail) {
-                $this->dispatch('notify', message: 'Measurement record not found!', type: 'error');
-                return;
+
+        try {
+            if ($this->detail_id) {
+                $detail = GarmentDetail::find($this->detail_id);
+                if (!$detail) {
+                    $this->dispatch('notify', message: 'Measurement record not found!', type: 'error');
+                    return;
+                }
+                
+                $detail->update($data);
+                $message = 'Measurement updated successfully!';
+            } else {
+                GarmentDetail::create($data);
+                $message = 'Measurement created successfully!';
             }
             
-            $detail->update($data);
-            $message = 'Measurement updated successfully!';
-        } else {
-            GarmentDetail::create($data);
-            $message = 'Measurement created successfully!';
+            $this->resetForm();
+            $this->dispatch('notify', message: $message);
+            $this->dispatch('close-modal', 'detail-form-modal');
+            
+        } catch (\Exception $e) {
+            $this->dispatch('notify', message: 'Failed to save: ' . $e->getMessage(), type: 'error');
         }
-    
-        $this->resetForm();
-        $this->dispatch('notify', message: $message);
-        $this->dispatch('close-modal', 'detail-form-modal');
     }
 
     public function edit($id)
@@ -254,14 +339,14 @@ class GarmentShow extends Component
             $this->dispatch('notify', message: 'You do not have permission!', type: 'error');
             return;
         }
-    
+
         $detail = GarmentDetail::with('garment')->find($id);
-    
+
         if (!$detail) {
             $this->dispatch('notify', message: 'Measurement record not found!', type: 'error');
             return;
         }
-    
+
         $this->detail_id = $detail->id;
         $this->nik = $detail->nik;
         $this->name = $detail->name;
@@ -279,7 +364,18 @@ class GarmentShow extends Component
         $this->judgement_d4 = $detail->judgement_d4;
         $this->remarks = $detail->remarks;
         $this->next_date = $detail->next_date ? Carbon::parse($detail->next_date)->format('Y-m-d') : null;
+        
+        // Load existing photos
+        $this->existingPhotos = $detail->photo_verification ? json_decode($detail->photo_verification, true) : [];
+        $this->photos = [];
+        $this->photosToDelete = [];
+        
         $this->modalTitle = 'Edit Measurement';
+    }
+
+    public function updatedPhotos()
+    {
+        $this->dispatch('refresh-photos');
     }
 
     public function confirmDelete($id)
@@ -313,6 +409,18 @@ class GarmentShow extends Component
             $this->dispatch('notify', message: 'Measurement record not found!', type: 'error');
             $this->detailToDelete = null;
             return;
+        }
+        
+        // Delete associated photos
+        if ($detail->photo_verification) {
+            $photos = json_decode($detail->photo_verification, true);
+            if (is_array($photos)) {
+                foreach ($photos as $photo) {
+                    if (Storage::disk('public')->exists($photo)) {
+                        Storage::disk('public')->delete($photo);
+                    }
+                }
+            }
         }
 
         $nik = $detail->garment->nik ?? 'Unknown';

@@ -1,5 +1,4 @@
 <section class="w-full">
-
     <flux:heading class="sr-only">
         {{ __('MTC - Daily Dashboard') }}
     </flux:heading>
@@ -51,16 +50,16 @@
         </x-slot>
 
         <div class="-mt-2" wire:poll.10s>
-            <!-- Stats Cards - Responsive Grid -->
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 mb-6">
+            <!-- Stats Cards - No Wrap Grid -->
+            <div class="grid grid-cols-5 gap-3 sm:gap-4 mb-6">
                 <!-- Checked Card -->
-                <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-3 sm:p-4 shadow-lg">
+                <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-3 sm:p-4 shadow-lg min-w-0">
                     <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-white/80 text-xs sm:text-sm">Checked</p>
+                        <div class="min-w-0 flex-1">
+                            <p class="text-white/80 text-xs sm:text-sm truncate">Checked</p>
                             <p class="text-white text-2xl sm:text-3xl font-bold">{{ $stats['checked'] }}</p>
                         </div>
-                        <div class="bg-white/20 p-2 sm:p-3 rounded-lg">
+                        <div class="bg-white/20 p-2 sm:p-3 rounded-lg flex-shrink-0 ml-2">
                             <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
@@ -69,13 +68,13 @@
                 </div>
 
                 <!-- On Progress Card -->
-                <div class="bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-xl p-3 sm:p-4 shadow-lg">
+                <div class="bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-xl p-3 sm:p-4 shadow-lg min-w-0">
                     <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-white/80 text-xs sm:text-sm">On Progress</p>
+                        <div class="min-w-0 flex-1">
+                            <p class="text-white/80 text-xs sm:text-sm truncate">On Progress</p>
                             <p class="text-white text-2xl sm:text-3xl font-bold">{{ $stats['on_progress'] }}</p>
                         </div>
-                        <div class="bg-white/20 p-2 sm:p-3 rounded-lg">
+                        <div class="bg-white/20 p-2 sm:p-3 rounded-lg flex-shrink-0 ml-2">
                             <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white animate-spin-slow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
                             </svg>
@@ -84,13 +83,13 @@
                 </div>
 
                 <!-- Delay Card -->
-                <div class="bg-gradient-to-r from-red-500 to-red-600 rounded-xl p-3 sm:p-4 shadow-lg">
+                <div class="bg-gradient-to-r from-red-500 to-red-600 rounded-xl p-3 sm:p-4 shadow-lg min-w-0">
                     <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-white/80 text-xs sm:text-sm">Delay</p>
+                        <div class="min-w-0 flex-1">
+                            <p class="text-white/80 text-xs sm:text-sm truncate">Delay</p>
                             <p class="text-white text-2xl sm:text-3xl font-bold">{{ $stats['delay'] }}</p>
                         </div>
-                        <div class="bg-white/20 p-2 sm:p-3 rounded-lg">
+                        <div class="bg-white/20 p-2 sm:p-3 rounded-lg flex-shrink-0 ml-2">
                             <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
@@ -99,13 +98,13 @@
                 </div>
 
                 <!-- Approved Card -->
-                <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-3 sm:p-4 shadow-lg">
+                <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-3 sm:p-4 shadow-lg min-w-0">
                     <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-white/80 text-xs sm:text-sm">Approved</p>
+                        <div class="min-w-0 flex-1">
+                            <p class="text-white/80 text-xs sm:text-sm truncate">Approved</p>
                             <p class="text-white text-2xl sm:text-3xl font-bold">{{ $stats['approved'] }}</p>
                         </div>
-                        <div class="bg-white/20 p-2 sm:p-3 rounded-lg">
+                        <div class="bg-white/20 p-2 sm:p-3 rounded-lg flex-shrink-0 ml-2">
                             <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
@@ -114,13 +113,13 @@
                 </div>
 
                 <!-- Pending Card -->
-                <div class="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl p-3 sm:p-4 shadow-lg col-span-2 sm:col-span-1">
+                <div class="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl p-3 sm:p-4 shadow-lg min-w-0">
                     <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-white/80 text-xs sm:text-sm">Pending</p>
+                        <div class="min-w-0 flex-1">
+                            <p class="text-white/80 text-xs sm:text-sm truncate">Pending</p>
                             <p class="text-white text-2xl sm:text-3xl font-bold">{{ $stats['pending'] }}</p>
                         </div>
-                        <div class="bg-white/20 p-2 sm:p-3 rounded-lg">
+                        <div class="bg-white/20 p-2 sm:p-3 rounded-lg flex-shrink-0 ml-2">
                             <svg class="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
@@ -129,116 +128,104 @@
                 </div>
             </div>
 
-            <!-- Line Cards - Dengan Horizontal Scroll untuk Mobile -->
+            <!-- Line Cards - Prevent Wrap -->
             @if(count($masterLines) > 0)
                 @php
                     $chunks = $masterLines->chunk(ceil($masterLines->count() / 2));
                 @endphp
 
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="flex flex-row gap-6 overflow-x-auto">
                     @foreach($chunks as $chunkIndex => $chunk)
-                    <div class="space-y-3">
-                        <!-- Header Kolom -->
-                        <div class="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-3 border border-zinc-200 dark:border-zinc-700">
-                            <div class="flex items-center justify-between">
-                                <span class="font-semibold text-zinc-700 dark:text-zinc-300 text-sm sm:text-base">
-                                    @if($chunkIndex == 0)
-                                        SMT 1 - 9
-                                    @else
-                                        SMT 10 - 17
-                                    @endif
-                                </span>
-                                <span class="text-xs text-zinc-500 bg-white dark:bg-zinc-900 px-2 py-1 rounded-full">
-                                    {{ $chunk->count() }} Lines
-                                </span>
+                    <div class="flex-1 min-w-0">
+                        <div class="space-y-3">
+                            <!-- Header Kolom -->
+                            <div class="bg-zinc-100 dark:bg-zinc-800 rounded-lg p-3 border border-zinc-200 dark:border-zinc-700">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-semibold text-zinc-700 dark:text-zinc-300 text-sm sm:text-base">
+                                        @if($chunkIndex == 0)
+                                            SMT 1 - 9
+                                        @else
+                                            SMT 10 - 17
+                                        @endif
+                                    </span>
+                                    <span class="text-xs text-zinc-500 bg-white dark:bg-zinc-900 px-2 py-1 rounded-full flex-shrink-0">
+                                        {{ $chunk->count() }} Lines
+                                    </span>
+                                </div>
                             </div>
-                        </div>
 
-                        <!-- Table dengan Horizontal Scroll -->
-                        <div class="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-700">
-                            <div class="min-w-[800px]">
-                                <!-- Header -->
-                                <div class="grid grid-cols-12 gap-2 px-3 py-3 bg-zinc-50 dark:bg-zinc-800/50 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider border-b border-zinc-200 dark:border-zinc-700">
-                                    <div class="col-span-2">Line</div>
-                                    <div class="col-span-2 text-center">Status</div>
-                                    <div class="col-span-2 text-center">Daily Check</div>
-                                    <div class="col-span-2 text-center">Approval</div>
-                                    <div class="col-span-2 text-center">Check By</div>
-                                    <div class="col-span-2 text-center">Approve By</div>
-                                </div>
+                            <!-- Table Container -->
+                            <div class="overflow-x-auto hover-scrollbar rounded-xl border border-zinc-200 dark:border-zinc-700">
+                                <div class="min-w-[800px]">
+                                    <!-- Header -->
+                                    <div class="grid grid-cols-12 gap-2 px-3 py-3 bg-zinc-50 dark:bg-zinc-800/50 text-xs font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider border-b border-zinc-200 dark:border-zinc-700">
+                                        <div class="col-span-2 text-center">Line</div>
+                                        <div class="col-span-2 text-center">Status</div>
+                                        <div class="col-span-2 text-center">Daily Check</div>
+                                        <div class="col-span-2 text-center">Approval</div>
+                                        <div class="col-span-2 text-center">Check By</div>
+                                        <div class="col-span-2 text-center">Approve By</div>
+                                    </div>
 
-                                <!-- Rows -->
-                                @foreach($chunk as $line)
-                                <div class="grid grid-cols-12 gap-2 items-center px-3 py-3 bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700/50 transition-colors cursor-pointer border-b border-zinc-100 dark:border-zinc-700 last:border-b-0"
-                                     onclick="openLineModal({{ $line->id }})">
-                                    
-                                    <!-- Line Number -->
-                                    <div class="col-span-2 flex items-center gap-1 sm:gap-2">
-                                        <div class="w-8 h-6 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold text-xs shadow-md">
-                                            SMT
+                                    <!-- Rows -->
+                                    @foreach($chunk as $line)
+                                    <div class="grid grid-cols-12 gap-2 items-center px-3 py-3 bg-white dark:bg-zinc-800 hover:bg-zinc-50 dark:hover:bg-zinc-700/50 transition-colors cursor-pointer border-b border-zinc-100 dark:border-zinc-700 last:border-b-0"
+                                         onclick="openLineModal({{ $line->id }})">
+                                        
+                                        <!-- Line Number -->
+                                        <div class="col-span-2 flex justify-center">
+                                            <div class="w-15 h-6 bg-blue-500 rounded-lg flex items-center justify-center text-white font-bold text-xs shadow-md flex-shrink-0">
+                                                SMT {{ $line->line_number }}
+                                            </div>
                                         </div>
-                                        <span class="font-semibold text-zinc-900 dark:text-white text-xs sm:text-sm whitespace-nowrap">Line {{ $line->line_number }}</span>
-                                    </div>
 
-                                    <!-- Status -->
-                                    <div class="col-span-2 flex justify-center">
-                                        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap {{ $this->getStatusColor($line->status) }}">
-                                            {{ $line->status }}
-                                        </span>
-                                    </div>
+                                        <!-- Status -->
+                                        <div class="col-span-2 flex justify-center">
+                                            <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap {{ $this->getStatusColor($line->status) }}">
+                                                {{ $line->status }}
+                                            </span>
+                                        </div>
 
-                                    <!-- Daily Check -->
-                                    <div class="col-span-2 flex justify-center">
-                                        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap {{ $this->getDailyCheckColor($line->daily_check_status) }}">
-                                            @if($line->daily_check_status === 'On Progress')
-                                                <svg class="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
-                                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                                </svg>
-                                            @endif
-                                            {{ $line->daily_check_status }}
-                                        </span>
-                                    </div>
+                                        <!-- Daily Check -->
+                                        <div class="col-span-2 flex justify-center">
+                                            <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap {{ $this->getDailyCheckColor($line->daily_check_status) }}">
+                                                @if($line->daily_check_status === 'On Progress')
+                                                    <svg class="w-3 h-3 animate-spin flex-shrink-0" fill="none" viewBox="0 0 24 24">
+                                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                    </svg>
+                                                @endif
+                                                <span class="truncate">{{ $line->daily_check_status }}</span>
+                                            </span>
+                                        </div>
 
-                                    <!-- Approval -->
-                                    <div class="col-span-2 flex justify-center">
-                                        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap {{ $this->getApprovalColor($line->daily_check_approval) }}">
-                                            {{ $line->daily_check_approval }}
-                                        </span>
-                                    </div>
+                                        <!-- Approval -->
+                                        <div class="col-span-2 flex justify-center">
+                                            <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium whitespace-nowrap {{ $this->getApprovalColor($line->daily_check_approval) }}">
+                                                {{ $line->daily_check_approval }}
+                                            </span>
+                                        </div>
 
-                                    <!-- Check By -->
-                                    <div class="col-span-2 text-center">
-                                        <span class="text-xs font-medium text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-700 px-2 py-1 rounded-full whitespace-nowrap">
-                                            {{ $line->daily_check_by }}
-                                        </span>
-                                    </div>
+                                        <!-- Check By -->
+                                        <div class="col-span-2 text-center">
+                                            <span class="text-xs font-medium text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-700 px-2 py-1 rounded-full whitespace-nowrap inline-block max-w-full truncate">
+                                                {{ $line->daily_check_by ?: '-' }}
+                                            </span>
+                                        </div>
 
-                                    <!-- Approve By -->
-                                    <div class="col-span-2 text-center">
-                                        <span class="text-xs font-medium text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-700 px-2 py-1 rounded-full whitespace-nowrap">
-                                            {{ $line->daily_approved_by }}
-                                        </span>
+                                        <!-- Approve By -->
+                                        <div class="col-span-2 text-center">
+                                            <span class="text-xs font-medium text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-700 px-2 py-1 rounded-full whitespace-nowrap inline-block max-w-full truncate">
+                                                {{ $line->daily_approved_by ?: '-' }}
+                                            </span>
+                                        </div>
                                     </div>
+                                    @endforeach
                                 </div>
-                                @endforeach
                             </div>
                         </div>
                     </div>
                     @endforeach
-                </div>
-
-                <!-- Footer - Responsive -->
-                <div class="mt-6 px-3 sm:px-4 py-3 bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 text-xs text-zinc-500 flex flex-col sm:flex-row justify-between items-center gap-3">
-                    <div class="flex flex-wrap items-center gap-4 justify-center sm:justify-start">
-                        <span>Showing <strong>{{ count($masterLines) }}</strong> lines</span>
-                        <span class="hidden sm:inline w-px h-4 bg-zinc-300 dark:bg-zinc-600"></span>
-                        <span>Last updated: {{ now()->format('d M Y H:i:s') }}</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                        <span>Live updates every 10 seconds</span>
-                    </div>
                 </div>
             @else
                 <div class="text-center py-12 bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700">
@@ -291,29 +278,66 @@
             animation: spin-slow 3s linear infinite;
         }
         
-        /* Custom scrollbar */
-        .overflow-x-auto::-webkit-scrollbar {
+        /* Hover scrollbar - scrollbar appears only when hovering */
+        .hover-scrollbar {
+            scrollbar-width: thin;
+            scrollbar-color: transparent transparent;
+            transition: scrollbar-color 0.3s ease;
+        }
+        
+        .hover-scrollbar:hover {
+            scrollbar-color: #c1c1c1 #f1f1f1;
+        }
+        
+        /* Webkit browsers (Chrome, Safari, Edge) */
+        .hover-scrollbar::-webkit-scrollbar {
             height: 6px;
         }
-        .overflow-x-auto::-webkit-scrollbar-track {
+        
+        .hover-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+            border-radius: 10px;
+        }
+        
+        .hover-scrollbar::-webkit-scrollbar-thumb {
+            background: transparent;
+            border-radius: 10px;
+            transition: background 0.3s ease;
+        }
+        
+        .hover-scrollbar:hover::-webkit-scrollbar-track {
             background: #f1f1f1;
-            border-radius: 10px;
         }
-        .overflow-x-auto::-webkit-scrollbar-thumb {
+        
+        .hover-scrollbar:hover::-webkit-scrollbar-thumb {
             background: #c1c1c1;
-            border-radius: 10px;
         }
-        .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+        
+        .hover-scrollbar:hover::-webkit-scrollbar-thumb:hover {
             background: #a8a8a8;
         }
-        .dark .overflow-x-auto::-webkit-scrollbar-track {
+        
+        /* Dark mode */
+        .dark .hover-scrollbar:hover::-webkit-scrollbar-track {
             background: #3f3f46;
         }
-        .dark .overflow-x-auto::-webkit-scrollbar-thumb {
+        
+        .dark .hover-scrollbar:hover::-webkit-scrollbar-thumb {
             background: #52525b;
         }
-        .dark .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+        
+        .dark .hover-scrollbar:hover::-webkit-scrollbar-thumb:hover {
             background: #71717a;
+        }
+        
+        /* Prevent text wrapping in tables */
+        .table-cell-content {
+            white-space: nowrap;
+        }
+        
+        /* Ensure flex children don't shrink */
+        .flex-1.min-w-0 {
+            min-width: 0;
         }
     </style>
 
@@ -332,9 +356,14 @@
                         <h4 class="text-lg font-bold text-zinc-900 dark:text-white">Line ${line.line_number}</h4>
                         <p class="text-sm text-zinc-500">${line.location?.location_name || 'No Location'}</p>
                         <div class="flex flex-wrap gap-2 mt-3">
-                            <span class="px-2 py-1 rounded-full text-xs font-medium ${line.status === 'Running' ? 'bg-green-100 text-green-800' : (line.status === 'Maintenance' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800')}">${line.status}</span>
-                            <span class="px-2 py-1 rounded-full text-xs font-medium ${line.daily_check_status === 'Checked' ? 'bg-green-100 text-green-800' : (line.daily_check_status === 'On Progress' ? 'bg-yellow-100 text-yellow-800' : (line.daily_check_status === 'Delay' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'))}">${line.daily_check_status}</span>
-                            <span class="px-2 py-1 rounded-full text-xs font-medium ${line.daily_check_approval === 'Approved' ? 'bg-green-100 text-green-800' : (line.daily_check_approval === 'Pending' ? 'bg-yellow-100 text-yellow-800' : (line.daily_check_approval === 'Rejected' ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'))}">${line.daily_check_approval}</span>
+                            <!-- Status Badge - SOLID -->
+                            <span class="px-2 py-1 rounded-full text-xs font-medium text-white ${line.status === 'Running' ? 'bg-green-600' : (line.status === 'Maintenance' ? 'bg-red-600' : 'bg-gray-600')}">${line.status}</span>
+                            
+                            <!-- Daily Check Badge - SOLID -->
+                            <span class="px-2 py-1 rounded-full text-xs font-medium text-white ${line.daily_check_status === 'Checked' ? 'bg-green-600' : (line.daily_check_status === 'On Progress' ? 'bg-yellow-600' : (line.daily_check_status === 'Delay' ? 'bg-red-600' : 'bg-gray-600'))}">${line.daily_check_status}</span>
+                            
+                            <!-- Approval Badge - SOLID -->
+                            <span class="px-2 py-1 rounded-full text-xs font-medium text-white ${line.daily_check_approval === 'Approved' ? 'bg-green-600' : (line.daily_check_approval === 'Pending' ? 'bg-yellow-600' : (line.daily_check_approval === 'Rejected' ? 'bg-red-600' : 'bg-gray-600'))}">${line.daily_check_approval}</span>
                         </div>
                     </div>
                     

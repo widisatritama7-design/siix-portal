@@ -303,7 +303,9 @@
                                         </span>
                                     </td>
                                     <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
-                                        {{ number_format($detail->measure_results_volts, 3) }} V
+                                        {{ $detail->measure_results_volts !== null 
+                                            ? number_format((float) $detail->measure_results_volts, 3) 
+                                            : '-' }} V
                                     </td>
                                     <td class="px-4 py-3">
                                         @php

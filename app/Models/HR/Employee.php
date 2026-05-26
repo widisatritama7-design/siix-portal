@@ -4,6 +4,8 @@ namespace App\Models\HR;
 
 use App\Models\HR\EmployeeCall;
 use App\Models\HR\ViolationEmployee;
+use App\Models\PROD\Absence\AbsenceReport;
+use App\Models\PROD\Uniform\UniformRequest;
 use Illuminate\Database\Eloquent\Model;
 
 class Employee extends Model
@@ -47,5 +49,35 @@ class Employee extends Model
     public function employeeCalls()
     {
         return $this->hasMany(EmployeeCall::class, 'nik', 'id');
+    }
+
+    public function uniformRequests()
+    {
+        return $this->hasMany(UniformRequest::class, 'employee_id', 'id');
+    }
+
+    public function pendingUniformRequests()
+    {
+        return $this->hasMany(UniformRequest::class, 'employee_id', 'id')->where('status', 'pending');
+    }
+
+    public function approvedUniformRequests()
+    {
+        return $this->hasMany(UniformRequest::class, 'employee_id', 'id')->where('status', 'approved');
+    }
+
+    public function receivedUniformRequests()
+    {
+        return $this->hasMany(UniformRequest::class, 'employee_id', 'id')->where('status', 'received');
+    }
+
+    public function rejectedUniformRequests()
+    {
+        return $this->hasMany(UniformRequest::class, 'employee_id', 'id')->where('status', 'rejected');
+    }
+
+    public function absenceReports()
+    {
+        return $this->hasMany(AbsenceReport::class, 'employee_id');
     }
 }

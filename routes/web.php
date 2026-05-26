@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\DashboardRefreshController;
+use App\Http\Controllers\DoorLockController;
 use App\Http\Controllers\InboxController;
+use App\Http\Controllers\PROD\Absence\AbsenceReportPrintController;
 use App\Http\Controllers\SearchController;
 use App\Livewire\DCC\DepartmentManagement;
 use App\Livewire\DCC\SubmissionManagement;
@@ -16,6 +18,9 @@ use App\Livewire\HR\Violation\ViolationEmployeeEdit;
 use App\Livewire\HR\Violation\ViolationEmployeeManagement;
 use App\Livewire\HR\Violation\ViolationReport;
 use App\Livewire\NotificationManager;
+use App\Livewire\PROD\Absence\AbsenceReportForm;
+use App\Livewire\PROD\Absence\AbsenceReportIndex;
+use App\Livewire\PROD\Absence\AbsenceReportShow;
 use App\Livewire\PROD\Kaizen\KaizenManagement;
 use App\Livewire\PROD\MS\Rack\MasterRackSampleCreate;
 use App\Livewire\PROD\MS\Rack\MasterRackSampleManagement;
@@ -25,6 +30,10 @@ use App\Livewire\PROD\MS\Sample\MasterSampleLoanForm;
 use App\Livewire\PROD\MS\Sample\MasterSampleManagement;
 use App\Livewire\PROD\MS\Sample\MasterSampleShow;
 use App\Livewire\PROD\MS\Sample\SampleChecksManagement;
+use App\Livewire\PROD\Uniform\MasterUniformManagement;
+use App\Livewire\PROD\Uniform\UniformRequestForm;
+use App\Livewire\PROD\Uniform\UniformRequestIndex;
+use App\Livewire\PROD\Uniform\UniformRequestShow;
 use App\Livewire\PROD\WIP\AddColumn;
 use App\Livewire\PROD\WIP\AddSheet;
 use App\Livewire\PROD\WIP\HistoryWipTransaction;
@@ -92,6 +101,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/hr/violation/{id}/edit', ViolationEmployeeEdit::class)->name('hr.violation.edit');
     Route::get('/hr/violation/report', ViolationReport::class)->name('hr.violation.report');
     Route::get('/hr/employee-call', EmployeeCallManagement::class)->name('hr.employee-call.index');
+    Route::get('/employee-call/download-template-excel', [EmployeeCallManagement::class, 'downloadTemplate'])->name('employee-call.download-template-excel');
+    Route::get('/employee-call/download-template-csv', [EmployeeCallManagement::class, 'downloadTemplateCSV'])->name('employee-call.download-template-csv');
 
     // Ticket
     Route::get('/ticket/categories', CategoryTicketManager::class)->name('ticket.categories');
@@ -137,6 +148,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // QA-QC
     Route::get('/qaqc/ncp', NCPManagement::class)->name('qaqc.ncp');
     Route::get('/qaqc/ncp/report', NCPReport::class)->name('qaqc.ncp.report');
+
+    // Doorlock
+    Route::get('/doorlock/test-pin/{deviceId}', [DoorLockController::class, 'generatePin']);
+
+    // Uniform
+    Route::get('/prod/uniform/master', MasterUniformManagement::class)->name('prod.uniform.master');
+    Route::get('/prod/uniform/request', UniformRequestIndex::class)->name('prod.uniform.request.index');
+    Route::get('/prod/uniform/request/create', UniformRequestForm::class)->name('prod.uniform.request.create');
+    Route::get('/prod/uniform/request/edit/{id}', UniformRequestForm::class)->name('prod.uniform.request.edit');
+    Route::get('/prod/uniform/request/show/{id}', UniformRequestShow::class)->name('prod.uniform.request.show');
+
+    // Absence
+    Route::get('/prod/absence/report', AbsenceReportIndex::class)->name('prod.absence.report.index');
+    Route::get('/prod/absence/report/create', AbsenceReportForm::class)->name('prod.absence.report.create');
+    Route::get('/prod/absence/report/edit/{id}', AbsenceReportForm::class)->name('prod.absence.report.edit');
+    Route::get('/prod/absence/report/show/{id}', AbsenceReportShow::class)->name('prod.absence.report.show');
+    Route::get('/prod/absence/report/print/{id}', [AbsenceReportPrintController::class, 'print'])->name('prod.absence.report.print');
 
 });
 

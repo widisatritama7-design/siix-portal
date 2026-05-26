@@ -66,33 +66,33 @@ class DailyDashboard extends Component
     public function getStatusColor($status)
     {
         return match($status) {
-            'Running' => 'bg-green-100 text-green-800',
-            'Maintenance' => 'bg-red-100 text-red-800',
-            'Trouble' => 'bg-yellow-100 text-yellow-800',
-            'No Schedule' => 'bg-gray-100 text-gray-800',
-            default => 'bg-gray-100 text-gray-800',
+            'Running' => 'bg-green-600 text-white',
+            'Maintenance' => 'bg-red-600 text-white',
+            'Trouble' => 'bg-yellow-600 text-white',
+            'No Schedule' => 'bg-gray-600 text-white',
+            default => 'bg-gray-600 text-white',
         };
     }
 
     public function getDailyCheckColor($status)
     {
         return match($status) {
-            'Checked' => 'bg-green-100 text-green-800',
-            'On Progress' => 'bg-yellow-100 text-yellow-800',
-            'Delay' => 'bg-red-100 text-red-800',
-            'No Check' => 'bg-gray-100 text-gray-800',
-            default => 'bg-gray-100 text-gray-800',
+            'Checked' => 'bg-green-600 text-white',
+            'On Progress' => 'bg-yellow-600 text-white',
+            'Delay' => 'bg-red-600 text-white',
+            'No Check' => 'bg-gray-600 text-white',
+            default => 'bg-gray-600 text-white',
         };
     }
 
     public function getApprovalColor($approval)
     {
         return match($approval) {
-            'Approved' => 'bg-green-100 text-green-800',
-            'Rejected' => 'bg-red-100 text-red-800',
-            'Pending' => 'bg-yellow-100 text-yellow-800',
-            'No Check' => 'bg-gray-100 text-gray-800',
-            default => 'bg-gray-100 text-gray-800',
+            'Approved' => 'bg-green-600 text-white',
+            'Rejected' => 'bg-red-600 text-white',
+            'Pending' => 'bg-yellow-600 text-white',
+            'No Check' => 'bg-gray-600 text-white',
+            default => 'bg-gray-600 text-white',
         };
     }
 

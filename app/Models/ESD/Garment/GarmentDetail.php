@@ -32,6 +32,11 @@ class GarmentDetail extends Model
         'next_date',
         'remarks',
         'created_by',
+        'photo_verification',
+    ];
+
+    protected $casts = [
+        'photo_verification' => 'array',
     ];
 
     public function garment()

@@ -61,6 +61,13 @@
                             @endforeach
                         </flux:select>
                         
+                        <!-- NEW: Measurement Filter -->
+                        <flux:select wire:model.live="measurementFilter" class="w-48">
+                            @foreach($measurementOptions as $key => $value)
+                                <flux:select.option value="{{ $key }}">{{ $value }}</flux:select.option>
+                            @endforeach
+                        </flux:select>
+                        
                         <flux:select wire:model.live="scheduleFilter" class="w-48">
                             @foreach($scheduleOptions as $key => $value)
                                 <flux:select.option value="{{ $key }}">{{ $value }}</flux:select.option>

@@ -181,10 +181,10 @@
                                 <td>Print Date</td>
                                 <td>: {{ $generated_at }}</td>
                             </tr>
-                            @if($machine_name)
+                            @if(!empty($machine_names))
                             <tr>
-                                <td>Machine Filter</td>
-                                <td colspan="3">: {{ $machine_name }}</td>
+                                <td style="width: 100px;">Machine Filter</td>
+                                <td colspan="3">: {{ implode(', ', $machine_names) }}</td>
                             </tr>
                             @endif
                             @if($date_from || $date_until)

@@ -26,24 +26,21 @@ class EquipmentGroundDetailManagement extends Component
     public $next_date;
 
     public $search = '';
-    public $filterMachine = '';
-    public $filterArea = '';
-    public $filterLocation = '';
-    public $filterJudgementOhm = '';
-    public $filterJudgementVolts = '';
+    public $selectedMachines = []; // Array untuk menyimpan machine IDs yang dipilih
     public $filterDateFrom = '';
     public $filterDateUntil = '';
     public $filterNextDateFrom = '';
     public $filterNextDateUntil = '';
+    
+    // Untuk search machine di dropdown
+    public $machineSearch = '';
+    public $printMachineSearch = '';
 
     public $modalTitle = 'Add New Measurement Detail';
     public $detailToDelete = null;
 
     // Properti untuk print
-    public $printPreview = false;
-    public $printMachineName = '';
-    public $printArea = '';
-    public $printLocation = '';
+    public $printSelectedMachines = [];
     public $printDateFrom = '';
     public $printDateUntil = '';
 
@@ -58,31 +55,14 @@ class EquipmentGroundDetailManagement extends Component
         ];
     }
 
-    protected $messages = [
-        'equipment_ground_id.required' => 'Machine name is required.',
-        'equipment_ground_id.exists' => 'Selected machine does not exist.',
-        'measure_results_ohm.required' => 'Ohm measurement result is required.',
-        'measure_results_ohm.numeric' => 'Ohm measurement result must be a number.',
-        'measure_results_volts.required' => 'Volts measurement result is required.',
-        'measure_results_volts.numeric' => 'Volts measurement result must be a number.',
-        'next_date.date' => 'Next date must be a valid date.',
-    ];
-
-    public function mount()
-    {
-        $this->resetJudgement();
-    }
-
     public function resetJudgement()
     {
-        // Standard Ohm: < 1.00 Ohm
         if ($this->measure_results_ohm !== null && $this->measure_results_ohm !== '') {
             $this->judgement_ohm = floatval($this->measure_results_ohm) >= 1.00 ? 'NG' : 'OK';
         } else {
             $this->judgement_ohm = null;
         }
         
-        // Standard Volts: < 2.00 Volts
         if ($this->measure_results_volts !== null && $this->measure_results_volts !== '') {
             $this->judgement_volts = floatval($this->measure_results_volts) >= 2.00 ? 'NG' : 'OK';
         } else {
@@ -116,6 +96,38 @@ class EquipmentGroundDetailManagement extends Component
         }
     }
 
+    // Tambah machine ke filter
+    public function addMachineFilter($machineId)
+    {
+        if (!in_array($machineId, $this->selectedMachines)) {
+            $this->selectedMachines[] = $machineId;
+        }
+        $this->machineSearch = '';
+        $this->resetPage();
+    }
+
+    // Remove machine dari filter
+    public function removeMachineFilter($machineId)
+    {
+        $this->selectedMachines = array_values(array_diff($this->selectedMachines, [$machineId]));
+        $this->resetPage();
+    }
+
+    // Tambah machine ke print filter
+    public function addPrintMachine($machineId)
+    {
+        if (!in_array($machineId, $this->printSelectedMachines)) {
+            $this->printSelectedMachines[] = $machineId;
+        }
+        $this->printMachineSearch = '';
+    }
+
+    // Remove machine dari print filter
+    public function removePrintMachine($machineId)
+    {
+        $this->printSelectedMachines = array_values(array_diff($this->printSelectedMachines, [$machineId]));
+    }
+
     public function resetForm()
     {
         $this->reset([
@@ -129,12 +141,12 @@ class EquipmentGroundDetailManagement extends Component
 
     public function resetFilters()
     {
-        $this->reset([
-            'search', 'filterMachine', 'filterArea', 'filterLocation',
-            'filterJudgementOhm', 'filterJudgementVolts',
-            'filterDateFrom', 'filterDateUntil',
-            'filterNextDateFrom', 'filterNextDateUntil'
-        ]);
+        $this->selectedMachines = [];
+        $this->filterDateFrom = '';
+        $this->filterDateUntil = '';
+        $this->filterNextDateFrom = '';
+        $this->filterNextDateUntil = '';
+        $this->search = '';
         $this->resetPage();
     }
 
@@ -158,7 +170,6 @@ class EquipmentGroundDetailManagement extends Component
         }
 
         $this->validate();
-
         $this->resetJudgement();
 
         $data = [
@@ -177,7 +188,6 @@ class EquipmentGroundDetailManagement extends Component
                 $this->dispatch('notify', message: 'Measurement detail not found!', type: 'error');
                 return;
             }
-
             $detail->update($data);
             $message = 'Measurement detail updated successfully!';
         } else {
@@ -226,7 +236,6 @@ class EquipmentGroundDetailManagement extends Component
         }
 
         $detail = EquipmentGroundDetail::with('equipmentGround')->find($id);
-
         if (!$detail) {
             $this->dispatch('notify', message: 'Measurement detail not found!', type: 'error');
             return;
@@ -244,7 +253,6 @@ class EquipmentGroundDetailManagement extends Component
         }
 
         $detail = EquipmentGroundDetail::find($this->detailToDelete->id);
-
         if (!$detail) {
             $this->dispatch('notify', message: 'Measurement detail not found!', type: 'error');
             $this->detailToDelete = null;
@@ -259,15 +267,6 @@ class EquipmentGroundDetailManagement extends Component
         $this->dispatch('close-modal', 'delete-detail-modal');
     }
 
-    public function cancelDelete()
-    {
-        $this->detailToDelete = null;
-        $this->dispatch('close-modal', 'delete-detail-modal');
-    }
-
-    /**
-     * Generate PDF untuk print
-     */
     public function printPDF()
     {
         if (!auth()->user()->can('view equipment ground details')) {
@@ -275,37 +274,17 @@ class EquipmentGroundDetailManagement extends Component
             return;
         }
 
-        // Validasi minimal satu filter dipilih
-        if (empty($this->printMachineName) && empty($this->printArea) && empty($this->printLocation) && empty($this->printDateFrom) && empty($this->printDateUntil)) {
-            $this->dispatch('notify', message: 'Please select at least one filter (Machine Name, Area, Location, or Date Range)!', type: 'error');
+        if (empty($this->printSelectedMachines) && empty($this->printDateFrom) && empty($this->printDateUntil)) {
+            $this->dispatch('notify', message: 'Please select at least one filter!', type: 'error');
             return;
         }
 
-        // Query data untuk print
         $query = EquipmentGroundDetail::with(['equipmentGround', 'creator']);
 
-        // Filter by Machine Name
-        if (!empty($this->printMachineName)) {
-            $query->whereHas('equipmentGround', function ($q) {
-                $q->where('machine_name', 'like', '%' . $this->printMachineName . '%');
-            });
+        if (!empty($this->printSelectedMachines)) {
+            $query->whereIn('equipment_ground_id', $this->printSelectedMachines);
         }
 
-        // Filter by Area
-        if (!empty($this->printArea)) {
-            $query->whereHas('equipmentGround', function ($q) {
-                $q->where('area', 'like', '%' . $this->printArea . '%');
-            });
-        }
-
-        // Filter by Location
-        if (!empty($this->printLocation)) {
-            $query->whereHas('equipmentGround', function ($q) {
-                $q->where('location', 'like', '%' . $this->printLocation . '%');
-            });
-        }
-
-        // Filter by Date Range
         if (!empty($this->printDateFrom)) {
             $query->whereDate('created_at', '>=', $this->printDateFrom);
         }
@@ -321,23 +300,18 @@ class EquipmentGroundDetailManagement extends Component
             return;
         }
 
-        // Data untuk PDF
+        $selectedMachineNames = EquipmentGround::whereIn('id', $this->printSelectedMachines)->pluck('machine_name')->toArray();
+
         $data = [
             'details' => $details,
             'title' => 'ESD EQUIPMENT GROUND MEASUREMENT REPORT',
             'date_from' => $this->printDateFrom,
             'date_until' => $this->printDateUntil,
-            'machine_name' => $this->printMachineName,
-            'area' => $this->printArea,
-            'location' => $this->printLocation,
+            'machine_names' => $selectedMachineNames,
             'generated_by' => auth()->user()->name,
             'generated_at' => Carbon::now()->format('d M Y H:i:s'),
-            'prepared_by' => auth()->user()->name,
-            'checked_by' => null,
-            'approved_by' => null,
         ];
 
-        // Generate PDF
         $pdf = Pdf::loadView('livewire.esd.eg.equipment-ground-detail-pdf', $data);
         $pdf->setPaper('A4', 'landscape');
         
@@ -351,12 +325,9 @@ class EquipmentGroundDetailManagement extends Component
 
     public function resetPrintFilters()
     {
-        $this->printMachineName = '';
-        $this->printArea = '';
-        $this->printLocation = '';
+        $this->printSelectedMachines = [];
         $this->printDateFrom = '';
         $this->printDateUntil = '';
-        $this->printPreview = false;
         $this->dispatch('notify', message: 'Print filters have been reset!', type: 'success');
     }
 
@@ -366,7 +337,16 @@ class EquipmentGroundDetailManagement extends Component
             abort(403, 'Unauthorized access.');
         }
 
-        $machines = EquipmentGround::orderBy('machine_name')->get();
+        $allMachines = EquipmentGround::orderBy('machine_name')->get();
+        
+        // Filter machines untuk dropdown (searchable)
+        $availableMachines = EquipmentGround::when($this->machineSearch, function($query) {
+            $query->where('machine_name', 'like', '%' . $this->machineSearch . '%');
+        })->orderBy('machine_name')->get();
+        
+        $printAvailableMachines = EquipmentGround::when($this->printMachineSearch, function($query) {
+            $query->where('machine_name', 'like', '%' . $this->printMachineSearch . '%');
+        })->orderBy('machine_name')->get();
         
         $details = EquipmentGroundDetail::with(['equipmentGround', 'creator'])
             ->when($this->search, function ($query) {
@@ -376,24 +356,8 @@ class EquipmentGroundDetailManagement extends Component
                         ->orWhere('location', 'like', '%' . $this->search . '%');
                 });
             })
-            ->when($this->filterMachine, function ($query) {
-                $query->where('equipment_ground_id', $this->filterMachine);
-            })
-            ->when($this->filterArea, function ($query) {
-                $query->whereHas('equipmentGround', function ($q) {
-                    $q->where('area', 'like', '%' . $this->filterArea . '%');
-                });
-            })
-            ->when($this->filterLocation, function ($query) {
-                $query->whereHas('equipmentGround', function ($q) {
-                    $q->where('location', 'like', '%' . $this->filterLocation . '%');
-                });
-            })
-            ->when($this->filterJudgementOhm, function ($query) {
-                $query->where('judgement_ohm', $this->filterJudgementOhm);
-            })
-            ->when($this->filterJudgementVolts, function ($query) {
-                $query->where('judgement_volts', $this->filterJudgementVolts);
+            ->when(!empty($this->selectedMachines), function ($query) {
+                $query->whereIn('equipment_ground_id', $this->selectedMachines);
             })
             ->when($this->filterDateFrom, function ($query) {
                 $query->whereDate('created_at', '>=', $this->filterDateFrom);
@@ -412,7 +376,9 @@ class EquipmentGroundDetailManagement extends Component
 
         return view('livewire.esd.eg.equipment-ground-detail-management', [
             'details' => $details,
-            'machines' => $machines,
+            'allMachines' => $allMachines,
+            'availableMachines' => $availableMachines,
+            'printAvailableMachines' => $printAvailableMachines,
         ]);
     }
 }

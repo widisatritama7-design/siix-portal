@@ -255,10 +255,10 @@
                     <div x-show="metalOpen" x-collapse class="mt-1 relative">
                         <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
                         <div class="space-y-1 ml-[30px]">
-                            <a href="<?php echo e(route('mtc.stencils')); ?>" wire:navigate
-                                class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('mtc.stencils') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>"
+                            <a href="<?php echo e(route('mtc.stencil.index')); ?>" wire:navigate
+                                class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('mtc.stencil.index') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>"
                                 @click="mobileMenuOpen = false">
-                                <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('mtc.stencils') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('mtc.stencil.index') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
                                 <span class="truncate">Master Stencil</span>
                             </a>
                         </div>
@@ -474,9 +474,9 @@
                             <div x-show="metalOpen" x-collapse class="mt-1 relative">
                                 <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
                                 <div class="space-y-1 ml-[30px]">
-                                    <a href="<?php echo e(route('mtc.stencils')); ?>" wire:navigate
-                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('mtc.stencils') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
-                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('mtc.stencils') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                    <a href="<?php echo e(route('mtc.stencil.index')); ?>" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('mtc.stencil.index') ? 'bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-200' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('mtc.stencil.index') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
                                         <span class="truncate">Master Stencil</span>
                                     </a>
                                 </div>

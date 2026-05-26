@@ -51,15 +51,12 @@
             </div>
         </x-slot>
         <div class="p-1 space-y-2 w-full">
-            <!-- Header with buttons aligned -->
+            <!-- Filters Section -->
             <div x-data="{ showFilters: false }">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-1 mb-4">
-                    <!-- Filter Toggle Button -->
                     <div class="flex-1">
-                        <button 
-                            @click="showFilters = !showFilters"
-                            class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-zinc-700 bg-white border border-zinc-300 rounded-lg hover:bg-zinc-50 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-600 dark:hover:bg-zinc-700 transition-colors"
-                        >
+                        <button @click="showFilters = !showFilters"
+                            class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-zinc-700 bg-white border border-zinc-300 rounded-lg hover:bg-zinc-50 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-600 dark:hover:bg-zinc-700">
                             <svg x-show="!showFilters" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                             </svg>
@@ -67,132 +64,184 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
                             </svg>
                             <span x-text="showFilters ? 'Hide Filters' : 'Show Filters'"></span>
-                            <span x-show="filterMachine || filterArea || filterLocation || filterJudgementOhm || filterJudgementVolts || filterDateFrom || filterDateUntil || filterNextDateFrom || filterNextDateUntil || search" 
-                                class="ml-1 px-1.5 py-0.5 text-xs bg-blue-100 text-blue-800 rounded-full dark:bg-blue-900 dark:text-blue-300">
-                                Active
-                            </span>
+                            <span x-show="window.Livewire.find('{{ $this->getId() }}').entangle('selectedMachines').value.length > 0 || $wire.filterDateFrom || $wire.filterDateUntil || $wire.filterNextDateFrom || $wire.filterNextDateUntil || $wire.search" 
+                                class="ml-1 px-1.5 py-0.5 text-xs bg-blue-100 text-blue-800 rounded-full">Active</span>
                         </button>
                     </div>
                     
-                    <!-- Create Button and Clear Filters -->
                     <div class="flex gap-2">
-                        @if($filterMachine || $filterArea || $filterLocation || $filterJudgementOhm || $filterJudgementVolts || $filterDateFrom || $filterDateUntil || $filterNextDateFrom || $filterNextDateUntil || $search)
-                        <button wire:click="resetFilters" class="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400">
-                            Clear All Filters
-                        </button>
+                        @if(!empty($selectedMachines) || $filterDateFrom || $filterDateUntil || $filterNextDateFrom || $filterNextDateUntil || $search)
+                        <button wire:click="resetFilters" class="text-sm text-blue-600 hover:text-blue-800">Clear All Filters</button>
                         @endif
                         
                         @can('create equipment ground details')
-                        <flux:button 
-                            variant="primary" 
-                            icon="plus" 
-                            class="bg-blue-600 hover:bg-blue-700 whitespace-nowrap"
-                            wire:click="resetForm"
-                            x-on:click="$dispatch('open-modal', 'detail-form-modal')"
-                        >
+                        <flux:button variant="primary" icon="plus" class="bg-blue-600 hover:bg-blue-700"
+                            wire:click="resetForm" x-on:click="$dispatch('open-modal', 'detail-form-modal')">
                             Add New Measurement
                         </flux:button>
                         @endcan
                     </div>
                 </div>
 
-                <!-- Filters Section with Collapsible -->
-                <div x-show="showFilters" 
-                    x-transition.duration.300ms
-                    x-cloak
-                    class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 p-6 mb-4">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-
+                <div x-show="showFilters" x-cloak class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border p-6 mb-4">
+                    <div class="space-y-4">
                         <!-- Search -->
                         <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Search</label>
-                            <input type="text" wire:model.live.debounce.300ms="search" placeholder="Search by machine, area, location..." class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                            <label class="block text-sm font-medium mb-1">Search</label>
+                            <input type="text" wire:model.live.debounce.300ms="search" 
+                                placeholder="Search by machine, area, location..." 
+                                class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-700 dark:border-zinc-600">
                         </div>
 
-                        <!-- Date From -->
+                        <!-- Machine Filter with Searchable Dropdown -->
                         <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Date From</label>
-                            <input type="date" wire:model.live="filterDateFrom" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                            <label class="block text-sm font-medium mb-1">Machine Name</label>
+                            
+                            <!-- Selected Machines Tags -->
+                            @if(!empty($selectedMachines))
+                            <div class="flex flex-wrap gap-2 mb-2">
+                                @foreach($selectedMachines as $machineId)
+                                    @php $machine = $allMachines->firstWhere('id', $machineId); @endphp
+                                    @if($machine)
+                                    <span class="inline-flex items-center gap-1 px-2 py-1 text-sm bg-blue-100 text-blue-800 rounded-full dark:bg-blue-900 dark:text-blue-300">
+                                        {{ $machine->machine_name }}
+                                        <button type="button" wire:click="removeMachineFilter({{ $machineId }})" class="hover:text-blue-600">
+                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                            </svg>
+                                        </button>
+                                    </span>
+                                    @endif
+                                @endforeach
+                            </div>
+                            @endif
+
+                            <!-- Search Input -->
+                            <input type="text" wire:model.live="machineSearch" 
+                                placeholder="Search and select machine..." 
+                                class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-700 dark:border-zinc-600">
+
+                            <!-- Search Results Dropdown -->
+                            @if($machineSearch && $availableMachines->count() > 0)
+                            <div class="mt-1 border rounded-lg max-h-48 overflow-y-auto shadow-lg bg-white dark:bg-zinc-800">
+                                @foreach($availableMachines as $machine)
+                                    @if(!in_array($machine->id, $selectedMachines))
+                                    <button type="button" wire:click="addMachineFilter({{ $machine->id }})"
+                                        class="w-full text-left px-3 py-2 hover:bg-blue-50 dark:hover:bg-zinc-700 border-b last:border-b-0">
+                                        <div class="font-medium">{{ $machine->machine_name }}</div>
+                                        <div class="text-xs text-zinc-500">{{ $machine->area }} - {{ $machine->location }}</div>
+                                    </button>
+                                    @endif
+                                @endforeach
+                            </div>
+                            @endif
                         </div>
 
-                        <!-- Date Until -->
-                        <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Date Until</label>
-                            <input type="date" wire:model.live="filterDateUntil" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                        <!-- Date Filters -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Date From</label>
+                                <input type="date" wire:model.live="filterDateFrom" class="w-full px-3 py-2 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Date Until</label>
+                                <input type="date" wire:model.live="filterDateUntil" class="w-full px-3 py-2 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Next Date From</label>
+                                <input type="date" wire:model.live="filterNextDateFrom" class="w-full px-3 py-2 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Next Date Until</label>
+                                <input type="date" wire:model.live="filterNextDateUntil" class="w-full px-3 py-2 border rounded-lg">
+                            </div>
                         </div>
-
-                        <!-- Next Date From -->
-                        <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Next Date From</label>
-                            <input type="date" wire:model.live="filterNextDateFrom" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                        </div>
-
-                        <!-- Next Date Until -->
-                        <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Next Date Until</label>
-                            <input type="date" wire:model.live="filterNextDateUntil" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                        </div>
-
                     </div>
                 </div>
             </div>
 
+            <!-- Print Report Section -->
             <div class="mb-4">
-                <div class="bg-white dark:bg-zinc-800 rounded-xl p-4 border border-zinc-200 dark:border-zinc-700 shadow-sm">
-                    <h3 class="text-lg font-semibold text-zinc-800 dark:text-zinc-100 mb-3 flex items-center gap-2">
+                <div class="bg-white dark:bg-zinc-800 rounded-xl p-4 border shadow-sm">
+                    <h3 class="text-lg font-semibold mb-3 flex items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
                         </svg>
                         Print Report
                     </h3>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <!-- Filter Machine Name -->
+                    <div class="space-y-4">
+                        <!-- Selected Print Machines -->
+                        @if(!empty($printSelectedMachines))
+                        <div class="flex flex-wrap gap-2">
+                            @foreach($printSelectedMachines as $machineId)
+                                @php $machine = $allMachines->firstWhere('id', $machineId); @endphp
+                                @if($machine)
+                                <span class="inline-flex items-center gap-1 px-2 py-1 text-sm bg-green-100 text-green-800 rounded-full">
+                                    {{ $machine->machine_name }}
+                                    <button type="button" wire:click="removePrintMachine({{ $machineId }})" class="hover:text-green-600">
+                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </button>
+                                </span>
+                                @endif
+                            @endforeach
+                        </div>
+                        @endif
+
+                        <!-- Search Machine for Print -->
                         <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Machine Name</label>
-                            <input type="text" 
-                                wire:model.live="printMachineName" 
-                                placeholder="Search by machine name..."
-                                class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                            <label class="block text-sm font-medium mb-1">Select Machine</label>
+                            <input type="text" wire:model.live="printMachineSearch" 
+                                placeholder="Search machine..." 
+                                class="w-full px-3 py-2 border rounded-lg">
+                            
+                            @if($printMachineSearch && $printAvailableMachines->count() > 0)
+                            <div class="mt-1 border rounded-lg max-h-48 overflow-y-auto shadow-lg">
+                                @foreach($printAvailableMachines as $machine)
+                                    @if(!in_array($machine->id, $printSelectedMachines))
+                                    <button type="button" wire:click="addPrintMachine({{ $machine->id }})"
+                                        class="w-full text-left px-3 py-2 hover:bg-green-50 border-b last:border-b-0">
+                                        <div class="font-medium">{{ $machine->machine_name }}</div>
+                                        <div class="text-xs text-zinc-500">{{ $machine->area }} - {{ $machine->location }}</div>
+                                    </button>
+                                    @endif
+                                @endforeach
+                            </div>
+                            @endif
+                        </div>
+
+                        <!-- Date Filters for Print -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Date From</label>
+                                <input type="date" wire:model.live="printDateFrom" class="w-full px-3 py-2 border rounded-lg">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium mb-1">Date Until</label>
+                                <input type="date" wire:model.live="printDateUntil" class="w-full px-3 py-2 border rounded-lg">
+                            </div>
                         </div>
                         
-                        <!-- Date From -->
-                        <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Date From</label>
-                            <input type="date" 
-                                wire:model.live="printDateFrom" 
-                                class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                        <!-- Print Buttons -->
+                        @if(!empty($printSelectedMachines) || $printDateFrom || $printDateUntil)
+                        <div class="flex gap-2">
+                            <button wire:click="printPDF" 
+                                class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path>
+                                </svg>
+                                Download PDF
+                            </button>
+                            
+                            <button wire:click="resetPrintFilters" 
+                                class="inline-flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-zinc-50">
+                                Reset Filters
+                            </button>
                         </div>
-                        
-                        <!-- Date Until -->
-                        <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Date Until</label>
-                            <input type="date" 
-                                wire:model.live="printDateUntil" 
-                                class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                        </div>
+                        @endif
                     </div>
-                    
-                    <!-- Print Buttons - Hanya muncul jika ada filter yang diisi -->
-                    @if($printMachineName || $printArea || $printLocation || $printDateFrom || $printDateUntil)
-                    <div class="flex gap-2 mt-4">
-                        <button wire:click="printPDF" 
-                                class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path>
-                            </svg>
-                            Download PDF
-                        </button>
-                        
-                        <button wire:click="resetPrintFilters" 
-                                class="inline-flex items-center gap-2 px-4 py-2 border border-zinc-300 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                            </svg>
-                            Reset Filters
-                        </button>
-                    </div>
-                    @endif
                 </div>
             </div>
 
@@ -375,7 +424,7 @@
                                     <select wire:model="equipment_ground_id"
                                             class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-blue-500">
                                         <option value="">Select Machine</option>
-                                        @foreach($machines as $machine)
+                                        @foreach($allMachines as $machine)
                                             <option value="{{ $machine->id }}">{{ $machine->machine_name }} - {{ $machine->area }} - {{ $machine->location }}</option>
                                         @endforeach
                                     </select>
