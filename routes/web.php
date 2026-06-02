@@ -3,6 +3,7 @@
 use App\Http\Controllers\DashboardRefreshController;
 use App\Http\Controllers\DoorLockController;
 use App\Http\Controllers\InboxController;
+use App\Http\Controllers\PROD\Absence\AbsenceControlPrintController;
 use App\Http\Controllers\PROD\Absence\AbsenceReportPrintController;
 use App\Http\Controllers\SearchController;
 use App\Livewire\DCC\DepartmentManagement;
@@ -18,6 +19,9 @@ use App\Livewire\HR\Violation\ViolationEmployeeEdit;
 use App\Livewire\HR\Violation\ViolationEmployeeManagement;
 use App\Livewire\HR\Violation\ViolationReport;
 use App\Livewire\NotificationManager;
+use App\Livewire\PROD\Absence\AbsenceControlGenerate;
+use App\Livewire\PROD\Absence\AbsenceControlIndex;
+use App\Livewire\PROD\Absence\AbsenceDashboard;
 use App\Livewire\PROD\Absence\AbsenceReportForm;
 use App\Livewire\PROD\Absence\AbsenceReportIndex;
 use App\Livewire\PROD\Absence\AbsenceReportShow;
@@ -153,18 +157,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/doorlock/test-pin/{deviceId}', [DoorLockController::class, 'generatePin']);
 
     // Uniform
-    Route::get('/prod/uniform/master', MasterUniformManagement::class)->name('prod.uniform.master');
-    Route::get('/prod/uniform/request', UniformRequestIndex::class)->name('prod.uniform.request.index');
-    Route::get('/prod/uniform/request/create', UniformRequestForm::class)->name('prod.uniform.request.create');
-    Route::get('/prod/uniform/request/edit/{id}', UniformRequestForm::class)->name('prod.uniform.request.edit');
-    Route::get('/prod/uniform/request/show/{id}', UniformRequestShow::class)->name('prod.uniform.request.show');
+    Route::get('/hr/uniform/master', MasterUniformManagement::class)->name('prod.uniform.master');
+    Route::get('/hr/uniform/request', UniformRequestIndex::class)->name('prod.uniform.request.index');
+    Route::get('/hr/uniform/request/create', UniformRequestForm::class)->name('prod.uniform.request.create');
+    Route::get('/hr/uniform/request/edit/{id}', UniformRequestForm::class)->name('prod.uniform.request.edit');
+    Route::get('/hr/uniform/request/show/{id}', UniformRequestShow::class)->name('prod.uniform.request.show');
 
     // Absence
-    Route::get('/prod/absence/report', AbsenceReportIndex::class)->name('prod.absence.report.index');
-    Route::get('/prod/absence/report/create', AbsenceReportForm::class)->name('prod.absence.report.create');
-    Route::get('/prod/absence/report/edit/{id}', AbsenceReportForm::class)->name('prod.absence.report.edit');
-    Route::get('/prod/absence/report/show/{id}', AbsenceReportShow::class)->name('prod.absence.report.show');
-    Route::get('/prod/absence/report/print/{id}', [AbsenceReportPrintController::class, 'print'])->name('prod.absence.report.print');
+    Route::get('/hr/attendance/report', AbsenceReportIndex::class)->name('prod.absence.report.index');
+    Route::get('/hr/attendance/report/create', AbsenceReportForm::class)->name('prod.absence.report.create');
+    Route::get('/hr/attendance/report/edit/{id}', AbsenceReportForm::class)->name('prod.absence.report.edit');
+    Route::get('/hr/attendance/report/show/{id}', AbsenceReportShow::class)->name('prod.absence.report.show');
+    Route::get('/hr/attendance/report/print/{id}', [AbsenceReportPrintController::class, 'print'])->name('prod.absence.report.print');
+    Route::get('/hr/attendance/control', AbsenceControlIndex::class)->name('prod.absence.control');
+    Route::get('/hr/attendance/control/generate', AbsenceControlGenerate::class)->name('prod.absence.control.generate');
+    Route::get('/hr/attendance/control/print/{startDate}/{endDate}/{department?}/{group?}', [AbsenceControlPrintController::class, 'print'])->name('prod.absence.control.print');
+    Route::get('/hr/attendance/dashboard', AbsenceDashboard::class)->name('prod.absence.dashboard');
 
 });
 

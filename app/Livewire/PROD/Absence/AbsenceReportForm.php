@@ -5,9 +5,9 @@ namespace App\Livewire\PROD\Absence;
 use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\PROD\Absence\AbsenceReport;
+use App\Models\PROD\Absence\AbsenceControl;
 use App\Models\HR\Employee;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class AbsenceReportForm extends Component
 {
@@ -44,31 +44,6 @@ class AbsenceReportForm extends Component
         'rows.*.jenis_ketidakhadiran.required' => 'Absence type is required.',
     ];
 
-    // Get all employees for dropdown
-    public function getEmployeesProperty()
-    {
-        return Employee::query()
-            ->select('id', 'nik', 'name', 'department')
-            ->whereIn('status', [1, 2, 3])
-            ->orderBy('name')
-            ->get()
-            ->mapWithKeys(fn ($employee) => [
-                $employee->id => $employee->nik . ' - ' . $employee->name . ' (' . $employee->department . ')'
-            ]);
-    }
-
-    public function getJenisKetidakhadiranOptions()
-    {
-        return [
-            'SD' => 'SD - Sakit Dengan Surat Dokter',
-            'IJ' => 'IJ - Izin Pribadi',
-            'A' => 'A - Tidak Hadir Tanpa Keterangan',
-            'CT' => 'CT - Cuti Tahunan',
-            'CK' => 'CK - Cuti Keguguran',
-            'CM' => 'CM - Cuti Melahirkan',
-        ];
-    }
-
     public function mount($id = null)
     {
         if ($id) {
@@ -91,6 +66,31 @@ class AbsenceReportForm extends Component
                 }
             }
         }
+    }
+
+    // Get all employees for dropdown
+    public function getEmployeesProperty()
+    {
+        return Employee::query()
+            ->select('id', 'nik', 'name', 'department')
+            ->whereIn('status', ['1', '2', '3'])
+            ->orderBy('name')
+            ->get()
+            ->mapWithKeys(fn ($employee) => [
+                $employee->id => $employee->nik . ' - ' . $employee->name . ' (' . $employee->department . ')'
+            ]);
+    }
+
+    public function getJenisKetidakhadiranOptions()
+    {
+        return [
+            'SD' => 'SD - Sakit Dengan Surat Dokter',
+            'IJ' => 'IJ - Izin Pribadi',
+            'A' => 'A - Tidak Hadir Tanpa Keterangan',
+            'CT' => 'CT - Cuti Tahunan',
+            'CK' => 'CK - Cuti Keguguran',
+            'CM' => 'CM - Cuti Melahirkan',
+        ];
     }
 
     public function addRow()
@@ -137,51 +137,44 @@ class AbsenceReportForm extends Component
         
         session()->flash('success', 'Row removed successfully!');
     }
-
-    public function sendEmailReport($report, $items)
+    
+    // ==================== UPDATE ABSENCE CONTROL ====================
+    
+    private function updateAbsenceControlFromReport($report)
     {
-        $jenisMap = [
-            'SD' => 'SD - Sakit Dengan Surat Dokter',
-            'IJ' => 'IJ - Izin Pribadi',
-            'A' => 'A - Tidak Hadir Tanpa Keterangan',
-            'CT' => 'CT - Cuti Tahunan',
-            'CK' => 'CK - Cuti Keguguran',
-            'CM' => 'CM - Cuti Melahirkan',
-        ];
-
-        // Get unique departments
-        $departments = collect($items)->pluck('employee_department')->unique()->implode(', ');
+        $reportDate = Carbon::parse($report->created_at)->format('Y-m-d');
+        $updated = 0;
         
-        // Prepare rows for email
-        $emailRows = [];
-        $no = 1;
-        foreach ($items as $item) {
-            $emailRows[] = [
-                'no' => $no++,
-                'nik' => $item['employee_nik'],
-                'nama' => $item['employee_name'],
-                'department' => $item['employee_department'],
-                'group' => $item['group'],
-                'line' => $item['line'],
-                'jenis_display' => $jenisMap[$item['jenis_ketidakhadiran']] ?? $item['jenis_ketidakhadiran'],
-                'keterangan' => $item['keterangan'] ?? '-',
-            ];
+        foreach ($this->rows as $row) {
+            $jenis = $row['jenis_ketidakhadiran'];
+            
+            $result = AbsenceControl::updateOrCreate(
+                [
+                    'employee_id' => $row['employee_id'],
+                    'date' => $reportDate,
+                ],
+                [
+                    'actual_shift' => $jenis,
+                    'status_date' => 'Normal',
+                ]
+            );
+            
+            if ($result) {
+                $updated++;
+            }
         }
-
-        $emailData = [
-            'date' => now()->format('d/m/Y'),
-            'departmentString' => $departments ?: 'All Departments',
-            'rows' => $emailRows,
-            'createdBy' => Auth::user()->name,
-            'createdAt' => now()->format('d/m/Y H:i:s'),
-            'reportUrl' => route('prod.absence.report.show', $report->id),
-        ];
-
-        // Send email
-        Mail::send('emails.prod.absence-report', $emailData, function ($message) {
-            $message->to('sek.esd@siix-global.com')
-                    ->subject('Laporan Ketidakhadiran Karyawan - ' . now()->format('d/m/Y H:i'));
-        });
+        
+        return $updated;
+    }
+    
+    private function deleteOldAbsenceControl($report)
+    {
+        $reportDate = Carbon::parse($report->created_at)->format('Y-m-d');
+        $oldEmployeeIds = collect($report->items)->pluck('employee_id')->toArray();
+        
+        return AbsenceControl::whereIn('employee_id', $oldEmployeeIds)
+            ->where('date', $reportDate)
+            ->delete();
     }
 
     public function save()
@@ -202,19 +195,20 @@ class AbsenceReportForm extends Component
         if ($this->reportId) {
             $report = AbsenceReport::find($this->reportId);
             if ($report->status === 'draft') {
+                $this->deleteOldAbsenceControl($report);
                 $report->update(['items' => $itemsForDb]);
-                session()->flash('success', 'Report updated successfully!');
+                $updated = $this->updateAbsenceControlFromReport($report);
+                
+                session()->flash('success', "Report updated successfully! {$updated} absence control record(s) updated.");
             } else {
                 session()->flash('error', 'Cannot edit report that is already processed!');
                 return;
             }
         } else {
             $report = AbsenceReport::create(['items' => $itemsForDb]);
+            $updated = $this->updateAbsenceControlFromReport($report);
             
-            // Send email after successful creation
-            $this->sendEmailReport($report, $this->rows);
-            
-            session()->flash('success', 'Report created successfully! Email has been sent to sek.esd@siix-global.com');
+            session()->flash('success', "Report created successfully! {$updated} absence control record(s) updated.");
         }
 
         return redirect()->route('prod.absence.report.index');

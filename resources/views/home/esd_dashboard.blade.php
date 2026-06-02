@@ -194,7 +194,7 @@
             </div>
         </div>
 
-        <!-- WEEKLY CHART - FULL WIDTH -->
+        <!-- WEEKLY CHART - FULL WIDTH -->  
         @php
             $weeklySelectedYear = request()->get('weekly_year', $currentYear);
             $weeklySelectedMonth = request()->get('weekly_month', $now->month);
@@ -221,26 +221,42 @@
 
             $weeklyPercentagesData = [];
             foreach ($weeklyWeeks as $week) {
-                $actual = App\Models\ESD\Activity\ViewAllMeasurement::select('measurement_type', DB::raw('COUNT(DISTINCT id_table) as total'))
-                    ->whereBetween('created_at', [$week['start'], $week['end']])
-                    ->groupBy('measurement_type')
-                    ->pluck('total', 'measurement_type');
-
-                $target = App\Models\ESD\Activity\ViewAllMeasurement::select('measurement_type', DB::raw('COUNT(DISTINCT id_table) as total'))
-                    ->whereBetween('next_date', [$week['start'], $week['end']])
-                    ->groupBy('measurement_type')
-                    ->pluck('total', 'measurement_type');
-
-                $allTypes = $actual->keys()->merge($target->keys())->unique();
-                $percentages = [];
-
-                foreach ($allTypes as $type) {
-                    $a = $actual->get($type, 0);
-                    $t = $target->get($type, 0);
-                    if ($t > 0) $percentages[] = ($a / $t) * 100;
+                // Get ALL measurement types that have targets OR actuals in this week
+                $allMeasurements = App\Models\ESD\Activity\ViewAllMeasurement::select('measurement_type')
+                    ->where(function($query) use ($week) {
+                        $query->whereBetween('created_at', [$week['start'], $week['end']])
+                            ->orWhereBetween('next_date', [$week['start'], $week['end']]);
+                    })
+                    ->distinct()
+                    ->pluck('measurement_type');
+                
+                $totalTarget = 0;
+                $totalActual = 0;
+                
+                foreach ($allMeasurements as $type) {
+                    $actual = App\Models\ESD\Activity\ViewAllMeasurement::where('measurement_type', $type)
+                        ->whereBetween('created_at', [$week['start'], $week['end']])
+                        ->distinct('id_table')
+                        ->count('id_table');
+                        
+                    $target = App\Models\ESD\Activity\ViewAllMeasurement::where('measurement_type', $type)
+                        ->whereBetween('next_date', [$week['start'], $week['end']])
+                        ->distinct('id_table')
+                        ->count('id_table');
+                    
+                    // Only count if target > 0, otherwise skip (no requirement this week)
+                    if ($target > 0) {
+                        $totalTarget += $target;
+                        $totalActual += $actual; // Bisa lebih dari target (lebih dari 100%)
+                    }
                 }
-
-                $weeklyPercentagesData[] = count($percentages) ? round(collect($percentages)->avg()) : 0;
+                
+                // Calculate overall percentage for the week (bisa > 100%)
+                if ($totalTarget > 0) {
+                    $weeklyPercentagesData[] = round(($totalActual / $totalTarget) * 100, 2); // Bisa > 100%
+                } else {
+                    $weeklyPercentagesData[] = 0;
+                }
             }
             
             $availableMonths = [
@@ -284,24 +300,46 @@
                             @foreach($rowWeeks as $weekIndex => $week)
                                 @php
                                     $percentage = $weeklyPercentagesChunked[$rowIndex][$weekIndex] ?? 0;
+                                    // Untuk tampilan gauge, batasi ke 100% (karena gauge hanya 0-100%)
                                     $percentageGauge = min($percentage, 100);
-                                    $targetAngle = -90 + ($percentageGauge * 1.8);
+                                    // Tentukan warna berdasarkan apakah melebihi 100% atau tidak
+                                    $badgeColor = $percentage > 100 ? 'emerald' : ($percentage >= 80 ? 'green' : ($percentage >= 60 ? 'yellow' : ($percentage >= 40 ? 'orange' : 'red')));
+                                    $gaugeColor = $percentage > 100 ? '#10b981' : ($percentage >= 80 ? '#22c55e' : ($percentage >= 60 ? '#eab308' : ($percentage >= 40 ? '#f97316' : '#ef4444')));
                                 @endphp
-                                <div class="flex flex-col items-center gauge-container" style="flex: 1; max-width: 200px; min-width: 140px;" data-percentage="{{ $percentageGauge }}">
+                                <div class="flex flex-col items-center gauge-container" 
+                                    style="flex: 1; max-width: 200px; min-width: 140px;" 
+                                    data-actual-percentage="{{ $percentage }}">
+                                    
+                                    <!-- SVG gauge tetap sama -->
                                     <div class="relative w-40 h-28 mx-auto">
                                         <svg class="w-full h-full gauge-svg" viewBox="0 0 200 100">
                                             <path d="M 30 85 A 70 70 0 0 1 170 85" fill="none" stroke="#e5e7eb" stroke-width="10" stroke-linecap="round" />
-                                            <path class="gauge-arc" d="M 30 85 A 70 70 0 0 1 170 85" fill="none" stroke="#f59e0b" stroke-width="10" stroke-linecap="round" stroke-dasharray="0 220" />
-                                            <circle cx="100" cy="85" r="6" fill="#f59e0b" stroke="#fff" stroke-width="2" />
+                                            <path class="gauge-arc" d="M 30 85 A 70 70 0 0 1 170 85" fill="none" stroke="#22c55e" stroke-width="10" stroke-linecap="round" stroke-dasharray="0 220" />
+                                            <circle class="gauge-circle" cx="100" cy="85" r="6" fill="#22c55e" stroke="#fff" stroke-width="2" />
                                             <line class="gauge-needle" x1="100" y1="85" x2="100" y2="35" stroke="#4b5563" stroke-width="3" stroke-linecap="round" transform="rotate(-90, 100, 85)" />
                                         </svg>
                                     </div>
+                                    
                                     <div class="text-center mt-3">
-                                        <span class="text-2xl font-bold text-orange-600 dark:text-orange-400 gauge-percentage">0%</span>
+                                        <span class="text-2xl font-bold gauge-percentage">0%</span>
+                                        @if($percentage > 100)
+                                            <span class="gauge-badge inline-flex ml-1 items-center rounded-full bg-emerald-100 dark:bg-emerald-900 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-300">
+                                                +{{ number_format($percentage - 100, 1) }}%
+                                            </span>
+                                        @endif
                                     </div>
+                                    
                                     <div class="text-center mt-1">
                                         <span class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">{{ $week['label'] }}</span>
                                     </div>
+                                    
+                                    @if($percentage > 100)
+                                        <div class="text-center mt-1">
+                                            <span class="text-xs text-emerald-600 dark:text-emerald-400 font-medium">
+                                                {{ $percentage }}% achieved
+                                            </span>
+                                        </div>
+                                    @endif
                                 </div>
                             @endforeach
                             @for($i = count($rowWeeks); $i < $weeklyItemsPerRow; $i++)
@@ -549,12 +587,11 @@
                 exceptPanel.classList.add('hidden');
             }
             
-            // Submit form immediately when radio changes
             const form = document.getElementById('monthlyFilterForm');
             if (form) form.submit();
         }
 
-        // Initialize panel visibility based on current filter mode
+        // Initialize panel visibility
         document.addEventListener('DOMContentLoaded', function() {
             const filterMode = '{{ $filterMode }}';
             if (filterMode === 'selected') {
@@ -565,70 +602,93 @@
                 document.getElementById('exceptTypesPanel')?.classList.remove('hidden');
             }
         });
-        // Fungsi untuk animasi semua gauge
-        function animateAllGauges() {
-            // ========== ANIMASI WEEKLY GAUGES ==========
+        
+        // Fungsi untuk update warna
+        function updateGaugeColors() {
             const gaugeContainers = document.querySelectorAll('.gauge-container');
             
             gaugeContainers.forEach(container => {
-                const targetPercentage = parseInt(container.dataset.percentage);
+                const percentage = parseFloat(container.dataset.actualPercentage) || 0;
+                const arcElement = container.querySelector('.gauge-arc');
+                const circleElement = container.querySelector('.gauge-circle');
+                const percentageElement = container.querySelector('.gauge-percentage');
+                
+                let color;
+                if (percentage > 100) color = '#10b981';
+                else if (percentage >= 80) color = '#22c55e';
+                else if (percentage >= 60) color = '#eab308';
+                else if (percentage >= 40) color = '#f97316';
+                else color = '#ef4444';
+                
+                if (arcElement) arcElement.setAttribute('stroke', color);
+                if (circleElement) circleElement.setAttribute('fill', color);
+                if (percentageElement) percentageElement.style.color = color;
+            });
+        }
+        
+        // Flag untuk mencegah multiple animation
+        let isAnimating = false;
+        
+        // Fungsi animasi gauge
+        function animateAllGauges() {
+            if (isAnimating) return;
+            isAnimating = true;
+            
+            // ANIMASI WEEKLY GAUGES
+            const gaugeContainers = document.querySelectorAll('.gauge-container');
+            
+            gaugeContainers.forEach(container => {
+                const actualPercentage = parseFloat(container.dataset.actualPercentage) || 0;
+                const displayPercentage = Math.min(actualPercentage, 100);
+                
                 const arcElement = container.querySelector('.gauge-arc');
                 const needleElement = container.querySelector('.gauge-needle');
                 const percentageElement = container.querySelector('.gauge-percentage');
+                const badgeElement = container.querySelector('.gauge-badge');
                 
                 const radius = 70;
                 const halfCircumference = Math.PI * radius;
-                const arcLength = (targetPercentage / 100) * halfCircumference;
+                const arcLength = (displayPercentage / 100) * halfCircumference;
                 const dasharray = `${arcLength} ${halfCircumference * 2}`;
-                const targetAngle = -90 + (targetPercentage * 1.8);
+                const targetAngle = -90 + (displayPercentage * 1.8);
                 
-                // Reset dulu ke posisi awal
+                // Set langsung tanpa reset untuk performa lebih baik
                 if (arcElement) {
-                    arcElement.style.transition = 'none';
-                    arcElement.setAttribute('stroke-dasharray', '0 220');
+                    arcElement.style.transition = 'stroke-dasharray 1s ease-out';
+                    arcElement.setAttribute('stroke-dasharray', dasharray);
                 }
+                
                 if (needleElement) {
-                    needleElement.style.transition = 'none';
-                    needleElement.setAttribute('transform', 'rotate(-90, 100, 85)');
+                    needleElement.style.transition = 'transform 1s ease-out';
+                    needleElement.setAttribute('transform', `rotate(${targetAngle}, 100, 85)`);
                 }
-                if (percentageElement) {
+                
+                // Animasi angka
+                if (percentageElement && actualPercentage > 0) {
+                    let current = 0;
+                    const increment = actualPercentage / 20; // Lebih cepat
+                    const timer = setInterval(() => {
+                        current += increment;
+                        if (current >= actualPercentage) {
+                            current = actualPercentage;
+                            clearInterval(timer);
+                        }
+                        percentageElement.textContent = Math.round(current) + '%';
+                        
+                        if (badgeElement && actualPercentage > 100) {
+                            const extraValue = (actualPercentage - 100).toFixed(1);
+                            badgeElement.textContent = `+${extraValue}%`;
+                        }
+                    }, 40);
+                } else if (percentageElement) {
                     percentageElement.textContent = '0%';
                 }
-                
-                // Force reflow
-                void container.offsetHeight;
-                
-                // Mulai animasi
-                setTimeout(() => {
-                    if (arcElement) {
-                        arcElement.style.transition = 'stroke-dasharray 1.5s ease-out';
-                        arcElement.setAttribute('stroke-dasharray', dasharray);
-                    }
-                    
-                    if (needleElement) {
-                        needleElement.style.transition = 'transform 1.5s ease-out';
-                        needleElement.setAttribute('transform', `rotate(${targetAngle}, 100, 85)`);
-                    }
-                    
-                    if (percentageElement) {
-                        let current = 0;
-                        const increment = targetPercentage / 30;
-                        const timer = setInterval(() => {
-                            current += increment;
-                            if (current >= targetPercentage) {
-                                current = targetPercentage;
-                                clearInterval(timer);
-                            }
-                            percentageElement.textContent = Math.round(current) + '%';
-                        }, 50);
-                    }
-                }, 100);
             });
             
-            // ========== ANIMASI ACHIEVEMENT GAUGE ==========
+            // ANIMASI ACHIEVEMENT GAUGE
             const achievementContainer = document.querySelector('.achievement-gauge');
             if (achievementContainer) {
-                const targetPercentage = parseFloat(achievementContainer.dataset.percentage);
+                const targetPercentage = parseFloat(achievementContainer.dataset.percentage) || 0;
                 const targetPercentageGauge = Math.min(targetPercentage, 100);
                 
                 const arcElement = document.querySelector('.achievement-arc');
@@ -641,71 +701,75 @@
                 const dasharray = `${arcLength} ${halfCircumference * 2}`;
                 const targetAngle = -90 + (targetPercentageGauge * 1.8);
                 
-                // Reset dulu ke posisi awal
                 if (arcElement) {
-                    arcElement.style.transition = 'none';
-                    arcElement.setAttribute('stroke-dasharray', '0 251');
+                    arcElement.style.transition = 'stroke-dasharray 1s ease-out';
+                    arcElement.setAttribute('stroke-dasharray', dasharray);
                 }
+                
                 if (needleElement) {
-                    needleElement.style.transition = 'none';
-                    needleElement.setAttribute('transform', 'rotate(-90, 100, 85)');
+                    needleElement.style.transition = 'transform 1s ease-out';
+                    needleElement.setAttribute('transform', `rotate(${targetAngle}, 100, 85)`);
                 }
-                if (percentageElement) {
+                
+                if (percentageElement && targetPercentage > 0) {
+                    let current = 0;
+                    const increment = targetPercentage / 20;
+                    const timer = setInterval(() => {
+                        current += increment;
+                        if (current >= targetPercentage) {
+                            current = targetPercentage;
+                            clearInterval(timer);
+                        }
+                        percentageElement.textContent = Math.round(current) + '%';
+                    }, 40);
+                } else if (percentageElement) {
                     percentageElement.textContent = '0%';
                 }
-                
-                // Force reflow
-                void achievementContainer.offsetHeight;
-                
-                // Mulai animasi
-                setTimeout(() => {
-                    if (arcElement) {
-                        arcElement.style.transition = 'stroke-dasharray 1.5s ease-out';
-                        arcElement.setAttribute('stroke-dasharray', dasharray);
-                    }
-                    
-                    if (needleElement) {
-                        needleElement.style.transition = 'transform 1.5s ease-out';
-                        needleElement.setAttribute('transform', `rotate(${targetAngle}, 100, 85)`);
-                    }
-                    
-                    if (percentageElement) {
-                        let current = 0;
-                        const increment = targetPercentage / 30;
-                        const timer = setInterval(() => {
-                            current += increment;
-                            if (current >= targetPercentage) {
-                                current = targetPercentage;
-                                clearInterval(timer);
-                            }
-                            percentageElement.textContent = Math.round(current) + '%';
-                        }, 50);
-                    }
-                }, 100);
             }
+            
+            // Reset flag setelah animasi selesai
+            setTimeout(() => {
+                isAnimating = false;
+            }, 1200);
         }
         
-        // Inisialisasi pertama kali
+        // Inisialisasi dengan debounce
+        let initTimeout;
         function initDashboard() {
-            // Delay sebentar untuk memastikan DOM benar-benar siap
-            setTimeout(() => {
+            if (initTimeout) clearTimeout(initTimeout);
+            
+            initTimeout = setTimeout(() => {
+                updateGaugeColors();
                 animateAllGauges();
-            }, 200);
+            }, 100);
         }
         
-        // Untuk Livewire SPA mode - event navigasi
-        document.addEventListener('livewire:navigated', function() {
-            // Reset dan animasi ulang saat navigasi ke halaman ini
-            setTimeout(() => {
-                animateAllGauges();
-            }, 200);
-        });
+        // Hanya gunakan 1 event listener untuk Livewire
+        if (typeof Livewire !== 'undefined') {
+            document.addEventListener('livewire:navigated', function() {
+                setTimeout(() => {
+                    updateGaugeColors();
+                    animateAllGauges();
+                }, 150);
+            });
+        }
         
-        // Untuk normal page load
+        // Simple DOM ready check
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', initDashboard);
         } else {
             initDashboard();
+        }
+        
+        // Optional: Refresh saat filter berubah
+        const filterForm = document.getElementById('monthlyFilterForm');
+        if (filterForm) {
+            filterForm.addEventListener('change', function() {
+                setTimeout(() => {
+                    updateGaugeColors();
+                    animateAllGauges();
+                }, 500);
+            });
         }
     </script>
     @endpush

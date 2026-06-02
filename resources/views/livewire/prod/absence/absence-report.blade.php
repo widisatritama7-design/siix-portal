@@ -154,8 +154,8 @@
         <table class="data-table">
             <thead>
                 <tr>
-                    <th style="width: 30px;">No</th>
-                    <th style="width: 80px;">NIK</th>
+                    <th style="width: 20px;">No</th>
+                    <th style="width: 40px;">NIK</th>
                     <th style="width: 130px;">Nama</th>
                     <th style="width: 100px;">Departement</th>
                     <th style="width: 60px;">Group</th>

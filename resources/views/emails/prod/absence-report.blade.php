@@ -247,7 +247,7 @@
             <p>Best Regards,<br>Web Portal SIIX EMS Indonesia</p>
         </div>
         <div class="footer">
-            <p>This is an automated notification from SIIX Absence Report System.</p>
+            <p>This is an automated notification from SIIX Attencance Report System.</p>
             <p>&copy; {{ date('Y') }} SIIX - All rights reserved.</p>
         </div>
     </div>

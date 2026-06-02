@@ -175,4 +175,38 @@ class AbsenceReport extends Model
     {
         return $query->where('status', 'accepted');
     }
+
+    public function getAbsenceByEmployee($employeeId)
+    {
+        $items = $this->items ?? [];
+        $absences = [];
+        
+        foreach ($items as $item) {
+            if (isset($item['employee_id']) && $item['employee_id'] == $employeeId) {
+                $absences[] = $item;
+            }
+        }
+        
+        return $absences;
+    }
+
+    public function getTotalAbsenceByEmployee($employeeId)
+    {
+        return count($this->getAbsenceByEmployee($employeeId));
+    }
+
+    public function getAbsenceByType($employeeId, $type)
+    {
+        $items = $this->items ?? [];
+        $count = 0;
+        
+        foreach ($items as $item) {
+            if (isset($item['employee_id']) && $item['employee_id'] == $employeeId 
+                && isset($item['jenis_ketidakhadiran']) && $item['jenis_ketidakhadiran'] == $type) {
+                $count++;
+            }
+        }
+        
+        return $count;
+    }
 }

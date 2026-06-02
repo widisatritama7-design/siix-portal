@@ -4,6 +4,7 @@ namespace App\Models\HR;
 
 use App\Models\HR\EmployeeCall;
 use App\Models\HR\ViolationEmployee;
+use App\Models\PROD\Absence\AbsenceControl;
 use App\Models\PROD\Absence\AbsenceReport;
 use App\Models\PROD\Uniform\UniformRequest;
 use Illuminate\Database\Eloquent\Model;
@@ -24,7 +25,14 @@ class Employee extends Model
         'last_group',
         'last_job',
         'last_route',
-        'photo',        
+        'photo',
+        'actual_group',
+        'actual_section',
+        'actual_process',
+        'actual_route',
+        'actual_titik_jemputan',
+        'actual_shift',
+        'actual_status',
     ];
 
     protected $primaryKey = 'id';
@@ -79,5 +87,18 @@ class Employee extends Model
     public function absenceReports()
     {
         return $this->hasMany(AbsenceReport::class, 'employee_id');
+    }
+
+    public function absenceControls()
+    {
+        return $this->hasMany(AbsenceControl::class, 'employee_id', 'id');
+    }
+
+    public function getAbsenceControlsByDateRange($startDate, $endDate)
+    {
+        return $this->absenceControls()
+            ->whereBetween('date', [$startDate, $endDate])
+            ->orderBy('date', 'asc')
+            ->get();
     }
 }

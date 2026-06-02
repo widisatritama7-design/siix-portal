@@ -1,10 +1,10 @@
 <div class="p-1 space-y-2">
-    @section('title', $reportId ? 'Edit Absence Report' : 'Create Absence Report')
+    @section('title', $reportId ? 'Edit Attendance Report' : 'Create Attendance Report')
     
     <flux:breadcrumbs>
         <flux:breadcrumbs.item href="{{ route('dashboard') }}" wire:navigate separator="slash">Dashboard</flux:breadcrumbs.item>
-        <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600">PROD</flux:breadcrumbs.item>
-        <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600">Absence</flux:breadcrumbs.item>
+        <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600">HR</flux:breadcrumbs.item>
+        <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600">Attendance</flux:breadcrumbs.item>
         <flux:breadcrumbs.item href="{{ route('prod.absence.report.index') }}" wire:navigate separator="slash">Report</flux:breadcrumbs.item>
         <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600">{{ $reportId ? 'Edit' : 'Create' }}</flux:breadcrumbs.item>
     </flux:breadcrumbs>
@@ -12,7 +12,7 @@
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-2">
         <div>
             <h1 class="text-3xl font-bold text-zinc-800 dark:text-white">
-                {{ $reportId ? 'Edit Absence Report' : 'Create Absence Report' }}
+                {{ $reportId ? 'Edit Attendance Report' : 'Create Attendance Report' }}
             </h1>
             <p class="text-sm text-zinc-500">Add multiple rows for different employees</p>
         </div>

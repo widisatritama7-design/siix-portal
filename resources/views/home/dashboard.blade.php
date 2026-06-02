@@ -65,153 +65,131 @@
             $userId = auth()->id();
             $now = now()->setTimezone('Asia/Jakarta');
             $today = $now->format('Y-m-d');
-            $todayStart = $now->copy()->startOfDay();
-            $todayEnd = $now->copy()->endOfDay();
             
-            // ==================== SESSION ANALYTICS ====================
-            // Get active session (user yang belum logout)
-            $activeSession = DB::table('session_analytics')
-                ->where('user_id', $userId)
-                ->whereNull('logout_at')
-                ->orderBy('login_at', 'desc')
-                ->first();
-            
-            // Calculate session remaining time (1 hour limit)
-            $sessionRemainingSeconds = 0;
-            $sessionExpired = false;
-            $sessionDurationMinutes = 0;
-            if ($activeSession && $activeSession->login_at) {
-                $loginTime = \Carbon\Carbon::parse($activeSession->login_at)->setTimezone('Asia/Jakarta');
-                $sessionEndTime = $loginTime->copy()->addHours(1);
-                $now = now()->setTimezone('Asia/Jakarta');
+            // Gunakan cache agar tidak query setiap load
+            $dashboardData = Cache::remember("dashboard_{$userId}_{$today}", 300, function() use ($userId, $now, $today) {
                 
-                $sessionDurationMinutes = $loginTime->diffInMinutes($now);
-                
-                if ($now->gte($sessionEndTime)) {
-                    $sessionExpired = true;
-                    $sessionRemainingSeconds = 0;
-                } else {
-                    $sessionRemainingSeconds = $now->diffInSeconds($sessionEndTime, false);
-                }
-            }
-            
-            // Get today's sessions
-            $todaySessions = DB::table('session_analytics')
-                ->where('user_id', $userId)
-                ->whereDate('login_at', $today)
-                ->count();
-            
-            // Get last login time
-            $lastLogin = DB::table('session_analytics')
-                ->where('user_id', $userId)
-                ->orderBy('login_at', 'desc')
-                ->first();
-            
-            // ==================== PAGE VIEWS DISTRIBUTION BY SESSION DURATION ====================
-            // Get all sessions for today
-            $allSessions = DB::table('session_analytics')
-                ->where('user_id', $userId)
-                ->whereDate('login_at', $today)
-                ->get();
-            
-            // Initialize counters for page views in each session duration category
-            $pageViewsDistribution = [
-                '0_5' => 0,
-                '5_10' => 0,
-                '10_30' => 0,
-                '30_60' => 0,
-            ];
-            
-            // For each session, get its page views and categorize by when they occurred
-            foreach ($allSessions as $session) {
-                $loginTime = \Carbon\Carbon::parse($session->login_at)->setTimezone('Asia/Jakarta');
-                $sessionEndTime = $loginTime->copy()->addHours(1);
-                
-                $sessionPageViews = DB::table('page_views')
+                // ==================== SESSION ANALYTICS ====================
+                $activeSession = DB::table('session_analytics')
                     ->where('user_id', $userId)
-                    ->whereBetween('created_at', [$loginTime, $sessionEndTime])
-                    ->whereNotIn('page', ['livewire', 'livewire/*', 'livewire/update'])
-                    ->orderBy('created_at', 'asc')
-                    ->get();
+                    ->whereNull('logout_at')
+                    ->orderBy('login_at', 'desc')
+                    ->first();
                 
-                foreach ($sessionPageViews as $pageView) {
-                    $viewTime = \Carbon\Carbon::parse($pageView->created_at)->setTimezone('Asia/Jakarta');
-                    $minutesAfterLogin = $loginTime->diffInMinutes($viewTime);
-                    
-                    if ($minutesAfterLogin >= 0 && $minutesAfterLogin < 5) {
-                        $pageViewsDistribution['0_5']++;
-                    } elseif ($minutesAfterLogin >= 5 && $minutesAfterLogin < 10) {
-                        $pageViewsDistribution['5_10']++;
-                    } elseif ($minutesAfterLogin >= 10 && $minutesAfterLogin < 30) {
-                        $pageViewsDistribution['10_30']++;
-                    } elseif ($minutesAfterLogin >= 30 && $minutesAfterLogin <= 60) {
-                        $pageViewsDistribution['30_60']++;
+                $sessionDurationMinutes = 0;
+                if ($activeSession && $activeSession->login_at) {
+                    $loginTime = \Carbon\Carbon::parse($activeSession->login_at)->setTimezone('Asia/Jakarta');
+                    $sessionDurationMinutes = $loginTime->diffInMinutes($now);
+                }
+                
+                // Get today's sessions (1 query)
+                $todaySessions = DB::table('session_analytics')
+                    ->where('user_id', $userId)
+                    ->whereDate('login_at', $today)
+                    ->count();
+                
+                // OPTIMASI: 1 query untuk semua session + page views
+                $allData = DB::select("
+                    SELECT 
+                        sa.login_at,
+                        pv.created_at as page_view_time,
+                        pv.page
+                    FROM session_analytics sa
+                    LEFT JOIN page_views pv ON pv.user_id = sa.user_id 
+                        AND pv.created_at BETWEEN sa.login_at AND DATE_ADD(sa.login_at, INTERVAL 1 HOUR)
+                        AND pv.page NOT IN ('livewire', 'livewire/*', 'livewire/update')
+                    WHERE sa.user_id = ?
+                        AND DATE(sa.login_at) = ?
+                ", [$userId, $today]);
+                
+                // Process data
+                $pageViewsDistribution = ['0_5' => 0, '5_10' => 0, '10_30' => 0, '30_60' => 0];
+                
+                foreach ($allData as $item) {
+                    if ($item->page_view_time) {
+                        $loginTime = \Carbon\Carbon::parse($item->login_at);
+                        $viewTime = \Carbon\Carbon::parse($item->page_view_time);
+                        $minutesAfterLogin = $loginTime->diffInMinutes($viewTime);
+                        
+                        if ($minutesAfterLogin >= 0 && $minutesAfterLogin < 5) {
+                            $pageViewsDistribution['0_5']++;
+                        } elseif ($minutesAfterLogin >= 5 && $minutesAfterLogin < 10) {
+                            $pageViewsDistribution['5_10']++;
+                        } elseif ($minutesAfterLogin >= 10 && $minutesAfterLogin < 30) {
+                            $pageViewsDistribution['10_30']++;
+                        } elseif ($minutesAfterLogin >= 30 && $minutesAfterLogin <= 60) {
+                            $pageViewsDistribution['30_60']++;
+                        }
                     }
                 }
-            }
-            
-            // Calculate total page views for distribution
-            $totalPageViewsForDist = array_sum($pageViewsDistribution);
-            if ($totalPageViewsForDist == 0) {
-                $totalPageViewsForDist = 1;
-            }
-            
-            // Calculate percentages
-            $percent0_5 = round(($pageViewsDistribution['0_5'] / $totalPageViewsForDist) * 100);
-            $percent5_10 = round(($pageViewsDistribution['5_10'] / $totalPageViewsForDist) * 100);
-            $percent10_30 = round(($pageViewsDistribution['10_30'] / $totalPageViewsForDist) * 100);
-            $percent30_60 = round(($pageViewsDistribution['30_60'] / $totalPageViewsForDist) * 100);
-            
-            // Adjust percentages to ensure total = 100%
-            $totalPercent = $percent0_5 + $percent5_10 + $percent10_30 + $percent30_60;
-            if ($totalPercent != 100 && $totalPercent > 0) {
-                $diff = 100 - $totalPercent;
-                $percentages = [
-                    '0_5' => &$percent0_5,
-                    '5_10' => &$percent5_10,
-                    '10_30' => &$percent10_30,
-                    '30_60' => &$percent30_60
+                
+                // Today's page views
+                $todayPageViews = DB::table('page_views')
+                    ->where('user_id', $userId)
+                    ->whereDate('created_at', $today)
+                    ->whereNotIn('page', ['livewire', 'livewire/*', 'livewire/update'])
+                    ->count();
+                
+                // Top pages
+                $topPages = DB::table('page_views')
+                    ->where('user_id', $userId)
+                    ->whereDate('created_at', $today)
+                    ->whereNotIn('page', ['livewire', 'livewire/*', 'livewire/update', 'null'])
+                    ->whereNotNull('page')
+                    ->select('page', DB::raw('COUNT(*) as views'))
+                    ->groupBy('page')
+                    ->orderBy('views', 'desc')
+                    ->limit(5)
+                    ->get();
+                
+                // Calculate percentages
+                $totalPageViewsForDist = array_sum($pageViewsDistribution);
+                if ($totalPageViewsForDist == 0) $totalPageViewsForDist = 1;
+                
+                $percent0_5 = round(($pageViewsDistribution['0_5'] / $totalPageViewsForDist) * 100);
+                $percent5_10 = round(($pageViewsDistribution['5_10'] / $totalPageViewsForDist) * 100);
+                $percent10_30 = round(($pageViewsDistribution['10_30'] / $totalPageViewsForDist) * 100);
+                $percent30_60 = round(($pageViewsDistribution['30_60'] / $totalPageViewsForDist) * 100);
+                
+                // Current session category
+                $currentPageViewCategory = '';
+                if ($activeSession) {
+                    if ($sessionDurationMinutes >= 0 && $sessionDurationMinutes < 5) {
+                        $currentPageViewCategory = '0-5 minutes';
+                    } elseif ($sessionDurationMinutes >= 5 && $sessionDurationMinutes < 10) {
+                        $currentPageViewCategory = '5-10 minutes';
+                    } elseif ($sessionDurationMinutes >= 10 && $sessionDurationMinutes < 30) {
+                        $currentPageViewCategory = '10-30 minutes';
+                    } elseif ($sessionDurationMinutes >= 30 && $sessionDurationMinutes <= 60) {
+                        $currentPageViewCategory = '30-60 minutes';
+                    }
+                }
+                
+                return [
+                    'todayPageViews' => $todayPageViews,
+                    'todaySessions' => $todaySessions,
+                    'pageViewsDistribution' => $pageViewsDistribution,
+                    'percent0_5' => $percent0_5,
+                    'percent5_10' => $percent5_10,
+                    'percent10_30' => $percent10_30,
+                    'percent30_60' => $percent30_60,
+                    'topPages' => $topPages,
+                    'currentPageViewCategory' => $currentPageViewCategory,
+                    'sessionDurationMinutes' => $sessionDurationMinutes,
                 ];
-                arsort($percentages);
-                foreach ($percentages as $key => &$value) {
-                    $value += $diff;
-                    break;
-                }
-            }
+            });
             
-            // Get current session's page view category for active session
-            $currentPageViewCategory = '';
-            if ($activeSession) {
-                if ($sessionDurationMinutes >= 0 && $sessionDurationMinutes < 5) {
-                    $currentPageViewCategory = '0-5 minutes';
-                } elseif ($sessionDurationMinutes >= 5 && $sessionDurationMinutes < 10) {
-                    $currentPageViewCategory = '5-10 minutes';
-                } elseif ($sessionDurationMinutes >= 10 && $sessionDurationMinutes < 30) {
-                    $currentPageViewCategory = '10-30 minutes';
-                } elseif ($sessionDurationMinutes >= 30 && $sessionDurationMinutes <= 60) {
-                    $currentPageViewCategory = '30-60 minutes';
-                }
-            }
-            
-            // ==================== PAGE VIEWS ====================
-            // Get today's page views (filter out Livewire routes)
-            $todayPageViews = DB::table('page_views')
-                ->where('user_id', $userId)
-                ->whereDate('created_at', $today)
-                ->whereNotIn('page', ['livewire', 'livewire/*', 'livewire/update'])
-                ->count();
-            
-            // Get most visited pages (filter out Livewire)
-            $topPages = DB::table('page_views')
-                ->where('user_id', $userId)
-                ->whereDate('created_at', $today)
-                ->whereNotIn('page', ['livewire', 'livewire/*', 'livewire/update', 'null'])
-                ->whereNotNull('page')
-                ->select('page', DB::raw('COUNT(*) as views'))
-                ->groupBy('page')
-                ->orderBy('views', 'desc')
-                ->limit(5)
-                ->get();
+            // Extract dari cache
+            $todayPageViews = $dashboardData['todayPageViews'];
+            $todaySessions = $dashboardData['todaySessions'];
+            $pageViewsDistribution = $dashboardData['pageViewsDistribution'];
+            $percent0_5 = $dashboardData['percent0_5'];
+            $percent5_10 = $dashboardData['percent5_10'];
+            $percent10_30 = $dashboardData['percent10_30'];
+            $percent30_60 = $dashboardData['percent30_60'];
+            $topPages = $dashboardData['topPages'];
+            $currentPageViewCategory = $dashboardData['currentPageViewCategory'];
+            $sessionDurationMinutes = $dashboardData['sessionDurationMinutes'];
         @endphp
 
         <!-- Dashboard Container -->
@@ -244,7 +222,7 @@
                                     <div class="flex items-center gap-3 p-3 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all duration-200">
                                         
                                         <!-- TIMELINE -->
-                                        <div class="relative flex flex-col items-center">
+                                        <div class="relative flex flex-col items-center flex-shrink-0">
                                             @php
                                                 $rankColors = ['bg-amber-500', 'bg-gray-400', 'bg-orange-600', 'bg-blue-500', 'bg-green-500'];
                                                 $rankColor = $rankColors[$index] ?? 'bg-purple-500';
@@ -259,23 +237,23 @@
                                             @endif
                                         </div>
                                         
-                                        <!-- Page Name -->
-                                        <div class="flex-1">
-                                            <div class="text-sm font-medium text-zinc-800 dark:text-zinc-200 truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                                        <!-- Page Name dengan ellipsis jika terlalu panjang -->
+                                        <div class="flex-1 min-w-0">
+                                            <div class="text-sm font-medium text-zinc-800 dark:text-zinc-200 truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors" title="{{ $page->page }}">
                                                 {{ $page->page }}
                                             </div>
                                         </div>
                                         
-                                        <!-- View Count -->
-                                        <div class="flex items-center gap-1">
-                                            <flux:icon.eye class="w-3.5 h-3.5 text-zinc-400" />
+                                        <!-- View Count (flex-shrink-0 agar tidak mengecil) -->
+                                        <div class="flex items-center gap-1 flex-shrink-0">
+                                            <flux:icon.eye class="w-3.5 h-3.5 text-zinc-400 flex-shrink-0" />
                                             <span class="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
                                                 {{ $page->views }}
                                             </span>
                                         </div>
                                         
-                                        <!-- Arrow -->
-                                        <flux:icon.arrow-top-right-on-square class="w-4 h-4 text-zinc-400 opacity-0 group-hover:opacity-100 transition-opacity" />
+                                        <!-- Arrow (flex-shrink-0 agar tidak mengecil) -->
+                                        <flux:icon.arrow-top-right-on-square class="w-4 h-4 text-zinc-400 opacity-0 group-hover:opacity-100 transition-opacity flex-shrink-0" />
                                     </div>
                                 </a>
                             @empty
