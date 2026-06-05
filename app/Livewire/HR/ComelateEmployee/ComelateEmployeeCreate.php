@@ -249,15 +249,32 @@ class ComelateEmployeeCreate extends Component
             $hodEmail = $hod?->hod_email;
             $hodName = $hod?->hod_name ?? 'HOD';
             
-            // Kirim email ke HOD jika ditemukan
+            // Daftar email untuk CC (sama dengan violation)
+            $ccEmails = [
+                'ridwan.andriyanto@siix-global.com',
+                'dedeh.ernawati@siix-global.com',
+                'sek.hr@siix-global.com',
+                'sek.admin01@siix-global.com'
+            ];
+            
+            // Kirim email ke HOD sebagai TO, dan tambahan sebagai CC
             if ($hodEmail) {
-                \Log::info('Sending email to: ' . $hodEmail);
+                \Log::info('Sending email to HOD: ' . $hodEmail);
+                \Log::info('CC to: ' . implode(', ', $ccEmails));
                 
-                Mail::to($hodEmail)->send(new ComelateCreated($comelate, $hodName));
+                Mail::to($hodEmail)
+                    ->cc($ccEmails)
+                    ->send(new ComelateCreated($comelate, $hodName));
                 
-                \Log::info('Email sent successfully to: ' . $hodEmail);
+                \Log::info('Email sent successfully to HOD with CC');
             } else {
+                // Jika HOD tidak ditemukan, kirim ke CC emails sebagai TO
                 \Log::warning('No HOD email found for department: ' . $comelate->department);
+                \Log::info('Sending email to: ' . implode(', ', $ccEmails));
+                
+                Mail::to($ccEmails)->send(new ComelateCreated($comelate, $hodName));
+                
+                \Log::info('Email sent successfully to fallback recipients');
             }
             
         } catch (\Exception $e) {

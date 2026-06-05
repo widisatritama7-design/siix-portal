@@ -136,6 +136,33 @@ class ViolationEmployeeCreate extends Component
         }
         return [];
     }
+
+    protected function shouldSendEmailForViolation($violation)
+    {
+        // Jika sub_category bukan "Tidak Ada Stiker (SIM & STNK Lengkap)", kirim email (return true)
+        $subCategories = is_array($violation->sub_category) 
+            ? $violation->sub_category 
+            : (json_decode($violation->sub_category, true) ?? []);
+        
+        // Cek apakah ada sub_category yang "Tidak Ada Stiker (SIM & STNK Lengkap)"
+        $hasStickerViolation = in_array('Tidak Ada Stiker (SIM & STNK Lengkap)', $subCategories);
+        
+        // Jika tidak ada violation stiker, langsung kirim email
+        if (!$hasStickerViolation) {
+            return true;
+        }
+        
+        // Hitung berapa kali violation stiker sudah terjadi (termasuk yang baru)
+        $stickerViolationCount = ViolationEmployee::where('nik', $violation->nik)
+            ->where(function($query) {
+                $query->whereJsonContains('sub_category', 'Tidak Ada Stiker (SIM & STNK Lengkap)');
+            })
+            ->count();
+        
+        // Kirim email hanya jika total (termasuk yang baru) >= 6
+        // Artinya email dikirim pada pelanggaran ke-6
+        return $stickerViolationCount >= 6;
+    }
     
     public function save()
     {
@@ -164,8 +191,12 @@ class ViolationEmployeeCreate extends Component
         // Load employee relation
         $violation->load('employee');
         
-        // Send email notifications
-        $this->sendEmailNotifications($violation);
+        // Send email notifications ONLY if condition is met
+        if ($this->shouldSendEmailForViolation($violation)) {
+            $this->sendEmailNotifications($violation);
+        } else {
+            Log::info('Email not sent - violation count for "Tidak Ada Stiker" is less than 6');
+        }
         
         session()->flash('message', 'Violation record created successfully.');
         return redirect()->route('hr.violation.index');
@@ -192,15 +223,32 @@ class ViolationEmployeeCreate extends Component
             $hodEmail = $hod?->hod_email;
             $hodName = $hod?->hod_name ?? 'HOD';
             
-            // Kirim email ke HOD jika ditemukan
+            // Daftar email untuk CC
+            $ccEmails = [
+                'ridwan.andriyanto@siix-global.com',
+                'dedeh.ernawati@siix-global.com',
+                'sek.hr@siix-global.com',
+                'sek.admin01@siix-global.com'
+            ];
+            
+            // Kirim email ke HOD sebagai TO, dan tambahan sebagai CC
             if ($hodEmail) {
-                Log::info('Sending email to: ' . $hodEmail);
+                Log::info('Sending email to HOD: ' . $hodEmail);
+                Log::info('CC to: ' . implode(', ', $ccEmails));
                 
-                Mail::to($hodEmail)->send(new ViolationCreated($violation, $hodName));
+                Mail::to($hodEmail)
+                    ->cc($ccEmails)
+                    ->send(new ViolationCreated($violation, $hodName));
                 
-                Log::info('Email sent successfully to: ' . $hodEmail);
+                Log::info('Email sent successfully to HOD with CC');
             } else {
+                // Jika HOD tidak ditemukan, kirim ke CC emails sebagai TO
                 Log::warning('No HOD email found for department: ' . $violation->dept);
+                Log::info('Sending email to: ' . implode(', ', $ccEmails));
+                
+                Mail::to($ccEmails)->send(new ViolationCreated($violation, $hodName));
+                
+                Log::info('Email sent successfully to fallback recipients');
             }
             
         } catch (\Exception $e) {
