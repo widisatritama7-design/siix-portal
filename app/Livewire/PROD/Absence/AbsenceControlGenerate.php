@@ -1,5 +1,4 @@
 <?php
-// app/Livewire/PROD/Absence/AbsenceControlGenerate.php
 
 namespace App\Livewire\PROD\Absence;
 
@@ -29,6 +28,7 @@ class AbsenceControlGenerate extends Component
     // User Access Properties
     public $userDepartment = null;
     public $isOneUserAccess = false;
+    public $accessError = null;
     
     protected $paginationTheme = 'tailwind';
     
@@ -73,50 +73,126 @@ class AbsenceControlGenerate extends Component
         $this->checkUserAccess();
         $this->loadDepartments();
         $this->setDefaultDateRange();
+        
+        // Debug logging
+        Log::info('AbsenceControlGenerate Mounted - User Access:', [
+            'user_id' => auth()->id(),
+            'user_name' => auth()->user()?->name,
+            'user_username' => auth()->user()?->username,
+            'can_view_one_user' => auth()->user()?->can('view absence report one user'),
+            'isOneUserAccess' => $this->isOneUserAccess,
+            'userDepartment' => $this->userDepartment,
+            'selectedDepartment' => $this->selectedDepartment,
+            'accessError' => $this->accessError
+        ]);
     }
     
     /**
-     * Check user access and set department filter
+     * Check user access and set department filter - FIXED
      */
     private function checkUserAccess()
     {
         $user = auth()->user();
         
+        if (!$user) {
+            Log::warning('No authenticated user found');
+            return;
+        }
+        
         // Check if user has 'view absence report one user' permission
-        if ($user && $user->can('view absence report one user')) {
+        if ($user->can('view absence report one user')) {
             $this->isOneUserAccess = true;
             
-            // Get user's department from employee data
-            $employee = Employee::where('nik', $user->username)
-                ->orWhere('email', $user->email)
-                ->first();
+            // Try multiple methods to find employee (HANYA STATUS 1,2,3)
+            $employee = null;
             
-            if ($employee && $employee->department) {
-                $this->userDepartment = $employee->department;
-                $this->selectedDepartment = $employee->department; // Auto select department
+            // Method 1: Cari berdasarkan NIK dari username (HANYA STATUS 1,2,3)
+            if (!empty($user->username)) {
+                $employee = Employee::where('nik', $user->username)
+                    ->whereIn('status', ['1', '2', '3'])
+                    ->first();
+                if ($employee) {
+                    Log::info('Employee found by NIK: ' . $user->username);
+                }
             }
             
-            Log::info('One User Access Generate - Department: ' . $this->userDepartment);
+            // Method 2: Cari berdasarkan email (HANYA STATUS 1,2,3)
+            if (!$employee && !empty($user->email)) {
+                $employee = Employee::where('email', $user->email)
+                    ->whereIn('status', ['1', '2', '3'])
+                    ->first();
+                if ($employee) {
+                    Log::info('Employee found by email: ' . $user->email);
+                }
+            }
+            
+            // Method 3: Cari berdasarkan nama (HANYA STATUS 1,2,3)
+            if (!$employee && !empty($user->name)) {
+                $employee = Employee::where('name', 'like', '%' . $user->name . '%')
+                    ->whereIn('status', ['1', '2', '3'])
+                    ->first();
+                if ($employee) {
+                    Log::info('Employee found by name: ' . $user->name);
+                }
+            }
+            
+            // Method 4: Cari berdasarkan user_id jika ada (HANYA STATUS 1,2,3)
+            if (!$employee && !empty($user->id)) {
+                $employee = Employee::where('user_id', $user->id)
+                    ->whereIn('status', ['1', '2', '3'])
+                    ->first();
+                if ($employee) {
+                    Log::info('Employee found by user_id: ' . $user->id);
+                }
+            }
+            
+            // Set department if employee found
+            if ($employee && !empty($employee->department)) {
+                $this->userDepartment = trim($employee->department);
+                $this->selectedDepartment = $this->userDepartment; // Auto select department
+                $this->accessError = null;
+                
+                Log::info('One User Access Generate ACTIVE - Department: ' . $this->userDepartment . ' - Employee Status: ' . $employee->status);
+            } else {
+                // Employee not found - set error
+                $this->accessError = 'Data karyawan tidak ditemukan atau status karyawan tidak aktif. Hubungi administrator.';
+                $this->isOneUserAccess = false; // Disable one user access
+                
+                Log::error('Employee not found for user: ' . $user->name . 
+                        ', NIK: ' . $user->username . 
+                        ', Email: ' . $user->email);
+            }
+        } else {
+            Log::info('User does not have view absence report one user permission');
         }
     }
     
     /**
-     * Load departments based on user access
+     * Load departments based on user access - FIXED
      */
     private function loadDepartments()
     {
         if ($this->isOneUserAccess && $this->userDepartment) {
             // Only load user's department
-            $this->departments = [$this->userDepartment];
+            $this->departments = [trim($this->userDepartment)];
         } else {
-            // Load all departments
+            // Load all departments with trim
             $this->departments = Employee::whereIn('status', ['1', '2', '3'])
                 ->where('nik', 'REGEXP', '^[0-9]+$')
+                ->whereNotNull('department')
+                ->where('department', '!=', '')
                 ->select('department')
                 ->distinct()
                 ->pluck('department')
+                ->map(function($dept) {
+                    return trim($dept);
+                })
+                ->filter()
+                ->values()
                 ->toArray();
         }
+        
+        Log::info('Departments loaded:', ['departments' => $this->departments, 'count' => count($this->departments)]);
     }
     
     public function setDefaultDateRange()
@@ -134,10 +210,10 @@ class AbsenceControlGenerate extends Component
     
     public function updatedSelectedDepartment()
     {
-        // Prevent changing department for one user access
+        // Prevent changing department for one user access - FIXED
         if ($this->isOneUserAccess && $this->userDepartment) {
             $this->selectedDepartment = $this->userDepartment;
-            $this->dispatch('notify', message: 'You can only generate data for your department!', type: 'error');
+            $this->dispatch('notify', message: 'You can only generate data for ' . $this->userDepartment . ' department!', type: 'error');
             return;
         }
         
@@ -161,27 +237,16 @@ class AbsenceControlGenerate extends Component
         }
     }
     
-    public function selectAll()
-    {
-        $allEmployeeIds = Employee::where('department', $this->selectedDepartment)
-            ->whereIn('status', ['1', '2', '3'])
-            ->where('nik', 'REGEXP', '^[0-9]+$')
-            ->pluck('id')
-            ->toArray();
-        
-        $this->selectedEmployees = $allEmployeeIds;
-        $this->selectAllCheckbox = true;
-    }
-    
-    public function deselectAll()
-    {
-        $this->selectedEmployees = [];
-        $this->selectAllCheckbox = false;
-    }
-    
+    /**
+     * Get current page employee IDs - FIXED
+     */
     private function getCurrentPageEmployeeIds()
     {
-        $employees = Employee::where('department', $this->selectedDepartment)
+        if (!$this->selectedDepartment) {
+            return [];
+        }
+        
+        $employees = Employee::where(DB::raw('TRIM(department)'), '=', trim($this->selectedDepartment))
             ->whereIn('status', ['1', '2', '3'])
             ->where('nik', 'REGEXP', '^[0-9]+$')
             ->orderBy(DB::raw('CAST(nik AS UNSIGNED)'), 'asc')
@@ -190,9 +255,40 @@ class AbsenceControlGenerate extends Component
         return $employees->pluck('id')->toArray();
     }
     
+    public function selectAll()
+    {
+        if (!$this->selectedDepartment) {
+            $this->dispatch('notify', message: 'Please select department first!', type: 'error');
+            return;
+        }
+        
+        $allEmployeeIds = Employee::where(DB::raw('TRIM(department)'), '=', trim($this->selectedDepartment))
+            ->whereIn('status', ['1', '2', '3'])
+            ->where('nik', 'REGEXP', '^[0-9]+$')
+            ->pluck('id')
+            ->toArray();
+        
+        $this->selectedEmployees = $allEmployeeIds;
+        $this->selectAllCheckbox = true;
+        
+        $this->dispatch('notify', message: count($allEmployeeIds) . ' employees selected', type: 'info');
+    }
+    
+    public function deselectAll()
+    {
+        $this->selectedEmployees = [];
+        $this->selectAllCheckbox = false;
+        
+        $this->dispatch('notify', message: 'All employees deselected', type: 'info');
+    }
+    
     public function selectAllGroup($group)
     {
-        $employees = Employee::where('department', $this->selectedDepartment)
+        if (!$this->selectedDepartment) {
+            return;
+        }
+        
+        $employees = Employee::where(DB::raw('TRIM(department)'), '=', trim($this->selectedDepartment))
             ->whereIn('status', ['1', '2', '3'])
             ->where('nik', 'REGEXP', '^[0-9]+$')
             ->get();
@@ -202,11 +298,17 @@ class AbsenceControlGenerate extends Component
                 $this->employeeGroups[$employee->id] = $group;
             }
         }
+        
+        $this->dispatch('notify', message: "Group set to {$group} for all selected employees", type: 'info');
     }
     
     public function selectAllShift($shift)
     {
-        $employees = Employee::where('department', $this->selectedDepartment)
+        if (!$this->selectedDepartment) {
+            return;
+        }
+        
+        $employees = Employee::where(DB::raw('TRIM(department)'), '=', trim($this->selectedDepartment))
             ->whereIn('status', ['1', '2', '3'])
             ->where('nik', 'REGEXP', '^[0-9]+$')
             ->get();
@@ -216,23 +318,45 @@ class AbsenceControlGenerate extends Component
                 $this->employeeShifts[$employee->id] = $shift;
             }
         }
+        
+        $this->dispatch('notify', message: "Shift set to {$shift} for all selected employees", type: 'info');
     }
     
     public function generate()
     {
-        // Check permission for one user access
-        if ($this->isOneUserAccess && !$this->userDepartment) {
-            $this->generatedMessage = [
-                'type' => 'error',
-                'message' => 'You do not have permission to generate data!'
-            ];
-            return;
+        // Check permission for one user access - FIXED
+        if ($this->isOneUserAccess) {
+            if (!$this->userDepartment) {
+                $this->generatedMessage = [
+                    'type' => 'error',
+                    'message' => 'You do not have permission to generate data! ' . ($this->accessError ?? '')
+                ];
+                return;
+            }
+            
+            // Ensure selected department matches user's department
+            if (trim($this->selectedDepartment) !== trim($this->userDepartment)) {
+                $this->selectedDepartment = $this->userDepartment;
+                $this->generatedMessage = [
+                    'type' => 'error',
+                    'message' => 'You can only generate data for your department: ' . $this->userDepartment
+                ];
+                return;
+            }
         }
         
         if (empty($this->selectedEmployees)) {
             $this->generatedMessage = [
                 'type' => 'error',
                 'message' => 'Please select at least one employee to generate'
+            ];
+            return;
+        }
+        
+        if (!$this->selectedDepartment) {
+            $this->generatedMessage = [
+                'type' => 'error',
+                'message' => 'Please select department first!'
             ];
             return;
         }
@@ -266,6 +390,7 @@ class AbsenceControlGenerate extends Component
             }
         } catch (\Exception $e) {
             DB::rollBack();
+            Log::error('Generate error: ' . $e->getMessage());
             $this->generatedMessage = [
                 'type' => 'error',
                 'message' => 'Error: ' . $e->getMessage()
@@ -275,10 +400,13 @@ class AbsenceControlGenerate extends Component
         $this->isGenerating = false;
     }
     
+    /**
+     * Generate for selected employees - FIXED
+     */
     private function generateForSelectedEmployees()
     {
         $employees = Employee::whereIn('id', $this->selectedEmployees)
-            ->where('department', $this->selectedDepartment)
+            ->where(DB::raw('TRIM(department)'), '=', trim($this->selectedDepartment))
             ->whereIn('status', ['1', '2', '3'])
             ->where('nik', 'REGEXP', '^[0-9]+$')
             ->get();
@@ -358,7 +486,15 @@ class AbsenceControlGenerate extends Component
     
     public function generateAll()
     {
-        $allEmployeeIds = Employee::where('department', $this->selectedDepartment)
+        if (!$this->selectedDepartment) {
+            $this->generatedMessage = [
+                'type' => 'error',
+                'message' => 'Please select department first!'
+            ];
+            return;
+        }
+        
+        $allEmployeeIds = Employee::where(DB::raw('TRIM(department)'), '=', trim($this->selectedDepartment))
             ->whereIn('status', ['1', '2', '3'])
             ->where('nik', 'REGEXP', '^[0-9]+$')
             ->pluck('id')
@@ -368,13 +504,85 @@ class AbsenceControlGenerate extends Component
         $this->generate();
     }
     
+    /**
+     * Debug method to check user access - ADD THIS FOR DEBUGGING
+     */
+    public function debugUserAccess()
+    {
+        $user = auth()->user();
+        
+        // Try to find employee with different methods
+        $employeeByNik = Employee::where('nik', $user->username)->first();
+        $employeeByEmail = Employee::where('email', $user->email)->first();
+        $employeeByName = Employee::where('name', 'like', '%' . $user->name . '%')->first();
+        
+        $allDepartments = Employee::whereIn('status', ['1', '2', '3'])
+            ->select('department', DB::raw('COUNT(*) as total'))
+            ->groupBy('department')
+            ->get();
+        
+        $debug = [
+            'user_info' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'username' => $user->username,
+                'email' => $user->email,
+            ],
+            'permissions' => [
+                'view absence report one user' => $user->can('view absence report one user'),
+            ],
+            'employee_search' => [
+                'by_nik' => $employeeByNik ? [
+                    'id' => $employeeByNik->id,
+                    'nik' => $employeeByNik->nik,
+                    'name' => $employeeByNik->name,
+                    'department' => $employeeByNik->department,
+                ] : null,
+                'by_email' => $employeeByEmail ? [
+                    'id' => $employeeByEmail->id,
+                    'nik' => $employeeByEmail->nik,
+                    'name' => $employeeByEmail->name,
+                    'department' => $employeeByEmail->department,
+                ] : null,
+                'by_name' => $employeeByName ? [
+                    'id' => $employeeByName->id,
+                    'nik' => $employeeByName->nik,
+                    'name' => $employeeByName->name,
+                    'department' => $employeeByName->department,
+                ] : null,
+            ],
+            'current_access_state' => [
+                'isOneUserAccess' => $this->isOneUserAccess,
+                'userDepartment' => $this->userDepartment,
+                'selectedDepartment' => $this->selectedDepartment,
+                'accessError' => $this->accessError,
+            ],
+            'available_departments_in_db' => $allDepartments->toArray(),
+            'loaded_departments' => $this->departments,
+        ];
+        
+        // Return as JSON or dump
+        dd($debug);
+    }
+    
     public function render()
     {
+        // FIXED: Early validation for one user access without department
+        if ($this->isOneUserAccess && empty($this->userDepartment)) {
+            return view('livewire.prod.absence.absence-control-generate', [
+                'employeesPaginated' => collect(),
+                'currentPageEmployees' => [],
+                'isOneUserAccess' => true,
+                'userDepartment' => null,
+                'accessError' => $this->accessError ?? 'Department not found for your account',
+            ]);
+        }
+        
         $employeesPaginated = collect();
         $currentPageEmployees = [];
         
         if ($this->selectedDepartment) {
-            $employeesPaginated = Employee::where('department', $this->selectedDepartment)
+            $employeesPaginated = Employee::where(DB::raw('TRIM(department)'), '=', trim($this->selectedDepartment))
                 ->whereIn('status', ['1', '2', '3'])
                 ->where('nik', 'REGEXP', '^[0-9]+$')
                 ->orderBy(DB::raw('CAST(nik AS UNSIGNED)'), 'asc')
@@ -398,6 +606,7 @@ class AbsenceControlGenerate extends Component
             'currentPageEmployees' => $currentPageEmployees,
             'isOneUserAccess' => $this->isOneUserAccess,
             'userDepartment' => $this->userDepartment,
+            'accessError' => $this->accessError,
         ]);
     }
 }

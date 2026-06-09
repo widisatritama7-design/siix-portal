@@ -1,5 +1,4 @@
 <?php
-// app/Livewire/PROD/Absence/AbsenceControlIndex.php
 
 namespace App\Livewire\PROD\Absence;
 
@@ -37,6 +36,7 @@ class AbsenceControlIndex extends Component
     // User Access Properties
     public $userDepartment = null;
     public $isOneUserAccess = false;
+    public $accessError = null;
     
     protected $paginationTheme = 'tailwind';
     
@@ -84,53 +84,127 @@ class AbsenceControlIndex extends Component
     {
         $this->checkUserAccess();
         $this->setDefaultDateRange();
+        
+        // Debug logging
+        Log::info('AbsenceControlIndex Mounted - User Access:', [
+            'user_id' => auth()->id(),
+            'user_name' => auth()->user()?->name,
+            'user_username' => auth()->user()?->username,
+            'user_email' => auth()->user()?->email,
+            'can_view_one_user' => auth()->user()?->can('view absence report one user'),
+            'isOneUserAccess' => $this->isOneUserAccess,
+            'userDepartment' => $this->userDepartment,
+            'departmentFilter' => $this->departmentFilter,
+            'accessError' => $this->accessError
+        ]);
     }
     
-    /**
-     * Check user access and set department filter
-     */
     private function checkUserAccess()
     {
         $user = auth()->user();
         
+        if (!$user) {
+            Log::warning('No authenticated user found');
+            return;
+        }
+        
         // Check if user has 'view absence report one user' permission
-        if ($user && $user->can('view absence report one user')) {
+        if ($user->can('view absence report one user')) {
             $this->isOneUserAccess = true;
             
-            // Get user's department from employee data
-            $employee = Employee::where('nik', $user->username) // or however you map user to employee
-                ->orWhere('email', $user->email)
-                ->first();
+            // Try multiple methods to find employee (HANYA STATUS 1,2,3)
+            $employee = null;
             
-            if ($employee && $employee->department) {
-                $this->userDepartment = $employee->department;
-                $this->departmentFilter = $employee->department; // Force filter to user's department
+            // Method 1: Cari berdasarkan NIK dari username (HANYA STATUS 1,2,3)
+            if (!empty($user->username)) {
+                $employee = Employee::where('nik', $user->username)
+                    ->whereIn('status', ['1', '2', '3'])
+                    ->first();
+                if ($employee) {
+                    Log::info('Employee found by NIK: ' . $user->username);
+                }
             }
             
-            Log::info('One User Access - Department: ' . $this->userDepartment);
+            // Method 2: Cari berdasarkan email (HANYA STATUS 1,2,3)
+            if (!$employee && !empty($user->email)) {
+                $employee = Employee::where('email', $user->email)
+                    ->whereIn('status', ['1', '2', '3'])
+                    ->first();
+                if ($employee) {
+                    Log::info('Employee found by email: ' . $user->email);
+                }
+            }
+            
+            // Method 3: Cari berdasarkan nama (HANYA STATUS 1,2,3)
+            if (!$employee && !empty($user->name)) {
+                $employee = Employee::where('name', 'like', '%' . $user->name . '%')
+                    ->whereIn('status', ['1', '2', '3'])
+                    ->first();
+                if ($employee) {
+                    Log::info('Employee found by name: ' . $user->name);
+                }
+            }
+            
+            // Method 4: Cari berdasarkan user_id jika ada (HANYA STATUS 1,2,3)
+            if (!$employee && !empty($user->id)) {
+                $employee = Employee::where('user_id', $user->id)
+                    ->whereIn('status', ['1', '2', '3'])
+                    ->first();
+                if ($employee) {
+                    Log::info('Employee found by user_id: ' . $user->id);
+                }
+            }
+            
+            // Set department if employee found
+            if ($employee && !empty($employee->department)) {
+                $this->userDepartment = trim($employee->department);
+                $this->departmentFilter = $this->userDepartment;
+                $this->accessError = null;
+                
+                Log::info('One User Access ACTIVE - Department: ' . $this->userDepartment . ' - Employee Status: ' . $employee->status);
+            } else {
+                // Employee not found - set error
+                $this->accessError = 'Data karyawan tidak ditemukan atau status karyawan tidak aktif. Hubungi administrator.';
+                $this->isOneUserAccess = false; // Disable one user access
+                
+                Log::error('Employee not found for user: ' . $user->name . 
+                        ', NIK: ' . $user->username . 
+                        ', Email: ' . $user->email);
+            }
+        } else {
+            Log::info('User does not have view absence report one user permission');
         }
     }
     
     /**
-     * Get departments for filter dropdown (respect user access)
+     * Get departments for filter dropdown (respect user access) - FIXED
      */
     private function getAvailableDepartments()
     {
         if ($this->isOneUserAccess && $this->userDepartment) {
             // Return only user's department
-            return collect([$this->userDepartment]);
+            return collect([trim($this->userDepartment)]);
         }
         
-        // Return all departments
-        return Employee::whereIn('status', ['1', '2', '3'])
+        // Return all departments with trim
+        $departments = Employee::whereIn('status', ['1', '2', '3'])
             ->where('nik', 'REGEXP', '^[0-9]+$')
+            ->whereNotNull('department')
+            ->where('department', '!=', '')
             ->select('department')
             ->distinct()
-            ->pluck('department');
+            ->pluck('department')
+            ->map(function($dept) {
+                return trim($dept);
+            })
+            ->filter()
+            ->values();
+        
+        return $departments;
     }
     
     /**
-     * Get groups for filter dropdown (respect user access)
+     * Get groups for filter dropdown (respect user access) - FIXED
      */
     private function getAvailableGroups()
     {
@@ -138,16 +212,18 @@ class AbsenceControlIndex extends Component
             ->where('nik', 'REGEXP', '^[0-9]+$')
             ->whereNotNull('actual_group');
         
-        // Apply department filter if one user access
+        // Apply department filter with trim
         if ($this->isOneUserAccess && $this->userDepartment) {
-            $query->where('department', $this->userDepartment);
+            $query->where(DB::raw('TRIM(department)'), '=', trim($this->userDepartment));
         } elseif ($this->departmentFilter) {
-            $query->where('department', $this->departmentFilter);
+            $query->where(DB::raw('TRIM(department)'), '=', trim($this->departmentFilter));
         }
         
         return $query->select('actual_group')
             ->distinct()
-            ->pluck('actual_group');
+            ->pluck('actual_group')
+            ->filter()
+            ->values();
     }
 
     public function setDefaultDateRange()
@@ -172,10 +248,10 @@ class AbsenceControlIndex extends Component
 
     public function updatedDepartmentFilter()
     {
-        // Prevent changing department for one user access
+        // Prevent changing department for one user access - FIXED
         if ($this->isOneUserAccess && $this->userDepartment) {
             $this->departmentFilter = $this->userDepartment;
-            $this->dispatch('notify', message: 'You can only view data from your department!', type: 'error');
+            $this->dispatch('notify', message: 'You can only view data from ' . $this->userDepartment . ' department!', type: 'error');
             return;
         }
         
@@ -195,7 +271,7 @@ class AbsenceControlIndex extends Component
     {
         $this->search = '';
         
-        // Untuk one user access, department filter tetap dipertahankan
+        // For one user access, keep department filter - FIXED
         if ($this->isOneUserAccess && $this->userDepartment) {
             $this->departmentFilter = $this->userDepartment;
             $this->groupFilter = '';
@@ -207,18 +283,32 @@ class AbsenceControlIndex extends Component
         $this->resetPage();
         $this->selectedEmployees = [];
         $this->selectAll = false;
+        
+        $this->dispatch('notify', message: 'Filters have been reset', type: 'info');
     }
 
     public function deleteAllData()
     {
-        // Check permission for one user access
-        if ($this->isOneUserAccess) {
-            $this->dispatch('notify', message: 'You do not have permission to delete data!', type: 'error');
-            return;
-        }
+        // HAPUS 5 baris ini jika one user access boleh delete:
+        // if ($this->isOneUserAccess) {
+        //     $this->dispatch('notify', message: 'You do not have permission to delete data!', type: 'error');
+        //     return;
+        // }
         
         try {
-            $deleted = AbsenceControl::deleteForDateRange($this->startDate, $this->endDate);
+            // TAMBAHKAN ini untuk one user access:
+            if ($this->isOneUserAccess && $this->userDepartment) {
+                $employeeIds = Employee::where(DB::raw('TRIM(department)'), '=', trim($this->userDepartment))
+                    ->pluck('id')
+                    ->toArray();
+                
+                $deleted = AbsenceControl::whereIn('employee_id', $employeeIds)
+                    ->whereBetween('date', [$this->startDate, $this->endDate])
+                    ->delete();
+            } else {
+                $deleted = AbsenceControl::deleteForDateRange($this->startDate, $this->endDate);
+            }
+            
             $this->dispatch('notify', message: "Deleted {$deleted} records successfully!", type: 'success');
         } catch (\Exception $e) {
             $this->dispatch('notify', message: 'Error: ' . $e->getMessage(), type: 'error');
@@ -370,11 +460,11 @@ class AbsenceControlIndex extends Component
     
     public function openBulkModal()
     {
-        // Check permission for one user access
-        if ($this->isOneUserAccess) {
-            $this->dispatch('notify', message: 'You do not have permission to bulk update!', type: 'error');
-            return;
-        }
+        // HAPUS 5 baris ini:
+        // if ($this->isOneUserAccess) {
+        //     $this->dispatch('notify', message: 'You do not have permission to bulk update!', type: 'error');
+        //     return;
+        // }
         
         if (empty($this->selectedEmployees) && !$this->selectAll) {
             $this->dispatch('notify', message: 'Please select at least one employee', type: 'error');
@@ -409,11 +499,11 @@ class AbsenceControlIndex extends Component
     
     public function applyBulkUpdate()
     {
-        // Check permission for one user access
-        if ($this->isOneUserAccess) {
-            $this->dispatch('notify', message: 'You do not have permission to bulk update!', type: 'error');
-            return;
-        }
+        // HAPUS 5 baris ini:
+        // if ($this->isOneUserAccess) {
+        //     $this->dispatch('notify', message: 'You do not have permission to bulk update!', type: 'error');
+        //     return;
+        // }
         
         $this->validate([
             'bulkField' => 'required|in:' . implode(',', array_keys($this->bulkFields)),
@@ -422,6 +512,12 @@ class AbsenceControlIndex extends Component
         
         try {
             $query = Employee::whereIn('id', $this->selectedEmployees);
+            
+            // TAMBAHKAN ini untuk one user access:
+            if ($this->isOneUserAccess && $this->userDepartment) {
+                $query->where(DB::raw('TRIM(department)'), '=', trim($this->userDepartment));
+            }
+            
             $count = $query->count();
             $this->dispatch('close-bulk-modal');
             
@@ -441,6 +537,9 @@ class AbsenceControlIndex extends Component
         }
     }
     
+    /**
+     * Get current page employee IDs - FIXED
+     */
     private function getCurrentPageEmployeeIds()
     {
         $query = Employee::query()
@@ -448,11 +547,11 @@ class AbsenceControlIndex extends Component
             ->whereRaw('CAST(nik AS UNSIGNED) IS NOT NULL')
             ->whereRaw('nik REGEXP "^[0-9]+$"');
         
-        // Apply department filter based on user access
+        // Apply department filter with TRIM - FIXED
         if ($this->isOneUserAccess && $this->userDepartment) {
-            $query->where('department', $this->userDepartment);
+            $query->where(DB::raw('TRIM(department)'), '=', trim($this->userDepartment));
         } elseif ($this->departmentFilter) {
-            $query->where('department', $this->departmentFilter);
+            $query->where(DB::raw('TRIM(department)'), '=', trim($this->departmentFilter));
         }
         
         $employees = $query
@@ -471,10 +570,84 @@ class AbsenceControlIndex extends Component
         return $employees->pluck('id')->toArray();
     }
     
-    // ==================== RENDER METHOD ====================
+    /**
+     * Debug method to check user access - ADD THIS FOR DEBUGGING
+     */
+    public function debugUserAccess()
+    {
+        $user = auth()->user();
+        
+        // Try to find employee with different methods
+        $employeeByNik = Employee::where('nik', $user->username)->first();
+        $employeeByEmail = Employee::where('email', $user->email)->first();
+        $employeeByName = Employee::where('name', 'like', '%' . $user->name . '%')->first();
+        
+        $allDepartments = Employee::whereIn('status', ['1', '2', '3'])
+            ->select('department', DB::raw('COUNT(*) as total'))
+            ->groupBy('department')
+            ->get();
+        
+        $debug = [
+            'user_info' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'username' => $user->username,
+                'email' => $user->email,
+            ],
+            'permissions' => [
+                'view absence report one user' => $user->can('view absence report one user'),
+            ],
+            'employee_search' => [
+                'by_nik' => $employeeByNik ? [
+                    'id' => $employeeByNik->id,
+                    'nik' => $employeeByNik->nik,
+                    'name' => $employeeByNik->name,
+                    'department' => $employeeByNik->department,
+                ] : null,
+                'by_email' => $employeeByEmail ? [
+                    'id' => $employeeByEmail->id,
+                    'nik' => $employeeByEmail->nik,
+                    'name' => $employeeByEmail->name,
+                    'department' => $employeeByEmail->department,
+                ] : null,
+                'by_name' => $employeeByName ? [
+                    'id' => $employeeByName->id,
+                    'nik' => $employeeByName->nik,
+                    'name' => $employeeByName->name,
+                    'department' => $employeeByName->department,
+                ] : null,
+            ],
+            'current_access_state' => [
+                'isOneUserAccess' => $this->isOneUserAccess,
+                'userDepartment' => $this->userDepartment,
+                'departmentFilter' => $this->departmentFilter,
+                'accessError' => $this->accessError,
+            ],
+            'available_departments_in_db' => $allDepartments->toArray(),
+        ];
+        
+        // Return as JSON or dump
+        dd($debug);
+    }
+    
+    // ==================== RENDER METHOD - FIXED ====================
     
     public function render()
     {
+        // FIXED: Early validation for one user access without department
+        if ($this->isOneUserAccess && empty($this->userDepartment)) {
+            return view('livewire.prod.absence.absence-control-index', [
+                'tableData' => [],
+                'employees' => collect(),
+                'dateHeaders' => [],
+                'departments' => collect(),
+                'groups' => collect(),
+                'isOneUserAccess' => true,
+                'userDepartment' => null,
+                'accessError' => $this->accessError ?? 'Department not found for your account',
+            ]);
+        }
+        
         // ==================== 1. BUILD DATES LIST ====================
         $datesList = [];
         $dateHeaders = [];
@@ -497,17 +670,17 @@ class AbsenceControlIndex extends Component
             }
         }
 
-        // ==================== 2. GET EMPLOYEES WITH PAGINATION ====================
+        // ==================== 2. GET EMPLOYEES WITH PAGINATION - FIXED ====================
         $query = Employee::query()
             ->whereIn('status', ['1', '2', '3'])
             ->whereRaw('CAST(nik AS UNSIGNED) IS NOT NULL')
             ->whereRaw('nik REGEXP "^[0-9]+$"');
         
-        // Apply department filter based on user access
+        // Apply department filter with TRIM for consistency - FIXED
         if ($this->isOneUserAccess && $this->userDepartment) {
-            $query->where('department', $this->userDepartment);
+            $query->where(DB::raw('TRIM(department)'), '=', trim($this->userDepartment));
         } elseif ($this->departmentFilter) {
-            $query->where('department', $this->departmentFilter);
+            $query->where(DB::raw('TRIM(department)'), '=', trim($this->departmentFilter));
         }
         
         $employees = $query
@@ -651,6 +824,7 @@ class AbsenceControlIndex extends Component
             'groups' => $groups,
             'isOneUserAccess' => $this->isOneUserAccess,
             'userDepartment' => $this->userDepartment,
+            'accessError' => $this->accessError,
         ]);
     }
 }

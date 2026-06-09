@@ -236,20 +236,12 @@ class ComelateEmployeeCreate extends Component
             \Log::info('=== SENDING COMELATE EMAIL ===');
             \Log::info('Department: ' . $comelate->department);
             
-            // Mencari data HOD berdasarkan department - menggunakan field yang benar
-            $hod = Hod::where('department_name', $comelate->department)->first();
+            // Mencari SEMUA data HOD berdasarkan department_name (bisa lebih dari satu)
+            $hods = Hod::where('department_name', $comelate->department)->get();
             
-            \Log::info('HOD found: ' . ($hod ? 'Yes' : 'No'));
+            \Log::info('Total HODs found: ' . $hods->count());
             
-            if ($hod) {
-                \Log::info('HOD Name: ' . $hod->hod_name);
-                \Log::info('HOD Email: ' . $hod->hod_email);
-            }
-            
-            $hodEmail = $hod?->hod_email;
-            $hodName = $hod?->hod_name ?? 'HOD';
-            
-            // Daftar email untuk CC (sama dengan violation)
+            // Daftar email untuk CC (tetap sama)
             $ccEmails = [
                 'ridwan.andriyanto@siix-global.com',
                 'dedeh.ernawati@siix-global.com',
@@ -257,23 +249,36 @@ class ComelateEmployeeCreate extends Component
                 'sek.admin01@siix-global.com'
             ];
             
-            // Kirim email ke HOD sebagai TO, dan tambahan sebagai CC
-            if ($hodEmail) {
-                \Log::info('Sending email to HOD: ' . $hodEmail);
-                \Log::info('CC to: ' . implode(', ', $ccEmails));
+            if ($hods->isNotEmpty()) {
+                // Kumpulkan semua email HOD
+                $hodEmails = $hods->pluck('hod_email')->filter()->unique()->toArray();
                 
-                Mail::to($hodEmail)
-                    ->cc($ccEmails)
-                    ->send(new ComelateCreated($comelate, $hodName));
+                // Kumpulkan nama HOD untuk ditampilkan
+                $hodNames = $hods->pluck('hod_name')->filter()->implode(', ');
                 
-                \Log::info('Email sent successfully to HOD with CC');
+                \Log::info('HOD Emails to send: ' . implode(', ', $hodEmails));
+                \Log::info('HOD Names: ' . $hodNames);
+                
+                // Kirim email ke SEMUA HOD
+                if (!empty($hodEmails)) {
+                    foreach ($hodEmails as $hodEmail) {
+                        \Log::info('Sending email to HOD: ' . $hodEmail);
+                        
+                        Mail::to($hodEmail)
+                            ->cc($ccEmails)
+                            ->send(new ComelateCreated($comelate, $hodNames));
+                    }
+                    
+                    \Log::info('Email sent successfully to ' . count($hodEmails) . ' HOD(s) with CC');
+                } else {
+                    \Log::warning('No valid HOD emails found for department: ' . $comelate->department);
+                    Mail::to($ccEmails)->send(new ComelateCreated($comelate, $hodNames));
+                    \Log::info('Email sent successfully to fallback recipients');
+                }
             } else {
-                // Jika HOD tidak ditemukan, kirim ke CC emails sebagai TO
-                \Log::warning('No HOD email found for department: ' . $comelate->department);
-                \Log::info('Sending email to: ' . implode(', ', $ccEmails));
-                
-                Mail::to($ccEmails)->send(new ComelateCreated($comelate, $hodName));
-                
+                // Jika HOD tidak ditemukan sama sekali
+                \Log::warning('No HOD records found for department: ' . $comelate->department);
+                Mail::to($ccEmails)->send(new ComelateCreated($comelate, 'HOD'));
                 \Log::info('Email sent successfully to fallback recipients');
             }
             

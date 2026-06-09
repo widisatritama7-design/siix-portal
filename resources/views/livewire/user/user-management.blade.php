@@ -147,7 +147,7 @@
                             </td>
                             <td class="px-4 py-3">
                                 @if($user->email)
-                                    <div class="flex items-center gap-2">
+                                    <div class="flex gap-1 min-w-[200px]">
                                         <flux:icon name="envelope" class="w-4 h-4 text-zinc-400 flex-shrink-0" />
                                         <span class="text-sm text-zinc-600 dark:text-zinc-300 break-all">
                                             {{ $user->email }}

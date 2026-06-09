@@ -26,6 +26,13 @@
             // Trend
             $lastYearActual = App\Models\ESD\Activity\ViewAllMeasurement::whereYear('created_at', $currentYear - 1)->count();
             $trendStats = $lastYearActual > 0 ? round((($actualCountStats - $lastYearActual) / $lastYearActual) * 100, 2) : 0;
+            
+            // Define available months globally
+            $availableMonths = [
+                1 => 'January', 2 => 'February', 3 => 'March', 4 => 'April',
+                5 => 'May', 6 => 'June', 7 => 'July', 8 => 'August',
+                9 => 'September', 10 => 'October', 11 => 'November', 12 => 'December',
+            ];
         @endphp
 
         <!-- ========== ROW: YEARLY CHART (70%) + STATS VERTICAL (30%) ========== -->
@@ -76,8 +83,8 @@
                             <flux:subheading>Monthly achievement breakdown for {{ $yearlySelectedYear }}</flux:subheading>
                         </div>
                         <form method="GET" class="flex items-center gap-2">
-                            <input type="hidden" name="weekly_year" value="{{ request()->get('weekly_year', $currentYear) }}">
-                            <input type="hidden" name="weekly_month" value="{{ request()->get('weekly_month', $now->month) }}">
+                            <input type="hidden" name="weekly_custom_start" value="{{ request()->get('weekly_custom_start', '') }}">
+                            <input type="hidden" name="weekly_custom_end" value="{{ request()->get('weekly_custom_end', '') }}">
                             <input type="hidden" name="monthly_start_date" value="{{ request()->get('monthly_start_date', $now->copy()->startOfWeek(Carbon\Carbon::SUNDAY)->toDateString()) }}">
                             <input type="hidden" name="monthly_end_date" value="{{ request()->get('monthly_end_date', $now->copy()->endOfWeek(Carbon\Carbon::SATURDAY)->toDateString()) }}">
                             <select name="yearly_year" onchange="this.form.submit()" class="text-sm rounded-lg border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2">
@@ -194,115 +201,253 @@
             </div>
         </div>
 
-        <!-- WEEKLY CHART - FULL WIDTH -->  
+        <!-- WEEKLY CHART WITH CUSTOM DATE RANGE - FULL WIDTH -->  
         @php
-            $weeklySelectedYear = request()->get('weekly_year', $currentYear);
-            $weeklySelectedMonth = request()->get('weekly_month', $now->month);
+            // Check if using custom date range or preset week
+            $useCustomRange = request()->has('weekly_custom_start') && request()->has('weekly_custom_end') && 
+                              request()->get('weekly_custom_start') && request()->get('weekly_custom_end');
             
-            $weeklyStartOfMonth = Carbon\Carbon::create($weeklySelectedYear, $weeklySelectedMonth, 1)->startOfMonth();
-            $weeklyEndOfMonth = Carbon\Carbon::create($weeklySelectedYear, $weeklySelectedMonth, 1)->endOfMonth();
-
-            $weeklyWeeks = [];
-            $weeklyCurrentWeekStart = $weeklyStartOfMonth->copy()->startOfWeek(Carbon\Carbon::SUNDAY);
-            $weeklyWeekCounter = 1;
-
-            while ($weeklyCurrentWeekStart <= $weeklyEndOfMonth) {
-                $weekStart = $weeklyCurrentWeekStart->copy();
-                $weekEnd = $weekStart->copy()->endOfWeek(Carbon\Carbon::SATURDAY);
-                $weeklyWeeks[] = [
-                    'label' => 'Week ' . $weeklyWeekCounter,
-                    'full_label' => 'Week ' . $weeklyWeekCounter . ' (' . $weekStart->format('M d') . ' - ' . $weekEnd->format('M d') . ')',
-                    'start' => $weekStart,
-                    'end' => $weekEnd,
+            // Define available months if not already defined
+            if (!isset($availableMonths)) {
+                $availableMonths = [
+                    1 => 'January', 2 => 'February', 3 => 'March', 4 => 'April',
+                    5 => 'May', 6 => 'June', 7 => 'July', 8 => 'August',
+                    9 => 'September', 10 => 'October', 11 => 'November', 12 => 'December',
                 ];
-                $weeklyCurrentWeekStart->addWeek();
-                $weeklyWeekCounter++;
             }
-
-            $weeklyPercentagesData = [];
-            foreach ($weeklyWeeks as $week) {
-                // Get ALL measurement types that have targets OR actuals in this week
-                $allMeasurements = App\Models\ESD\Activity\ViewAllMeasurement::select('measurement_type')
-                    ->where(function($query) use ($week) {
-                        $query->whereBetween('created_at', [$week['start'], $week['end']])
-                            ->orWhereBetween('next_date', [$week['start'], $week['end']]);
-                    })
+            
+            if ($useCustomRange) {
+                // Gunakan tanggal persis dari input user
+                $customStartDate = Carbon\Carbon::parse(request()->get('weekly_custom_start'));
+                $customEndDate = Carbon\Carbon::parse(request()->get('weekly_custom_end'));
+                
+                // Gunakan tanggal yang sama persis untuk query (tanpa modifikasi startOfWeek/endOfWeek)
+                $queryStartDate = $customStartDate->copy()->startOfDay();
+                $queryEndDate = $customEndDate->copy()->endOfDay();
+                
+                // Ambil SEMUA measurement types yang ada di database
+                $allMeasurementTypes = App\Models\ESD\Activity\ViewAllMeasurement::select('measurement_type')
                     ->distinct()
                     ->pluck('measurement_type');
                 
                 $totalTarget = 0;
                 $totalActual = 0;
                 
-                foreach ($allMeasurements as $type) {
+                // Detail untuk debugging (opsional, bisa dihapus)
+                $details = [];
+                
+                foreach ($allMeasurementTypes as $type) {
+                    // Hitung actual (created_at dalam range)
                     $actual = App\Models\ESD\Activity\ViewAllMeasurement::where('measurement_type', $type)
-                        ->whereBetween('created_at', [$week['start'], $week['end']])
-                        ->distinct('id_table')
-                        ->count('id_table');
-                        
-                    $target = App\Models\ESD\Activity\ViewAllMeasurement::where('measurement_type', $type)
-                        ->whereBetween('next_date', [$week['start'], $week['end']])
+                        ->whereBetween('created_at', [$queryStartDate, $queryEndDate])
                         ->distinct('id_table')
                         ->count('id_table');
                     
-                    // Only count if target > 0, otherwise skip (no requirement this week)
-                    if ($target > 0) {
-                        $totalTarget += $target;
-                        $totalActual += $actual; // Bisa lebih dari target (lebih dari 100%)
+                    // Hitung target (next_date dalam range)
+                    $target = App\Models\ESD\Activity\ViewAllMeasurement::where('measurement_type', $type)
+                        ->whereBetween('next_date', [$queryStartDate, $queryEndDate])
+                        ->distinct('id_table')
+                        ->count('id_table');
+                    
+                    $totalTarget += $target;
+                    $totalActual += $actual;
+                    
+                    $details[$type] = ['target' => $target, 'actual' => $actual];
+                }
+                
+                $customPercentage = $totalTarget > 0 ? round(($totalActual / $totalTarget) * 100, 2) : 0;
+                $displayTitle = 'Custom Date Range: ' . $customStartDate->format('M d, Y') . ' - ' . $customEndDate->format('M d, Y');
+                $weeklySelectedYear = $customStartDate->year;
+                $weeklySelectedMonth = $customStartDate->month;
+                
+                // Set flag untuk mode custom
+                $isCustomMode = true;
+            } else {
+                // Use preset month/year selection - show multiple weeks
+                $weeklySelectedYear = request()->get('weekly_year', $currentYear);
+                $weeklySelectedMonth = request()->get('weekly_month', $now->month);
+                
+                $weeklyStartOfMonth = Carbon\Carbon::create($weeklySelectedYear, $weeklySelectedMonth, 1)->startOfMonth();
+                $weeklyEndOfMonth = Carbon\Carbon::create($weeklySelectedYear, $weeklySelectedMonth, 1)->endOfMonth();
+
+                $weeklyWeeks = [];
+                $weeklyCurrentWeekStart = $weeklyStartOfMonth->copy()->startOfWeek(Carbon\Carbon::SUNDAY);
+                $weeklyWeekCounter = 1;
+
+                while ($weeklyCurrentWeekStart <= $weeklyEndOfMonth) {
+                    $weekStart = $weeklyCurrentWeekStart->copy();
+                    $weekEnd = $weekStart->copy()->endOfWeek(Carbon\Carbon::SATURDAY);
+                    $weeklyWeeks[] = [
+                        'label' => 'Week ' . $weeklyWeekCounter,
+                        'full_label' => 'Week ' . $weeklyWeekCounter . ' (' . $weekStart->format('M d') . ' - ' . $weekEnd->format('M d') . ')',
+                        'start' => $weekStart,
+                        'end' => $weekEnd,
+                    ];
+                    $weeklyCurrentWeekStart->addWeek();
+                    $weeklyWeekCounter++;
+                }
+                
+                // Calculate percentages for each week
+                $weeklyPercentagesData = [];
+                foreach ($weeklyWeeks as $week) {
+                    $allMeasurements = App\Models\ESD\Activity\ViewAllMeasurement::select('measurement_type')
+                        ->where(function($query) use ($week) {
+                            $query->whereBetween('created_at', [$week['start'], $week['end']])
+                                ->orWhereBetween('next_date', [$week['start'], $week['end']]);
+                        })
+                        ->distinct()
+                        ->pluck('measurement_type');
+                    
+                    $totalTarget = 0;
+                    $totalActual = 0;
+                    
+                    foreach ($allMeasurements as $type) {
+                        $actual = App\Models\ESD\Activity\ViewAllMeasurement::where('measurement_type', $type)
+                            ->whereBetween('created_at', [$week['start'], $week['end']])
+                            ->distinct('id_table')
+                            ->count('id_table');
+                            
+                        $target = App\Models\ESD\Activity\ViewAllMeasurement::where('measurement_type', $type)
+                            ->whereBetween('next_date', [$week['start'], $week['end']])
+                            ->distinct('id_table')
+                            ->count('id_table');
+                        
+                        if ($target > 0) {
+                            $totalTarget += $target;
+                            $totalActual += $actual;
+                        }
+                    }
+                    
+                    if ($totalTarget > 0) {
+                        $weeklyPercentagesData[] = round(($totalActual / $totalTarget) * 100, 2);
+                    } else {
+                        $weeklyPercentagesData[] = 0;
                     }
                 }
                 
-                // Calculate overall percentage for the week (bisa > 100%)
-                if ($totalTarget > 0) {
-                    $weeklyPercentagesData[] = round(($totalActual / $totalTarget) * 100, 2); // Bisa > 100%
-                } else {
-                    $weeklyPercentagesData[] = 0;
-                }
+                $displayTitle = $availableMonths[$weeklySelectedMonth] . ' ' . $weeklySelectedYear;
+                $isCustomMode = false;
             }
             
-            $availableMonths = [
-                1 => 'January', 2 => 'February', 3 => 'March', 4 => 'April',
-                5 => 'May', 6 => 'June', 7 => 'July', 8 => 'August',
-                9 => 'September', 10 => 'October', 11 => 'November', 12 => 'December',
-            ];
-            
             $weeklyItemsPerRow = 5;
-            $weeklyRows = array_chunk($weeklyWeeks, $weeklyItemsPerRow);
-            $weeklyPercentagesChunked = array_chunk($weeklyPercentagesData, $weeklyItemsPerRow);
+            if (!$isCustomMode) {
+                $weeklyRows = array_chunk($weeklyWeeks, $weeklyItemsPerRow);
+                $weeklyPercentagesChunked = array_chunk($weeklyPercentagesData, $weeklyItemsPerRow);
+            }
         @endphp
 
         <flux:card class="p-6 shadow-lg hover:shadow-xl transition-shadow duration-300 mt-0">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6">
                 <div>
-                    <flux:heading size="lg">Completion By Week</flux:heading>
-                    <flux:subheading>{{ $availableMonths[$weeklySelectedMonth] }} {{ $weeklySelectedYear }}</flux:subheading>
+                    <flux:heading size="lg">Completion By {{ $isCustomMode ? 'Date Range' : 'Week' }}</flux:heading>
+                    <flux:subheading>{{ $displayTitle }}</flux:subheading>
                 </div>
-                <form method="GET" class="flex items-center gap-2">
+                
+                <form method="GET" class="flex flex-wrap items-center gap-2" id="weeklyFilterForm">
                     <input type="hidden" name="yearly_year" value="{{ request()->get('yearly_year', $currentYear) }}">
                     <input type="hidden" name="monthly_start_date" value="{{ request()->get('monthly_start_date', $now->copy()->startOfWeek(Carbon\Carbon::SUNDAY)->toDateString()) }}">
                     <input type="hidden" name="monthly_end_date" value="{{ request()->get('monthly_end_date', $now->copy()->endOfWeek(Carbon\Carbon::SATURDAY)->toDateString()) }}">
-                    <select name="weekly_month" onchange="this.form.submit()" class="text-sm rounded-lg border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2">
-                        @foreach($availableMonths as $monthNum => $monthName)
-                            <option value="{{ $monthNum }}" {{ $weeklySelectedMonth == $monthNum ? 'selected' : '' }}>{{ $monthName }}</option>
-                        @endforeach
-                    </select>
-                    <select name="weekly_year" onchange="this.form.submit()" class="text-sm rounded-lg border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2">
-                        @foreach($availableYears as $yearOption)
-                            <option value="{{ $yearOption }}" {{ $weeklySelectedYear == $yearOption ? 'selected' : '' }}>{{ $yearOption }}</option>
-                        @endforeach
-                    </select>
+                    
+                    <!-- Toggle between preset and custom -->
+                    <div class="flex items-center gap-2">
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="weekly_mode" value="preset" {{ !$useCustomRange ? 'checked' : '' }} onchange="toggleWeeklyMode('preset')" class="mr-1">
+                            <span class="text-sm">Preset</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="weekly_mode" value="custom" {{ $useCustomRange ? 'checked' : '' }} onchange="toggleWeeklyMode('custom')" class="mr-1">
+                            <span class="text-sm">Custom Range</span>
+                        </label>
+                    </div>
+                    
+                    <!-- Preset Mode Controls -->
+                    <div id="presetControls" style="{{ $useCustomRange ? 'display: none;' : '' }}" class="flex items-center gap-2">
+                        <select name="weekly_month" onchange="this.form.submit()" class="text-sm rounded-lg border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2">
+                            @foreach($availableMonths as $monthNum => $monthName)
+                                <option value="{{ $monthNum }}" {{ (!$useCustomRange && $weeklySelectedMonth == $monthNum) ? 'selected' : '' }}>{{ $monthName }}</option>
+                            @endforeach
+                        </select>
+                        <select name="weekly_year" onchange="this.form.submit()" class="text-sm rounded-lg border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2">
+                            @foreach($availableYears as $yearOption)
+                                <option value="{{ $yearOption }}" {{ (!$useCustomRange && $weeklySelectedYear == $yearOption) ? 'selected' : '' }}>{{ $yearOption }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    
+                    <!-- Custom Range Controls -->
+                    <div id="customControls" style="{{ $useCustomRange ? '' : 'display: none;' }}" class="flex items-center gap-2">
+                        <input type="date" name="weekly_custom_start" value="{{ request()->get('weekly_custom_start', $customStartDate ?? $now->copy()->startOfMonth()->toDateString()) }}" 
+                               class="text-sm rounded-lg border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-2 py-1">
+                        <span class="text-zinc-500">to</span>
+                        <input type="date" name="weekly_custom_end" value="{{ request()->get('weekly_custom_end', $customEndDate ?? $now->copy()->endOfMonth()->toDateString()) }}" 
+                               class="text-sm rounded-lg border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-2 py-1">
+                        <button type="submit" class="text-sm bg-purple-600 hover:bg-purple-700 text-white rounded-lg px-3 py-1 transition-colors">Apply Range</button>
+                    </div>
                 </form>
             </div>
             
-            @if(count($weeklyWeeks) > 0)
+            @if($isCustomMode)
+                <!-- TAMPILAN SINGLE GAUGE UNTUK CUSTOM RANGE -->
+                @php
+                    $percentage = $customPercentage;
+                    $percentageGauge = min($percentage, 100);
+                    $badgeColor = $percentage > 100 ? 'emerald' : ($percentage >= 80 ? 'green' : ($percentage >= 60 ? 'yellow' : ($percentage >= 40 ? 'orange' : 'red')));
+                    $gaugeColor = $percentage > 100 ? '#10b981' : ($percentage >= 80 ? '#22c55e' : ($percentage >= 60 ? '#eab308' : ($percentage >= 40 ? '#f97316' : '#ef4444')));
+                @endphp
+                <div class="flex flex-col items-center justify-center py-8 gauge-container" data-actual-percentage="{{ $percentage }}">
+                    <div class="relative w-64 h-40 mx-auto">
+                        <svg class="w-full h-full" viewBox="0 0 200 100">
+                            <path d="M 30 85 A 70 70 0 0 1 170 85" fill="none" stroke="#e5e7eb" stroke-width="12" stroke-linecap="round" />
+                            <path class="gauge-arc" d="M 30 85 A 70 70 0 0 1 170 85" fill="none" stroke="#22c55e" stroke-width="12" stroke-linecap="round" stroke-dasharray="0 220" />
+                            <circle class="gauge-circle" cx="100" cy="85" r="7" fill="#22c55e" stroke="#fff" stroke-width="2" />
+                            <line class="gauge-needle" x1="100" y1="85" x2="100" y2="30" stroke="#4b5563" stroke-width="3" stroke-linecap="round" transform="rotate(-90, 100, 85)" />
+                        </svg>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <span class="text-4xl font-bold gauge-percentage" style="color: {{ $gaugeColor }}">0%</span>
+                        @if($percentage > 100)
+                            <span class="inline-flex ml-2 items-center rounded-full bg-emerald-100 dark:bg-emerald-900 px-2.5 py-0.5 text-sm font-medium text-emerald-700 dark:text-emerald-300">
+                                +{{ number_format($percentage - 100, 1) }}%
+                            </span>
+                        @endif
+                    </div>
+                    
+                    <div class="text-center mt-3">
+                        <span class="text-base font-semibold text-zinc-600 dark:text-zinc-400">
+                            Total Achievement
+                        </span>
+                    </div>
+                    
+                    <div class="text-center mt-2">
+                        <span class="text-sm text-zinc-500">
+                            {{ $customStartDate->format('M d, Y') }} - {{ $customEndDate->format('M d, Y') }}
+                        </span>
+                    </div>
+                    
+                    @if($percentage > 100)
+                        <div class="text-center mt-2">
+                            <span class="text-sm text-emerald-600 dark:text-emerald-400 font-medium">
+                                {{ $percentage }}% achieved ({{ number_format($totalActual) }} / {{ number_format($totalTarget) }})
+                            </span>
+                        </div>
+                    @else
+                        <div class="text-center mt-2">
+                            <span class="text-sm text-zinc-500">
+                                {{ number_format($totalActual) }} of {{ number_format($totalTarget) }} completed
+                            </span>
+                        </div>
+                    @endif
+                </div>
+            @elseif(count($weeklyWeeks) > 0)
+                <!-- TAMPILAN MULTIPLE GAUGES UNTUK PRESET MODE -->
                 <div class="flex flex-col items-center">
                     @foreach($weeklyRows as $rowIndex => $rowWeeks)
                         <div class="flex w-full {{ !$loop->last ? 'mb-12 border-b border-zinc-100 dark:border-zinc-800 pb-10' : '' }}" style="justify-content: space-evenly;">
                             @foreach($rowWeeks as $weekIndex => $week)
                                 @php
                                     $percentage = $weeklyPercentagesChunked[$rowIndex][$weekIndex] ?? 0;
-                                    // Untuk tampilan gauge, batasi ke 100% (karena gauge hanya 0-100%)
                                     $percentageGauge = min($percentage, 100);
-                                    // Tentukan warna berdasarkan apakah melebihi 100% atau tidak
                                     $badgeColor = $percentage > 100 ? 'emerald' : ($percentage >= 80 ? 'green' : ($percentage >= 60 ? 'yellow' : ($percentage >= 40 ? 'orange' : 'red')));
                                     $gaugeColor = $percentage > 100 ? '#10b981' : ($percentage >= 80 ? '#22c55e' : ($percentage >= 60 ? '#eab308' : ($percentage >= 40 ? '#f97316' : '#ef4444')));
                                 @endphp
@@ -310,7 +455,6 @@
                                     style="flex: 1; max-width: 200px; min-width: 140px;" 
                                     data-actual-percentage="{{ $percentage }}">
                                     
-                                    <!-- SVG gauge tetap sama -->
                                     <div class="relative w-40 h-28 mx-auto">
                                         <svg class="w-full h-full gauge-svg" viewBox="0 0 200 100">
                                             <path d="M 30 85 A 70 70 0 0 1 170 85" fill="none" stroke="#e5e7eb" stroke-width="10" stroke-linecap="round" />
@@ -332,6 +476,9 @@
                                     <div class="text-center mt-1">
                                         <span class="text-sm font-semibold text-zinc-600 dark:text-zinc-400">{{ $week['label'] }}</span>
                                     </div>
+                                    <div class="text-center mt-0.5">
+                                        <span class="text-xs text-zinc-400">{{ $week['start']->format('M d') }} - {{ $week['end']->format('M d') }}</span>
+                                    </div>
                                     
                                     @if($percentage > 100)
                                         <div class="text-center mt-1">
@@ -350,18 +497,22 @@
                 </div>
             @else
                 <div class="h-48 flex items-center justify-center">
-                    <p class="text-zinc-500">No data available</p>
+                    <p class="text-zinc-500">No data available for the selected date range</p>
                 </div>
             @endif
         </flux:card>
 
         <!-- MONTHLY CHART - FULL WIDTH -->
         @php
-            $monthlyStartDate = request()->get('monthly_start_date', $now->copy()->startOfWeek(Carbon\Carbon::SUNDAY)->toDateString());
-            $monthlyEndDate = request()->get('monthly_end_date', $now->copy()->endOfWeek(Carbon\Carbon::SATURDAY)->toDateString());
+            $monthlyStartDate = request()->get('monthly_start_date', $now->copy()->toDateString());
+            $monthlyEndDate = request()->get('monthly_end_date', $now->copy()->toDateString());
+            
+            // HAPUS startOfWeek dan endOfWeek - gunakan tanggal persis
+            $startDate = Carbon\Carbon::parse($monthlyStartDate)->startOfDay();
+            $endDate = Carbon\Carbon::parse($monthlyEndDate)->endOfDay();
             
             // Filter jenis measurement yang akan ditampilkan
-            $filterMode = request()->get('filter_mode', 'all'); // 'all', 'selected', 'except'
+            $filterMode = request()->get('filter_mode', 'all');
             $selectedTypes = request()->get('selected_types', []);
             if (!is_array($selectedTypes)) {
                 $selectedTypes = explode(',', $selectedTypes);
@@ -370,9 +521,6 @@
             if (!is_array($exceptTypes)) {
                 $exceptTypes = explode(',', $exceptTypes);
             }
-            
-            $startOfWeek = Carbon\Carbon::parse($monthlyStartDate)->startOfWeek(Carbon\Carbon::SUNDAY);
-            $endOfWeek = Carbon\Carbon::parse($monthlyEndDate)->endOfWeek(Carbon\Carbon::SATURDAY);
             
             $typeLabels = [
                 'equipment_ground' => 'Equipment Ground', 'ionizer' => 'Ionizer', 'flooring' => 'Flooring',
@@ -400,12 +548,12 @@
             }
             
             $createdCounts = App\Models\ESD\Activity\ViewAllMeasurement::select('measurement_type', DB::raw('COUNT(DISTINCT id_table) as total'))
-                ->whereBetween('created_at', [$startOfWeek, $endOfWeek])
+                ->whereBetween('created_at', [$startDate, $endDate])
                 ->groupBy('measurement_type')
                 ->pluck('total', 'measurement_type');
 
             $nextCounts = App\Models\ESD\Activity\ViewAllMeasurement::select('measurement_type', DB::raw('COUNT(DISTINCT id_table) as total'))
-                ->whereBetween('next_date', [$startOfWeek, $endOfWeek])
+                ->whereBetween('next_date', [$startDate, $endDate])
                 ->groupBy('measurement_type')
                 ->pluck('total', 'measurement_type');
 
@@ -447,17 +595,20 @@
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
                 <div>
                     <flux:heading size="lg">Measurement Progress By Type</flux:heading>
-                    <flux:subheading>{{ $startOfWeek->format('d M Y') }} - {{ $endOfWeek->format('d M Y') }}</flux:subheading>
+                    <flux:subheading>{{ $startDate->format('d M Y') }} - {{ $endDate->format('d M Y') }}</flux:subheading>
                 </div>
                 <form method="GET" class="flex flex-wrap items-center gap-2" id="monthlyFilterForm">
                     <input type="hidden" name="yearly_year" value="{{ request()->get('yearly_year', $currentYear) }}">
                     <input type="hidden" name="weekly_year" value="{{ request()->get('weekly_year', $currentYear) }}">
                     <input type="hidden" name="weekly_month" value="{{ request()->get('weekly_month', $now->month) }}">
+                    <input type="hidden" name="weekly_custom_start" value="{{ request()->get('weekly_custom_start', '') }}">
+                    <input type="hidden" name="weekly_custom_end" value="{{ request()->get('weekly_custom_end', '') }}">
+                    <input type="hidden" name="weekly_mode" value="{{ request()->get('weekly_mode', 'preset') }}">
                     <input type="date" name="monthly_start_date" value="{{ $monthlyStartDate }}" class="text-sm rounded-lg border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-2 py-1">
                     <span class="text-zinc-500">to</span>
                     <input type="date" name="monthly_end_date" value="{{ $monthlyEndDate }}" class="text-sm rounded-lg border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-2 py-1">
                     
-                    <!-- Filter Mode Selection -->
+                    <!-- Filter Mode Selection (sama seperti sebelumnya) -->
                     <div class="relative" x-data="{ open: false }">
                         <button type="button" @click="open = !open" class="flex items-center gap-1 text-sm rounded-lg border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-1 hover:bg-zinc-50 dark:hover:bg-zinc-700">
                             <flux:icon name="funnel" class="w-4 h-4" />
@@ -514,6 +665,7 @@
                 </form>
             </div>
             
+            <!-- Rest of the chart display code remains the same -->
             @if(count($chartData) > 0)
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
                     @foreach($columns as $colIndex => $columnData)
@@ -572,6 +724,40 @@
 
     @push('scripts')
     <script>
+        function toggleWeeklyMode(mode) {
+            const presetControls = document.getElementById('presetControls');
+            const customControls = document.getElementById('customControls');
+            const form = document.getElementById('weeklyFilterForm');
+            
+            if (mode === 'preset') {
+                presetControls.style.display = 'flex';
+                customControls.style.display = 'none';
+                // Remove custom date parameters when switching to preset
+                const customStartInput = form.querySelector('input[name="weekly_custom_start"]');
+                const customEndInput = form.querySelector('input[name="weekly_custom_end"]');
+                if (customStartInput) customStartInput.value = '';
+                if (customEndInput) customEndInput.value = '';
+            } else {
+                presetControls.style.display = 'none';
+                customControls.style.display = 'flex';
+                // Set default dates if empty
+                const customStartInput = form.querySelector('input[name="weekly_custom_start"]');
+                const customEndInput = form.querySelector('input[name="weekly_custom_end"]');
+                if (customStartInput && !customStartInput.value) {
+                    const now = new Date();
+                    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+                    customStartInput.value = firstDay.toISOString().split('T')[0];
+                }
+                if (customEndInput && !customEndInput.value) {
+                    const now = new Date();
+                    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+                    customEndInput.value = lastDay.toISOString().split('T')[0];
+                }
+            }
+            
+            form.submit();
+        }
+        
         function toggleFilterMode(mode) {
             const selectedPanel = document.getElementById('selectedTypesPanel');
             const exceptPanel = document.getElementById('exceptTypesPanel');

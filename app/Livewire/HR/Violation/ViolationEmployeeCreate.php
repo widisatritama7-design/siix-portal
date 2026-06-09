@@ -152,15 +152,18 @@ class ViolationEmployeeCreate extends Component
             return true;
         }
         
-        // Hitung berapa kali violation stiker sudah terjadi (termasuk yang baru)
+        // Hitung berapa kali violation stiker sudah terjadi dalam BULAN INI (termasuk yang baru)
+        $startOfMonth = Carbon::now()->startOfMonth();
+        
         $stickerViolationCount = ViolationEmployee::where('nik', $violation->nik)
             ->where(function($query) {
                 $query->whereJsonContains('sub_category', 'Tidak Ada Stiker (SIM & STNK Lengkap)');
             })
+            ->where('created_at', '>=', $startOfMonth)
             ->count();
         
-        // Kirim email hanya jika total (termasuk yang baru) >= 6
-        // Artinya email dikirim pada pelanggaran ke-6
+        // Kirim email hanya jika total dalam bulan ini (termasuk yang baru) >= 6
+        // Artinya email dikirim pada pelanggaran ke-6 di bulan ini
         return $stickerViolationCount >= 6;
     }
     
@@ -201,7 +204,7 @@ class ViolationEmployeeCreate extends Component
         session()->flash('message', 'Violation record created successfully.');
         return redirect()->route('hr.violation.index');
     }
-    
+        
     protected function sendEmailNotifications($violation)
     {
         try {
@@ -210,18 +213,10 @@ class ViolationEmployeeCreate extends Component
             Log::info('Employee NIK: ' . ($violation->employee?->nik ?? 'Not found'));
             Log::info('Employee Name: ' . ($violation->employee?->name ?? 'Not found'));
             
-            // Mencari data HOD berdasarkan department
-            $hod = Hod::where('department_name', $violation->dept)->first();
+            // Mencari SEMUA data HOD berdasarkan department (bisa lebih dari satu)
+            $hods = Hod::where('department_name', $violation->dept)->get();
             
-            Log::info('HOD found: ' . ($hod ? 'Yes' : 'No'));
-            
-            if ($hod) {
-                Log::info('HOD Name: ' . $hod->hod_name);
-                Log::info('HOD Email: ' . $hod->hod_email);
-            }
-            
-            $hodEmail = $hod?->hod_email;
-            $hodName = $hod?->hod_name ?? 'HOD';
+            Log::info('Total HODs found: ' . $hods->count());
             
             // Daftar email untuk CC
             $ccEmails = [
@@ -231,23 +226,36 @@ class ViolationEmployeeCreate extends Component
                 'sek.admin01@siix-global.com'
             ];
             
-            // Kirim email ke HOD sebagai TO, dan tambahan sebagai CC
-            if ($hodEmail) {
-                Log::info('Sending email to HOD: ' . $hodEmail);
-                Log::info('CC to: ' . implode(', ', $ccEmails));
+            if ($hods->isNotEmpty()) {
+                // Kumpulkan semua email HOD
+                $hodEmails = $hods->pluck('hod_email')->filter()->unique()->toArray();
                 
-                Mail::to($hodEmail)
-                    ->cc($ccEmails)
-                    ->send(new ViolationCreated($violation, $hodName));
+                // Kumpulkan nama HOD untuk ditampilkan
+                $hodNames = $hods->pluck('hod_name')->filter()->implode(', ');
                 
-                Log::info('Email sent successfully to HOD with CC');
+                Log::info('HOD Emails to send: ' . implode(', ', $hodEmails));
+                Log::info('HOD Names: ' . $hodNames);
+                
+                // Kirim email ke SEMUA HOD
+                if (!empty($hodEmails)) {
+                    foreach ($hodEmails as $hodEmail) {
+                        Log::info('Sending email to HOD: ' . $hodEmail);
+                        
+                        Mail::to($hodEmail)
+                            ->cc($ccEmails)
+                            ->send(new ViolationCreated($violation, $hodNames));
+                    }
+                    
+                    Log::info('Email sent successfully to ' . count($hodEmails) . ' HOD(s) with CC');
+                } else {
+                    Log::warning('No valid HOD emails found for department: ' . $violation->dept);
+                    Mail::to($ccEmails)->send(new ViolationCreated($violation, $hodNames));
+                    Log::info('Email sent successfully to fallback recipients');
+                }
             } else {
-                // Jika HOD tidak ditemukan, kirim ke CC emails sebagai TO
-                Log::warning('No HOD email found for department: ' . $violation->dept);
-                Log::info('Sending email to: ' . implode(', ', $ccEmails));
-                
-                Mail::to($ccEmails)->send(new ViolationCreated($violation, $hodName));
-                
+                // Jika HOD tidak ditemukan sama sekali
+                Log::warning('No HOD records found for department: ' . $violation->dept);
+                Mail::to($ccEmails)->send(new ViolationCreated($violation, 'HOD'));
                 Log::info('Email sent successfully to fallback recipients');
             }
             

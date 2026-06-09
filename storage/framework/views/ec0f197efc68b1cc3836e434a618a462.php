@@ -1,8 +1,12 @@
+<?php # [BlazeFolded]:{flux::separator}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/separator.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::navbar}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/navbar/index.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::header}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/header.blade.php}:{1776985208} ?>
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
+<html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>" class="dark">
 <head>
-    @voletStyles
-    @include('partials.head')
+    <?php echo '<link rel="stylesheet" href="https://test.siix-ems.co.id/vendor/volet/volet-default.css">'; ?>
+    <?php echo $__env->make('partials.head', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
     <style>
         [x-cloak] { display: none !important; }
         
@@ -158,7 +162,7 @@
                     :class="{'hidden': !sidebarOpen && !isHovering && !sidebarPinned}">
                     <a href="/" wire:navigate class="inline-block">
                         <img 
-                            src="{{ asset('images/logo-siix.png') }}" 
+                            src="<?php echo e(asset('images/logo-siix.png')); ?>" 
                             alt="SIIX Portal" 
                             class="h-11 w-auto object-contain image-rendering-auto"
                         />
@@ -329,94 +333,94 @@
                         class="mt-1 relative">
                         <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
                         <div class="space-y-1 ml-[30px]">
-                        <a href="{{ route('dashboard') }}" wire:navigate
-                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('dashboard') ? 'menu-active' : '' }}">
+                        <a href="<?php echo e(route('dashboard')); ?>" wire:navigate
+                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('dashboard') ? 'menu-active' : ''); ?>">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gauge-icon lucide-gauge w-4 h-4">
                                 <path d="m12 14 4-4"/>
                                 <path d="M3.34 19a10 10 0 1 1 17.32 0"/>
                             </svg>
                             <span class="truncate">Main Dashboard</span>
                         </a>
-                        @can('view dcc-dashboard')
-                        <a href="{{ route('dcc-dashboard') }}" wire:navigate
-                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('dcc-dashboard') ? 'menu-active' : '' }}">
+                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view dcc-dashboard')): ?>
+                        <a href="<?php echo e(route('dcc-dashboard')); ?>" wire:navigate
+                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('dcc-dashboard') ? 'menu-active' : ''); ?>">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gauge-icon lucide-gauge w-4 h-4">
                                 <path d="m12 14 4-4"/>
                                 <path d="M3.34 19a10 10 0 1 1 17.32 0"/>
                             </svg>
                             <span class="truncate">DCC Dashboard</span>
                         </a>
-                        @endcan
-                        @can('view hr-dashboard')
-                        <a href="{{ route('hr-dashboard') }}" wire:navigate
-                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('hr-dashboard') ? 'menu-active' : '' }}">
+                        <?php endif; ?>
+                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view hr-dashboard')): ?>
+                        <a href="<?php echo e(route('hr-dashboard')); ?>" wire:navigate
+                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('hr-dashboard') ? 'menu-active' : ''); ?>">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gauge-icon lucide-gauge w-4 h-4">
                                 <path d="m12 14 4-4"/>
                                 <path d="M3.34 19a10 10 0 1 1 17.32 0"/>
                             </svg>
                             <span class="truncate">HR Dashboard</span>
                         </a>
-                        @endcan
-                        @can('view esd-dashboard')
-                        <a href="{{ route('esd-dashboard') }}" wire:navigate
-                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('esd-dashboard') ? 'menu-active' : '' }}">
+                        <?php endif; ?>
+                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view esd-dashboard')): ?>
+                        <a href="<?php echo e(route('esd-dashboard')); ?>" wire:navigate
+                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('esd-dashboard') ? 'menu-active' : ''); ?>">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gauge-icon lucide-gauge w-4 h-4">
                                 <path d="m12 14 4-4"/>
                                 <path d="M3.34 19a10 10 0 1 1 17.32 0"/>
                             </svg>
                             <span class="truncate">ESD Dashboard</span>
                         </a>
-                        @endcan
-                        @can('view kaizen-dashboard')
-                        <a href="{{ route('kaizen-dashboard') }}" wire:navigate
-                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('kaizen-dashboard') ? 'menu-active' : '' }}">
+                        <?php endif; ?>
+                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view kaizen-dashboard')): ?>
+                        <a href="<?php echo e(route('kaizen-dashboard')); ?>" wire:navigate
+                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('kaizen-dashboard') ? 'menu-active' : ''); ?>">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gauge-icon lucide-gauge w-4 h-4">
                                 <path d="m12 14 4-4"/>
                                 <path d="M3.34 19a10 10 0 1 1 17.32 0"/>
                             </svg>
                             <span class="truncate">Kaizen Dashboard</span>
                         </a>
-                        @endcan
-                        @can('view ms-dashboard')
-                        <a href="{{ route('prod.ms.dashboard') }}" wire:navigate
-                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('prod.ms.dashboard') ? 'menu-active' : '' }}">
+                        <?php endif; ?>
+                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view ms-dashboard')): ?>
+                        <a href="<?php echo e(route('prod.ms.dashboard')); ?>" wire:navigate
+                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('prod.ms.dashboard') ? 'menu-active' : ''); ?>">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gauge-icon lucide-gauge w-4 h-4">
                                 <path d="m12 14 4-4"/>
                                 <path d="M3.34 19a10 10 0 1 1 17.32 0"/>
                             </svg>
                             <span class="truncate">MS Dashboard</span>
                         </a>
-                        @endcan
-                        @can('view ticket-dashboard')
-                        <a href="{{ route('ticket-dashboard') }}" wire:navigate
-                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('ticket-dashboard') ? 'menu-active' : '' }}">
+                        <?php endif; ?>
+                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view ticket-dashboard')): ?>
+                        <a href="<?php echo e(route('ticket-dashboard')); ?>" wire:navigate
+                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('ticket-dashboard') ? 'menu-active' : ''); ?>">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gauge-icon lucide-gauge w-4 h-4">
                                 <path d="m12 14 4-4"/>
                                 <path d="M3.34 19a10 10 0 1 1 17.32 0"/>
                             </svg>
                             <span class="truncate">Ticket Dashboard</span>
                         </a>
-                        @endcan
-                        @can('view inbox')
-                        <a href="{{ route('inbox') }}" wire:navigate
-                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('inbox') ? 'menu-active' : '' }}">
+                        <?php endif; ?>
+                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view inbox')): ?>
+                        <a href="<?php echo e(route('inbox')); ?>" wire:navigate
+                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('inbox') ? 'menu-active' : ''); ?>">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
                                 <path d="M1.5 8.67v8.58a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3V8.67l-8.928 5.493a3 3 0 0 1-3.144 0L1.5 8.67Z" />
                                 <path d="M22.5 6.908V6.75a3 3 0 0 0-3-3h-15a3 3 0 0 0-3 3v.158l9.714 5.978a1.5 1.5 0 0 0 1.572 0L22.5 6.908Z" />
                             </svg>
                             <span class="truncate">Inbox</span>
-                            @php $inboxCount = App\Helpers\InboxHelper::getTotalInboxCount(); @endphp
-                            @if($inboxCount > 0)
-                            <span class="ml-auto bg-blue-500 text-white text-xs px-1.5 py-0.5 rounded-full">{{ $inboxCount }}</span>
-                            @endif
+                            <?php $inboxCount = App\Helpers\InboxHelper::getTotalInboxCount(); ?>
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($inboxCount > 0): ?>
+                            <span class="ml-auto bg-blue-500 text-white text-xs px-1.5 py-0.5 rounded-full"><?php echo e($inboxCount); ?></span>
+                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </a>
-                        @endcan
+                        <?php endif; ?>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Group: MAINTENANCE -->
-                @canany(['view maintenance'])
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->any(['view maintenance'])): ?>
                 <div class="mb-2">
                     <div class="relative w-full">
                         <button @click="toggleGroup('maintenance')" 
@@ -449,18 +453,18 @@
                          class="mt-1 relative">
                         <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
                         <div class="space-y-1 ml-[30px]">
-                        @can('view esd-monitoring')
-                        <a href="{{ route('esd.calendar') }}" wire:navigate
-                           class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('esd.calendar') ? 'menu-active' : '' }}">
+                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view esd-monitoring')): ?>
+                        <a href="<?php echo e(route('esd.calendar')); ?>" wire:navigate
+                           class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('esd.calendar') ? 'menu-active' : ''); ?>">
                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
                                 <path d="m20.798 11.012-3.188 3.416L9.462 6.28l4.24-4.542a.75.75 0 0 1 1.272.71L12.982 9.75h7.268a.75.75 0 0 1 .548 1.262ZM3.202 12.988 6.39 9.572l8.148 8.148-4.24 4.542a.75.75 0 0 1-1.272-.71l1.992-7.302H3.75a.75.75 0 0 1-.548-1.262ZM3.53 2.47a.75.75 0 0 0-1.06 1.06l18 18a.75.75 0 1 0 1.06-1.06l-18-18Z" />
                             </svg>
                             <span class="truncate">ESD Monitoring</span>
                         </a>
-                        @endcan
-                        @can('view mtc-monitoring')
-                        <a href="{{ route('mtc.daily-dashboard') }}" wire:navigate
-                           class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('mtc.daily-dashboard') ? 'menu-active' : '' }}">
+                        <?php endif; ?>
+                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view mtc-monitoring')): ?>
+                        <a href="<?php echo e(route('mtc.daily-dashboard')); ?>" wire:navigate
+                           class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('mtc.daily-dashboard') ? 'menu-active' : ''); ?>">
                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cog-icon lucide-cog w-4 h-4">
                                 <path d="M11 10.27 7 3.34"/>
                                 <path d="m11 13.73-4 6.93"/>
@@ -479,14 +483,14 @@
                             </svg>
                             <span class="truncate">MTC Monitoring</span>
                         </a>
-                        @endcan
+                        <?php endif; ?>
                         </div>
                     </div>
                 </div>
-                @endcanany
+                <?php endif; ?>
 
                 <!-- Group: PRODUCTION -->
-                @canany(['view production'])
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->any(['view production'])): ?>
                 <div class="mb-2">
                     <div class="relative w-full">
                         <button @click="toggleGroup('production')" 
@@ -518,17 +522,17 @@
                         class="mt-1 relative">
                         <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
                         <div class="space-y-1 ml-[30px]">
-                            @can('view kaizen')
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view kaizen')): ?>
                             <!-- Kaizen Monitoring -->
-                            <a href="{{ route('prod.kaizens') }}" wire:navigate
-                            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('prod.kaizens') ? 'menu-active' : '' }}">
+                            <a href="<?php echo e(route('prod.kaizens')); ?>" wire:navigate
+                            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('prod.kaizens') ? 'menu-active' : ''); ?>">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
                                     <path fill-rule="evenodd" d="M12 1.5a.75.75 0 0 1 .75.75V4.5a.75.75 0 0 1-1.5 0V2.25A.75.75 0 0 1 12 1.5ZM5.636 4.136a.75.75 0 0 1 1.06 0l1.592 1.591a.75.75 0 0 1-1.061 1.06l-1.591-1.59a.75.75 0 0 1 0-1.061Zm12.728 0a.75.75 0 0 1 0 1.06l-1.591 1.592a.75.75 0 0 1-1.06-1.061l1.59-1.591a.75.75 0 0 1 1.061 0Zm-6.816 4.496a.75.75 0 0 1 .82.311l5.228 7.917a.75.75 0 0 1-.777 1.148l-2.097-.43 1.045 3.9a.75.75 0 0 1-1.45.388l-1.044-3.899-1.601 1.42a.75.75 0 0 1-1.247-.606l.569-9.47a.75.75 0 0 1 .554-.68ZM3 10.5a.75.75 0 0 1 .75-.75H6a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 10.5Zm14.25 0a.75.75 0 0 1 .75-.75h2.25a.75.75 0 0 1 0 1.5H18a.75.75 0 0 1-.75-.75Zm-8.962 3.712a.75.75 0 0 1 0 1.061l-1.591 1.591a.75.75 0 1 1-1.061-1.06l1.591-1.592a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" />
                                 </svg>
                                 <span class="truncate">Kaizen Monitoring</span>
                             </a>
-                            @endcan
-                            @canany(['view wip'])
+                            <?php endif; ?>
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->any(['view wip'])): ?>
                             <!-- WIP Monitoring as SUB GROUP -->
                             <div class="relative w-full">
                                 <button @click="toggleGroup('wipMonitoring')" 
@@ -557,8 +561,8 @@
                                     
                                     <div class="space-y-1 ml-[24px]">
                                         <!-- Master Model -->
-                                        <a href="{{ route('prod.master-models') }}" wire:navigate
-                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('prod.master-models') ? 'menu-active' : '' }}">
+                                        <a href="<?php echo e(route('prod.master-models')); ?>" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('prod.master-models') ? 'menu-active' : ''); ?>">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
                                                 <path d="M3.375 3C2.339 3 1.5 3.84 1.5 4.875v.75c0 1.036.84 1.875 1.875 1.875h17.25c1.035 0 1.875-.84 1.875-1.875v-.75C22.5 3.839 21.66 3 20.625 3H3.375Z" />
                                                 <path fill-rule="evenodd" d="m3.087 9 .54 9.176A3 3 0 0 0 6.62 21h10.757a3 3 0 0 0 2.995-2.824L20.913 9H3.087Zm6.163 3.75A.75.75 0 0 1 10 12h4a.75.75 0 0 1 0 1.5h-4a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
@@ -566,8 +570,8 @@
                                             <span class="truncate">Master Model</span>
                                         </a>
                                         <!-- Master WIP -->
-                                        <a href="{{ route('prod.wip.index') }}" wire:navigate
-                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('prod.wip.index') ? 'menu-active' : '' }}">
+                                        <a href="<?php echo e(route('prod.wip.index')); ?>" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('prod.wip.index') ? 'menu-active' : ''); ?>">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
                                                 <path d="M9.97.97a.75.75 0 0 1 1.06 0l3 3a.75.75 0 0 1-1.06 1.06l-1.72-1.72v3.44h-1.5V3.31L8.03 5.03a.75.75 0 0 1-1.06-1.06l3-3ZM9.75 6.75v6a.75.75 0 0 0 1.5 0v-6h3a3 3 0 0 1 3 3v7.5a3 3 0 0 1-3 3h-7.5a3 3 0 0 1-3-3v-7.5a3 3 0 0 1 3-3h3Z" />
                                                 <path d="M7.151 21.75a2.999 2.999 0 0 0 2.599 1.5h7.5a3 3 0 0 0 3-3v-7.5c0-1.11-.603-2.08-1.5-2.599v7.099a4.5 4.5 0 0 1-4.5 4.5H7.151Z" />
@@ -575,8 +579,8 @@
                                             <span class="truncate">Master WIP</span>
                                         </a>
                                         <!-- Master Rack Lose -->
-                                        <a href="{{ route('prod.rack-lose') }}" wire:navigate
-                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('prod.rack-lose') ? 'menu-active' : '' }}">
+                                        <a href="<?php echo e(route('prod.rack-lose')); ?>" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('prod.rack-lose') ? 'menu-active' : ''); ?>">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
                                                 <path fill-rule="evenodd" d="M9.75 6.75h-3a3 3 0 0 0-3 3v7.5a3 3 0 0 0 3 3h7.5a3 3 0 0 0 3-3v-7.5a3 3 0 0 0-3-3h-3V1.5a.75.75 0 0 0-1.5 0v5.25Zm0 0h1.5v5.69l1.72-1.72a.75.75 0 1 1 1.06 1.06l-3 3a.75.75 0 0 1-1.06 0l-3-3a.75.75 0 1 1 1.06-1.06l1.72 1.72V6.75Z" clip-rule="evenodd" />
                                                 <path d="M7.151 21.75a2.999 2.999 0 0 0 2.599 1.5h7.5a3 3 0 0 0 3-3v-7.5c0-1.11-.603-2.08-1.5-2.599v7.099a4.5 4.5 0 0 1-4.5 4.5H7.151Z" />
@@ -584,8 +588,8 @@
                                             <span class="truncate">Master Rack Lose</span>
                                         </a>
                                         <!-- Report -->
-                                        <a href="{{ route('prod.history') }}" wire:navigate
-                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('prod.history') ? 'menu-active' : '' }}">
+                                        <a href="<?php echo e(route('prod.history')); ?>" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('prod.history') ? 'menu-active' : ''); ?>">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
                                                 <path fill-rule="evenodd" d="M7.875 1.5C6.839 1.5 6 2.34 6 3.375v2.99c-.426.053-.851.11-1.274.174-1.454.218-2.476 1.483-2.476 2.917v6.294a3 3 0 0 0 3 3h.27l-.155 1.705A1.875 1.875 0 0 0 7.232 22.5h9.536a1.875 1.875 0 0 0 1.867-2.045l-.155-1.705h.27a3 3 0 0 0 3-3V9.456c0-1.434-1.022-2.7-2.476-2.917A48.716 48.716 0 0 0 18 6.366V3.375c0-1.036-.84-1.875-1.875-1.875h-8.25ZM16.5 6.205v-2.83A.375.375 0 0 0 16.125 3h-8.25a.375.375 0 0 0-.375.375v2.83a49.353 49.353 0 0 1 9 0Zm-.217 8.265c.178.018.317.16.333.337l.526 5.784a.375.375 0 0 1-.374.409H7.232a.375.375 0 0 1-.374-.409l.526-5.784a.373.373 0 0 1 .333-.337 41.741 41.741 0 0 1 8.566 0Z" clip-rule="evenodd" />
                                             </svg>
@@ -594,8 +598,8 @@
                                     </div>
                                 </div>
                             </div>
-                            @endcanany
-                            @canany(['view master sample'])
+                            <?php endif; ?>
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->any(['view master sample'])): ?>
                             <!-- MS Monitoring as SUB GROUP -->
                             <div class="relative w-full">
                                 <button @click="toggleGroup('msMonitoring')" 
@@ -627,50 +631,50 @@
                                     <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
                                     
                                     <div class="space-y-1 ml-[24px]">
-                                        @can(['view master sample'])
+                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check(['view master sample'])): ?>
                                         <!-- Master Sample -->
-                                        <a href="{{ route('prod.ms.master-sample') }}" wire:navigate
-                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('prod.ms.master-sample') ? 'menu-active' : '' }}">
+                                        <a href="<?php echo e(route('prod.ms.master-sample')); ?>" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('prod.ms.master-sample') ? 'menu-active' : ''); ?>">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
                                                 <path d="M3.375 3C2.339 3 1.5 3.84 1.5 4.875v.75c0 1.036.84 1.875 1.875 1.875h17.25c1.035 0 1.875-.84 1.875-1.875v-.75C22.5 3.839 21.66 3 20.625 3H3.375Z" />
                                                 <path fill-rule="evenodd" d="m3.087 9 .54 9.176A3 3 0 0 0 6.62 21h10.757a3 3 0 0 0 2.995-2.824L20.913 9H3.087Zm6.163 3.75A.75.75 0 0 1 10 12h4a.75.75 0 0 1 0 1.5h-4a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
                                             </svg>
                                             <span class="truncate">Master Sample</span>
                                         </a>
-                                        @endcan
-                                        @can(['view master sample rack'])
+                                        <?php endif; ?>
+                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check(['view master sample rack'])): ?>
                                         <!-- Master Rack -->
-                                        <a href="{{ route('prod.ms.master-rack') }}" wire:navigate
-                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('prod.ms.master-rack') ? 'menu-active' : '' }}">
+                                        <a href="<?php echo e(route('prod.ms.master-rack')); ?>" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('prod.ms.master-rack') ? 'menu-active' : ''); ?>">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
                                                 <path d="M5.507 4.048A3 3 0 0 1 7.785 3h8.43a3 3 0 0 1 2.278 1.048l1.722 2.008A4.533 4.533 0 0 0 19.5 6h-15c-.243 0-.482.02-.715.056l1.722-2.008Z" />
                                                 <path fill-rule="evenodd" d="M1.5 10.5a3 3 0 0 1 3-3h15a3 3 0 1 1 0 6h-15a3 3 0 0 1-3-3Zm15 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm2.25.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM4.5 15a3 3 0 1 0 0 6h15a3 3 0 1 0 0-6h-15Zm11.25 3.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM19.5 18a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" clip-rule="evenodd" />
                                             </svg>
                                             <span class="truncate">Master Rack</span>
                                         </a>
-                                        @endcan
-                                        @can(['view master sample task'])
+                                        <?php endif; ?>
+                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check(['view master sample task'])): ?>
                                         <!--Approval -->
-                                        <a href="{{ route('prod.ms.sample-checks') }}" wire:navigate
-                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('prod.ms.sample-checks') ? 'menu-active' : '' }}">
+                                        <a href="<?php echo e(route('prod.ms.sample-checks')); ?>" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('prod.ms.sample-checks') ? 'menu-active' : ''); ?>">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
                                                 <path fill-rule="evenodd" d="M7.502 6h7.128A3.375 3.375 0 0 1 18 9.375v9.375a3 3 0 0 0 3-3V6.108c0-1.505-1.125-2.811-2.664-2.94a48.972 48.972 0 0 0-.673-.05A3 3 0 0 0 15 1.5h-1.5a3 3 0 0 0-2.663 1.618c-.225.015-.45.032-.673.05C8.662 3.295 7.554 4.542 7.502 6ZM13.5 3A1.5 1.5 0 0 0 12 4.5h4.5A1.5 1.5 0 0 0 15 3h-1.5Z" clip-rule="evenodd" />
                                                 <path fill-rule="evenodd" d="M3 9.375C3 8.339 3.84 7.5 4.875 7.5h9.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 0 1 3 20.625V9.375Zm9.586 4.594a.75.75 0 0 0-1.172-.938l-2.476 3.096-.908-.907a.75.75 0 0 0-1.06 1.06l1.5 1.5a.75.75 0 0 0 1.116-.062l3-3.75Z" clip-rule="evenodd" />
                                             </svg>
                                             <span class="truncate">Task</span>
                                         </a>
-                                        @endcan
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </div>
-                            @endcanany
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
-                @endcanany
+                <?php endif; ?>
                 
                 <!-- Group: DCC -->
-                @canany(['view departments', 'view submissions', 'view submissions one user'])
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->any(['view departments', 'view submissions', 'view submissions one user'])): ?>
                 <div class="mb-2">
                     <div class="relative w-full">
                         <button @click="toggleGroup('dcc')" 
@@ -702,33 +706,33 @@
                          class="mt-1 relative">
                         <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
                         <div class="space-y-1 ml-[30px]">
-                        @can('view departments')
-                        <a href="{{ route('dcc.departments') }}" wire:navigate
-                           class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('dcc.departments') ? 'menu-active' : '' }}">
+                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view departments')): ?>
+                        <a href="<?php echo e(route('dcc.departments')); ?>" wire:navigate
+                           class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('dcc.departments') ? 'menu-active' : ''); ?>">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
                                 <path d="M19.006 3.705a.75.75 0 1 0-.512-1.41L6 6.838V3a.75.75 0 0 0-.75-.75h-1.5A.75.75 0 0 0 3 3v4.93l-1.006.365a.75.75 0 0 0 .512 1.41l16.5-6Z" />
                                 <path fill-rule="evenodd" d="M3.019 11.114 18 5.667v3.421l4.006 1.457a.75.75 0 1 1-.512 1.41l-.494-.18v8.475h.75a.75.75 0 0 1 0 1.5H2.25a.75.75 0 0 1 0-1.5H3v-9.129l.019-.007ZM18 20.25v-9.566l1.5.546v9.02H18Zm-9-6a.75.75 0 0 0-.75.75v4.5c0 .414.336.75.75.75h3a.75.75 0 0 0 .75-.75V15a.75.75 0 0 0-.75-.75H9Z" clip-rule="evenodd" />
                             </svg>
                             <span class="truncate">Departments</span>
                         </a>
-                        @endcan
-                        @canany(['view submissions', 'view submissions one user'])
-                        <a href="{{ route('dcc.submissions') }}" wire:navigate
-                           class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('dcc.submissions') ? 'menu-active' : '' }}">
+                        <?php endif; ?>
+                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->any(['view submissions', 'view submissions one user'])): ?>
+                        <a href="<?php echo e(route('dcc.submissions')); ?>" wire:navigate
+                           class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('dcc.submissions') ? 'menu-active' : ''); ?>">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
                                 <path fill-rule="evenodd" d="M9.75 6.75h-3a3 3 0 0 0-3 3v7.5a3 3 0 0 0 3 3h7.5a3 3 0 0 0 3-3v-7.5a3 3 0 0 0-3-3h-3V1.5a.75.75 0 0 0-1.5 0v5.25Zm0 0h1.5v5.69l1.72-1.72a.75.75 0 1 1 1.06 1.06l-3 3a.75.75 0 0 1-1.06 0l-3-3a.75.75 0 1 1 1.06-1.06l1.72 1.72V6.75Z" clip-rule="evenodd" />
                                 <path d="M7.151 21.75a2.999 2.999 0 0 0 2.599 1.5h7.5a3 3 0 0 0 3-3v-7.5c0-1.11-.603-2.08-1.5-2.599v7.099a4.5 4.5 0 0 1-4.5 4.5H7.151Z" />
                             </svg>
                             <span class="truncate">Submissions</span>
                         </a>
-                        @endcanany
+                        <?php endif; ?>
                         </div>
                     </div>
                 </div>
-                @endcanany
+                <?php endif; ?>
                 
                 <!-- Group: HR -->
-                @canany(['view employee', 'view comelate employee', 'view violation employee', 'view employee call', 'view uniform request', 'view absence report'])
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->any(['view employee', 'view comelate employee', 'view violation employee', 'view employee call', 'view uniform request', 'view absence report'])): ?>
                 <div class="mb-2">
                     <div class="relative w-full">
                         <button @click="toggleGroup('hr')" 
@@ -762,49 +766,49 @@
                         <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
                         
                         <div class="space-y-1 ml-[30px]">
-                            @can('view employee')
-                            <a href="{{ route('hr.employee') }}" wire:navigate
-                            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('hr.employee') ? 'menu-active' : '' }}">
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view employee')): ?>
+                            <a href="<?php echo e(route('hr.employee')); ?>" wire:navigate
+                            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('hr.employee') ? 'menu-active' : ''); ?>">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
                                     <path d="M4.5 6.375a4.125 4.125 0 1 1 8.25 0 4.125 4.125 0 0 1-8.25 0ZM14.25 8.625a3.375 3.375 0 1 1 6.75 0 3.375 3.375 0 0 1-6.75 0ZM1.5 19.125a7.125 7.125 0 0 1 14.25 0v.003l-.001.119a.75.75 0 0 1-.363.63 13.067 13.067 0 0 1-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 0 1-.364-.63l-.001-.122ZM17.25 19.128l-.001.144a2.25 2.25 0 0 1-.233.96 10.088 10.088 0 0 0 5.06-1.01.75.75 0 0 0 .42-.643 4.875 4.875 0 0 0-6.957-4.611 8.586 8.586 0 0 1 1.71 5.157v.003Z" />
                                 </svg>
                                 <span class="truncate">Master Employee</span>
                             </a>
-                            @endcan
+                            <?php endif; ?>
                             
-                            @can('view comelate employee')
-                            <a href="{{ route('hr.comelate.index') }}" wire:navigate
-                            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('hr.comelate.index') ? 'menu-active' : '' }}">
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view comelate employee')): ?>
+                            <a href="<?php echo e(route('hr.comelate.index')); ?>" wire:navigate
+                            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('hr.comelate.index') ? 'menu-active' : ''); ?>">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
                                     <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm4.28 10.28a.75.75 0 0 0 0-1.06l-3-3a.75.75 0 1 0-1.06 1.06l1.72 1.72H8.25a.75.75 0 0 0 0 1.5h5.69l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3Z" clip-rule="evenodd" />
                                 </svg>
                                 <span class="truncate">Comelate Employee</span>
                             </a>
-                            @endcan
+                            <?php endif; ?>
                             
-                            @can('view violation employee')
-                            <a href="{{ route('hr.violation.index') }}" wire:navigate
-                            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('hr.violation.index') ? 'menu-active' : '' }}">
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view violation employee')): ?>
+                            <a href="<?php echo e(route('hr.violation.index')); ?>" wire:navigate
+                            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('hr.violation.index') ? 'menu-active' : ''); ?>">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
                                     <path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
                                 </svg>
                                 <span class="truncate">Violation Employee</span>
                             </a>
-                            @endcan
+                            <?php endif; ?>
                             
-                            @can('view employee call')
-                            <a href="{{ route('hr.employee-call.index') }}" wire:navigate
-                            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('hr.employee-call.index') ? 'menu-active' : '' }}">
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view employee call')): ?>
+                            <a href="<?php echo e(route('hr.employee-call.index')); ?>" wire:navigate
+                            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('hr.employee-call.index') ? 'menu-active' : ''); ?>">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
                                     <path fill-rule="evenodd" d="M15 3.75a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0V5.56l-4.72 4.72a.75.75 0 1 1-1.06-1.06l4.72-4.72h-2.69a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
                                     <path fill-rule="evenodd" d="M1.5 4.5a3 3 0 0 1 3-3h1.372c.86 0 1.61.586 1.819 1.42l1.105 4.423a1.875 1.875 0 0 1-.694 1.955l-1.293.97c-.135.101-.164.249-.126.352a11.285 11.285 0 0 0 6.697 6.697c.103.038.25.009.352-.126l.97-1.293a1.875 1.875 0 0 1 1.955-.694l4.423 1.105c.834.209 1.42.959 1.42 1.82V19.5a3 3 0 0 1-3 3h-2.25C8.552 22.5 1.5 15.448 1.5 6.75V4.5Z" clip-rule="evenodd" />
                                 </svg>
                                 <span class="truncate">Employee Call</span>
                             </a>
-                            @endcan
+                            <?php endif; ?>
 
                             <!-- Uniform Group -->
-                            @canany(['view uniform request'])
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->any(['view uniform request'])): ?>
                             <div class="relative w-full">
                                 <button @click="toggleGroup('uniformMonitoring')" 
                                         class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
@@ -831,33 +835,33 @@
                                     <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
                                     
                                     <div class="space-y-1 ml-[24px]">
-                                        @can(['view master uniform'])
+                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check(['view master uniform'])): ?>
                                         <!-- Master Uniform -->
-                                        <a href="{{ route('prod.uniform.master') }}" wire:navigate
-                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('prod.uniform.master') ? 'menu-active' : '' }}">
+                                        <a href="<?php echo e(route('prod.uniform.master')); ?>" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('prod.uniform.master') ? 'menu-active' : ''); ?>">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
                                                 <path d="M3.375 3C2.339 3 1.5 3.84 1.5 4.875v.75c0 1.036.84 1.875 1.875 1.875h17.25c1.035 0 1.875-.84 1.875-1.875v-.75C22.5 3.839 21.66 3 20.625 3H3.375Z" />
                                                 <path fill-rule="evenodd" d="m3.087 9 .54 9.176A3 3 0 0 0 6.62 21h10.757a3 3 0 0 0 2.995-2.824L20.913 9H3.087Zm6.163 3.75A.75.75 0 0 1 10 12h4a.75.75 0 0 1 0 1.5h-4a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
                                             </svg>
                                             <span class="truncate">Master Uniform</span>
                                         </a>
-                                        @endcan
-                                        @can(['view uniform request'])
+                                        <?php endif; ?>
+                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check(['view uniform request'])): ?>
                                         <!-- Request Uniform -->
-                                        <a href="{{ route('prod.uniform.request.index') }}" wire:navigate
-                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('prod.uniform.request.index') ? 'menu-active' : '' }}">
+                                        <a href="<?php echo e(route('prod.uniform.request.index')); ?>" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('prod.uniform.request.index') ? 'menu-active' : ''); ?>">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
                                                 <path fill-rule="evenodd" d="M9.75 6.75h-3a3 3 0 0 0-3 3v7.5a3 3 0 0 0 3 3h7.5a3 3 0 0 0 3-3v-7.5a3 3 0 0 0-3-3h-3V1.5a.75.75 0 0 0-1.5 0v5.25Zm0 0h1.5v5.69l1.72-1.72a.75.75 0 1 1 1.06 1.06l-3 3a.75.75 0 0 1-1.06 0l-3-3a.75.75 0 1 1 1.06-1.06l1.72 1.72V6.75Z" clip-rule="evenodd" />
                                                 <path d="M7.151 21.75a2.999 2.999 0 0 0 2.599 1.5h7.5a3 3 0 0 0 3-3v-7.5c0-1.11-.603-2.08-1.5-2.599v7.099a4.5 4.5 0 0 1-4.5 4.5H7.151Z" />
                                             </svg>
                                             <span class="truncate">Request Uniform</span>
                                         </a>
-                                        @endcan
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </div>
-                            @endcanany
-                            @canany(['view absence report'])
+                            <?php endif; ?>
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->any(['view absence report'])): ?>
                             <!-- Absence Group -->
                             <div class="relative w-full">
                                 <button @click="toggleGroup('absenceMonitoring')" 
@@ -885,45 +889,45 @@
                                     <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
                                     
                                     <div class="space-y-1 ml-[24px]">
-                                        @can(['view absence report'])
+                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check(['view absence report'])): ?>
                                         <!-- Report Absence -->
-                                        <a href="{{ route('prod.absence.dashboard') }}" wire:navigate
-                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('prod.absence.dashboard') ? 'menu-active' : '' }}">
+                                        <a href="<?php echo e(route('prod.absence.dashboard')); ?>" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('prod.absence.dashboard') ? 'menu-active' : ''); ?>">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
                                                 <path fill-rule="evenodd" d="M7.502 6h7.128A3.375 3.375 0 0 1 18 9.375v9.375a3 3 0 0 0 3-3V6.108c0-1.505-1.125-2.811-2.664-2.94a48.972 48.972 0 0 0-.673-.05A3 3 0 0 0 15 1.5h-1.5a3 3 0 0 0-2.663 1.618c-.225.015-.45.032-.673.05C8.662 3.295 7.554 4.542 7.502 6ZM13.5 3A1.5 1.5 0 0 0 12 4.5h4.5A1.5 1.5 0 0 0 15 3h-1.5Z" clip-rule="evenodd" />
                                                 <path fill-rule="evenodd" d="M3 9.375C3 8.339 3.84 7.5 4.875 7.5h9.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 0 1 3 20.625V9.375Zm9.586 4.594a.75.75 0 0 0-1.172-.938l-2.476 3.096-.908-.907a.75.75 0 0 0-1.06 1.06l1.5 1.5a.75.75 0 0 0 1.116-.062l3-3.75Z" clip-rule="evenodd" />
                                             </svg>
                                             <span class="truncate">Summary</span>
                                         </a>
-                                        @endcan
-                                        @can(['view absence report'])
+                                        <?php endif; ?>
+                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check(['view absence report'])): ?>
                                         <!-- Report Absence -->
-                                        <a href="{{ route('prod.absence.report.index') }}" wire:navigate
-                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('prod.absence.report.index') ? 'menu-active' : '' }}">
+                                        <a href="<?php echo e(route('prod.absence.report.index')); ?>" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('prod.absence.report.index') ? 'menu-active' : ''); ?>">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
                                                 <path fill-rule="evenodd" d="M7.502 6h7.128A3.375 3.375 0 0 1 18 9.375v9.375a3 3 0 0 0 3-3V6.108c0-1.505-1.125-2.811-2.664-2.94a48.972 48.972 0 0 0-.673-.05A3 3 0 0 0 15 1.5h-1.5a3 3 0 0 0-2.663 1.618c-.225.015-.45.032-.673.05C8.662 3.295 7.554 4.542 7.502 6ZM13.5 3A1.5 1.5 0 0 0 12 4.5h4.5A1.5 1.5 0 0 0 15 3h-1.5Z" clip-rule="evenodd" />
                                                 <path fill-rule="evenodd" d="M3 9.375C3 8.339 3.84 7.5 4.875 7.5h9.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 0 1 3 20.625V9.375Zm9.586 4.594a.75.75 0 0 0-1.172-.938l-2.476 3.096-.908-.907a.75.75 0 0 0-1.06 1.06l1.5 1.5a.75.75 0 0 0 1.116-.062l3-3.75Z" clip-rule="evenodd" />
                                             </svg>
                                             <span class="truncate">Attendance Report</span>
                                         </a>
-                                        @endcan
+                                        <?php endif; ?>
                                         <!-- Report Absence -->
-                                        @can(['view absence report'])
-                                        <a href="{{ route('prod.absence.control') }}" wire:navigate
-                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('prod.absence.control') ? 'menu-active' : '' }}">
+                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check(['view absence report'])): ?>
+                                        <a href="<?php echo e(route('prod.absence.control')); ?>" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('prod.absence.control') ? 'menu-active' : ''); ?>">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
                                                 <path fill-rule="evenodd" d="M8.603 3.799A4.49 4.49 0 0 1 12 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 0 1 3.498 1.307 4.491 4.491 0 0 1 1.307 3.497A4.49 4.49 0 0 1 21.75 12a4.49 4.49 0 0 1-1.549 3.397 4.491 4.491 0 0 1-1.307 3.497 4.491 4.491 0 0 1-3.497 1.307A4.49 4.49 0 0 1 12 21.75a4.49 4.49 0 0 1-3.397-1.549 4.49 4.49 0 0 1-3.498-1.306 4.491 4.491 0 0 1-1.307-3.498A4.49 4.49 0 0 1 2.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 0 1 1.307-3.497 4.49 4.49 0 0 1 3.497-1.307Zm7.007 6.387a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
                                             </svg>
                                             <span class="truncate">Attendance Control</span>
                                         </a>
-                                        @endcan
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </div>
-                            @endcanany
+                            <?php endif; ?>
 
                             <!-- Sub Group: Report - Sekarang sejajar dengan menu lainnya -->
-                            @canany(['export comelate report', 'export violation report'])
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->any(['export comelate report', 'export violation report'])): ?>
                             <div class="relative w-full">
                                 <button @click="toggleGroup('hrReport')" 
                                         class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
@@ -949,35 +953,35 @@
                                     <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
                                     
                                     <div class="space-y-1 ml-[24px]">
-                                        @can('export comelate report')
-                                        <a href="{{ route('hr.comelate.report') }}" wire:navigate
-                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('hr.comelate.report') ? 'menu-active' : '' }}">
+                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('export comelate report')): ?>
+                                        <a href="<?php echo e(route('hr.comelate.report')); ?>" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('hr.comelate.report') ? 'menu-active' : ''); ?>">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
                                                 <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm4.28 10.28a.75.75 0 0 0 0-1.06l-3-3a.75.75 0 1 0-1.06 1.06l1.72 1.72H8.25a.75.75 0 0 0 0 1.5h5.69l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3Z" clip-rule="evenodd" />
                                             </svg>
                                             <span class="truncate">Comelate Report</span>
                                         </a>
-                                        @endcan
-                                        @can('export violation report')
-                                        <a href="{{ route('hr.violation.report') }}" wire:navigate
-                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('hr.violation.report') ? 'menu-active' : '' }}">
+                                        <?php endif; ?>
+                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('export violation report')): ?>
+                                        <a href="<?php echo e(route('hr.violation.report')); ?>" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('hr.violation.report') ? 'menu-active' : ''); ?>">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
                                                 <path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
                                             </svg>
                                             <span class="truncate">Violation Report</span>
                                         </a>
-                                        @endcan
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </div>
-                            @endcanany
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
-                @endcanany
+                <?php endif; ?>
 
                 <!-- Group: QA/QC -->
-                @canany(['view qaqc'])
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->any(['view qaqc'])): ?>
                 <div class="mb-2">
                     <div class="relative w-full">
                         <button @click="toggleGroup('qaqc')" 
@@ -1008,29 +1012,29 @@
                         class="mt-1 relative">
                         <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
                         <div class="space-y-1 ml-[30px]">
-                            @can('view ncp')
-                            <a href="{{ route('qaqc.ncp') }}" wire:navigate
-                            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('qaqc.ncp') ? 'menu-active' : '' }}">
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view ncp')): ?>
+                            <a href="<?php echo e(route('qaqc.ncp')); ?>" wire:navigate
+                            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('qaqc.ncp') ? 'menu-active' : ''); ?>">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
                                     <path fill-rule="evenodd" d="M1.5 6.375c0-1.036.84-1.875 1.875-1.875h17.25c1.035 0 1.875.84 1.875 1.875v3.026a.75.75 0 0 1-.375.65 2.249 2.249 0 0 0 0 3.898.75.75 0 0 1 .375.65v3.026c0 1.035-.84 1.875-1.875 1.875H3.375A1.875 1.875 0 0 1 1.5 17.625v-3.026a.75.75 0 0 1 .374-.65 2.249 2.249 0 0 0 0-3.898.75.75 0 0 1-.374-.65V6.375Zm15-1.125a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-1.5 0V6a.75.75 0 0 1 .75-.75Zm.75 4.5a.75.75 0 0 0-1.5 0v.75a.75.75 0 0 0 1.5 0v-.75Zm-.75 3a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-1.5 0v-.75a.75.75 0 0 1 .75-.75Zm.75 4.5a.75.75 0 0 0-1.5 0V18a.75.75 0 0 0 1.5 0v-.75ZM6 12a.75.75 0 0 1 .75-.75H12a.75.75 0 0 1 0 1.5H6.75A.75.75 0 0 1 6 12Zm.75 2.25a.75.75 0 0 0 0 1.5h3a.75.75 0 0 0 0-1.5h-3Z" clip-rule="evenodd" />
                                 </svg>
                                 <span class="truncate">NCP Management</span>
                             </a>
-                            @endcan
-                            @can('view ncp all')
-                            <a href="{{ route('qaqc.ncp.report') }}" wire:navigate
-                            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('qaqc.ncp.report') ? 'menu-active' : '' }}">
+                            <?php endif; ?>
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view ncp all')): ?>
+                            <a href="<?php echo e(route('qaqc.ncp.report')); ?>" wire:navigate
+                            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('qaqc.ncp.report') ? 'menu-active' : ''); ?>">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sheet-icon lucide-sheet"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="3" x2="21" y1="9" y2="9"/><line x1="3" x2="21" y1="15" y2="15"/><line x1="9" x2="9" y1="9" y2="21"/><line x1="15" x2="15" y1="9" y2="21"/></svg>
                                 <span class="truncate">NCP Report</span>
                             </a>
-                            @endcan
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
-                @endcanany
+                <?php endif; ?>
                 
                 <!-- Group: TICKETING SUPPORT -->
-                @canany(['view categories', 'view tickets'])
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->any(['view categories', 'view tickets'])): ?>
                 <div class="mb-2">
                     <div class="relative w-full">
                         <button @click="toggleGroup('ticketing')" 
@@ -1062,32 +1066,32 @@
                          class="mt-1 relative">
                         <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
                         <div class="space-y-1 ml-[30px]">
-                        @can('view categories')
-                        <a href="{{ route('ticket.categories') }}" wire:navigate
-                           class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('ticket.categories') ? 'menu-active' : '' }}">
+                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view categories')): ?>
+                        <a href="<?php echo e(route('ticket.categories')); ?>" wire:navigate
+                           class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('ticket.categories') ? 'menu-active' : ''); ?>">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
                                 <path d="M7.5 3.375c0-1.036.84-1.875 1.875-1.875h.375a3.75 3.75 0 0 1 3.75 3.75v1.875C13.5 8.161 14.34 9 15.375 9h1.875A3.75 3.75 0 0 1 21 12.75v3.375C21 17.16 20.16 18 19.125 18h-9.75A1.875 1.875 0 0 1 7.5 16.125V3.375Z" />
                                 <path d="M15 5.25a5.23 5.23 0 0 0-1.279-3.434 9.768 9.768 0 0 1 6.963 6.963A5.23 5.23 0 0 0 17.25 7.5h-1.875A.375.375 0 0 1 15 7.125V5.25ZM4.875 6H6v10.125A3.375 3.375 0 0 0 9.375 19.5H16.5v1.125c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 0 1 3 20.625V7.875C3 6.839 3.84 6 4.875 6Z" />
                             </svg>
                             <span class="truncate">Category</span>
                         </a>
-                        @endcan
-                        @can('view tickets')
-                        <a href="{{ route('ticket.list') }}" wire:navigate
-                           class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('ticket.list') ? 'menu-active' : '' }}">
+                        <?php endif; ?>
+                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view tickets')): ?>
+                        <a href="<?php echo e(route('ticket.list')); ?>" wire:navigate
+                           class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('ticket.list') ? 'menu-active' : ''); ?>">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
                                 <path fill-rule="evenodd" d="M1.5 6.375c0-1.036.84-1.875 1.875-1.875h17.25c1.035 0 1.875.84 1.875 1.875v3.026a.75.75 0 0 1-.375.65 2.249 2.249 0 0 0 0 3.898.75.75 0 0 1 .375.65v3.026c0 1.035-.84 1.875-1.875 1.875H3.375A1.875 1.875 0 0 1 1.5 17.625v-3.026a.75.75 0 0 1 .374-.65 2.249 2.249 0 0 0 0-3.898.75.75 0 0 1-.374-.65V6.375Zm15-1.125a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-1.5 0V6a.75.75 0 0 1 .75-.75Zm.75 4.5a.75.75 0 0 0-1.5 0v.75a.75.75 0 0 0 1.5 0v-.75Zm-.75 3a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-1.5 0v-.75a.75.75 0 0 1 .75-.75Zm.75 4.5a.75.75 0 0 0-1.5 0V18a.75.75 0 0 0 1.5 0v-.75ZM6 12a.75.75 0 0 1 .75-.75H12a.75.75 0 0 1 0 1.5H6.75A.75.75 0 0 1 6 12Zm.75 2.25a.75.75 0 0 0 0 1.5h3a.75.75 0 0 0 0-1.5h-3Z" clip-rule="evenodd" />
                             </svg>
                             <span class="truncate">Ticket</span>
                         </a>
-                        @endcan
+                        <?php endif; ?>
                         </div>
                     </div>
                 </div>
-                @endcanany
+                <?php endif; ?>
                 
                 <!-- Group: SETTINGS -->
-                @canany(['view users', 'view notification', 'view roles', 'view permissions'])
+                <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->any(['view users', 'view notification', 'view roles', 'view permissions'])): ?>
                 <div class="mb-2">
                     <div class="relative w-full">
                         <button @click="toggleGroup('settings')" 
@@ -1121,29 +1125,29 @@
                         <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
                         
                         <div class="space-y-1 ml-[30px]">
-                            @can('view users')
-                            <a href="{{ route('users') }}" wire:navigate
-                            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('users') ? 'menu-active' : '' }}">
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view users')): ?>
+                            <a href="<?php echo e(route('users')); ?>" wire:navigate
+                            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('users') ? 'menu-active' : ''); ?>">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
                                     <path d="M4.5 6.375a4.125 4.125 0 1 1 8.25 0 4.125 4.125 0 0 1-8.25 0ZM14.25 8.625a3.375 3.375 0 1 1 6.75 0 3.375 3.375 0 0 1-6.75 0ZM1.5 19.125a7.125 7.125 0 0 1 14.25 0v.003l-.001.119a.75.75 0 0 1-.363.63 13.067 13.067 0 0 1-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 0 1-.364-.63l-.001-.122ZM17.25 19.128l-.001.144a2.25 2.25 0 0 1-.233.96 10.088 10.088 0 0 0 5.06-1.01.75.75 0 0 0 .42-.643 4.875 4.875 0 0 0-6.957-4.611 8.586 8.586 0 0 1 1.71 5.157v.003Z" />
                                 </svg>
                                 <span class="truncate">Users</span>
                             </a>
-                            @endcan
+                            <?php endif; ?>
                             
-                            @can('view notification')
-                            <a href="{{ route('notifications.manager') }}" wire:navigate
-                            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('notifications.manager') ? 'menu-active' : '' }}">
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view notification')): ?>
+                            <a href="<?php echo e(route('notifications.manager')); ?>" wire:navigate
+                            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('notifications.manager') ? 'menu-active' : ''); ?>">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
                                     <path d="M5.85 3.5a.75.75 0 0 0-1.117-1 9.719 9.719 0 0 0-2.348 4.876.75.75 0 0 0 1.479.248A8.219 8.219 0 0 1 5.85 3.5ZM19.267 2.5a.75.75 0 1 0-1.118 1 8.22 8.22 0 0 1 1.987 4.124.75.75 0 0 0 1.48-.248A9.72 9.72 0 0 0 19.266 2.5Z" />
                                     <path fill-rule="evenodd" d="M12 2.25A6.75 6.75 0 0 0 5.25 9v.75a8.217 8.217 0 0 1-2.119 5.52.75.75 0 0 0 .298 1.206c1.544.57 3.16.99 4.831 1.243a3.75 3.75 0 1 0 7.48 0 24.583 24.583 0 0 0 4.83-1.244.75.75 0 0 0 .298-1.205 8.217 8.217 0 0 1-2.118-5.52V9A6.75 6.75 0 0 0 12 2.25ZM9.75 18c0-.034 0-.067.002-.1a25.05 25.05 0 0 0 4.496 0l.002.1a2.25 2.25 0 1 1-4.5 0Z" clip-rule="evenodd" />
                                 </svg>
                                 <span class="truncate">Notification</span>
                             </a>
-                            @endcan
+                            <?php endif; ?>
 
                             <!-- Sub Group: AUTH - Sekarang sejajar dengan Users & Notification -->
-                            @canany(['view roles', 'view permissions'])
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->any(['view roles', 'view permissions'])): ?>
                             <div class="relative w-full">
                                 <button @click="toggleGroup('auth')" 
                                         class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
@@ -1169,40 +1173,42 @@
                                     <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
                                     
                                     <div class="space-y-1 ml-[24px]">
-                                        @can('view roles')
-                                        <a href="{{ route('role.management') }}" wire:navigate
-                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('role.management') ? 'menu-active' : '' }}">
+                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view roles')): ?>
+                                        <a href="<?php echo e(route('role.management')); ?>" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('role.management') ? 'menu-active' : ''); ?>">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
                                                 <path fill-rule="evenodd" d="M12.516 2.17a.75.75 0 0 0-1.032 0 11.209 11.209 0 0 1-7.877 3.08.75.75 0 0 0-.722.515A12.74 12.74 0 0 0 2.25 9.75c0 5.942 4.064 10.933 9.563 12.348a.749.749 0 0 0 .374 0c5.499-1.415 9.563-6.406 9.563-12.348 0-1.39-.223-2.73-.635-3.985a.75.75 0 0 0-.722-.516l-.143.001c-2.996 0-5.717-1.17-7.734-3.08Zm3.094 8.016a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
                                             </svg>
                                             <span class="truncate">Roles</span>
                                         </a>
-                                        @endcan
-                                        @can('view permissions')
-                                        <a href="{{ route('permission.management') }}" wire:navigate
-                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('permission.management') ? 'menu-active' : '' }}">
+                                        <?php endif; ?>
+                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view permissions')): ?>
+                                        <a href="<?php echo e(route('permission.management')); ?>" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('permission.management') ? 'menu-active' : ''); ?>">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
                                                 <path d="M18.75 12.75h1.5a.75.75 0 0 0 0-1.5h-1.5a.75.75 0 0 0 0 1.5ZM12 6a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 12 6ZM12 18a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 12 18ZM3.75 6.75h1.5a.75.75 0 1 0 0-1.5h-1.5a.75.75 0 0 0 0 1.5ZM5.25 18.75h-1.5a.75.75 0 0 1 0-1.5h1.5a.75.75 0 0 1 0 1.5ZM3 12a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 3 12ZM9 3.75a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5ZM12.75 12a2.25 2.25 0 1 1 4.5 0 2.25 2.25 0 0 1-4.5 0ZM9 15.75a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5Z" />
                                             </svg>
                                             <span class="truncate">Permissions</span>
                                         </a>
-                                        @endcan
+                                        <?php endif; ?>
                                     </div>
                                 </div>
                             </div>
-                            @endcanany
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
-                @endcanany
+                <?php endif; ?>
                 
             </nav>
         </aside>
         
         <!-- MAIN CONTENT -->
         <main class="flex-1 min-w-0 bg-gray-100 dark:bg-black">
-            <flux:header class="sticky top-0 z-10 block! bg-white dark:bg-black border-b border-zinc-200 dark:border-zinc-800 p-0! m-0! w-full shadow-sm">
-                <flux:navbar class="flex items-center justify-between px-3 lg:px-4 mx-0!">
+            <?php ob_start(); ?><header class="[grid-area:header] z-10 min-h-14 flex items-center px-6 lg:px-8 sticky top-0 z-10 block! bg-white dark:bg-black border-b border-zinc-200 dark:border-zinc-800 p-0! m-0! w-full shadow-sm" data-flux-header>
+            <?php ob_start(); ?>
+                <?php ob_start(); ?><nav class="flex items-center gap-1 py-3  flex items-center justify-between px-3 lg:px-4 mx-0!" data-flux-navbar>
+    <?php ob_start(); ?>
                     <div class="flex items-center gap-3">
                         <button @click="toggleSidebar" 
                                 class="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
@@ -1211,11 +1217,36 @@
                             </svg>
                         </button>
                         
-                        <livewire:header-badge />
+                        <?php
+$__split = function ($name, $params = []) {
+    return [$name, $params];
+};
+[$__name, $__params] = $__split('header-badge', []);
+
+$__keyOuter = $__key ?? null;
+
+$__key = null;
+$__componentSlots = [];
+
+$__key ??= \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::generateKey('lw-2303199532-0', $__key);
+
+$__html = app('livewire')->mount($__name, $__params, $__key, $__componentSlots);
+
+echo $__html;
+
+unset($__html);
+unset($__key);
+$__key = $__keyOuter;
+unset($__keyOuter);
+unset($__name);
+unset($__params);
+unset($__componentSlots);
+unset($__split);
+?>
                     </div>
                     
                     <div class="flex items-center gap-1 sm:gap-2">
-                        <a href="{{ route('profile.edit') }}" 
+                        <a href="<?php echo e(route('profile.edit')); ?>" 
                             class="flex items-center gap-2 rounded-lg !p-2 lg:!p-2.5 
                                 text-zinc-700 dark:text-zinc-300 
                                 hover:text-zinc-900 dark:hover:text-zinc-100 
@@ -1227,11 +1258,13 @@
                                 <path fill-rule="evenodd" d="M18.685 19.097A9.723 9.723 0 0 0 21.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 0 0 3.065 7.097A9.716 9.716 0 0 0 12 21.75a9.716 9.716 0 0 0 6.685-2.653Zm-12.54-1.285A7.486 7.486 0 0 1 12 15a7.486 7.486 0 0 1 5.855 2.812A8.224 8.224 0 0 1 12 20.25a8.224 8.224 0 0 1-5.855-2.438ZM15.75 9a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" clip-rule="evenodd" />
                             </svg>
                             <span class="hidden lg:inline text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                                {{ auth()->user()->name }}
+                                <?php echo e(auth()->user()->name); ?>
+
                             </span>
                         </a>
 
-                        <flux:separator vertical class="my-2" />
+                        <?php ob_start(); ?><div data-orientation="vertical" role="none" class="border-0 [print-color-adjust:exact] bg-zinc-800/15 dark:bg-white/20 self-stretch self-center w-px my-2" data-flux-separator></div>
+<?php echo ltrim(ob_get_clean()); ?>
                         
                         <button 
                             x-data
@@ -1246,23 +1279,49 @@
                             </svg>
                         </button>
                         
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <flux:button type="submit" variant="danger" icon="arrow-right" size="sm">
-                                <span class="hidden lg:inline">{{ __('Logout') }}</span>
-                            </flux:button>
+                        <form method="POST" action="<?php echo e(route('logout')); ?>">
+                            <?php echo csrf_field(); ?>
+                            <?php ob_start(); ?><button type="submit" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-8 text-sm rounded-md px-3 inline-flex  bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-500 text-white  shadow-[inset_0px_1px_var(--color-red-500),inset_0px_2px_--theme(--color-white/.15)] dark:shadow-none [[data-flux-button-group]_&amp;]:border-e [:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-0 [[data-flux-button-group]_&amp;]:border-red-600 dark:[[data-flux-button-group]_&amp;]:border-red-900/25 *:transition-opacity [&amp;[disabled]&gt;:not([data-flux-loading-indicator])]:opacity-0 [&amp;[disabled]&gt;[data-flux-loading-indicator]]:opacity-100 [&amp;[disabled]]:pointer-events-none" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target">
+        <div class="absolute inset-0 flex items-center justify-center opacity-0" data-flux-loading-indicator>
+                <svg class="shrink-0 [:where(&amp;)]:size-4 animate-spin" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true" data-slot="icon">
+    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+</svg>
+                    </div>
+        
+                    <svg class="shrink-0 [:where(&amp;)]:size-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M2 8a.75.75 0 0 1 .75-.75h8.69L8.22 4.03a.75.75 0 0 1 1.06-1.06l4.5 4.5a.75.75 0 0 1 0 1.06l-4.5 4.5a.75.75 0 0 1-1.06-1.06l3.22-3.22H2.75A.75.75 0 0 1 2 8Z" clip-rule="evenodd"/>
+</svg>
+
+                
+                    
+            
+            <span><?php ob_start(); ?>
+                                <span class="hidden lg:inline"><?php echo e(__('Logout')); ?></span>
+                            <?php echo trim(ob_get_clean()); ?></span>
+    </button>
+<?php echo ltrim(ob_get_clean()); ?>
                         </form>
                     </div>
-                </flux:navbar>
-            </flux:header>
+                <?php echo trim(ob_get_clean()); ?>
+
+</nav>
+<?php echo ltrim(ob_get_clean()); ?>
+            <?php echo trim(ob_get_clean()); ?>
+
+    </header>
+<?php echo ltrim(ob_get_clean()); ?>
             
             <div class="p-0">
-                {{ $slot }}
+                <?php echo e($slot); ?>
+
             </div>
         </main>
     </div>
 
-    @fluxScripts
+    <?php app('livewire')->forceAssetInjection(); ?>
+<?php echo app('flux')->scripts(); ?>
+
 
     <script>
         function sidebarPersistence() {
@@ -1572,6 +1631,11 @@
             }
         }
     </script>
-    @volet
+    <?php echo '<div
+                id="volet"
+                data-icon="https://api.iconify.design/heroicons:chat-bubble-left-ellipsis.svg?color=%23FFFFFF"
+                data-close-icon="https://api.iconify.design/heroicons:x-mark.svg?color=%23FFFFFF"
+                data-labels="{&quot;bubble&quot;:{&quot;tooltip&quot;:&quot;Something to share ?&quot;},&quot;panel&quot;:{&quot;title&quot;:&quot;How can we help ?&quot;,&quot;close&quot;:&quot;Close&quot;,&quot;loading&quot;:&quot;Loading...&quot;,&quot;back&quot;:&quot;Back&quot;},&quot;feedback-messages&quot;:{&quot;placeholder&quot;:&quot;What&#039;s on your mind?&quot;,&quot;button&quot;:&quot;Send feedback&quot;,&quot;button-loading&quot;:&quot;Sending...&quot;,&quot;success-title&quot;:&quot;Thank you for your feedback!&quot;,&quot;success-subtitle&quot;:&quot;We appreciate your input and will review it shortly.&quot;,&quot;send-another&quot;:&quot;Send another feedback&quot;,&quot;error&quot;:&quot;Failed to submit feedback&quot;}}"
+                ></div>'; ?><?php echo '<script src="https://test.siix-ems.co.id/vendor/volet/volet-app.js"></script>'; ?>
 </body>
-</html>
+</html><?php /**PATH /www/wwwroot/testings.siix-ems.co.id/siix-portal/resources/views/layouts/app/sidebar.blade.php ENDPATH**/ ?>
