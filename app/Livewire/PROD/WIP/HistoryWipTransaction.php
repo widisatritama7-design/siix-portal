@@ -2,11 +2,11 @@
 
 namespace App\Livewire\PROD\WIP;
 
-use Livewire\Component;
-use App\Models\PROD\WIP\MasterWip;
-use App\Models\PROD\WIP\MasterModel;
 use App\Models\PROD\WIP\DetailWip;
+use App\Models\PROD\WIP\MasterModel;
+use App\Models\PROD\WIP\MasterWip;
 use Carbon\Carbon;
+use Livewire\Component;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
@@ -299,7 +299,7 @@ class HistoryWipTransaction extends Component
                 $sheet->setCellValue('G' . $row, $item->acm);
                 $sheet->setCellValue('H' . $row, $item->balance);
                 $sheet->setCellValue('I' . $row, $item->status ?? '-');
-                $sheet->setCellValue('J' . $row, $item->no_hu ?? '-');
+                $sheet->setCellValue('J' . $row, $item->no_hu_text ?? '-');
                 $sheet->setCellValue('K' . $row, $item->remarks ?? '-');
                 $sheet->setCellValue('L' . $row, $item->created_at ? Carbon::parse($item->created_at)->format('d/m/Y H:i:s') : '-');
                 $sheet->setCellValue('M' . $row, $item->creator->name ?? '-');

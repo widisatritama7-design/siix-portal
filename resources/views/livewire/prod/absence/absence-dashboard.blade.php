@@ -205,7 +205,7 @@
                             $barHeight = $totalShift > 0 ? ($totalShift / $shiftStackedData['max_absence']) * 300 : 0;
                         @endphp
                         <div class="w-24 flex flex-col items-center">
-                            <div class="flex flex-col items-center justify-end h-80 gap-0.5">
+                            <div class="flex flex-col items-center justify-end h-80 gap-0.5 relative">
                                 @if($totalShift > 0)
                                     <!-- Stacked bars from bottom to top -->
                                     @foreach(['CT', 'SD', 'IJ', 'A', 'CK', 'CM'] as $type)
@@ -217,8 +217,8 @@
                                         @if($count > 0)
                                             <div class="w-14 rounded-t transition-all duration-300 hover:opacity-80 relative group"
                                                 style="height: {{ $typeHeight }}px; background-color: {{ $color }};">
-                                                <div class="absolute -top-5 left-1/2 transform -translate-x-1/2 text-[10px] font-semibold whitespace-nowrap"
-                                                    style="color: {{ $color }};">
+                                                <!-- Label in the middle of the bar -->
+                                                <div class="absolute inset-0 flex items-center justify-center text-[10px] font-semibold whitespace-nowrap text-white [text-shadow:_0_1px_2px_rgb(0_0_0_/_0.8)]">
                                                     {{ $type }}: {{ $count }}
                                                 </div>
                                             </div>
