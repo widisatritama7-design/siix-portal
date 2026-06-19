@@ -64,6 +64,7 @@
                         <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Item Code</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Description</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Size</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Price (IDR)</th>
                         <th class="px-4 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
@@ -91,6 +92,11 @@
                             <flux:badge size="sm" color="purple">
                                 {{ $uniform->size }}
                             </flux:badge>
+                        </td>
+                        <td class="px-4 py-3">
+                            <span class="text-sm font-semibold text-green-600 dark:text-green-400">
+                                {{ $uniform->formatted_price }}
+                            </span>
                         </td>
                         <!-- Actions Column -->
                         <td class="px-4 py-3 text-right">
@@ -128,7 +134,6 @@
                         <td colspan="7" class="px-4 py-12 text-center">
                             <div class="flex flex-col items-center gap-3">
                                 <div class="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-                                    <!-- Ganti icon.tshirt dengan icon svg manual -->
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-zinc-400 dark:text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 3.75L3 6.75l1.5 3h3L9 6.75 7.5 3.75h-3zm12 0L15 6.75l1.5 3h3L21 6.75 19.5 3.75h-3zM3 6.75h18M6.75 6.75v10.5a1.5 1.5 0 001.5 1.5h7.5a1.5 1.5 0 001.5-1.5V6.75" />
                                     </svg>
@@ -141,7 +146,6 @@
                                         {{ $search ? 'Try adjusting your search query' : 'Get started by creating a new uniform' }}
                                     </p>
                                 </div>
-                                <!-- Empty State - Tombol Add Your First Uniform -->
                                 @if($search)
                                     <flux:button wire:click="$set('search', '')" size="sm">
                                         Clear Search
@@ -247,6 +251,38 @@
                                     class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
                                 <p class="text-xs text-zinc-500 mt-1">You can select from dropdown or type custom size</p>
                             </div>
+                        </div>
+
+                        <!-- Price -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium mb-1">Price (IDR) <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500 dark:text-zinc-400 font-medium">Rp</span>
+                                <input type="text" 
+                                    wire:model="price"
+                                    x-data
+                                    x-init="
+                                        $el.addEventListener('input', function(e) {
+                                            let value = e.target.value.replace(/\D/g, '');
+                                            if (value) {
+                                                value = parseInt(value).toLocaleString('id-ID');
+                                                e.target.value = value;
+                                            }
+                                        })
+                                    "
+                                    placeholder="0"
+                                    class="w-full pl-10 pr-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    @input="
+                                        let value = $event.target.value.replace(/\D/g, '');
+                                        if (value) {
+                                            value = parseInt(value).toLocaleString('id-ID');
+                                            $event.target.value = value;
+                                        }
+                                        $wire.price = value;
+                                    ">
+                            </div>
+                            <p class="text-xs text-zinc-500 mt-1">Format: Rp 1,000,000 (tanpa desimal)</p>
+                            @error('price') <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span> @enderror
                         </div>
 
                         <!-- Buttons -->

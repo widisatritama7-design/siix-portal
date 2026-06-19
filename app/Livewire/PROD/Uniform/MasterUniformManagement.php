@@ -14,6 +14,7 @@ class MasterUniformManagement extends Component
     public $item_code;
     public $description;
     public $size;
+    public $price; // Tambahkan ini
 
     public $search = '';
     public $modalTitle = 'Add New Uniform';
@@ -25,6 +26,7 @@ class MasterUniformManagement extends Component
             'item_code' => 'required|string|max:100|unique:tb_prod_master_uniform,item_code,' . $this->uniform_id,
             'description' => 'required|string|max:255',
             'size' => 'required|string|max:50',
+            'price' => 'required|numeric|min:0|max:999999999.99', // Validasi price
         ];
     }
 
@@ -33,11 +35,15 @@ class MasterUniformManagement extends Component
         'item_code.unique' => 'This item code already exists.',
         'description.required' => 'Description is required.',
         'size.required' => 'Size is required.',
+        'price.required' => 'Price is required.',
+        'price.numeric' => 'Price must be a number.',
+        'price.min' => 'Price cannot be negative.',
+        'price.max' => 'Price is too high.',
     ];
 
     public function resetForm()
     {
-        $this->reset(['uniform_id', 'item_code', 'description', 'size']);
+        $this->reset(['uniform_id', 'item_code', 'description', 'size', 'price']);
         $this->modalTitle = 'Add New Uniform';
         $this->resetValidation();
     }
@@ -64,10 +70,15 @@ class MasterUniformManagement extends Component
 
         $this->validate();
 
+        // Bersihkan price dari titik dan koma
+        $cleanPrice = str_replace(['.', ','], '', $this->price);
+        $cleanPrice = (float) $cleanPrice;
+
         $data = [
             'item_code' => $this->item_code,
             'description' => $this->description,
             'size' => $this->size,
+            'price' => $cleanPrice, // Simpan sebagai angka murni
         ];
 
         if ($this->uniform_id) {
@@ -107,6 +118,7 @@ class MasterUniformManagement extends Component
         $this->item_code = $uniform->item_code;
         $this->description = $uniform->description;
         $this->size = $uniform->size;
+        $this->price = $uniform->price; // Ambil nilai price
         $this->modalTitle = 'Edit Uniform';
     }
 

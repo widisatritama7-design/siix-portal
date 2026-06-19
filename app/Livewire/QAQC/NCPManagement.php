@@ -64,6 +64,10 @@ class NCPManagement extends Component
     
     public $activeTab = 'all';
 
+    // User department for filtering
+    public $userDepartment = null;
+    public $hasValidEmployee = false;
+
     protected function rules()
     {
         $rules = [
@@ -113,33 +117,61 @@ class NCPManagement extends Component
         'status.required' => 'Status is required.',
     ];
 
-    public function view($id)
+    /**
+     * Get current user's employee data
+     * Only returns if user has valid NIK with status 1,2,3
+     */
+    private function getCurrentUserEmployee()
     {
-        if (!auth()->user()->can('view ncp')) {
-            $this->dispatch('notify', message: 'You do not have permission!', type: 'error');
-            return;
-        }
-
-        $ncp = NCP::with(['employee', 'creator', 'approver', 'deleter'])->find($id);
+        $currentUserNik = auth()->user()->nik;
         
-        if (!$ncp) {
-            $this->dispatch('notify', message: 'NCP not found!', type: 'error');
-            return;
+        if (!$currentUserNik) {
+            return null;
         }
         
-        $this->viewData = $ncp;
-        $this->dispatch('open-modal-view');
+        return Employee::where('nik', $currentUserNik)
+            ->whereIn('status', [1, 2, 3])
+            ->first();
     }
 
+    /**
+     * Get current user's department
+     */
+    private function getUserDepartment()
+    {
+        $employee = $this->getCurrentUserEmployee();
+        return $employee ? $employee->department : null;
+    }
+
+    /**
+     * Check if current user has valid employee record
+     */
+    private function hasValidEmployeeRecord()
+    {
+        return $this->getCurrentUserEmployee() !== null;
+    }
+
+    /**
+     * Get all employees for dropdown
+     * - Hanya status 1, 2, 3
+     * - Filter berdasarkan department user
+     */
     public function getEmployeesProperty()
     {
-        return Cache::remember('ncp_employees_list', 300, function () {
+        $userDepartment = $this->getUserDepartment();
+        
+        // Jika user tidak memiliki employee valid, return empty
+        if (!$this->hasValidEmployeeRecord() || !$userDepartment) {
+            return collect([]);
+        }
+        
+        return Cache::remember('ncp_employees_list_dept_' . $userDepartment, 300, function () use ($userDepartment) {
             return Employee::query()
-                ->select('id', 'nik', 'name', 'department', 'status')
+                ->select('id', 'nik', 'name', 'department')
                 ->whereIn('status', [1, 2, 3])
+                ->where('department', $userDepartment)
                 ->orderBy('nik')
                 ->orderBy('name')
-                ->limit(100)
                 ->get()
                 ->mapWithKeys(fn ($employee) => [
                     $employee->id => $employee->nik . ' - ' . $employee->name . ' (' . $employee->department . ')'
@@ -153,15 +185,98 @@ class NCPManagement extends Component
             return [];
         }
         
-        return Employee::where('nik', 'like', "%{$search}%")
-            ->orWhere('name', 'like', "%{$search}%")
+        $userDepartment = $this->getUserDepartment();
+        
+        // Jika user tidak memiliki employee valid, return empty
+        if (!$this->hasValidEmployeeRecord() || !$userDepartment) {
+            return [];
+        }
+        
+        return Employee::where(function($query) use ($search) {
+                $query->where('nik', 'like', "%{$search}%")
+                    ->orWhere('name', 'like', "%{$search}%");
+            })
             ->whereIn('status', [1, 2, 3])
+            ->where('department', $userDepartment)
             ->limit(20)
             ->get()
             ->map(fn($employee) => [
                 'id' => $employee->id,
                 'label' => $employee->nik . ' - ' . $employee->name . ' (' . $employee->department . ')'
             ]);
+    }
+
+    public function mount()
+    {
+        // STEP 1: Ambil NIK dari user login (users.nik)
+        $user = auth()->user();
+        if ($user) {
+            $userNik = trim($user->nik ?? '');
+            
+            if (!empty($userNik)) {
+                $employee = Employee::where('nik', $userNik)
+                    ->whereIn('status', [1, 2, 3])
+                    ->first();
+                
+                if (!$employee) {
+                    $employee = Employee::whereRaw('LOWER(nik) = ?', [strtolower($userNik)])
+                        ->whereIn('status', [1, 2, 3])
+                        ->first();
+                }
+                
+                if ($employee) {
+                    $this->userDepartment = $employee->department;
+                    $this->hasValidEmployee = true;
+                    
+                    // Auto-fill employee data for new NCP
+                    $this->employee_id = $employee->id;
+                    $this->nik = $employee->nik;
+                    $this->name = $employee->name;
+                    $this->department = $employee->department;
+                    $this->status_display = match((int)$employee->status) {
+                        1 => 'Permanent',
+                        2 => 'Contract',
+                        3 => 'Magang',
+                        default => 'Unknown',
+                    };
+                } else {
+                    \Log::warning('No active employee (status 1,2,3) found with NIK: ' . $userNik);
+                    $this->userDepartment = null;
+                    $this->hasValidEmployee = false;
+                }
+            }
+        }
+    }
+
+    public function view($id)
+    {
+        if (!auth()->user()->can('view ncp')) {
+            $this->dispatch('notify', message: 'You do not have permission!', type: 'error');
+            return;
+        }
+
+        // Check if user has valid employee record
+        if (!$this->hasValidEmployeeRecord()) {
+            $this->dispatch('notify', message: 'You do not have a valid employee record!', type: 'error');
+            return;
+        }
+
+        $ncp = NCP::with(['employee', 'creator', 'approver', 'deleter'])->find($id);
+        
+        if (!$ncp) {
+            $this->dispatch('notify', message: 'NCP not found!', type: 'error');
+            return;
+        }
+        
+        // Validate that NCP belongs to same department
+        $userDepartment = $this->getUserDepartment();
+        if ($ncp->employee && $userDepartment && $ncp->employee->department !== $userDepartment) {
+            $this->dispatch('notify', message: 'You can only view NCPs from your department!', type: 'error');
+            return;
+        }
+        
+        $this->viewData = $ncp;
+        $this->dispatch('open-modal-view');
     }
 
     public function addDefectDetail()
@@ -195,6 +310,22 @@ class NCPManagement extends Component
             'failure_rate', 'do_no', 'packing_list_no', 'disposition', 'disposition_details', 
             'approved_by', 'defect_details'
         ]);
+        
+        // Auto-fill with current user's employee data if valid
+        $currentUserEmployee = $this->getCurrentUserEmployee();
+        if ($currentUserEmployee) {
+            $this->employee_id = $currentUserEmployee->id;
+            $this->nik = $currentUserEmployee->nik;
+            $this->name = $currentUserEmployee->name;
+            $this->department = $currentUserEmployee->department;
+            $this->status_display = match((int)$currentUserEmployee->status) {
+                1 => 'Permanent',
+                2 => 'Contract',
+                3 => 'Magang',
+                default => 'Unknown',
+            };
+        }
+        
         $this->modalTitle = 'Add New NCP';
         $this->resetValidation();
     }
@@ -225,19 +356,35 @@ class NCPManagement extends Component
 
     public function selectEmployee($id)
     {
-        $employee = Employee::find($id);
-        if ($employee) {
-            $this->employee_id = $employee->id;
-            $this->nik = $employee->nik;
-            $this->name = $employee->name;
-            $this->department = $employee->department;
-            $this->status_display = match((int)$employee->status) {
-                1 => 'Permanent',
-                2 => 'Contract',
-                3 => 'Magang',
-                default => 'Unknown',
-            };
+        // Verify employee belongs to same department and has valid status
+        $currentUserEmployee = $this->getCurrentUserEmployee();
+        
+        if (!$currentUserEmployee) {
+            $this->dispatch('notify', message: 'You do not have a valid employee record!', type: 'error');
+            return;
         }
+        
+        $employee = Employee::where('id', $id)
+            ->whereIn('status', [1, 2, 3])
+            ->where('department', $currentUserEmployee->department)
+            ->first();
+            
+        if (!$employee) {
+            $this->dispatch('notify', message: 'Invalid employee selection!', type: 'error');
+            return;
+        }
+        
+        $this->employee_id = $employee->id;
+        $this->nik = $employee->nik;
+        $this->name = $employee->name;
+        $this->department = $employee->department;
+        $this->status_display = match((int)$employee->status) {
+            1 => 'Permanent',
+            2 => 'Contract',
+            3 => 'Magang',
+            default => 'Unknown',
+        };
+        
         $this->employeeSearch = '';
         $this->showEmployeeDropdown = false;
     }
@@ -298,47 +445,52 @@ class NCPManagement extends Component
     public function getTabCountsProperty()
     {
         $canViewAll = auth()->user()->can('view ncp all');
+        $userDepartment = $this->getUserDepartment();
+        $hasValidRecord = $this->hasValidEmployeeRecord();
         
-        $baseQuery = NCP::query();
+        // If user doesn't have valid record, return all zeros
+        if (!$hasValidRecord) {
+            return [
+                'all' => 0, 'open' => 0, 'in_progress' => 0, 
+                'closed' => 0, 'rejected' => 0, 'deleted' => 0
+            ];
+        }
+        
+        // Base query untuk active records (tidak deleted)
+        $baseQuery = NCP::query()->whereNull('deleted_at');
+        // Query untuk deleted records
         $deletedQuery = NCP::onlyTrashed();
         
-        if (!$canViewAll) {
-            $currentUserNik = auth()->user()->nik;
-            if ($currentUserNik) {
-                $currentUserEmployee = Employee::where('nik', $currentUserNik)->first();
-                if ($currentUserEmployee && $currentUserEmployee->department) {
-                    $baseQuery->whereHas('employee', function ($empQuery) use ($currentUserEmployee) {
-                        $empQuery->where('department', $currentUserEmployee->department);
-                    });
-                    $deletedQuery->whereHas('employee', function ($empQuery) use ($currentUserEmployee) {
-                        $empQuery->where('department', $currentUserEmployee->department);
-                    });
-                } else {
-                    return [
-                        'all' => 0, 'open' => 0, 'in_progress' => 0, 
-                        'closed' => 0, 'rejected' => 0, 'deleted' => 0
-                    ];
-                }
-            } else {
-                return [
-                    'all' => 0, 'open' => 0, 'in_progress' => 0, 
-                    'closed' => 0, 'rejected' => 0, 'deleted' => 0
-                ];
-            }
+        // Filter berdasarkan department jika user tidak punya akses all
+        if (!$canViewAll && $userDepartment) {
+            $baseQuery->whereHas('employee', function ($empQuery) use ($userDepartment) {
+                $empQuery->where('department', $userDepartment);
+            });
+            $deletedQuery->whereHas('employee', function ($empQuery) use ($userDepartment) {
+                $empQuery->where('department', $userDepartment);
+            });
         }
         
         return [
-            'all' => (clone $baseQuery)->whereNull('deleted_at')->count(),
-            'open' => (clone $baseQuery)->whereNull('deleted_at')->where('status', 'open')->count(),
-            'in_progress' => (clone $baseQuery)->whereNull('deleted_at')->where('status', 'in_progress')->count(),
-            'closed' => (clone $baseQuery)->whereNull('deleted_at')->where('status', 'closed')->count(),
-            'rejected' => (clone $baseQuery)->whereNull('deleted_at')->where('status', 'rejected')->count(),
+            'all' => (clone $baseQuery)->count(),
+            'open' => (clone $baseQuery)->where('status', 'open')->count(),
+            'in_progress' => (clone $baseQuery)->where('status', 'in_progress')->count(),
+            'closed' => (clone $baseQuery)->where('status', 'closed')->count(),
+            'rejected' => (clone $baseQuery)->where('status', 'rejected')->count(),
             'deleted' => (clone $deletedQuery)->count(),
         ];
     }
 
     public function save()
     {
+        // Check if user has valid employee record
+        $currentUserEmployee = $this->getCurrentUserEmployee();
+        
+        if (!$currentUserEmployee) {
+            $this->dispatch('notify', message: 'You do not have a valid employee record!', type: 'error');
+            return;
+        }
+
         if ($this->ncp_id) {
             if (!auth()->user()->can('edit ncp')) {
                 $this->dispatch('notify', message: 'You do not have permission!', type: 'error');
@@ -347,6 +499,23 @@ class NCPManagement extends Component
         } else {
             if (!auth()->user()->can('create ncp')) {
                 $this->dispatch('notify', message: 'You do not have permission!', type: 'error');
+                return;
+            }
+        }
+
+        // Validate that selected employee exists and belongs to same department
+        if ($this->employee_id) {
+            $selectedEmployee = Employee::where('id', $this->employee_id)
+                ->whereIn('status', [1, 2, 3])
+                ->first();
+                
+            if (!$selectedEmployee) {
+                $this->dispatch('notify', message: 'Selected employee is not active!', type: 'error');
+                return;
+            }
+            
+            if ($selectedEmployee->department !== $currentUserEmployee->department) {
+                $this->dispatch('notify', message: 'You can only select employees from your department!', type: 'error');
                 return;
             }
         }
@@ -438,10 +607,24 @@ class NCPManagement extends Component
             return;
         }
 
+        // Check if user has valid employee record
+        $currentUserEmployee = $this->getCurrentUserEmployee();
+        
+        if (!$currentUserEmployee) {
+            $this->dispatch('notify', message: 'You do not have a valid employee record!', type: 'error');
+            return;
+        }
+
         $ncp = NCP::with('employee', 'approver')->find($id);
 
         if (!$ncp) {
             $this->dispatch('notify', message: 'NCP not found!', type: 'error');
+            return;
+        }
+
+        // Validate that NCP belongs to same department
+        if ($ncp->employee && $ncp->employee->department !== $currentUserEmployee->department) {
+            $this->dispatch('notify', message: 'You can only edit NCPs from your department!', type: 'error');
             return;
         }
 
@@ -563,6 +746,8 @@ class NCPManagement extends Component
         }
 
         $canViewAll = auth()->user()->can('view ncp all');
+        $userDepartment = $this->getUserDepartment();
+        $hasValidRecord = $this->hasValidEmployeeRecord();
         
         $query = NCP::with(['employee' => function($query) {
                 $query->select('id', 'nik', 'name', 'department');
@@ -573,6 +758,17 @@ class NCPManagement extends Component
             }, 'deleter' => function($query) {
                 $query->select('id', 'name');
             }]);
+        
+        // If user doesn't have valid employee record, show empty
+        if (!$hasValidRecord) {
+            $query->whereRaw('1 = 0');
+        } 
+        // Apply department filter for non-admin users
+        elseif (!$canViewAll && $userDepartment) {
+            $query->whereHas('employee', function ($empQuery) use ($userDepartment) {
+                $empQuery->where('department', $userDepartment);
+            });
+        }
         
         // Filter berdasarkan tab
         switch ($this->activeTab) {
@@ -585,23 +781,6 @@ class NCPManagement extends Component
                     $query->where('status', $this->activeTab);
                 }
                 break;
-        }
-        
-        // Apply department filter
-        if (!$canViewAll) {
-            $currentUserNik = auth()->user()->nik;
-            if ($currentUserNik) {
-                $currentUserEmployee = Employee::where('nik', $currentUserNik)->first();
-                if ($currentUserEmployee && $currentUserEmployee->department) {
-                    $query->whereHas('employee', function ($empQuery) use ($currentUserEmployee) {
-                        $empQuery->where('department', $currentUserEmployee->department);
-                    });
-                } else {
-                    $query->whereRaw('1 = 0');
-                }
-            } else {
-                $query->whereRaw('1 = 0');
-            }
         }
         
         // Apply search filter
@@ -624,6 +803,8 @@ class NCPManagement extends Component
             'canViewAll' => $canViewAll,
             'users' => \App\Models\User::select('id', 'name')->orderBy('name')->get(),
             'tabCounts' => $this->tabCounts,
+            'hasValidRecord' => $hasValidRecord,
+            'userDepartment' => $userDepartment,
         ]);
     }
 }

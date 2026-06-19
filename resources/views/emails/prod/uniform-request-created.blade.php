@@ -1,60 +1,95 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Uniform Request Notification</title>
+    <meta charset="utf-8">
+    <title>{{ $isUpdate ? 'Uniform Request Updated' : 'New Uniform Request Created' }}</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
         }
         .container {
-            width: 90%;
-            max-width: 1000px;
-            margin: 20px auto;
-            background: #ffffff;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
             border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            background-color: #f9f9f9;
         }
         .header {
-            background-color: #2563eb;
+            background-color: #4F46E5;
             color: white;
-            padding: 20px;
+            padding: 15px;
             text-align: center;
+            border-radius: 8px 8px 0 0;
+            margin: -20px -20px 20px -20px;
+        }
+        .header h2 {
+            margin: 0;
             font-size: 20px;
-            font-weight: bold;
         }
         .content {
             padding: 20px;
         }
-        .footer {
-            text-align: center;
-            margin-top: 20px;
+        .info-box {
+            background-color: #fff;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+        .info-row {
+            display: flex;
+            padding: 8px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        .info-label {
+            width: 130px;
+            font-weight: 600;
+            color: #4b5563;
+        }
+        .info-value {
+            flex: 1;
+            color: #1f2937;
+        }
+        .status-pending {
+            background-color: #FEF3C7;
+            color: #D97706;
+            padding: 4px 12px;
+            border-radius: 20px;
+            display: inline-block;
             font-size: 12px;
-            color: #888;
-            padding: 10px;
-            border-top: 1px solid #eee;
+            font-weight: 600;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
+        .button {
+            display: inline-block;
+            background-color: #4F46E5;
+            color: white;
+            padding: 12px 24px;
+            text-decoration: none;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-weight: 600;
         }
-        table, th, td {
-            border: 1px solid #ddd;
+        .button:hover {
+            background-color: #4338CA;
         }
-        th, td {
-            padding: 12px;
-            text-align: left;
-            vertical-align: top;
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e5e7eb;
+            text-align: center;
+            font-size: 12px;
+            color: #9ca3af;
         }
-        th {
-            background-color: #f0f8ff;
-            width: 30%;
+        .icon {
+            font-size: 48px;
+            text-align: center;
+            margin-bottom: 10px;
         }
         .badge {
             display: inline-block;
@@ -67,86 +102,60 @@
             background-color: #fef3c7;
             color: #d97706;
         }
-        .items-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 15px;
-        }
-        .items-table th, .items-table td {
-            border: 1px solid #ddd;
-            padding: 10px;
-            text-align: left;
-        }
-        .items-table th {
-            background-color: #f0f8ff;
-            text-align: center;
-        }
-        .items-table td {
-            text-align: left;
-        }
         .text-center {
             text-align: center;
-        }
-        .btn {
-            display: inline-block;
-            padding: 10px 20px;
-            background-color: #2563eb;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            margin-top: 10px;
-        }
-        .btn:hover {
-            background-color: #1e40af;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            {{ $isUpdate ? 'Uniform Request Updated' : 'New Uniform Request Created' }}
+            <h2>{{ $isUpdate ? 'Uniform Request Updated' : 'New Uniform Request Created' }}</h2>
         </div>
+        
         <div class="content">
             <p>Dear <strong>Admin & Costing Team</strong>,</p>
             
-            <p>A uniform request has been {{ $isUpdate ? 'updated' : 'created' }} with the following details:</p>
+            <p>A uniform request has been <strong>{{ $isUpdate ? 'updated' : 'created' }}</strong> with the following details:</p>
             
-            <h3>Request Details</h3>
-            <table>
-                <tr>
-                    <th>Request Number</th>
-                    <td>{{ $request->request_number }}</td>
-                </tr>
-                <tr>
-                    <th>Prepared By</th>
-                    <td>{{ $request->created_by }}</td>
-                </tr>
-                <tr>
-                    <th>Created Date</th>
-                    <td>{{ $request->created_at ? $request->created_at->format('d M Y H:i') : '-' }}</td>
-                </tr>
-                <tr>
-                    <th>Status</th>
-                    <td>
-                        <span class="badge badge-pending">Pending</span>
-                    </td>
-                </tr>
-            </table>
+            <div class="info-box">
+                <div class="info-row">
+                    <div class="info-label">Request Number</div>
+                    <div class="info-value"><strong>{{ $request->request_number }}</strong></div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Prepared By</div>
+                    <div class="info-value">{{ $request->created_by ?? 'System' }}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Created Date</div>
+                    <div class="info-value">{{ $request->created_at ? $request->created_at->format('d M Y H:i') : '-' }}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">Status</div>
+                    <div class="info-value">
+                        <span class="status-pending">⏳ Pending</span>
+                    </div>
+                </div>
+            </div>
             
             <p>You can view the complete request details by clicking the link below:</p>
-            <p>
-                <a href="https://portal.siix-ems.co.id/prod/uniform/request/show/{{ $request->id }}" class="btn">
-                    View Request Details
+            
+            <div class="text-center">
+                <a href="{{ route('prod.uniform.request.show', $request->id) }}" class="button">
+                    🔍 View Request Details
                 </a>
-            </p>
+            </div>
+            
             <p>Please check it for the feedback process.</p>
             
             <p>Thank you,</p>
-            <p>Best Regards,<br>Web Portal SIIX EMS Indonesia</p>
+            <p><strong>Best Regards,</strong><br>Web Portal SIIX EMS Indonesia</p>
         </div>
+        
         <div class="footer">
-            <p>This is an automated notification from SIIX Uniform Request System.</p>
-            <p>&copy; {{ date('Y') }} SIIX - All rights reserved.</p>
+            <p>&copy; {{ date('Y') }} SIIX EMS Indonesia. All rights reserved.</p>
+            <p>This is an automated message, please do not reply to this email.</p>
         </div>
     </div>
 </body>

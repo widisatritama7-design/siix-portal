@@ -24,6 +24,42 @@
         </div>
     @endif
 
+    @php
+        $isOneUser = auth()->user()->can('view uniform request one user');
+        $isFullAccess = auth()->user()->can('view uniform request');
+        $canManual = auth()->user()->can('feedback uniform request admin');
+    @endphp
+
+    @if($isOneUser && !$isFullAccess && $userDepartment)
+        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+            <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 mt-0.5 text-blue-600 dark:text-blue-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <div>
+                    <p class="text-sm font-medium text-blue-700 dark:text-blue-300">
+                        Department Access Restricted
+                    </p>
+                    <p class="text-sm text-blue-600 dark:text-blue-400">
+                        You can only see and select employees from department: 
+                        <strong class="font-semibold">{{ $userDepartment }}</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if($canManual)
+        <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-3">
+            <p class="text-sm text-yellow-700 dark:text-yellow-300 flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>You have Admin access. You can use <strong>"Manual Input"</strong> for employees not registered in database.</span>
+            </p>
+        </div>
+    @endif
+
     <form wire:submit="save">
         <!-- FORM ADD NEW ROW - DI ATAS -->
         <flux:card class="p-6 mb-6">
@@ -32,49 +68,96 @@
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <!-- Left Column -->
                 <div>
-                    <!-- Employee Dropdown with Search -->
+                    <!-- Employee Dropdown with Search + Manual Input -->
                     <div class="mb-4">
-                        <div x-data="{ show: false, search: @entangle('employeeSearch') }" class="relative">
-                            <label class="block text-sm font-medium mb-1">Employee <span class="text-red-500">*</span></label>
-
-                            <input 
-                                type="text"
-                                x-model="search"
-                                @input="show = search.trim().length > 0"
-                                placeholder="Search by NIK or name..."
-                                class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-800 dark:border-zinc-600 dark:text-white"
-                            >
-
-                            <div 
-                                x-show="show"
-                                x-transition
-                                @click.outside="show = false"
-                                class="absolute z-50 w-full mt-1 bg-white dark:bg-zinc-800 border rounded-lg shadow-lg max-h-60 overflow-y-auto"
-                                style="display: none;"
-                            >
-                                @foreach($this->employees as $value => $label)
-                                    <div 
-                                        x-show="'{{ strtolower($label) }}'.includes(search.toLowerCase()) 
-                                                || '{{ $value }}'.includes(search)"
-                                        @click="
-                                            $wire.set('current_employee_id', '{{ $value }}'); 
-                                            $wire.set('employeeSearch', '{{ $label }}');
-                                            search = '{{ $label }}'; 
-                                            show = false;
-                                        "
-                                        class="px-3 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-700 cursor-pointer text-sm"
-                                    >
-                                        <span>{{ $label }}</span>
-                                    </div>
-                                @endforeach
-                            </div>
-
-                            <input type="hidden" wire:model="current_employee_id">
-
-                            @error('current_employee_id') 
-                                <span class="text-red-500 text-xs">{{ $message }}</span> 
-                            @enderror
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="block text-sm font-medium">Employee Information<span class="text-red-500">*</span></label>
+                            
+                            @if($canManual)
+                                <button type="button" 
+                                    wire:click="toggleManualInput"
+                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 transition-colors shadow-sm">
+                                    @if($isManualInput)
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                            <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-4.28 9.22a.75.75 0 0 0 0 1.06l3 3a.75.75 0 1 0 1.06-1.06l-1.72-1.72h5.69a.75.75 0 0 0 0-1.5h-5.69l1.72-1.72a.75.75 0 0 0-1.06-1.06l-3 3Z" clip-rule="evenodd" />
+                                        </svg>
+                                        Back to Search
+                                    @else
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                            <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 9a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25V15a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V9Z" clip-rule="evenodd" />
+                                        </svg>
+                                        Manual Input
+                                    @endif
+                                </button>
+                            @endif
                         </div>
+
+                        @if($isManualInput && $canManual)
+                            <!-- Manual Input Form -->
+                            <div class="space-y-2 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                                <p class="text-xs text-yellow-600 dark:text-yellow-400">
+                                    Manual input for employees not registered in database
+                                </p>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <input type="text" 
+                                        wire:model="manualNik"
+                                        placeholder="NIK | Jika tidak ada beri ( - )"
+                                        class="px-3 py-2 border rounded-lg dark:bg-zinc-800 text-sm">
+                                    <input type="text" 
+                                        wire:model="manualName"
+                                        placeholder="Full Name *"
+                                        class="px-3 py-2 border rounded-lg dark:bg-zinc-800 text-sm">
+                                    <input type="text" 
+                                        wire:model="manualDepartment"
+                                        placeholder="Department *"
+                                        class="px-3 py-2 border rounded-lg dark:bg-zinc-800 text-sm">
+                                </div>
+                                @error('manualNik') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                @error('manualName') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                @error('manualDepartment') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                            </div>
+                        @else
+                            <!-- Regular Search Dropdown -->
+                            <div x-data="{ show: false, search: @entangle('employeeSearch') }" class="relative">
+                                <input 
+                                    type="text"
+                                    x-model="search"
+                                    @input="show = search.trim().length > 0"
+                                    placeholder="Search by NIK or name..."
+                                    class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-800 dark:border-zinc-600 dark:text-white"
+                                >
+
+                                <div 
+                                    x-show="show"
+                                    x-transition
+                                    @click.outside="show = false"
+                                    class="absolute z-50 w-full mt-1 bg-white dark:bg-zinc-800 border rounded-lg shadow-lg max-h-60 overflow-y-auto"
+                                    style="display: none;"
+                                >
+                                    @foreach($this->employees as $value => $label)
+                                        <div 
+                                            x-show="'{{ strtolower($label) }}'.includes(search.toLowerCase()) 
+                                                    || '{{ $value }}'.includes(search)"
+                                            @click="
+                                                $wire.set('current_employee_id', '{{ $value }}'); 
+                                                $wire.set('employeeSearch', '{{ $label }}');
+                                                search = '{{ $label }}'; 
+                                                show = false;
+                                            "
+                                            class="px-3 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-700 cursor-pointer text-sm"
+                                        >
+                                            <span>{{ $label }}</span>
+                                        </div>
+                                    @endforeach
+                                </div>
+
+                                <input type="hidden" wire:model="current_employee_id">
+
+                                @error('current_employee_id') 
+                                    <span class="text-red-500 text-xs">{{ $message }}</span> 
+                                @enderror
+                            </div>
+                        @endif
                     </div>
 
                     <!-- Uniform Dropdown with Search -->
@@ -130,7 +213,16 @@
 
                     <div class="mb-4">
                         <label class="block text-sm font-medium mb-1">Group <span class="text-red-500">*</span></label>
-                        <input type="text" wire:model="current_group" placeholder="e.g., Production, Maintenance" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800">
+                        <select wire:model="current_group" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="">Select Group</option>
+                            <option value="GA">GA</option>
+                            <option value="GB">GB</option>
+                            <option value="GC">GC</option>
+                            <option value="TA">TA</option>
+                            <option value="TB">TB</option>
+                            <option value="NS">NS</option>
+                            <option value="1">1</option>
+                        </select>
                         @error('current_group') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                     </div>
                 </div>
@@ -169,17 +261,18 @@
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-lg font-semibold">Request Items</h2>
                 <div class="text-sm text-zinc-500">
-                    Total: {{ $totalRows }} row(s)
+                    Total: {{ $paginatedRows->total() }} row(s)
                 </div>
             </div>
             
             <!-- SCROLL HORIZONTAL - TANPA WRAP -->
             <div class="overflow-x-auto" style="overflow-x: auto !important; white-space: nowrap !important;">
-                <table class="w-full text-sm border" style="min-width: 1400px;">
+                <table class="w-full text-sm border" style="min-width: 1600px;">
                     <thead class="bg-zinc-100 dark:bg-zinc-800">
                         <tr>
                             <th class="px-3 py-2 text-left">NIK</th>
                             <th class="px-3 py-2 text-left">NAME</th>
+                            <th class="px-3 py-2 text-left">DEPARTMENT</th>  {{-- TAMBAHKAN --}}
                             <th class="px-3 py-2 text-left">ITEM CODE</th>
                             <th class="px-3 py-2 text-left">DESCRIPTION</th>
                             <th class="px-3 py-2 text-left">SIZE</th>
@@ -188,16 +281,36 @@
                             <th class="px-3 py-2 text-left">GROUP</th>
                             <th class="px-3 py-2 text-left">REQUEST DATE</th>
                             <th class="px-3 py-2 text-left">REMARKS</th>
-                            <th class="px-3 py-2 text-left">ADMIN FEEDBACK</th>
-                            <th class="px-3 py-2 text-left">COSTING FEEDBACK</th>
                             <th class="px-3 py-2 text-center">ACTION</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($paginatedRows as $index => $row)
                         <tr class="border-t hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
-                            <td class="px-3 py-2 whitespace-nowrap">{{ $row['employee_nik'] }}</td>
-                            <td class="px-3 py-2 whitespace-nowrap">{{ $row['employee_name'] }}</td>
+                            <td class="px-3 py-2 whitespace-nowrap">
+                                @if(isset($row['is_manual']) && $row['is_manual'])
+                                    <div class="flex items-center gap-1">
+                                        <span class="text-xs text-yellow-600 dark:text-yellow-400">(Manual)</span>
+                                        <span>{{ $row['manual_nik'] ?? $row['employee_nik'] }}</span>
+                                    </div>
+                                @else
+                                    {{ $row['employee_nik'] }}
+                                @endif
+                            </td>
+                            <td class="px-3 py-2 whitespace-nowrap">
+                                @if(isset($row['is_manual']) && $row['is_manual'])
+                                    {{ $row['manual_name'] ?? $row['employee_name'] }}
+                                @else
+                                    {{ $row['employee_name'] }}
+                                @endif
+                            </td>
+                            <td class="px-3 py-2 whitespace-nowrap">
+                                @if(isset($row['is_manual']) && $row['is_manual'])
+                                    {{ $row['manual_department'] ?? $row['employee_department'] }}
+                                @else
+                                    {{ $row['employee_department'] }}
+                                @endif
+                            </td>
                             <td class="px-3 py-2 whitespace-nowrap">{{ $row['item_code'] }}</td>
                             <td class="px-3 py-2 whitespace-nowrap">{{ $row['description'] }}</td>
                             <td class="px-3 py-2 whitespace-nowrap">{{ $row['size'] }}</td>
@@ -206,22 +319,6 @@
                             <td class="px-3 py-2 whitespace-nowrap">{{ $row['group'] }}</td>
                             <td class="px-3 py-2 whitespace-nowrap">{{ \Carbon\Carbon::parse($row['request_date'])->format('d/m/Y') }}</td>
                             <td class="px-3 py-2 min-w-[100px]">{{ Str::limit($row['remarks'], 20) ?? '-' }}</td>
-                            <td class="px-3 py-2 min-w-[150px]">
-                                <div class="space-y-1">
-                                    <span class="text-xs">{{ $row['admin_feedback'] ?? '-' }}</span>
-                                    @if($row['admin_feedback_datetime'])
-                                    <br><span class="text-[10px] text-zinc-400">{{ \Carbon\Carbon::parse($row['admin_feedback_datetime'])->format('d/m/Y H:i') }}</span>
-                                    @endif
-                                </div>
-                            </td>
-                            <td class="px-3 py-2 min-w-[150px]">
-                                <div class="space-y-1">
-                                    <span class="text-xs">{{ $row['costing_feedback'] ?? '-' }}</span>
-                                    @if($row['costing_feedback_datetime'])
-                                    <br><span class="text-[10px] text-zinc-400">{{ \Carbon\Carbon::parse($row['costing_feedback_datetime'])->format('d/m/Y H:i') }}</span>
-                                    @endif
-                                </div>
-                            </td>
                             <td class="px-3 py-2 text-center whitespace-nowrap">
                                 <button type="button" wire:click="removeRow({{ $index }})" class="text-red-600 hover:text-red-800">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -236,28 +333,9 @@
             </div>
             
             <!-- PAGINATION -->
-            @if($lastPage > 1)
-            <div class="flex justify-between items-center mt-4 pt-4 border-t">
-                <div class="text-sm text-zinc-500">
-                    Showing {{ ($currentPage - 1) * $perPage + 1 }} to {{ min($currentPage * $perPage, $totalRows) }} of {{ $totalRows }} rows
-                </div>
-                <div class="flex gap-2">
-                    <button type="button" 
-                        wire:click="$set('page', {{ $currentPage - 1 }})" 
-                        @if($currentPage <= 1) disabled @endif
-                        class="px-3 py-1 border rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 {{ $currentPage <= 1 ? 'opacity-50 cursor-not-allowed' : '' }}">
-                        Previous
-                    </button>
-                    <span class="px-3 py-1 border rounded-lg bg-blue-50 dark:bg-blue-900/30">
-                        Page {{ $currentPage }} of {{ $lastPage }}
-                    </span>
-                    <button type="button" 
-                        wire:click="$set('page', {{ $currentPage + 1 }})" 
-                        @if($currentPage >= $lastPage) disabled @endif
-                        class="px-3 py-1 border rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 {{ $currentPage >= $lastPage ? 'opacity-50 cursor-not-allowed' : '' }}">
-                        Next
-                    </button>
-                </div>
+            @if($paginatedRows->hasPages())
+            <div class="p-4 border-t border-zinc-200 dark:border-zinc-700">
+                {{ $paginatedRows->links() }}
             </div>
             @endif
         </flux:card>

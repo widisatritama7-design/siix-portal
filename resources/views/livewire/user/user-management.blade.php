@@ -253,6 +253,18 @@
         @endif
     </flux:card>
 
+    <!-- Info Selected Users Summary -->
+    @if(count($selectedUsers) > 0)
+    <div class="fixed bottom-4 left-1/2 transform -translate-x-1/2 z-30">
+        <div class="bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3">
+            <span class="font-medium">{{ count($selectedUsers) }} user(s) selected</span>
+            <button wire:click="clearAllSelections" class="text-white hover:text-blue-200">
+                <flux:icon name="x-mark" class="w-5 h-5" />
+            </button>
+        </div>
+    </div>
+    @endif
+
     <!-- MODAL FORM USER -->
     <div x-data="{ open: false }" 
         x-show="open" 

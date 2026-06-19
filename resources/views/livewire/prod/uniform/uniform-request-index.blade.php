@@ -16,76 +16,117 @@
         </div>
 
         @can('create uniform request')
-            <flux:button variant="primary" icon="plus" href="{{ route('prod.uniform.request.create') }}" wire:navigate>
+            <flux:button variant="primary" icon="plus-circle" href="{{ route('prod.uniform.request.create') }}" wire:navigate>
                 New Request
             </flux:button>
         @endcan
     </div>
 
     <!-- Filters -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3">
-        <div class="lg:col-span-2">
-            <flux:input
-                wire:model.live.debounce.300ms="search"
-                placeholder="Search by request #..."
-                icon="magnifying-glass"
-                clearable
-            />
+    <div class="space-y-2">
+        {{-- BARIS ATAS: Search + Date --}}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
+            <div class="lg:col-span-2">
+                <flux:input
+                    wire:model.live.debounce.300ms="search"
+                    placeholder="Search by request #..."
+                    icon="magnifying-glass"
+                    clearable
+                />
+            </div>
+
+            <div>
+                <input type="date" 
+                    wire:model.live="dateFrom"
+                    class="w-full px-3 py-2 text-sm bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-zinc-700 dark:text-zinc-300">
+            </div>
+
+            <div>
+                <input type="date" 
+                    wire:model.live="dateTo"
+                    class="w-full px-3 py-2 text-sm bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-zinc-700 dark:text-zinc-300">
+            </div>
         </div>
 
-        <div>
-            <select wire:model.live="misscStatusFilter" 
-                class="w-full px-3 py-2 text-sm bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-zinc-700 dark:text-zinc-300">
-                <option value="">All MISSC Status</option>
-                <option value="Waiting">Waiting</option>
-                <option value="On Process">On Process</option>
-                <option value="Accepted">Accepted</option>
-            </select>
+        {{-- BARIS BAWAH: Semua Filter --}}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2">
+            <div>
+                <select wire:model.live="adminFeedbackFilter" 
+                    class="w-full px-3 py-2 text-sm bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-zinc-700 dark:text-zinc-300">
+                    <option value="">All Admin Feedback</option>
+                    <option value="Open">Open</option>
+                    <option value="On Process">On Process</option>
+                    <option value="Checked">Checked</option>
+                </select>
+            </div>
+
+            <div>
+                <select wire:model.live="verificationFilter" 
+                    class="w-full px-3 py-2 text-sm bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-zinc-700 dark:text-zinc-300">
+                    <option value="">All Verification</option>
+                    <option value="Waiting">Waiting</option>
+                    <option value="On Process">On Process</option>
+                    <option value="Approved">Approved</option>
+                    <option value="Completed">Completed</option>
+                    <option value="N/A">N/A</option>
+                </select>
+            </div>
+
+            <div>
+                <select wire:model.live="costingFeedbackFilter" 
+                    class="w-full px-3 py-2 text-sm bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-zinc-700 dark:text-zinc-300">
+                    <option value="">All Costing Feedback</option>
+                    <option value="Open">Open</option>
+                    <option value="On Process">On Process</option>
+                    <option value="Checked">Checked</option>
+                </select>
+            </div>
+
+            <div>
+                <select wire:model.live="signatureFilter" 
+                    class="w-full px-3 py-2 text-sm bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-zinc-700 dark:text-zinc-300">
+                    <option value="">All Signature</option>
+                    <option value="Waiting">Waiting</option>
+                    <option value="On Process">On Process</option>
+                    <option value="Signed">Signed</option>
+                    <option value="Completed">Completed</option>
+                </select>
+            </div>
+
+            <div>
+                <select wire:model.live="misscStatusFilter" 
+                    class="w-full px-3 py-2 text-sm bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-zinc-700 dark:text-zinc-300">
+                    <option value="">All MISSC Status</option>
+                    <option value="Waiting">Waiting</option>
+                    <option value="On Process">On Process</option>
+                    <option value="Accepted">Accepted</option>
+                </select>
+            </div>
         </div>
 
-        <div>
-            <select wire:model.live="adminFeedbackFilter" 
-                class="w-full px-3 py-2 text-sm bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-zinc-700 dark:text-zinc-300">
-                <option value="">All Admin Feedback</option>
-                <option value="Open">Open</option>
-                <option value="On Process">On Process</option>
-                <option value="Checked">Checked</option>
-            </select>
-        </div>
-
-        <div>
-            <select wire:model.live="costingFeedbackFilter" 
-                class="w-full px-3 py-2 text-sm bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-zinc-700 dark:text-zinc-300">
-                <option value="">All Costing Feedback</option>
-                <option value="Open">Open</option>
-                <option value="On Process">On Process</option>
-                <option value="Checked">Checked</option>
-            </select>
-        </div>
-
-        <div>
-            <input type="date" 
-                wire:model.live="dateFrom"
-                class="w-full px-3 py-2 text-sm bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-zinc-700 dark:text-zinc-300">
-        </div>
-
-        <div>
-            <input type="date" 
-                wire:model.live="dateTo"
-                class="w-full px-3 py-2 text-sm bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-zinc-700 dark:text-zinc-300">
-        </div>
+        @if($adminFeedbackFilter || $costingFeedbackFilter || $misscStatusFilter || $verificationFilter || $signatureFilter || $dateFrom || $dateTo || $search)
+            <div class="flex justify-end">
+                <button wire:click="resetFilters" 
+                    class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 transition-colors">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                    Reset Filters
+                </button>
+            </div>
+        @endif
     </div>
 
-    @if($adminFeedbackFilter || $costingFeedbackFilter || $misscStatusFilter || $dateFrom || $dateTo || $search)
-    <div class="flex justify-end">
-        <button wire:click="resetFilters" 
-            class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700 transition-colors">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-            </svg>
-            Reset Filters
-        </button>
-    </div>
+    @if($adminFeedbackFilter || $costingFeedbackFilter || $misscStatusFilter || $verificationFilter || $signatureFilter || $dateFrom || $dateTo || $search)
+        <div class="flex justify-end">
+            <button wire:click="resetFilters" 
+                class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+                Reset Filters
+            </button>
+        </div>
     @endif
 
     <!-- Uniform Request Table -->
@@ -97,8 +138,10 @@
                         <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">REQUEST NUMBER #</th>
                         <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">TOTAL EMPLOYEE</th>
                         <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">ADMIN FEEDBACK</th>
+                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">VERIFICATION</th>
                         <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">COSTING FEEDBACK</th>
                         <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">MISSC STATUS</th>
+                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">SIGNATURE</th>
                         <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">PREPARED BY</th>
                         <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">DATE</th>
                         <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">ACTIONS</th>
@@ -111,21 +154,56 @@
                         $costingStatus = $this->getCostingFeedbackStatus($request);
                         $canEdit = ($adminStatus['status'] == 'Open' && $costingStatus['status'] == 'Open');
                         
-                        $statusColors = [
+                        // ============ MISSC STATUS ============
+                        $misscStatusColors = [
                             'Waiting' => 'gray',
                             'On Process' => 'yellow',
                             'Accepted' => 'green',
                         ];
                         
-                        $statusIcons = [
+                        $misscStatusIcons = [
                             'Waiting' => 'M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z',
                             'On Process' => 'M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z',
                             'Accepted' => 'M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z',
                         ];
                         
-                        $status = $request->missc_status ?? 'Waiting';
-                        $statusColor = $statusColors[$status] ?? 'gray';
-                        $statusIcon = $statusIcons[$status] ?? $statusIcons['Waiting'];
+                        $misscStatus = $request->missc_status ?? 'Waiting';
+                        $misscColor = $misscStatusColors[$misscStatus] ?? 'gray';
+                        $misscIcon = $misscStatusIcons[$misscStatus] ?? $misscStatusIcons['Waiting'];
+                        
+                        // ============ VERIFICATION STATUS ============
+                        $verificationStatus = $this->getVerificationStatus($request);
+                        $verificationColors = [
+                            'Waiting' => 'gray',
+                            'On Process' => 'yellow',
+                            'Approved' => 'green',
+                            'Completed' => 'blue',
+                        ];
+                        $verificationIcons = [
+                            'Waiting' => 'M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z',
+                            'On Process' => 'M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z',
+                            'Approved' => 'M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z',
+                            'Completed' => 'M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z',
+                        ];
+                        $verificationColor = $verificationColors[$verificationStatus['status']] ?? 'gray';
+                        $verificationIcon = $verificationIcons[$verificationStatus['status']] ?? $verificationIcons['Waiting'];
+                        
+                        // ============ SIGNATURE STATUS ============
+                        $signatureStatus = $this->getSignatureStatus($request);
+                        $signatureColors = [
+                            'Waiting' => 'gray',
+                            'On Process' => 'yellow',
+                            'Signed' => 'green',
+                            'Completed' => 'blue',
+                        ];
+                        $signatureIcons = [
+                            'Waiting' => 'M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z',
+                            'On Process' => 'M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z',
+                            'Signed' => 'M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z',
+                            'Completed' => 'M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z',
+                        ];
+                        $signatureColor = $signatureColors[$signatureStatus['status']] ?? 'gray';
+                        $signatureIcon = $signatureIcons[$signatureStatus['status']] ?? $signatureIcons['Waiting'];
                     @endphp
                     <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
                         <td class="px-4 py-3 text-center whitespace-nowrap">
@@ -166,6 +244,90 @@
                             @endif
                         </td>
 
+                        <!-- Verification Status Column -->
+                        <td class="px-4 py-3 text-center whitespace-nowrap">
+                            @php
+                                $verificationColors = [
+                                    'Waiting' => 'gray',
+                                    'On Process' => 'yellow',
+                                    'Approved' => 'green',
+                                    'Completed' => 'blue',
+                                    'N/A' => 'gray',
+                                ];
+                                $verificationIcons = [
+                                    'Waiting' => 'M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z',
+                                    'On Process' => 'M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z',
+                                    'Approved' => 'M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z',
+                                    'Completed' => 'M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z',
+                                    'N/A' => 'M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z',
+                                ];
+                                $verificationColor = $verificationColors[$verificationStatus['status']] ?? 'gray';
+                                $verificationIcon = $verificationIcons[$verificationStatus['status']] ?? $verificationIcons['Waiting'];
+                            @endphp
+                            
+                            @if($verificationStatus['status'] == 'N/A')
+                                <span class="inline-flex items-center gap-1 px-2 py-1 text-sm font-medium rounded-full bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 whitespace-nowrap">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4 shrink-0">
+                                        <path fill-rule="evenodd" d="{{ $verificationIcon }}" clip-rule="evenodd" />
+                                    </svg>
+                                    N/A
+                                    <flux:tooltip content="All items are manual input (no verification needed)" position="top">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                            <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 0 1 .67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 1 1-.671-1.34l.041-.022ZM12 9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
+                                        </svg>
+                                    </flux:tooltip>
+                                </span>
+                            @elseif($verificationStatus['status'] == 'Waiting')
+                                <span class="inline-flex items-center gap-1 px-2 py-1 text-sm font-medium rounded-full bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300 whitespace-nowrap">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4 shrink-0">
+                                        <path fill-rule="evenodd" d="{{ $verificationIcon }}" clip-rule="evenodd" />
+                                    </svg>
+                                    Waiting
+                                    <flux:tooltip content="All items are waiting for verification" position="top">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                            <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 0 1 .67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 1 1-.671-1.34l.041-.022ZM12 9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
+                                        </svg>
+                                    </flux:tooltip>
+                                </span>
+                            @elseif($verificationStatus['status'] == 'On Process')
+                                <span class="inline-flex items-center gap-1 px-2 py-1 text-sm font-medium rounded-full bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300 whitespace-nowrap">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4 shrink-0">
+                                        <path fill-rule="evenodd" d="{{ $verificationIcon }}" clip-rule="evenodd" />
+                                    </svg>
+                                    On Process
+                                    <flux:tooltip content="Some items have been verified, some are still pending" position="top">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                            <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 0 1 .67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 1 1-.671-1.34l.041-.022ZM12 9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
+                                        </svg>
+                                    </flux:tooltip>
+                                </span>
+                            @elseif($verificationStatus['status'] == 'Approved')
+                                <span class="inline-flex items-center gap-1 px-2 py-1 text-sm font-medium rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300 whitespace-nowrap">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4 shrink-0">
+                                        <path fill-rule="evenodd" d="{{ $verificationIcon }}" clip-rule="evenodd" />
+                                    </svg>
+                                    Approved
+                                    <flux:tooltip content="All items have been approved" position="top">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                            <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 0 1 .67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 1 1-.671-1.34l.041-.022ZM12 9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
+                                        </svg>
+                                    </flux:tooltip>
+                                </span>
+                            @elseif($verificationStatus['status'] == 'Completed')
+                                <span class="inline-flex items-center gap-1 px-2 py-1 text-sm font-medium rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 whitespace-nowrap">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4 shrink-0">
+                                        <path fill-rule="evenodd" d="{{ $verificationIcon }}" clip-rule="evenodd" />
+                                    </svg>
+                                    Completed
+                                    <flux:tooltip content="Process completed with some rejected or manual items" position="top">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                            <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 0 1 .67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 1 1-.671-1.34l.041-.022ZM12 9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
+                                        </svg>
+                                    </flux:tooltip>
+                                </span>
+                            @endif
+                        </td>
+
                         <td class="px-4 py-3 text-center whitespace-nowrap">
                             @if($costingStatus['status'] == 'Checked')
                                 <span class="inline-flex items-center gap-1 px-2 py-1 text-sm font-medium text-green-700 bg-green-100 rounded-full dark:bg-green-900/30 dark:text-green-300 whitespace-nowrap">
@@ -193,19 +355,48 @@
 
                         <td class="px-4 py-3 text-center whitespace-nowrap">
                             <div class="flex flex-col items-center gap-1">
-                                <span class="inline-flex items-center gap-1 px-2 py-1 text-sm font-medium rounded-full bg-{{ $statusColor }}-100 text-{{ $statusColor }}-700 dark:bg-{{ $statusColor }}-900/30 dark:text-{{ $statusColor }}-300 whitespace-nowrap">
+                                <span class="inline-flex items-center gap-1 px-2 py-1 text-sm font-medium rounded-full bg-{{ $misscColor }}-100 text-{{ $misscColor }}-700 dark:bg-{{ $misscColor }}-900/30 dark:text-{{ $misscColor }}-300 whitespace-nowrap">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4 shrink-0">
-                                        <path fill-rule="evenodd" d="{{ $statusIcon }}" clip-rule="evenodd" />
+                                        <path fill-rule="evenodd" d="{{ $misscIcon }}" clip-rule="evenodd" />
                                     </svg>
-                                    {{ $status }}
+                                    {{ $misscStatus }}
                                 </span>
                                 
-                                @if($status == 'Accepted' && $request->missc_accept_at)
+                                @if($misscStatus == 'Accepted' && $request->missc_accept_at)
                                     <span class="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
                                         {{ $request->missc_accept_at->format('d M Y H:i') }}
                                     </span>
                                 @endif
                             </div>
+                        </td>
+
+                        <!-- Signature Status Column -->
+                        <td class="px-4 py-3 text-center whitespace-nowrap">
+                            @if($signatureStatus['status'] == 'Signed')
+                                <span class="inline-flex items-center gap-1 px-2 py-1 text-sm font-medium rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300 whitespace-nowrap">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4 shrink-0">
+                                        <path fill-rule="evenodd" d="{{ $signatureIcon }}" clip-rule="evenodd" />
+                                    </svg>
+                                    Signed
+                                    <flux:tooltip content="All items have been digitally signed" position="top">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                        <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 0 1 .67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 1 1-.671-1.34l.041-.022ZM12 9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
+                                    </svg>
+                                    </flux:tooltip>
+                                </span>
+                            @elseif($signatureStatus['status'] == 'Completed')
+                                <span class="inline-flex items-center gap-1 px-2 py-1 text-sm font-medium rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 whitespace-nowrap">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4 shrink-0">
+                                        <path fill-rule="evenodd" d="{{ $signatureIcon }}" clip-rule="evenodd" />
+                                    </svg>
+                                    Completed
+                                    <flux:tooltip content="Process completed with some rejected items (no signature needed)" position="top">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                        <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 0 1 .67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 1 1-.671-1.34l.041-.022ZM12 9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
+                                    </svg>
+                                    </flux:tooltip>
+                                </span>
+                            @endif
                         </td>
                         
                         <td class="px-4 py-3 text-center whitespace-nowrap">
@@ -227,6 +418,19 @@
                                         icon="eye"
                                         variant="primary"
                                         color="blue"
+                                        class="!p-1.5"
+                                    />
+                                </flux:tooltip>
+
+                                <!-- Print PDF Button -->
+                                <flux:tooltip content="Print PDF" position="bottom">
+                                    <flux:button 
+                                        href="{{ route('prod.uniform.request.print', $request->id) }}"
+                                        target="_blank"
+                                        size="xs"
+                                        icon="printer"
+                                        variant="primary"
+                                        color="gray"
                                         class="!p-1.5"
                                     />
                                 </flux:tooltip>
@@ -304,7 +508,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="8" class="px-4 py-12 text-center">
+                        <td colspan="10" class="px-4 py-12 text-center">
                             <div class="flex flex-col items-center gap-3">
                                 <svg class="w-12 h-12 text-zinc-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />

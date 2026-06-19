@@ -95,10 +95,22 @@ class UniformRequest extends Model
                 'group' => $item['group'],
                 'request_date' => $item['request_date'],
                 'remarks' => $item['remarks'],
+                // Admin Feedback
                 'admin_feedback' => $item['admin_feedback'] ?? null,
                 'admin_feedback_datetime' => $item['admin_feedback_datetime'] ?? null,
+                // Verification (after admin feedback)
+                'verification_status' => $item['verification_status'] ?? null, // 'approved' or 'rejected'
+                'verification_datetime' => $item['verification_datetime'] ?? null,
+                'verification_by' => $item['verification_by'] ?? null,
+                'verification_note' => $item['verification_note'] ?? null,
+                // Costing Feedback
                 'costing_feedback' => $item['costing_feedback'] ?? null,
                 'costing_feedback_datetime' => $item['costing_feedback_datetime'] ?? null,
+                // Digital Signature (after costing feedback)
+                'digital_signature' => $item['digital_signature'] ?? null, // 'SIGNED'
+                'signature_datetime' => $item['signature_datetime'] ?? null,
+                'signature_name' => $item['signature_name'] ?? null,
+                'signature_position' => $item['signature_position'] ?? null,
             ];
         }
         
@@ -110,6 +122,7 @@ class UniformRequest extends Model
         return $this->belongsTo(User::class, 'created_by', 'name');
     }
 
+    // Admin Feedback
     public function addAdminFeedback($rowIndex, $feedback)
     {
         $items = $this->items;
@@ -120,12 +133,39 @@ class UniformRequest extends Model
         }
     }
 
+    // Verification
+    public function verifyItem($rowIndex, $status, $note = null)
+    {
+        $items = $this->items;
+        if (isset($items[$rowIndex])) {
+            $items[$rowIndex]['verification_status'] = $status;
+            $items[$rowIndex]['verification_datetime'] = now()->toDateTimeString();
+            $items[$rowIndex]['verification_by'] = Auth::user()->name;
+            $items[$rowIndex]['verification_note'] = $note;
+            $this->update(['items' => $items]);
+        }
+    }
+
+    // Costing Feedback
     public function addCostingFeedback($rowIndex, $feedback)
     {
         $items = $this->items;
         if (isset($items[$rowIndex])) {
             $items[$rowIndex]['costing_feedback'] = $feedback;
             $items[$rowIndex]['costing_feedback_datetime'] = now()->toDateTimeString();
+            $this->update(['items' => $items]);
+        }
+    }
+
+    // Digital Signature
+    public function addDigitalSignature($rowIndex, $name, $position)
+    {
+        $items = $this->items;
+        if (isset($items[$rowIndex])) {
+            $items[$rowIndex]['digital_signature'] = 'SIGNED';
+            $items[$rowIndex]['signature_datetime'] = now()->toDateTimeString();
+            $items[$rowIndex]['signature_name'] = $name;
+            $items[$rowIndex]['signature_position'] = $position;
             $this->update(['items' => $items]);
         }
     }
@@ -140,5 +180,94 @@ class UniformRequest extends Model
         }
         
         $this->save();
+    }
+
+    // Check if all items are verified and signed
+    public function isFullyProcessed()
+    {
+        $items = $this->items ?? [];
+        foreach ($items as $item) {
+            if (empty($item['verification_status']) || empty($item['digital_signature'])) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // Get verification statistics
+    public function getVerificationStats()
+    {
+        $items = $this->items ?? [];
+        $total = count($items);
+        $approved = 0;
+        $rejected = 0;
+        $pending = 0;
+        
+        foreach ($items as $item) {
+            $status = $item['verification_status'] ?? null;
+            if ($status === 'approved') {
+                $approved++;
+            } elseif ($status === 'rejected') {
+                $rejected++;
+            } else {
+                $pending++;
+            }
+        }
+        
+        return [
+            'total' => $total,
+            'approved' => $approved,
+            'rejected' => $rejected,
+            'pending' => $pending,
+        ];
+    }
+
+    public function getSignatureImageAttribute($value)
+    {
+        if (empty($value)) {
+            return null;
+        }
+        return $value; // Return base64 image
+    }
+
+    // Get signature statistics
+    public function getSignatureStats()
+    {
+        $items = $this->items ?? [];
+        $total = count($items);
+        $signed = 0;
+        $unsigned = 0;
+        
+        foreach ($items as $item) {
+            if (!empty($item['digital_signature'])) {
+                $signed++;
+            } else {
+                $unsigned++;
+            }
+        }
+        
+        return [
+            'total' => $total,
+            'signed' => $signed,
+            'unsigned' => $unsigned,
+        ];
+    }
+
+    public function updateSalaryDeduction($itemIndex, $data)
+    {
+        $items = $this->items;
+        
+        if (!isset($items[$itemIndex])) {
+            return false;
+        }
+        
+        $items[$itemIndex]['salary_deduction'] = $data['deduction'] ?? 'no';
+        $items[$itemIndex]['deduction_amount'] = $data['amount'] ?? null;
+        $items[$itemIndex]['payroll_period'] = $data['period'] ?? null;
+        $items[$itemIndex]['salary_updated_by'] = auth()->user()->name;
+        $items[$itemIndex]['salary_updated_at'] = now()->toDateTimeString();
+        
+        $this->update(['items' => $items]);
+        return true;
     }
 }

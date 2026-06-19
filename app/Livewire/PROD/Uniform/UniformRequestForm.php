@@ -9,6 +9,7 @@ use App\Models\PROD\Uniform\MasterUniform;
 use App\Models\HR\Employee;
 use App\Mail\PROD\UniformRequestCreatedMail;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class UniformRequestForm extends Component
 {
@@ -27,16 +28,25 @@ class UniformRequestForm extends Component
     public $current_request_date = '';
     public $current_remarks = '';
     
+    // Manual input (untuk admin)
+    public $manualNik = '';
+    public $manualName = '';
+    public $manualDepartment = '';
+    public $isManualInput = false;
+    
     // For dropdown
     public $employeeSearch = '';
     public $uniformSearch = '';
     
     // Loading state
     public $isSaving = false;
+    
+    // User department for filtering (untuk user dengan akses one user)
+    public $userDepartment = null;
 
     protected $rules = [
         'rows' => 'required|array|min:1',
-        'rows.*.employee_id' => 'required|exists:tb_hr_employee,id',
+        'rows.*.employee_id' => 'nullable|exists:tb_hr_employee,id',
         'rows.*.master_uniform_id' => 'required|exists:tb_prod_master_uniform,id',
         'rows.*.qty' => 'required|integer|min:1',
         'rows.*.reason' => 'required|string',
@@ -47,27 +57,51 @@ class UniformRequestForm extends Component
 
     protected $messages = [
         'rows.required' => 'At least one row is required.',
-        'rows.*.employee_id.required' => 'Employee is required.',
         'rows.*.master_uniform_id.required' => 'Uniform is required.',
         'rows.*.qty.min' => 'Quantity must be at least 1.',
-        'rows.*.reason.min' => 'Reason must be at least 5 characters.',
         'rows.*.group.required' => 'Group is required.',
     ];
 
-    // Get all employees for dropdown
+    /**
+     * Check if user can input manual
+     */
+    public function getCanManualInputProperty()
+    {
+        return auth()->user()->can('feedback uniform request admin');
+    }
+
+    /**
+     * Get all employees for dropdown
+     * - Hanya status 1, 2, 3
+     * - Jika one user, filter berdasarkan department user
+     */
     public function getEmployeesProperty()
     {
-        return Employee::query()
+        $query = Employee::query()
             ->select('id', 'nik', 'name', 'department')
-            ->whereIn('status', [1, 2, 3]) // or whatever your column name is
-            ->orderBy('name')
-            ->get()
+            ->whereIn('status', [1, 2, 3])
+            ->orderBy('name');
+        
+        // CEK: Jika user hanya memiliki akses 'view uniform request one user'
+        $isOneUser = auth()->user()->can('view uniform request one user');
+        $isFullAccess = auth()->user()->can('view uniform request');
+        
+        // Jika one user (dan tidak punya full access), filter berdasarkan department
+        if ($isOneUser && !$isFullAccess) {
+            if ($this->userDepartment) {
+                $query->where('department', $this->userDepartment);
+            }
+        }
+        
+        return $query->get()
             ->mapWithKeys(fn ($employee) => [
                 $employee->id => $employee->nik . ' - ' . $employee->name . ' (' . $employee->department . ')'
             ]);
     }
 
-    // Get all uniforms for dropdown
+    /**
+     * Get all uniforms for dropdown
+     */
     public function getUniformsProperty()
     {
         return MasterUniform::query()
@@ -82,20 +116,45 @@ class UniformRequestForm extends Component
     {
         $this->current_request_date = date('Y-m-d');
         
+        // STEP 1: Ambil NIK dari user login (users.nik)
+        $user = auth()->user();
+        if ($user) {
+            $userNik = trim($user->nik ?? '');
+            
+            if (!empty($userNik)) {
+                $employee = Employee::where('nik', $userNik)
+                    ->whereIn('status', [1, 2, 3])
+                    ->first();
+                
+                if (!$employee) {
+                    $employee = Employee::whereRaw('LOWER(nik) = ?', [strtolower($userNik)])
+                        ->whereIn('status', [1, 2, 3])
+                        ->first();
+                }
+                
+                if ($employee) {
+                    $this->userDepartment = $employee->department;
+                } else {
+                    \Log::warning('No active employee (status 1,2,3) found with NIK: ' . $userNik);
+                    $this->userDepartment = null;
+                }
+            }
+        }
+        
         if ($id) {
             $this->requestId = $id;
             $request = UniformRequest::find($id);
             
             if ($request) {
                 foreach ($request->items as $item) {
-                    $employee = Employee::find($item['employee_id']);
+                    $employee = Employee::find($item['employee_id'] ?? null);
                     $uniform = MasterUniform::find($item['master_uniform_id']);
                     
                     $this->rows[] = [
-                        'employee_id' => $item['employee_id'],
-                        'employee_nik' => $employee->nik ?? '-',
-                        'employee_name' => $employee->name ?? '-',
-                        'employee_department' => $employee->department ?? '-',
+                        'employee_id' => $item['employee_id'] ?? null,
+                        'employee_nik' => $employee->nik ?? ($item['manual_nik'] ?? '-'),
+                        'employee_name' => $employee->name ?? ($item['manual_name'] ?? '-'),
+                        'employee_department' => $employee->department ?? ($item['manual_department'] ?? '-'),
                         'master_uniform_id' => $item['master_uniform_id'],
                         'item_code' => $uniform->item_code ?? '-',
                         'description' => $uniform->description ?? '-',
@@ -109,47 +168,137 @@ class UniformRequestForm extends Component
                         'admin_feedback_datetime' => $item['admin_feedback_datetime'] ?? null,
                         'costing_feedback' => $item['costing_feedback'] ?? null,
                         'costing_feedback_datetime' => $item['costing_feedback_datetime'] ?? null,
+                        'manual_nik' => $item['manual_nik'] ?? null,
+                        'manual_name' => $item['manual_name'] ?? null,
+                        'manual_department' => $item['manual_department'] ?? null,
+                        'is_manual' => $item['is_manual'] ?? false,
                     ];
                 }
             }
         }
     }
 
+    public function toggleManualInput()
+    {
+        $this->isManualInput = !$this->isManualInput;
+        if ($this->isManualInput) {
+            $this->current_employee_id = null;
+            $this->employeeSearch = '';
+        } else {
+            $this->manualNik = '';
+            $this->manualName = '';
+            $this->manualDepartment = '';
+        }
+    }
+
     public function addRow()
     {
-        $this->validate([
-            'current_employee_id' => 'required|exists:tb_hr_employee,id',
-            'current_master_uniform_id' => 'required|exists:tb_prod_master_uniform,id',
-            'current_qty' => 'required|integer|min:1',
-            'current_reason' => 'required|string',
-            'current_group' => 'required|string|max:100',
-            'current_request_date' => 'required|date',
-        ]);
+        $isAdmin = auth()->user()->can('feedback uniform request admin');
+        
+        // Validasi berdasarkan mode
+        if ($this->isManualInput && $isAdmin) {
+            $this->validate([
+                'manualNik' => 'required|string',
+                'manualName' => 'required|string',
+                'manualDepartment' => 'required|string',
+                'current_master_uniform_id' => 'required|exists:tb_prod_master_uniform,id',
+                'current_qty' => 'required|integer|min:1',
+                'current_reason' => 'required|string',
+                'current_group' => 'required|string|max:100',
+                'current_request_date' => 'required|date',
+            ]);
+        } else {
+            $this->validate([
+                'current_employee_id' => 'required|exists:tb_hr_employee,id',
+                'current_master_uniform_id' => 'required|exists:tb_prod_master_uniform,id',
+                'current_qty' => 'required|integer|min:1',
+                'current_reason' => 'required|string',
+                'current_group' => 'required|string|max:100',
+                'current_request_date' => 'required|date',
+            ]);
+        }
 
-        $employee = Employee::find($this->current_employee_id);
         $uniform = MasterUniform::find($this->current_master_uniform_id);
+        
+        if ($this->isManualInput && $isAdmin) {
+            // Manual input
+            $this->rows[] = [
+                'employee_id' => null,
+                'employee_nik' => $this->manualNik,
+                'employee_name' => $this->manualName,
+                'employee_department' => $this->manualDepartment,  // TAMBAHKAN
+                'master_uniform_id' => $this->current_master_uniform_id,
+                'item_code' => $uniform->item_code ?? '-',
+                'description' => $uniform->description ?? '-',
+                'size' => $uniform->size ?? '-',
+                'qty' => $this->current_qty,
+                'reason' => $this->current_reason,
+                'group' => $this->current_group,
+                'request_date' => $this->current_request_date,
+                'remarks' => $this->current_remarks,
+                'admin_feedback' => null,
+                'admin_feedback_datetime' => null,
+                'costing_feedback' => null,
+                'costing_feedback_datetime' => null,
+                'manual_nik' => $this->manualNik,
+                'manual_name' => $this->manualName,
+                'manual_department' => $this->manualDepartment,  // TAMBAHKAN
+                'is_manual' => true,
+            ];
+            
+            $this->manualNik = '';
+            $this->manualName = '';
+            $this->manualDepartment = '';
+        } else {
+            // Regular input
+            $employee = Employee::find($this->current_employee_id);
+            
+            if (!$employee) {
+                session()->flash('error', 'Employee not found!');
+                return;
+            }
+            
+            if (!in_array($employee->status, [1, 2, 3])) {
+                session()->flash('error', 'Employee ' . $employee->nik . ' - ' . $employee->name . ' is not active!');
+                return;
+            }
+            
+            $isOneUser = auth()->user()->can('view uniform request one user');
+            $isFullAccess = auth()->user()->can('view uniform request');
+            
+            if ($isOneUser && !$isFullAccess && $this->userDepartment) {
+                if ($employee->department !== $this->userDepartment) {
+                    session()->flash('error', 'You can only select employees from your department: ' . $this->userDepartment);
+                    return;
+                }
+            }
 
-        $this->rows[] = [
-            'employee_id' => $this->current_employee_id,
-            'employee_nik' => $employee->nik ?? '-',
-            'employee_name' => $employee->name ?? '-',
-            'employee_department' => $employee->department ?? '-',
-            'master_uniform_id' => $this->current_master_uniform_id,
-            'item_code' => $uniform->item_code ?? '-',
-            'description' => $uniform->description ?? '-',
-            'size' => $uniform->size ?? '-',
-            'qty' => $this->current_qty,
-            'reason' => $this->current_reason,
-            'group' => $this->current_group,
-            'request_date' => $this->current_request_date,
-            'remarks' => $this->current_remarks,
-            'admin_feedback' => null,
-            'admin_feedback_datetime' => null,
-            'costing_feedback' => null,
-            'costing_feedback_datetime' => null,
-        ];
+            $this->rows[] = [
+                'employee_id' => $this->current_employee_id,
+                'employee_nik' => $employee->nik ?? '-',
+                'employee_name' => $employee->name ?? '-',
+                'employee_department' => $employee->department ?? '-',
+                'master_uniform_id' => $this->current_master_uniform_id,
+                'item_code' => $uniform->item_code ?? '-',
+                'description' => $uniform->description ?? '-',
+                'size' => $uniform->size ?? '-',
+                'qty' => $this->current_qty,
+                'reason' => $this->current_reason,
+                'group' => $this->current_group,
+                'request_date' => $this->current_request_date,
+                'remarks' => $this->current_remarks,
+                'admin_feedback' => null,
+                'admin_feedback_datetime' => null,
+                'costing_feedback' => null,
+                'costing_feedback_datetime' => null,
+                'manual_nik' => null,
+                'manual_name' => null,
+                'manual_department' => null,
+                'is_manual' => false,
+            ];
+        }
 
-        // RESET FORM KE KOSONG
+        // RESET FORM
         $this->current_employee_id = null;
         $this->current_master_uniform_id = null;
         $this->current_qty = 1;
@@ -159,19 +308,23 @@ class UniformRequestForm extends Component
         $this->current_remarks = '';
         $this->employeeSearch = '';
         $this->uniformSearch = '';
+        $this->isManualInput = false;
+
+        $this->resetPage();
 
         session()->flash('success', 'Row added successfully!');
     }
 
     public function removeRow($index)
     {
-        // Hitung index sebenarnya berdasarkan pagination
         $page = request()->get('page', 1);
         $offset = ($page - 1) * $this->perPage;
         $realIndex = $offset + $index;
         
         unset($this->rows[$realIndex]);
         $this->rows = array_values($this->rows);
+
+        $this->resetPage();
         
         session()->flash('success', 'Row removed successfully!');
     }
@@ -183,10 +336,42 @@ class UniformRequestForm extends Component
         try {
             $this->validate();
 
+            $isOneUser = auth()->user()->can('view uniform request one user');
+            $isFullAccess = auth()->user()->can('view uniform request');
+            
+            foreach ($this->rows as $row) {
+                // Jika manual input, skip validasi employee
+                if (isset($row['is_manual']) && $row['is_manual']) {
+                    continue;
+                }
+                
+                $employee = Employee::find($row['employee_id']);
+                
+                if (!$employee) {
+                    session()->flash('error', 'Employee not found! (ID: ' . $row['employee_id'] . ')');
+                    $this->isSaving = false;
+                    return;
+                }
+                
+                if (!in_array($employee->status, [1, 2, 3])) {
+                    session()->flash('error', 'Employee ' . $employee->nik . ' - ' . $employee->name . ' is not active!');
+                    $this->isSaving = false;
+                    return;
+                }
+                
+                if ($isOneUser && !$isFullAccess && $this->userDepartment) {
+                    if ($employee->department !== $this->userDepartment) {
+                        session()->flash('error', 'You can only create requests for employees from your department: ' . $this->userDepartment);
+                        $this->isSaving = false;
+                        return;
+                    }
+                }
+            }
+
             $itemsForDb = [];
             foreach ($this->rows as $row) {
-                $itemsForDb[] = [
-                    'employee_id' => $row['employee_id'],
+                $itemData = [
+                    'employee_id' => $row['employee_id'] ?? null,
                     'master_uniform_id' => $row['master_uniform_id'],
                     'qty' => $row['qty'],
                     'reason' => $row['reason'],
@@ -198,6 +383,16 @@ class UniformRequestForm extends Component
                     'costing_feedback' => $row['costing_feedback'] ?? null,
                     'costing_feedback_datetime' => $row['costing_feedback_datetime'] ?? null,
                 ];
+                
+                // Jika manual input, tambahkan field manual
+                if (isset($row['is_manual']) && $row['is_manual']) {
+                    $itemData['manual_nik'] = $row['manual_nik'];
+                    $itemData['manual_name'] = $row['manual_name'];
+                    $itemData['manual_department'] = $row['manual_department'];
+                    $itemData['is_manual'] = true;
+                }
+                
+                $itemsForDb[] = $itemData;
             }
 
             $isUpdate = false;
@@ -212,9 +407,8 @@ class UniformRequestForm extends Component
                 session()->flash('success', 'Request created successfully!');
             }
 
-            // Send email notification
             try {
-                Mail::to(['widifajarsatritama@gmail.com', 'sek.esd@siix-global.com'])
+                Mail::to('sek.esd@siix-global.com')
                     ->send(new UniformRequestCreatedMail($request, $isUpdate));
             } catch (\Exception $e) {
                 \Log::error('Failed to send uniform request email: ' . $e->getMessage());
@@ -229,22 +423,38 @@ class UniformRequestForm extends Component
         }
     }
 
+    public function getPage()
+    {
+        // Ambil dari request atau default 1
+        return request()->get('page', 1);
+    }
+
+    public function resetPage()
+    {
+        // Redirect ke halaman 1
+        $this->dispatch('resetPage');
+        // Atau gunakan JavaScript
+    }
+
     public function render()
     {
-        // Paginate rows manually
-        $currentPage = request()->get('page', 1);
-        $offset = ($currentPage - 1) * $this->perPage;
-        $paginatedRows = array_slice($this->rows, $offset, $this->perPage);
-        
+        $currentPage = LengthAwarePaginator::resolveCurrentPage();
+        $perPage = $this->perPage;
         $totalRows = count($this->rows);
-        $lastPage = ceil($totalRows / $this->perPage);
+        
+        $offset = ($currentPage - 1) * $perPage;
+        $paginatedRows = array_slice($this->rows, $offset, $perPage);
+        
+        $paginator = new LengthAwarePaginator(
+            $paginatedRows,
+            $totalRows,
+            $perPage,
+            $currentPage,
+            ['path' => LengthAwarePaginator::resolveCurrentPath()]
+        );
         
         return view('livewire.prod.uniform.uniform-request-form', [
-            'paginatedRows' => $paginatedRows,
-            'totalRows' => $totalRows,
-            'currentPage' => $currentPage,
-            'lastPage' => $lastPage,
-            'perPage' => $this->perPage,
+            'paginatedRows' => $paginator,
         ]);
     }
 }

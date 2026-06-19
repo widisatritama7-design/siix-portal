@@ -28,8 +28,8 @@ class UserManagement extends Component
     // Bulk action properties
     public $selectedUsers = [];
     public $selectAll = false;
-    public $bulkSelectedRoles = []; // Array untuk multiple roles
-    public $bulkActionType = 'assign'; // 'assign' or 'remove'
+    public $bulkSelectedRoles = [];
+    public $bulkActionType = 'assign';
     public $showBulkModal = false;
 
     protected function rules()
@@ -84,24 +84,32 @@ class UserManagement extends Component
     public function updatedSearch()
     {
         $this->resetPage();
-        $this->resetBulkSelection();
+        // JANGAN reset selectedUsers di sini biar ceklist tetap terjaga
+        // $this->resetBulkSelection(); // Hapus baris ini
     }
 
     public function updatedSelectAll($value)
     {
         if ($value) {
-            $this->selectedUsers = $this->getUsers()->pluck('id')->map(fn($id) => (string) $id)->toArray();
+            // Select all users on CURRENT page only
+            $currentPageUserIds = $this->getUsersQuery()->paginate(10)->pluck('id')->map(fn($id) => (string) $id)->toArray();
+            $this->selectedUsers = array_unique(array_merge($this->selectedUsers, $currentPageUserIds));
         } else {
-            $this->selectedUsers = [];
+            // Unselect all users on CURRENT page only
+            $currentPageUserIds = $this->getUsersQuery()->paginate(10)->pluck('id')->map(fn($id) => (string) $id)->toArray();
+            $this->selectedUsers = array_values(array_diff($this->selectedUsers, $currentPageUserIds));
         }
     }
 
     public function updatedSelectedUsers()
     {
-        $this->selectAll = count($this->selectedUsers) === $this->getUsers()->count();
+        // Check if all users on current page are selected
+        $currentPageUserIds = $this->getUsersQuery()->paginate(10)->pluck('id')->map(fn($id) => (string) $id)->toArray();
+        $currentPageSelected = array_intersect($this->selectedUsers, $currentPageUserIds);
+        $this->selectAll = count($currentPageSelected) === count($currentPageUserIds) && count($currentPageUserIds) > 0;
     }
 
-    protected function getUsers()
+    protected function getUsersQuery()
     {
         return User::with('roles')
             ->when($this->search, function ($query) {
@@ -112,8 +120,14 @@ class UserManagement extends Component
                       ->orWhere('email', 'like', $searchTerm);
                 });
             })
-            ->orderBy('created_at', 'asc')
-            ->get();
+            ->orderBy('created_at', 'asc');
+    }
+
+    public function clearAllSelections()
+    {
+        $this->selectedUsers = [];
+        $this->selectAll = false;
+        $this->dispatch('notify', message: 'All selections cleared!', type: 'info');
     }
 
     public function resetBulkSelection()
@@ -327,7 +341,8 @@ class UserManagement extends Component
             }
 
             $this->resetForm();
-            $this->resetBulkSelection();
+            // JANGAN reset selectedUsers di sini biar ceklist tetap terjaga
+            // $this->resetBulkSelection(); // Hapus baris ini
             $this->dispatch('notify', message: $message, type: $type);
             
         } catch (\Exception $e) {
@@ -386,10 +401,15 @@ class UserManagement extends Component
         try {
             $user = User::findOrFail($this->userToDelete->id);
             $userName = $user->name;
+            
+            // Remove from selectedUsers array if present
+            if (in_array($user->id, $this->selectedUsers)) {
+                $this->selectedUsers = array_values(array_diff($this->selectedUsers, [$user->id]));
+            }
+            
             $user->delete();
 
             $this->userToDelete = null;
-            $this->resetBulkSelection();
             
             $this->dispatch('notify', message: "User '{$userName}' has been deleted successfully!", type: 'success');
             $this->dispatch('close-modal', modal: 'delete-user-modal');
@@ -412,17 +432,7 @@ class UserManagement extends Component
             abort(403, 'Unauthorized access.');
         }
     
-        $users = User::with('roles')
-            ->when($this->search, function ($query) {
-                $searchTerm = '%' . trim($this->search) . '%';
-                $query->where(function ($q) use ($searchTerm) {
-                    $q->where('name', 'like', $searchTerm)
-                      ->orWhere('nik', 'like', $searchTerm)
-                      ->orWhere('email', 'like', $searchTerm);
-                });
-            })
-            ->orderBy('created_at', 'asc')
-            ->paginate(10);
+        $users = $this->getUsersQuery()->paginate(10);
     
         $roles = Role::orderBy('created_at', 'asc')->get();
     

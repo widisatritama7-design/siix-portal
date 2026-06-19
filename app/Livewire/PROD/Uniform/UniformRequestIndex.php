@@ -18,6 +18,8 @@ class UniformRequestIndex extends Component
     public $misscStatusFilter = '';
     public $dateFrom = '';
     public $dateTo = '';
+    public $verificationFilter = '';
+    public $signatureFilter = '';
 
     // Modal properties
     public $showMisscModal = false;
@@ -56,6 +58,136 @@ class UniformRequestIndex extends Component
     public function updatedDateTo()
     {
         $this->resetPage();
+    }
+
+    public function updatedVerificationFilter()
+    {
+        $this->resetPage();
+    }
+
+    public function updatedSignatureFilter()
+    {
+        $this->resetPage();
+    }
+
+    // Helper function to get verification status
+    public function getVerificationStatus($request)
+    {
+        $items = $request->items ?? [];
+        
+        if (empty($items)) {
+            return ['status' => 'Waiting', 'color' => 'gray'];
+        }
+        
+        $totalItems = count($items);
+        $completedCount = 0;
+        $approvedCount = 0;
+        $rejectedCount = 0;
+        $manualCount = 0;
+        $pendingCount = 0;
+        $allManual = true;
+        
+        foreach ($items as $item) {
+            $verificationStatus = $item['verification_status'] ?? '';
+            $isManual = isset($item['is_manual']) && $item['is_manual'];
+            
+            // Cek apakah semua item manual
+            if (!$isManual) {
+                $allManual = false;
+            }
+            
+            // Jika manual, skip verification (dianggap completed)
+            if ($isManual) {
+                $completedCount++;
+                $manualCount++;
+                continue;
+            }
+            
+            if ($verificationStatus === 'approved') {
+                $completedCount++;
+                $approvedCount++;
+            } elseif ($verificationStatus === 'rejected') {
+                $completedCount++;
+                $rejectedCount++;
+            } else {
+                $pendingCount++;
+            }
+        }
+        
+        // Jika semua item adalah manual
+        if ($allManual && $manualCount == $totalItems) {
+            return ['status' => 'N/A', 'color' => 'gray'];
+        }
+        
+        // Jika semua sudah selesai (approved, rejected, atau manual)
+        if ($completedCount == $totalItems) {
+            // Jika semua approved (tidak ada rejected dan tidak ada manual)
+            if ($approvedCount == $totalItems) {
+                return ['status' => 'Approved', 'color' => 'green'];
+            }
+            // Jika ada manual, tapi tidak ada pending
+            if ($manualCount > 0 && $pendingCount == 0) {
+                return ['status' => 'Completed', 'color' => 'blue'];
+            }
+            // Jika ada yang rejected (selesai semua)
+            return ['status' => 'Completed', 'color' => 'blue'];
+        }
+        
+        // Jika ada yang sudah selesai tapi belum semua
+        if ($completedCount > 0) {
+            return ['status' => 'On Process', 'color' => 'yellow'];
+        }
+        
+        return ['status' => 'Waiting', 'color' => 'gray'];
+    }
+
+    // Helper function to get signature status
+    public function getSignatureStatus($request)
+    {
+        $items = $request->items ?? [];
+        
+        if (empty($items)) {
+            return ['status' => 'Waiting', 'color' => 'gray'];
+        }
+        
+        $totalItems = count($items);
+        $completedCount = 0; // Items yang sudah selesai (signed atau rejected)
+        $signedCount = 0;
+        $rejectedCount = 0;
+        $pendingCount = 0;
+        
+        foreach ($items as $item) {
+            $verificationStatus = $item['verification_status'] ?? '';
+            $isSigned = !empty($item['digital_signature']);
+            
+            // Jika item rejected, dianggap selesai (tidak perlu signature)
+            if ($verificationStatus === 'rejected') {
+                $completedCount++;
+                $rejectedCount++;
+            } elseif ($isSigned) {
+                $completedCount++;
+                $signedCount++;
+            } else {
+                $pendingCount++;
+            }
+        }
+        
+        // Jika semua sudah selesai (signed atau rejected)
+        if ($completedCount == $totalItems) {
+            // Jika semua signed (tidak ada rejected)
+            if ($signedCount == $totalItems) {
+                return ['status' => 'Signed', 'color' => 'green'];
+            }
+            // Jika ada yang rejected (selesai semua)
+            return ['status' => 'Completed', 'color' => 'blue'];
+        }
+        
+        // Jika ada yang sudah selesai tapi belum semua
+        if ($completedCount > 0) {
+            return ['status' => 'On Process', 'color' => 'yellow'];
+        }
+        
+        return ['status' => 'Waiting', 'color' => 'gray'];
     }
 
     public function delete($id)
@@ -163,6 +295,8 @@ class UniformRequestIndex extends Component
         $this->adminFeedbackFilter = '';
         $this->costingFeedbackFilter = '';
         $this->misscStatusFilter = '';
+        $this->verificationFilter = '';
+        $this->signatureFilter = '';
         $this->dateFrom = '';
         $this->dateTo = '';
         $this->search = '';
@@ -199,26 +333,48 @@ class UniformRequestIndex extends Component
     public function getCostingFeedbackStatus($request)
     {
         $items = $request->items ?? [];
-        $totalItems = count($items);
         
-        if ($totalItems == 0) {
+        if (empty($items)) {
             return ['status' => 'Open', 'color' => 'gray'];
         }
         
-        $filledCount = 0;
+        $totalItems = count($items);
+        $checkedCount = 0;
+        $onProcessCount = 0;
+        $openCount = 0;
+        
         foreach ($items as $item) {
-            if (!empty($item['costing_feedback'])) {
-                $filledCount++;
+            $verificationStatus = $item['verification_status'] ?? '';
+            
+            // 1. Jika verification_status = rejected, anggap sudah terisi
+            if ($verificationStatus === 'rejected') {
+                $checkedCount++;
+            } 
+            // 2. Jika costing_feedback terisi, anggap sudah terisi
+            elseif (!empty($item['costing_feedback'])) {
+                $checkedCount++;
+            }
+            // 3. Jika verification_status = approved dan costing_feedback kosong
+            elseif ($verificationStatus === 'approved' && empty($item['costing_feedback'])) {
+                $onProcessCount++;
+            }
+            // 4. Jika verification_status kosong atau lainnya
+            else {
+                $openCount++;
             }
         }
         
-        if ($filledCount == 0) {
-            return ['status' => 'Open', 'color' => 'gray'];
-        } elseif ($filledCount == $totalItems) {
+        // Semua sudah terisi (termasuk rejected)
+        if ($checkedCount == $totalItems) {
             return ['status' => 'Checked', 'color' => 'green'];
-        } else {
+        }
+        
+        // Ada yang sudah terisi tapi belum semua
+        if ($checkedCount > 0 || $onProcessCount > 0) {
             return ['status' => 'On Process', 'color' => 'yellow'];
         }
+        
+        return ['status' => 'Open', 'color' => 'gray'];
     }
 
     public function render()
@@ -230,8 +386,7 @@ class UniformRequestIndex extends Component
 
         $query = UniformRequest::with('creator');
 
-        // PRIORITAS: Jika user memiliki 'view uniform request one user', maka hanya tampilkan data milik sendiri
-        // (walaupun juga memiliki 'view uniform request')
+        // PRIORITAS: Jika user memiliki 'view uniform request one user'
         if (auth()->user()->can('view uniform request one user')) {
             $query->where('created_by', auth()->user()->name);
         }
@@ -253,16 +408,22 @@ class UniformRequestIndex extends Component
         $requests = $query->paginate(10);
 
         // Apply feedback status filters manually after pagination
-        if ($this->adminFeedbackFilter || $this->costingFeedbackFilter) {
+        if ($this->adminFeedbackFilter || $this->costingFeedbackFilter || 
+            $this->verificationFilter || $this->signatureFilter) {
+            
             $filteredRequests = [];
             foreach ($requests as $request) {
                 $adminStatus = $this->getAdminFeedbackStatus($request);
                 $costingStatus = $this->getCostingFeedbackStatus($request);
+                $verificationStatus = $this->getVerificationStatus($request);
+                $signatureStatus = $this->getSignatureStatus($request);
                 
                 $adminMatch = !$this->adminFeedbackFilter || $adminStatus['status'] == $this->adminFeedbackFilter;
                 $costingMatch = !$this->costingFeedbackFilter || $costingStatus['status'] == $this->costingFeedbackFilter;
+                $verificationMatch = !$this->verificationFilter || $verificationStatus['status'] == $this->verificationFilter;
+                $signatureMatch = !$this->signatureFilter || $signatureStatus['status'] == $this->signatureFilter;
                 
-                if ($adminMatch && $costingMatch) {
+                if ($adminMatch && $costingMatch && $verificationMatch && $signatureMatch) {
                     $filteredRequests[] = $request;
                 }
             }

@@ -17,6 +17,7 @@ class MasterUniform extends Model
         'item_code',
         'description',
         'size',
+        'price', // Tambahkan ini
         'created_by',
         'updated_by',
     ];
@@ -24,6 +25,7 @@ class MasterUniform extends Model
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+        'price' => 'decimal:2', // Untuk formatting 2 desimal
     ];
 
     public function getFormattedItemCodeAttribute(): string
@@ -39,6 +41,24 @@ class MasterUniform extends Model
     public function getDisplayNameAttribute(): string
     {
         return "[{$this->item_code}] {$this->description} ({$this->size})";
+    }
+
+    // Accessor untuk format price dengan Rupiah (IDR)
+    public function getFormattedPriceAttribute(): string
+    {
+        return 'Rp ' . number_format($this->price, 0, ',', '.');
+    }
+
+    // Accessor untuk price tanpa format (untuk input)
+    public function getPriceAttribute($value)
+    {
+        return (float) $value;
+    }
+
+    // Mutator untuk memastikan price disimpan sebagai decimal
+    public function setPriceAttribute($value)
+    {
+        $this->attributes['price'] = (float) str_replace(',', '', $value);
     }
 
     // Relasi ke User untuk created_by (by name)

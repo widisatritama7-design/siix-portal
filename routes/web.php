@@ -5,6 +5,7 @@ use App\Http\Controllers\DoorLockController;
 use App\Http\Controllers\InboxController;
 use App\Http\Controllers\PROD\Absence\AbsenceControlPrintController;
 use App\Http\Controllers\PROD\Absence\AbsenceReportPrintController;
+use App\Http\Controllers\PROD\Uniform\UniformRequestPrintController;
 use App\Http\Controllers\SearchController;
 use App\Livewire\DCC\DepartmentManagement;
 use App\Livewire\DCC\SubmissionManagement;
@@ -162,6 +163,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/hr/uniform/request/create', UniformRequestForm::class)->name('prod.uniform.request.create');
     Route::get('/hr/uniform/request/edit/{id}', UniformRequestForm::class)->name('prod.uniform.request.edit');
     Route::get('/hr/uniform/request/show/{id}', UniformRequestShow::class)->name('prod.uniform.request.show');
+    Route::get('/hr/uniform/request/print/{id}', [UniformRequestPrintController::class, 'print'])->name('prod.uniform.request.print');
 
     // Absence
     Route::get('/hr/attendance/report', AbsenceReportIndex::class)->name('prod.absence.report.index');
