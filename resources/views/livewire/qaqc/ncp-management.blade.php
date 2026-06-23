@@ -16,10 +16,10 @@
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-2">
         <div>
             <h1 class="text-3xl font-bold text-zinc-800 dark:text-white">
-                NCP Management
+                Non-Conforming Product Management
             </h1>
             <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-                Manage Non-Conformance Process (NCP) records
+                Manage (NCP) records
             </p>
             
             <!-- Show user validation status -->
@@ -209,7 +209,7 @@
                 </div>
                 <h3 class="text-lg font-medium text-zinc-900 dark:text-white mt-4">Invalid Employee Record</h3>
                 <p class="text-sm text-zinc-500 dark:text-zinc-400 text-center max-w-md mt-2">
-                    Your NIK is not registered or has invalid status (status must be 1, 2, or 3).<br>
+                    Your NIK is not registered or has invalid status.<br>
                     Please contact HR for assistance.
                 </p>
             </div>

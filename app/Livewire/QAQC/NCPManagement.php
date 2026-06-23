@@ -152,25 +152,39 @@ class NCPManagement extends Component
     }
 
     /**
+     * Check if user can view all NCPs
+     */
+    private function canViewAll()
+    {
+        return auth()->user()->can('view ncp all');
+    }
+
+    /**
      * Get all employees for dropdown
      * - Hanya status 1, 2, 3
-     * - Filter berdasarkan department user
+     * - Filter berdasarkan department user (kecuali memiliki akses all)
      */
     public function getEmployeesProperty()
     {
         $userDepartment = $this->getUserDepartment();
+        $canViewAll = $this->canViewAll();
         
         // Jika user tidak memiliki employee valid, return empty
-        if (!$this->hasValidEmployeeRecord() || !$userDepartment) {
+        if (!$this->hasValidEmployeeRecord()) {
             return collect([]);
         }
         
-        return Cache::remember('ncp_employees_list_dept_' . $userDepartment, 300, function () use ($userDepartment) {
-            return Employee::query()
+        return Cache::remember('ncp_employees_list_' . ($canViewAll ? 'all' : 'dept_' . $userDepartment), 300, function () use ($userDepartment, $canViewAll) {
+            $query = Employee::query()
                 ->select('id', 'nik', 'name', 'department')
-                ->whereIn('status', [1, 2, 3])
-                ->where('department', $userDepartment)
-                ->orderBy('nik')
+                ->whereIn('status', [1, 2, 3]);
+            
+            // Jika tidak memiliki akses all, filter berdasarkan department
+            if (!$canViewAll && $userDepartment) {
+                $query->where('department', $userDepartment);
+            }
+            
+            return $query->orderBy('nik')
                 ->orderBy('name')
                 ->get()
                 ->mapWithKeys(fn ($employee) => [
@@ -186,19 +200,25 @@ class NCPManagement extends Component
         }
         
         $userDepartment = $this->getUserDepartment();
+        $canViewAll = $this->canViewAll();
         
         // Jika user tidak memiliki employee valid, return empty
-        if (!$this->hasValidEmployeeRecord() || !$userDepartment) {
+        if (!$this->hasValidEmployeeRecord()) {
             return [];
         }
         
-        return Employee::where(function($query) use ($search) {
+        $query = Employee::where(function($query) use ($search) {
                 $query->where('nik', 'like', "%{$search}%")
                     ->orWhere('name', 'like', "%{$search}%");
             })
-            ->whereIn('status', [1, 2, 3])
-            ->where('department', $userDepartment)
-            ->limit(20)
+            ->whereIn('status', [1, 2, 3]);
+        
+        // Jika tidak memiliki akses all, filter berdasarkan department
+        if (!$canViewAll && $userDepartment) {
+            $query->where('department', $userDepartment);
+        }
+        
+        return $query->limit(20)
             ->get()
             ->map(fn($employee) => [
                 'id' => $employee->id,
@@ -268,9 +288,11 @@ class NCPManagement extends Component
             return;
         }
         
-        // Validate that NCP belongs to same department
+        // Validate that NCP belongs to same department (kecuali memiliki akses all)
         $userDepartment = $this->getUserDepartment();
-        if ($ncp->employee && $userDepartment && $ncp->employee->department !== $userDepartment) {
+        $canViewAll = $this->canViewAll();
+        
+        if (!$canViewAll && $ncp->employee && $userDepartment && $ncp->employee->department !== $userDepartment) {
             $this->dispatch('notify', message: 'You can only view NCPs from your department!', type: 'error');
             return;
         }
@@ -356,18 +378,23 @@ class NCPManagement extends Component
 
     public function selectEmployee($id)
     {
-        // Verify employee belongs to same department and has valid status
+        // Verify employee has valid status
         $currentUserEmployee = $this->getCurrentUserEmployee();
+        $canViewAll = $this->canViewAll();
         
         if (!$currentUserEmployee) {
             $this->dispatch('notify', message: 'You do not have a valid employee record!', type: 'error');
             return;
         }
         
-        $employee = Employee::where('id', $id)
-            ->whereIn('status', [1, 2, 3])
-            ->where('department', $currentUserEmployee->department)
-            ->first();
+        $query = Employee::where('id', $id)->whereIn('status', [1, 2, 3]);
+        
+        // Jika tidak memiliki akses all, filter berdasarkan department
+        if (!$canViewAll) {
+            $query->where('department', $currentUserEmployee->department);
+        }
+        
+        $employee = $query->first();
             
         if (!$employee) {
             $this->dispatch('notify', message: 'Invalid employee selection!', type: 'error');
@@ -403,37 +430,67 @@ class NCPManagement extends Component
         return $romanNumerals[$number] ?? '';
     }
 
+    /**
+     * Generate NCP Number dengan aturan khusus:
+     * - Tahun 2026: dimulai dari 760
+     * - Tahun 2027 dan seterusnya: reset ke 1
+     * - Format: NCP/YY/MM/XXXX
+     */
     private function generateNCPNumber()
     {
         $year = date('y');
+        $fullYear = date('Y');
         $month = (int)date('m');
         $romanMonth = $this->toRomanNumeral($month);
         
-        $lastNCP = NCP::whereYear('created_at', date('Y'))
-            ->whereMonth('created_at', $month)
+        // Tentukan starting sequence berdasarkan tahun
+        $startSequence = 1; // default untuk 2027+
+        
+        if ($fullYear == 2026) {
+            // Tahun 2026 dimulai dari 760
+            $startSequence = 760;
+        }
+        // Tahun lain (2027+) dimulai dari 1
+        
+        // Cari NCP terakhir di tahun yang sama
+        $lastNCP = NCP::whereYear('created_at', $fullYear)
             ->whereNull('deleted_at')
             ->orderBy('id', 'desc')
             ->first();
         
         if ($lastNCP) {
+            // Extract sequence number from last NCP number
+            // Format: NCP/YY/MM/XXXX
             $parts = explode('/', $lastNCP->ncp_number);
-            $sequence = (int)end($parts) + 1;
+            if (count($parts) >= 4) {
+                $lastSequence = (int)end($parts);
+                // Jika sequence terakhir kurang dari startSequence, gunakan startSequence
+                $sequence = max($lastSequence + 1, $startSequence);
+            } else {
+                $sequence = $startSequence;
+            }
         } else {
-            $sequence = 1;
+            $sequence = $startSequence;
         }
         
-        $exists = NCP::where('ncp_number', "NCP/{$year}/{$romanMonth}/{$sequence}")
-            ->withTrashed()
-            ->exists();
+        // Check if sequence already exists (prevent duplicates)
+        $exists = true;
+        $attempts = 0;
+        $maxAttempts = 10000; // Prevent infinite loop
         
-        while ($exists) {
-            $sequence++;
-            $exists = NCP::where('ncp_number', "NCP/{$year}/{$romanMonth}/{$sequence}")
+        while ($exists && $attempts < $maxAttempts) {
+            $ncpNumber = "NCP/{$year}/{$romanMonth}/" . str_pad($sequence, 3, '0', STR_PAD_LEFT);
+            $exists = NCP::where('ncp_number', $ncpNumber)
                 ->withTrashed()
                 ->exists();
+            
+            if ($exists) {
+                $sequence++;
+            }
+            $attempts++;
         }
         
-        return "NCP/{$year}/{$romanMonth}/{$sequence}";
+        return "NCP/{$year}/{$romanMonth}/" . str_pad($sequence, 3, '0', STR_PAD_LEFT);
     }
 
     public function setTab($tab)
@@ -444,7 +501,7 @@ class NCPManagement extends Component
 
     public function getTabCountsProperty()
     {
-        $canViewAll = auth()->user()->can('view ncp all');
+        $canViewAll = $this->canViewAll();
         $userDepartment = $this->getUserDepartment();
         $hasValidRecord = $this->hasValidEmployeeRecord();
         
@@ -503,19 +560,22 @@ class NCPManagement extends Component
             }
         }
 
-        // Validate that selected employee exists and belongs to same department
+        // Validate that selected employee exists and is active
+        $canViewAll = $this->canViewAll();
+        
         if ($this->employee_id) {
-            $selectedEmployee = Employee::where('id', $this->employee_id)
-                ->whereIn('status', [1, 2, 3])
-                ->first();
-                
-            if (!$selectedEmployee) {
-                $this->dispatch('notify', message: 'Selected employee is not active!', type: 'error');
-                return;
+            $query = Employee::where('id', $this->employee_id)
+                ->whereIn('status', [1, 2, 3]);
+            
+            // Jika tidak memiliki akses all, filter berdasarkan department
+            if (!$canViewAll) {
+                $query->where('department', $currentUserEmployee->department);
             }
             
-            if ($selectedEmployee->department !== $currentUserEmployee->department) {
-                $this->dispatch('notify', message: 'You can only select employees from your department!', type: 'error');
+            $selectedEmployee = $query->first();
+                
+            if (!$selectedEmployee) {
+                $this->dispatch('notify', message: 'Selected employee is not active or not in your department!', type: 'error');
                 return;
             }
         }
@@ -622,8 +682,10 @@ class NCPManagement extends Component
             return;
         }
 
-        // Validate that NCP belongs to same department
-        if ($ncp->employee && $ncp->employee->department !== $currentUserEmployee->department) {
+        // Validate that NCP belongs to same department (kecuali memiliki akses all)
+        $canViewAll = $this->canViewAll();
+        
+        if (!$canViewAll && $ncp->employee && $ncp->employee->department !== $currentUserEmployee->department) {
             $this->dispatch('notify', message: 'You can only edit NCPs from your department!', type: 'error');
             return;
         }
@@ -745,7 +807,7 @@ class NCPManagement extends Component
             abort(403, 'Unauthorized access.');
         }
 
-        $canViewAll = auth()->user()->can('view ncp all');
+        $canViewAll = $this->canViewAll();
         $userDepartment = $this->getUserDepartment();
         $hasValidRecord = $this->hasValidEmployeeRecord();
         
@@ -769,6 +831,7 @@ class NCPManagement extends Component
                 $empQuery->where('department', $userDepartment);
             });
         }
+        // Jika memiliki akses all, tidak ada filter department
         
         // Filter berdasarkan tab
         switch ($this->activeTab) {
