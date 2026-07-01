@@ -994,6 +994,17 @@
         .w-100 {
             width: 100%;
         }
+        /* Tambahkan di bagian CSS setelah .status-Finish */
+        .status-NG {
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd0 100%);
+            color: #880e4f;
+            border: 1px solid #f8bbd0;
+        }
+
+        /* Tambahkan dot untuk legend */
+        .dot-ng {
+            background: linear-gradient(135deg, #ec407a 0%, #d81b60 100%);
+        }
     </style>
 </head>
 <body>
@@ -1022,6 +1033,11 @@
                 <div class="legend-item">
                     <span class="legend-dot dot-finish"></span>
                     <span>Finish</span>
+                </div>
+                <!-- TAMBAHKAN INI -->
+                <div class="legend-item">
+                    <span class="legend-dot dot-ng"></span>
+                    <span>NG (Process Request)</span>
                 </div>
             </div>
         </div>
@@ -1287,12 +1303,14 @@
         let confirmResolve = null;
 
         // Status Icon Helper
+        // Status Icon Helper - Tambahkan case untuk NG
         function getStatusIconClass(status) {
             switch(status) {
                 case 'Available': return 'fa-unlock';
                 case 'Filled': return 'fa-lock';
                 case 'On Process Measure': return 'fa-rocket';
                 case 'Finish': return 'fa-circle-check';
+                case 'NG': return 'fa-exclamation-triangle'; // TAMBAHKAN INI
                 default: return 'fa-question-circle';
             }
         }
@@ -1663,6 +1681,7 @@
                 'Filled' => 'fa-lock',
                 'On Process Measure' => 'fa-rocket',
                 'Finish' => 'fa-circle-check',
+                'NG' => 'fa-exclamation-triangle', // TAMBAHKAN INI
                 default => 'fa-question-circle',
             };
         }

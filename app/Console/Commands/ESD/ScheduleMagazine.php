@@ -27,7 +27,7 @@ class ScheduleMagazine extends Command
                 'magazines_id'     => $record->magazines_id,
                 'remarks'          => 'Schedule On',
                 'next_date'        => Carbon::parse($record->next_date)->addYear(), // bulan depan
-                'created_by'       => 504,
+                'created_by'       => 574,
                 'created_at'       => now(),
                 'updated_at'       => now(),
             ]);

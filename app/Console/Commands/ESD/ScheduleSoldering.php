@@ -35,7 +35,7 @@ class ScheduleSoldering extends Command
                 'running_customer'   => $record->running_customer,
                 'shift'              => $record->shift,
                 'running_status'     => $record->running_status,
-                'created_by'         => 504,
+                'created_by'         => 574,
                 'created_at'         => now(),
                 'updated_at'         => now(),
             ]);

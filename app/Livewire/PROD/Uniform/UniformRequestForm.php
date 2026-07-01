@@ -6,6 +6,7 @@ use Livewire\Component;
 use Livewire\WithPagination;
 use App\Models\PROD\Uniform\UniformRequest;
 use App\Models\PROD\Uniform\MasterUniform;
+use App\Models\PROD\Uniform\UniformStockTransaction;
 use App\Models\HR\Employee;
 use App\Mail\PROD\UniformRequestCreatedMail;
 use Illuminate\Support\Facades\Mail;
@@ -22,6 +23,7 @@ class UniformRequestForm extends Component
     // Current row for adding new item
     public $current_employee_id = null;
     public $current_master_uniform_id = null;
+    public $current_uniforms = []; // Array untuk multiple uniforms
     public $current_qty = 1;
     public $current_reason = '';
     public $current_group = '';
@@ -41,8 +43,13 @@ class UniformRequestForm extends Component
     // Loading state
     public $isSaving = false;
     
-    // User department for filtering (untuk user dengan akses one user)
+    // User department for filtering
     public $userDepartment = null;
+    
+    // Untuk paginasi table uniform
+    public $uniformPage = 1;
+    public $uniformPerPage = 5;
+    protected $listeners = ['refreshUniformPage' => '$refresh'];
 
     protected $rules = [
         'rows' => 'required|array|min:1',
@@ -62,19 +69,11 @@ class UniformRequestForm extends Component
         'rows.*.group.required' => 'Group is required.',
     ];
 
-    /**
-     * Check if user can input manual
-     */
     public function getCanManualInputProperty()
     {
         return auth()->user()->can('feedback uniform request admin');
     }
 
-    /**
-     * Get all employees for dropdown
-     * - Hanya status 1, 2, 3
-     * - Jika one user, filter berdasarkan department user
-     */
     public function getEmployeesProperty()
     {
         $query = Employee::query()
@@ -82,11 +81,9 @@ class UniformRequestForm extends Component
             ->whereIn('status', [1, 2, 3])
             ->orderBy('name');
         
-        // CEK: Jika user hanya memiliki akses 'view uniform request one user'
         $isOneUser = auth()->user()->can('view uniform request one user');
         $isFullAccess = auth()->user()->can('view uniform request');
         
-        // Jika one user (dan tidak punya full access), filter berdasarkan department
         if ($isOneUser && !$isFullAccess) {
             if ($this->userDepartment) {
                 $query->where('department', $this->userDepartment);
@@ -99,24 +96,82 @@ class UniformRequestForm extends Component
             ]);
     }
 
-    /**
-     * Get all uniforms for dropdown
-     */
-    public function getUniformsProperty()
+    // Ambil uniform yang memiliki stock > 0 dan belum ada di current_uniforms
+    public function getAvailableUniformsProperty()
     {
-        return MasterUniform::query()
-            ->orderBy('item_code')
-            ->get()
-            ->mapWithKeys(fn ($uniform) => [
-                $uniform->id => $uniform->item_code . ' - ' . $uniform->description . ' (' . $uniform->size . ')'
-            ]);
+    // Ambil ID uniform yang sudah ada di cart
+    $existingUniformIds = collect($this->current_uniforms)->pluck('master_uniform_id')->toArray();
+    
+    // Hitung qty yang sudah di-cart per uniform
+    $cartQtyMap = [];
+    foreach ($this->current_uniforms as $item) {
+        $cartQtyMap[$item['master_uniform_id']] = ($cartQtyMap[$item['master_uniform_id']] ?? 0) + $item['qty'];
+    }
+    
+    // Hitung qty yang sudah di-request items (rows)
+    $requestQtyMap = [];
+    foreach ($this->rows as $row) {
+        $requestQtyMap[$row['master_uniform_id']] = ($requestQtyMap[$row['master_uniform_id']] ?? 0) + $row['qty'];
+    }
+    
+    $query = MasterUniform::query()
+        ->where('qty', '>', 0);
+    
+    // Filter berdasarkan search
+    if ($this->uniformSearch) {
+        $query->where(function($q) {
+            $q->where('item_code', 'like', '%' . $this->uniformSearch . '%')
+                ->orWhere('description', 'like', '%' . $this->uniformSearch . '%')
+                ->orWhere('size', 'like', '%' . $this->uniformSearch . '%');
+        });
+    }
+    
+    // Exclude uniform yang sudah ada di cart
+    if (!empty($existingUniformIds)) {
+        $query->whereNotIn('id', $existingUniformIds);
+    }
+    
+    $uniforms = $query->orderBy('item_code')->get();
+    
+    // Tambahkan qty yang sudah dipesan (cart + rows) ke setiap uniform
+    $availableUniforms = [];
+    foreach ($uniforms as $uniform) {
+        $reservedQty = ($cartQtyMap[$uniform->id] ?? 0) + ($requestQtyMap[$uniform->id] ?? 0);
+        $availableQty = $uniform->qty - $reservedQty;
+        
+        // Hanya yang available_qty > 0
+        if ($availableQty > 0) {
+            $uniform->available_qty = $availableQty;
+            $uniform->reserved_qty = $reservedQty;
+            $availableUniforms[] = $uniform;
+        }
+    }
+    
+    // Paginate manual dengan LengthAwarePaginator
+    $currentPage = \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPage('uniformPage');
+    $perPage = $this->uniformPerPage;
+    $total = count($availableUniforms);
+    $items = array_slice($availableUniforms, ($currentPage - 1) * $perPage, $perPage);
+    
+    return new \Illuminate\Pagination\LengthAwarePaginator(
+        $items,
+        $total,
+        $perPage,
+        $currentPage,
+        [
+            'path' => \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPath(),
+            'pageName' => 'uniformPage',
+            'query' => request()->query(),
+        ]
+    );
     }
 
     public function mount($id = null)
     {
         $this->current_request_date = date('Y-m-d');
+        $this->current_uniforms = [];
+        $this->current_master_uniform_id = null;
         
-        // STEP 1: Ambil NIK dari user login (users.nik)
         $user = auth()->user();
         if ($user) {
             $userNik = trim($user->nik ?? '');
@@ -191,6 +246,60 @@ class UniformRequestForm extends Component
         }
     }
 
+    // Add uniform to current employee's uniform list
+    public function addUniformToCurrent()
+    {
+        $this->validate([
+            'current_master_uniform_id' => 'required|exists:tb_prod_master_uniform,id',
+            'current_qty' => 'required|integer|min:1',
+            'current_reason' => 'required|string',
+            'current_remarks' => 'nullable|string',
+        ]);
+
+        $uniform = MasterUniform::find($this->current_master_uniform_id);
+        
+        // Cek stock tersedia
+        if ($uniform->qty < $this->current_qty) {
+            session()->flash('error', 'Insufficient stock! Available: ' . $uniform->qty . ', Requested: ' . $this->current_qty);
+            return;
+        }
+        
+        // Check if uniform already added
+        $exists = collect($this->current_uniforms)->contains('master_uniform_id', $this->current_master_uniform_id);
+        
+        if ($exists) {
+            session()->flash('error', 'This uniform has already been added for this employee!');
+            return;
+        }
+
+        $this->current_uniforms[] = [
+            'master_uniform_id' => $this->current_master_uniform_id,
+            'item_code' => $uniform->item_code ?? '-',
+            'description' => $uniform->description ?? '-',
+            'size' => $uniform->size ?? '-',
+            'qty' => $this->current_qty,
+            'reason' => $this->current_reason,
+            'remarks' => $this->current_remarks,
+            'stock_available' => $uniform->qty,
+        ];
+
+        // Reset uniform fields
+        $this->current_master_uniform_id = null;
+        $this->current_qty = 1;
+        $this->uniformSearch = '';
+
+        session()->flash('success', 'Uniform added to list!');
+    }
+
+    // Remove uniform from current employee's list
+    public function removeUniformFromCurrent($index)
+    {
+        unset($this->current_uniforms[$index]);
+        $this->current_uniforms = array_values($this->current_uniforms);
+        // Reset page untuk refresh tabel uniform
+        $this->uniformPage = 1;
+    }
+
     public function addRow()
     {
         $isAdmin = auth()->user()->can('feedback uniform request admin');
@@ -201,56 +310,31 @@ class UniformRequestForm extends Component
                 'manualNik' => 'required|string',
                 'manualName' => 'required|string',
                 'manualDepartment' => 'required|string',
-                'current_master_uniform_id' => 'required|exists:tb_prod_master_uniform,id',
-                'current_qty' => 'required|integer|min:1',
-                'current_reason' => 'required|string',
+                'current_uniforms' => 'required|array|min:1',
                 'current_group' => 'required|string|max:100',
                 'current_request_date' => 'required|date',
             ]);
         } else {
             $this->validate([
                 'current_employee_id' => 'required|exists:tb_hr_employee,id',
-                'current_master_uniform_id' => 'required|exists:tb_prod_master_uniform,id',
-                'current_qty' => 'required|integer|min:1',
-                'current_reason' => 'required|string',
+                'current_uniforms' => 'required|array|min:1',
                 'current_group' => 'required|string|max:100',
                 'current_request_date' => 'required|date',
             ]);
         }
 
-        $uniform = MasterUniform::find($this->current_master_uniform_id);
+        // Get employee data
+        $employee = null;
+        $isManual = false;
         
         if ($this->isManualInput && $isAdmin) {
-            // Manual input
-            $this->rows[] = [
-                'employee_id' => null,
-                'employee_nik' => $this->manualNik,
-                'employee_name' => $this->manualName,
-                'employee_department' => $this->manualDepartment,  // TAMBAHKAN
-                'master_uniform_id' => $this->current_master_uniform_id,
-                'item_code' => $uniform->item_code ?? '-',
-                'description' => $uniform->description ?? '-',
-                'size' => $uniform->size ?? '-',
-                'qty' => $this->current_qty,
-                'reason' => $this->current_reason,
-                'group' => $this->current_group,
-                'request_date' => $this->current_request_date,
-                'remarks' => $this->current_remarks,
-                'admin_feedback' => null,
-                'admin_feedback_datetime' => null,
-                'costing_feedback' => null,
-                'costing_feedback_datetime' => null,
-                'manual_nik' => $this->manualNik,
-                'manual_name' => $this->manualName,
-                'manual_department' => $this->manualDepartment,  // TAMBAHKAN
-                'is_manual' => true,
+            $isManual = true;
+            $employeeData = [
+                'nik' => $this->manualNik,
+                'name' => $this->manualName,
+                'department' => $this->manualDepartment,
             ];
-            
-            $this->manualNik = '';
-            $this->manualName = '';
-            $this->manualDepartment = '';
         } else {
-            // Regular input
             $employee = Employee::find($this->current_employee_id);
             
             if (!$employee) {
@@ -272,36 +356,56 @@ class UniformRequestForm extends Component
                     return;
                 }
             }
+        }
 
-            $this->rows[] = [
-                'employee_id' => $this->current_employee_id,
-                'employee_nik' => $employee->nik ?? '-',
-                'employee_name' => $employee->name ?? '-',
-                'employee_department' => $employee->department ?? '-',
-                'master_uniform_id' => $this->current_master_uniform_id,
-                'item_code' => $uniform->item_code ?? '-',
-                'description' => $uniform->description ?? '-',
-                'size' => $uniform->size ?? '-',
-                'qty' => $this->current_qty,
-                'reason' => $this->current_reason,
+        // Create rows for each uniform
+        foreach ($this->current_uniforms as $uniformItem) {
+            $rowData = [
+                'master_uniform_id' => $uniformItem['master_uniform_id'],
+                'item_code' => $uniformItem['item_code'],
+                'description' => $uniformItem['description'],
+                'size' => $uniformItem['size'],
+                'qty' => $uniformItem['qty'],
+                'reason' => $uniformItem['reason'],
                 'group' => $this->current_group,
                 'request_date' => $this->current_request_date,
-                'remarks' => $this->current_remarks,
+                'remarks' => $uniformItem['remarks'] ?? null,
                 'admin_feedback' => null,
                 'admin_feedback_datetime' => null,
                 'costing_feedback' => null,
                 'costing_feedback_datetime' => null,
-                'manual_nik' => null,
-                'manual_name' => null,
-                'manual_department' => null,
-                'is_manual' => false,
             ];
+
+            if ($isManual) {
+                $rowData['employee_id'] = null;
+                $rowData['employee_nik'] = $employeeData['nik'];
+                $rowData['employee_name'] = $employeeData['name'];
+                $rowData['employee_department'] = $employeeData['department'];
+                $rowData['manual_nik'] = $employeeData['nik'];
+                $rowData['manual_name'] = $employeeData['name'];
+                $rowData['manual_department'] = $employeeData['department'];
+                $rowData['is_manual'] = true;
+            } else {
+                $rowData['employee_id'] = $employee->id;
+                $rowData['employee_nik'] = $employee->nik ?? '-';
+                $rowData['employee_name'] = $employee->name ?? '-';
+                $rowData['employee_department'] = $employee->department ?? '-';
+                $rowData['manual_nik'] = null;
+                $rowData['manual_name'] = null;
+                $rowData['manual_department'] = null;
+                $rowData['is_manual'] = false;
+            }
+
+            $this->rows[] = $rowData;
         }
 
+        $countUniforms = count($this->current_uniforms);
+        
         // RESET FORM
         $this->current_employee_id = null;
         $this->current_master_uniform_id = null;
         $this->current_qty = 1;
+        $this->current_uniforms = [];
         $this->current_reason = '';
         $this->current_group = '';
         $this->current_request_date = date('Y-m-d');
@@ -309,10 +413,13 @@ class UniformRequestForm extends Component
         $this->employeeSearch = '';
         $this->uniformSearch = '';
         $this->isManualInput = false;
+        $this->manualNik = '';
+        $this->manualName = '';
+        $this->manualDepartment = '';
 
         $this->resetPage();
 
-        session()->flash('success', 'Row added successfully!');
+        session()->flash('success', $countUniforms . ' uniform(s) added successfully for employee!');
     }
 
     public function removeRow($index)
@@ -339,8 +446,38 @@ class UniformRequestForm extends Component
             $isOneUser = auth()->user()->can('view uniform request one user');
             $isFullAccess = auth()->user()->can('view uniform request');
             
+            // CEK STOCK SEBELUM CREATE
+            $stockErrors = [];
+            $stockData = [];
             foreach ($this->rows as $row) {
-                // Jika manual input, skip validasi employee
+                $uniform = MasterUniform::find($row['master_uniform_id']);
+                if (!$uniform) {
+                    $stockErrors[] = "Uniform not found! (ID: " . $row['master_uniform_id'] . ")";
+                    continue;
+                }
+                
+                // Cek stock tersedia
+                if ($uniform->qty < $row['qty']) {
+                    $stockErrors[] = "Insufficient stock for {$uniform->item_code} - {$uniform->description} ({$uniform->size}). Available: {$uniform->qty}, Requested: {$row['qty']}";
+                }
+                
+                $stockData[] = [
+                    'uniform' => $uniform,
+                    'qty_requested' => $row['qty'],
+                    'employee_nik' => $row['employee_nik'] ?? $row['manual_nik'] ?? '-',
+                    'employee_name' => $row['employee_name'] ?? $row['manual_name'] ?? '-',
+                    'employee_department' => $row['employee_department'] ?? $row['manual_department'] ?? '-',
+                ];
+            }
+            
+            if (!empty($stockErrors)) {
+                session()->flash('error', implode('<br>', $stockErrors));
+                $this->isSaving = false;
+                return;
+            }
+            
+            // Validasi employee
+            foreach ($this->rows as $row) {
                 if (isset($row['is_manual']) && $row['is_manual']) {
                     continue;
                 }
@@ -377,14 +514,13 @@ class UniformRequestForm extends Component
                     'reason' => $row['reason'],
                     'group' => $row['group'],
                     'request_date' => $row['request_date'],
-                    'remarks' => $row['remarks'],
+                    'remarks' => $row['remarks'] ?? null,
                     'admin_feedback' => $row['admin_feedback'] ?? null,
                     'admin_feedback_datetime' => $row['admin_feedback_datetime'] ?? null,
                     'costing_feedback' => $row['costing_feedback'] ?? null,
                     'costing_feedback_datetime' => $row['costing_feedback_datetime'] ?? null,
                 ];
                 
-                // Jika manual input, tambahkan field manual
                 if (isset($row['is_manual']) && $row['is_manual']) {
                     $itemData['manual_nik'] = $row['manual_nik'];
                     $itemData['manual_name'] = $row['manual_name'];
@@ -396,19 +532,97 @@ class UniformRequestForm extends Component
             }
 
             $isUpdate = false;
+            $request = null;
             
             if ($this->requestId) {
+                // UPDATE: Kurangi stock sesuai perubahan qty
                 $request = UniformRequest::find($this->requestId);
+                $oldItems = $request->items ?? [];
+                
+                // Hitung selisih qty per uniform
+                $qtyDiff = [];
+                foreach ($oldItems as $oldItem) {
+                    $key = $oldItem['master_uniform_id'];
+                    $qtyDiff[$key] = ($qtyDiff[$key] ?? 0) - $oldItem['qty'];
+                }
+                foreach ($itemsForDb as $newItem) {
+                    $key = $newItem['master_uniform_id'];
+                    $qtyDiff[$key] = ($qtyDiff[$key] ?? 0) + $newItem['qty'];
+                }
+                
+                // Update stock berdasarkan selisih
+                foreach ($qtyDiff as $uniformId => $diff) {
+                    if ($diff == 0) continue;
+                    
+                    $uniform = MasterUniform::find($uniformId);
+                    if ($uniform) {
+                        $oldQty = $uniform->qty;
+                        $newQty = $oldQty - $diff;
+                        
+                        if ($newQty < 0) {
+                            session()->flash('error', "Insufficient stock for {$uniform->item_code}! Available: {$oldQty}, Need: " . ($diff));
+                            $this->isSaving = false;
+                            return;
+                        }
+                        
+                        $uniform->qty = $newQty;
+                        $uniform->save();
+                        
+                        // Catat transaksi
+                        UniformStockTransaction::create([
+                            'master_uniform_id' => $uniform->id,
+                            'transaction_type' => $diff > 0 ? 'OUT' : 'IN',
+                            'qty_change' => -$diff,
+                            'qty_before' => $oldQty,
+                            'qty_after' => $newQty,
+                            'reference_id' => $request->request_number,
+                            'reference_type' => 'uniform_request_edit',
+                            'description' => 'Edit request: ' . $request->request_number . ' - ' . ($diff > 0 ? 'Added ' . $diff . ' items' : 'Removed ' . abs($diff) . ' items'),
+                            'performed_by' => auth()->user()->name,
+                            'performed_at' => now(),
+                        ]);
+                    }
+                }
+                
                 $request->update(['items' => $itemsForDb]);
-                session()->flash('success', 'Request updated successfully!');
+                session()->flash('success', 'Request updated successfully! Stock adjusted.');
                 $isUpdate = true;
             } else {
+                // CREATE: Kurangi stock
                 $request = UniformRequest::create(['items' => $itemsForDb]);
-                session()->flash('success', 'Request created successfully!');
+                
+                // Kurangi stock untuk setiap item
+                foreach ($stockData as $data) {
+                    $uniform = $data['uniform'];
+                    $oldQty = $uniform->qty;
+                    $newQty = $oldQty - $data['qty_requested'];
+                    
+                    $uniform->qty = $newQty;
+                    $uniform->save();
+                    
+                    // Buat deskripsi dengan NIK, Name, Department
+                    $employeeInfo = $data['employee_nik'] . ' - ' . $data['employee_name'] . ' (' . $data['employee_department'] . ')';
+                    
+                    // Catat transaksi OUT
+                    UniformStockTransaction::create([
+                        'master_uniform_id' => $uniform->id,
+                        'transaction_type' => 'OUT',
+                        'qty_change' => -$data['qty_requested'],
+                        'qty_before' => $oldQty,
+                        'qty_after' => $newQty,
+                        'reference_id' => $request->request_number,
+                        'reference_type' => 'uniform_request',
+                        'description' => 'Request: ' . $request->request_number . ' - ' . $employeeInfo,
+                        'performed_by' => auth()->user()->name,
+                        'performed_at' => now(),
+                    ]);
+                }
+                
+                session()->flash('success', 'Request created successfully! Stock has been updated.');
             }
 
             try {
-                Mail::to('sek.esd@siix-global.com')
+                Mail::to('SEK.Admin01@siix-global.com')
                     ->send(new UniformRequestCreatedMail($request, $isUpdate));
             } catch (\Exception $e) {
                 \Log::error('Failed to send uniform request email: ' . $e->getMessage());
@@ -425,15 +639,12 @@ class UniformRequestForm extends Component
 
     public function getPage()
     {
-        // Ambil dari request atau default 1
         return request()->get('page', 1);
     }
 
     public function resetPage()
     {
-        // Redirect ke halaman 1
         $this->dispatch('resetPage');
-        // Atau gunakan JavaScript
     }
 
     public function render()
@@ -453,8 +664,12 @@ class UniformRequestForm extends Component
             ['path' => LengthAwarePaginator::resolveCurrentPath()]
         );
         
+        // Ambil uniform dengan stock > 0
+        $availableUniforms = $this->available_uniforms;
+        
         return view('livewire.prod.uniform.uniform-request-form', [
             'paginatedRows' => $paginator,
+            'availableUniforms' => $availableUniforms,
         ]);
     }
 }

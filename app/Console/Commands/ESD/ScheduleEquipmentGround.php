@@ -42,7 +42,7 @@ class ScheduleEquipmentGround extends Command
                 'judgement_volts'         => null,
                 'remarks'                 => 'Schedule On',
                 'next_date'               => Carbon::today()->addMonth(),
-                'created_by'              => 504,
+                'created_by'              => 574,
                 'created_at'              => now(),
                 'updated_at'              => now(),
             ]);

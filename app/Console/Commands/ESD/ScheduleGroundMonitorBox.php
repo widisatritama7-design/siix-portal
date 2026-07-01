@@ -27,7 +27,7 @@ class ScheduleGroundMonitorBox extends Command
                 'ground_monitor_box_id' => $record->ground_monitor_box_id,
                 'remarks'               => 'Schedule On',
                 'next_date'             => Carbon::parse($record->next_date)->addYear(), // tahun depan
-                'created_by'            => 504,
+                'created_by'            => 574,
                 'created_at'            => now(),
                 'updated_at'            => now(),
             ]);

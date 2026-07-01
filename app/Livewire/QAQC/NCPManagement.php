@@ -68,6 +68,9 @@ class NCPManagement extends Component
     public $userDepartment = null;
     public $hasValidEmployee = false;
 
+    public $printNcpId = null;
+    public $printData = null;
+
     protected function rules()
     {
         $rules = [
@@ -116,6 +119,91 @@ class NCPManagement extends Component
         'defect_details.*.quantity.min' => 'Quantity must be at least 1.',
         'status.required' => 'Status is required.',
     ];
+
+    public function printNCP($id)
+    {
+        if (!auth()->user()->can('view ncp')) {
+            $this->dispatch('notify', message: 'You do not have permission!', type: 'error');
+            return;
+        }
+
+        $ncp = NCP::with(['employee', 'creator', 'approver'])->find($id);
+        
+        if (!$ncp) {
+            $this->dispatch('notify', message: 'NCP not found!', type: 'error');
+            return;
+        }
+
+        // Check if user has valid employee record
+        if (!$this->hasValidEmployeeRecord()) {
+            $this->dispatch('notify', message: 'You do not have a valid employee record!', type: 'error');
+            return;
+        }
+
+        // Validate that NCP belongs to same department
+        $canViewAll = $this->canViewAll();
+        $userDepartment = $this->getUserDepartment();
+        
+        if (!$canViewAll && $ncp->employee && $userDepartment && $ncp->employee->department !== $userDepartment) {
+            $this->dispatch('notify', message: 'You can only print NCPs from your department!', type: 'error');
+            return;
+        }
+
+        // Check if NCP is complete
+        if (!$this->canPrintNCP($id)) {
+            $this->dispatch('notify', message: 'Cannot print - NCP data incomplete! Need at least 1 defect or disposition.', type: 'error');
+            return;
+        }
+
+        // Generate new serial number
+        $ncp->serial_number_barcode = NCP::generateSerialNumberBarcode();
+        
+        // Increment print count - fix untuk null/0
+        if ($ncp->print_count === null || $ncp->print_count == 0) {
+            $ncp->print_count = 1;
+        } else {
+            $ncp->print_count = $ncp->print_count + 1;
+        }
+        
+        $ncp->last_printed_at = now();
+        $ncp->save();
+
+        // Set data untuk print
+        $this->printNcpId = $ncp->id;
+        $this->printData = $ncp;
+
+        // Dispatch event untuk print
+        $this->dispatch('print-ncp-pdf', $ncp->id);
+        
+        $this->dispatch('notify', message: 'NCP printed successfully! (Print #' . $ncp->print_count . ')', type: 'success');
+    }
+
+    public function updatedSection($value)
+    {
+        $this->section = strtoupper($value);
+    }
+
+    public function canPrintNCP($ncpId)
+    {
+        $ncp = NCP::find($ncpId);
+        if (!$ncp) {
+            return false;
+        }
+        
+        // Minimal harus ada employee_id dan ncp_number
+        if (empty($ncp->employee_id) || empty($ncp->ncp_number)) {
+            return false;
+        }
+        
+        // Cek apakah ada defect details
+        $hasDefect = !empty($ncp->defect_details) && count($ncp->defect_details) > 0;
+        
+        // Cek apakah ada disposition
+        $hasDisposition = !empty($ncp->disposition);
+        
+        // Harus ada minimal 1 defect ATAU 1 disposition
+        return $hasDefect || $hasDisposition;
+    }
 
     /**
      * Get current user's employee data

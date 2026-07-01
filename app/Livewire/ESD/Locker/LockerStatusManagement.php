@@ -45,7 +45,8 @@ class LockerStatusManagement extends Component
         'Filled' => 'Filled',
         'On Process Measure' => 'On Process Measure',
         'Finish' => 'Finish',
-        'Available' => 'Available'
+        'Available' => 'Available',
+        'NG' => 'NG (Process Request)' // TAMBAHKAN INI
     ];
 
     protected function rules()
@@ -55,7 +56,7 @@ class LockerStatusManagement extends Component
             'nik' => 'nullable|string|max:20',
             'name' => 'nullable|string|max:100',
             'dept' => 'nullable|string|max:100',
-            'status' => 'required|string|in:Filled,On Process Measure,Finish,Available',
+            'status' => 'required|string|in:Filled,On Process Measure,Finish,Available,NG', // TAMBAHKAN 'NG'
         ];
     }
 
@@ -83,6 +84,7 @@ class LockerStatusManagement extends Component
             'On Process Measure' => 'warning',
             'Finish' => 'info',
             'Available' => 'danger',
+            'NG' => 'danger', // TAMBAHKAN INI - atau bisa pakai 'warning' atau 'purple'
             default => 'gray',
         };
     }

@@ -2,6 +2,7 @@
 
 namespace App\Models\PROD\Uniform;
 
+use App\Models\PROD\Uniform\UniformStockTransaction;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -17,7 +18,8 @@ class MasterUniform extends Model
         'item_code',
         'description',
         'size',
-        'price', // Tambahkan ini
+        'price',
+        'qty', // Tambahkan kolom qty
         'created_by',
         'updated_by',
     ];
@@ -25,7 +27,8 @@ class MasterUniform extends Model
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
-        'price' => 'decimal:2', // Untuk formatting 2 desimal
+        'price' => 'decimal:2',
+        'qty' => 'integer',
     ];
 
     public function getFormattedItemCodeAttribute(): string
@@ -43,40 +46,47 @@ class MasterUniform extends Model
         return "[{$this->item_code}] {$this->description} ({$this->size})";
     }
 
-    // Accessor untuk format price dengan Rupiah (IDR)
     public function getFormattedPriceAttribute(): string
     {
         return 'Rp ' . number_format($this->price, 0, ',', '.');
     }
 
-    // Accessor untuk price tanpa format (untuk input)
     public function getPriceAttribute($value)
     {
         return (float) $value;
     }
 
-    // Mutator untuk memastikan price disimpan sebagai decimal
     public function setPriceAttribute($value)
     {
         $this->attributes['price'] = (float) str_replace(',', '', $value);
     }
 
-    // Relasi ke User untuk created_by (by name)
+    public function getQtyAttribute($value)
+    {
+        return (int) $value;
+    }
+
+    // Relasi ke User
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by', 'name');
     }
 
-    // Relasi ke User untuk updated_by (by name)
     public function updater()
     {
         return $this->belongsTo(User::class, 'updated_by', 'name');
     }
 
-    // Relasi ke UniformRequest (opsional, untuk melihat request yang memuat uniform ini)
+    // Relasi ke UniformRequest
     public function uniformRequests()
     {
         return $this->hasMany(UniformRequest::class, 'master_uniform_id');
+    }
+
+    // Relasi ke Stock Transaction
+    public function stockTransactions()
+    {
+        return $this->hasMany(UniformStockTransaction::class, 'master_uniform_id');
     }
 
     protected static function boot()
@@ -87,6 +97,9 @@ class MasterUniform extends Model
             if (Auth::check()) {
                 $model->created_by = Auth::user()->name;
                 $model->updated_by = Auth::user()->name;
+            }
+            if ($model->qty === null) {
+                $model->qty = 0;
             }
         });
 

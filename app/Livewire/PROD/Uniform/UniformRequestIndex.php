@@ -2,9 +2,10 @@
 
 namespace App\Livewire\PROD\Uniform;
 
+use App\Models\PROD\Uniform\MasterUniform;
+use App\Models\PROD\Uniform\UniformRequest;
 use Livewire\Component;
 use Livewire\WithPagination;
-use App\Models\PROD\Uniform\UniformRequest;
 
 class UniformRequestIndex extends Component
 {
@@ -27,6 +28,12 @@ class UniformRequestIndex extends Component
     public $selectedRequestNumber = '';
     public $currentMisscStatus = '';
     public $selectedStatus = '';
+
+    // Tambahkan di class UniformRequestIndex
+    public $selectedRequests = [];
+    public $selectAll = false;
+    public $showBulkModal = false;
+    public $bulkData = [];
 
     protected $listeners = ['refreshTable' => '$refresh'];
 
@@ -70,6 +77,305 @@ class UniformRequestIndex extends Component
         $this->resetPage();
     }
 
+    // Method untuk toggle selection
+    public function toggleSelect($id)
+    {
+        if (in_array($id, $this->selectedRequests)) {
+            $this->selectedRequests = array_diff($this->selectedRequests, [$id]);
+        } else {
+            $this->selectedRequests[] = $id;
+        }
+        $this->selectAll = count($this->selectedRequests) == $this->getTotalCount();
+    }
+
+    public function toggleSelectAll()
+    {
+        // Hanya select request yang costing statusnya On Process atau Checked
+        $selectableIds = [];
+        foreach ($this->getFilteredRequests() as $request) {
+            $costingStatus = $this->getCostingFeedbackStatus($request);
+            if (in_array($costingStatus['status'], ['On Process', 'Checked'])) {
+                $selectableIds[] = $request->id;
+            }
+        }
+        
+        // Jika semua selectable sudah dipilih, unselect semua
+        $allSelected = count(array_intersect($this->selectedRequests, $selectableIds)) === count($selectableIds);
+        
+        if ($allSelected) {
+            $this->selectedRequests = array_diff($this->selectedRequests, $selectableIds);
+            $this->selectAll = false;
+        } else {
+            // Tambahkan semua selectable yang belum dipilih
+            $this->selectedRequests = array_unique(array_merge($this->selectedRequests, $selectableIds));
+            $this->selectAll = true;
+        }
+    }
+
+    private function getFilteredRequests()
+    {
+        // Ambil request yang sedang ditampilkan (sesuai filter)
+        $query = UniformRequest::query();
+        
+        if (auth()->user()->can('view uniform request one user')) {
+            $query->where('created_by', auth()->user()->name);
+        }
+        
+        $query->when($this->search, function ($query) {
+            $query->where('request_number', 'like', '%' . $this->search . '%');
+        })
+        ->when($this->dateFrom, function ($query) {
+            $query->whereDate('created_at', '>=', $this->dateFrom);
+        })
+        ->when($this->dateTo, function ($query) {
+            $query->whereDate('created_at', '<=', $this->dateTo);
+        })
+        ->when($this->misscStatusFilter, function ($query) {
+            $query->where('missc_status', $this->misscStatusFilter);
+        })
+        ->orderByDesc('id');
+        
+        return $query->get();
+    }
+
+    public function getSelectableCount()
+    {
+        $count = 0;
+        foreach ($this->getFilteredRequests() as $request) {
+            $costingStatus = $this->getCostingFeedbackStatus($request);
+            if (in_array($costingStatus['status'], ['On Process', 'Checked'])) {
+                $count++;
+            }
+        }
+        return $count;
+    }
+
+    public function getTotalCount()
+    {
+        $query = UniformRequest::query();
+        
+        if (auth()->user()->can('view uniform request one user')) {
+            $query->where('created_by', auth()->user()->name);
+        }
+        
+        return $query->count();
+    }
+
+    public function getAllIds()
+    {
+        $query = UniformRequest::query();
+        
+        if (auth()->user()->can('view uniform request one user')) {
+            $query->where('created_by', auth()->user()->name);
+        }
+        
+        return $query->pluck('id')->toArray();
+    }
+
+    public function getSelectedCount()
+    {
+        return count($this->selectedRequests);
+    }
+
+    public function openBulkModal()
+    {
+        if (empty($this->selectedRequests)) {
+            $this->dispatch('notify', message: 'Please select at least one request!', type: 'error');
+            return;
+        }
+        
+        // Filter hanya request yang costing statusnya On Process atau Checked
+        $validRequests = [];
+        foreach ($this->selectedRequests as $id) {
+            $request = UniformRequest::find($id);
+            if ($request) {
+                $costingStatus = $this->getCostingFeedbackStatus($request);
+                if (in_array($costingStatus['status'], ['On Process', 'Checked'])) {
+                    $validRequests[] = $id;
+                }
+            }
+        }
+        
+        if (empty($validRequests)) {
+            $this->dispatch('notify', message: 'No valid requests selected! Only requests with "On Process" or "Checked" costing feedback can be bulk processed.', type: 'error');
+            return;
+        }
+        
+        // Update selected requests dengan yang valid saja
+        $this->selectedRequests = $validRequests;
+        
+        $this->bulkData = [];
+        $costingData = [];
+        
+        foreach ($this->selectedRequests as $id) {
+            $request = UniformRequest::find($id);
+            if (!$request) continue;
+            
+            $items = $request->items ?? [];
+            
+            foreach ($items as $index => $item) {
+                // Cek apakah item memiliki costing_feedback
+                if (empty($item['costing_feedback'])) {
+                    continue;
+                }
+                
+                // Cek status costing_feedback (Create Missc atau Create Stock Manual)
+                $costingFeedback = $item['costing_feedback'];
+                $isCreateMissc = stripos($costingFeedback, 'Create Missc') !== false;
+                $isCreateStockManual = stripos($costingFeedback, 'Create Stock Manual') !== false;
+                
+                // Jika Create Missc atau Create Stock Manual, tambahkan ke data
+                if ($isCreateMissc || $isCreateStockManual) {
+                    $uniform = MasterUniform::find($item['master_uniform_id']);
+                    $itemCode = $uniform ? $uniform->item_code : 'N/A';
+                    $description = $uniform ? $uniform->description : 'N/A';
+                    
+                    $type = $isCreateMissc ? 'Create Missc' : 'Create Stock Manual';
+                    $qty = $item['qty'] ?? 0;
+                    
+                    $key = $itemCode . '|' . $type;
+                    
+                    if (!isset($costingData[$key])) {
+                        $costingData[$key] = [
+                            'item_code' => $itemCode,
+                            'description' => $description,
+                            'qty' => 0,
+                            'type' => $type,
+                            'request_numbers' => []
+                        ];
+                    }
+                    
+                    $costingData[$key]['qty'] += $qty;
+                    if (!in_array($request->request_number, $costingData[$key]['request_numbers'])) {
+                        $costingData[$key]['request_numbers'][] = $request->request_number;
+                    }
+                }
+            }
+        }
+        
+        $this->bulkData = array_values($costingData);
+        $this->showBulkModal = true;
+        
+        if (empty($this->bulkData)) {
+            $this->dispatch('notify', message: 'No items with Costing Feedback (Create Missc/Create Stock Manual) found in selected requests!', type: 'warning');
+            $this->showBulkModal = false;
+        }
+    }
+
+    public function closeBulkModal()
+    {
+        $this->showBulkModal = false;
+        $this->bulkData = [];
+    }
+
+    // Helper function to check if all items are manual
+    public function isAllManual($request)
+    {
+        $items = $request->items ?? [];
+        
+        if (empty($items)) {
+            return false;
+        }
+        
+        foreach ($items as $item) {
+            if (!isset($item['is_manual']) || $item['is_manual'] !== true) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+
+    // Helper function to get admin feedback status
+    public function getAdminFeedbackStatus($request)
+    {
+        // CEK: Jika semua item manual, return N/A
+        if ($this->isAllManual($request)) {
+            return ['status' => 'N/A', 'color' => 'gray'];
+        }
+        
+        $items = $request->items ?? [];
+        $totalItems = count($items);
+        
+        if ($totalItems == 0) {
+            return ['status' => 'Open', 'color' => 'gray'];
+        }
+        
+        // Filter manual items untuk diabaikan dari perhitungan
+        $nonManualItems = array_filter($items, function($item) {
+            return !isset($item['is_manual']) || $item['is_manual'] !== true;
+        });
+        
+        $totalNonManual = count($nonManualItems);
+        
+        if ($totalNonManual === 0) {
+            return ['status' => 'N/A', 'color' => 'gray'];
+        }
+        
+        $filledCount = 0;
+        foreach ($nonManualItems as $item) {
+            if (!empty($item['admin_feedback']) && $item['admin_feedback'] !== 'N/A (Manual Input)') {
+                $filledCount++;
+            }
+        }
+        
+        if ($filledCount == 0) {
+            return ['status' => 'Open', 'color' => 'gray'];
+        } elseif ($filledCount == $totalNonManual) {
+            return ['status' => 'Checked', 'color' => 'green'];
+        } else {
+            return ['status' => 'On Process', 'color' => 'yellow'];
+        }
+    }
+
+    // Helper function to get costing feedback status
+    public function getCostingFeedbackStatus($request)
+    {
+        $items = $request->items ?? [];
+        
+        if (empty($items)) {
+            return ['status' => 'Open', 'color' => 'gray'];
+        }
+        
+        $totalItems = count($items);
+        $checkedCount = 0;
+        $onProcessCount = 0;
+        $openCount = 0;
+        
+        foreach ($items as $item) {
+            $verificationStatus = $item['verification_status'] ?? '';
+            
+            // 1. Jika verification_status = rejected, anggap sudah terisi
+            if ($verificationStatus === 'rejected') {
+                $checkedCount++;
+            } 
+            // 2. Jika costing_feedback terisi, anggap sudah terisi
+            elseif (!empty($item['costing_feedback'])) {
+                $checkedCount++;
+            }
+            // 3. Jika verification_status = approved dan costing_feedback kosong
+            elseif ($verificationStatus === 'approved' && empty($item['costing_feedback'])) {
+                $onProcessCount++;
+            }
+            // 4. Jika verification_status kosong atau lainnya
+            else {
+                $openCount++;
+            }
+        }
+        
+        // Semua sudah terisi (termasuk rejected)
+        if ($checkedCount == $totalItems) {
+            return ['status' => 'Checked', 'color' => 'green'];
+        }
+        
+        // Ada yang sudah terisi tapi belum semua
+        if ($checkedCount > 0 || $onProcessCount > 0) {
+            return ['status' => 'On Process', 'color' => 'yellow'];
+        }
+        
+        return ['status' => 'Open', 'color' => 'gray'];
+    }
+
     // Helper function to get verification status
     public function getVerificationStatus($request)
     {
@@ -85,16 +391,10 @@ class UniformRequestIndex extends Component
         $rejectedCount = 0;
         $manualCount = 0;
         $pendingCount = 0;
-        $allManual = true;
         
         foreach ($items as $item) {
             $verificationStatus = $item['verification_status'] ?? '';
             $isManual = isset($item['is_manual']) && $item['is_manual'];
-            
-            // Cek apakah semua item manual
-            if (!$isManual) {
-                $allManual = false;
-            }
             
             // Jika manual, skip verification (dianggap completed)
             if ($isManual) {
@@ -115,7 +415,7 @@ class UniformRequestIndex extends Component
         }
         
         // Jika semua item adalah manual
-        if ($allManual && $manualCount == $totalItems) {
+        if ($manualCount == $totalItems) {
             return ['status' => 'N/A', 'color' => 'gray'];
         }
         
@@ -151,39 +451,49 @@ class UniformRequestIndex extends Component
         }
         
         $totalItems = count($items);
-        $completedCount = 0; // Items yang sudah selesai (signed atau rejected)
         $signedCount = 0;
         $rejectedCount = 0;
         $pendingCount = 0;
+        $manualCount = 0;
         
         foreach ($items as $item) {
             $verificationStatus = $item['verification_status'] ?? '';
             $isSigned = !empty($item['digital_signature']);
+            $isManual = isset($item['is_manual']) && $item['is_manual'];
+            
+            // Manual items tetap perlu signature
+            if ($isManual) {
+                $manualCount++;
+                if ($isSigned) {
+                    $signedCount++;
+                } else {
+                    $pendingCount++;
+                }
+                continue;
+            }
             
             // Jika item rejected, dianggap selesai (tidak perlu signature)
             if ($verificationStatus === 'rejected') {
-                $completedCount++;
                 $rejectedCount++;
             } elseif ($isSigned) {
-                $completedCount++;
                 $signedCount++;
             } else {
                 $pendingCount++;
             }
         }
         
-        // Jika semua sudah selesai (signed atau rejected)
-        if ($completedCount == $totalItems) {
+        // Jika semua item sudah selesai (signed ATAU rejected)
+        if ($signedCount + $rejectedCount == $totalItems) {
             // Jika semua signed (tidak ada rejected)
             if ($signedCount == $totalItems) {
                 return ['status' => 'Signed', 'color' => 'green'];
             }
-            // Jika ada yang rejected (selesai semua)
+            // Jika ada yang rejected (selesai semua, dengan atau tanpa signed)
             return ['status' => 'Completed', 'color' => 'blue'];
         }
         
         // Jika ada yang sudah selesai tapi belum semua
-        if ($completedCount > 0) {
+        if ($signedCount > 0 || $rejectedCount > 0) {
             return ['status' => 'On Process', 'color' => 'yellow'];
         }
         
@@ -301,80 +611,6 @@ class UniformRequestIndex extends Component
         $this->dateTo = '';
         $this->search = '';
         $this->resetPage();
-    }
-
-    // Helper function to get admin feedback status
-    public function getAdminFeedbackStatus($request)
-    {
-        $items = $request->items ?? [];
-        $totalItems = count($items);
-        
-        if ($totalItems == 0) {
-            return ['status' => 'Open', 'color' => 'gray'];
-        }
-        
-        $filledCount = 0;
-        foreach ($items as $item) {
-            if (!empty($item['admin_feedback'])) {
-                $filledCount++;
-            }
-        }
-        
-        if ($filledCount == 0) {
-            return ['status' => 'Open', 'color' => 'gray'];
-        } elseif ($filledCount == $totalItems) {
-            return ['status' => 'Checked', 'color' => 'green'];
-        } else {
-            return ['status' => 'On Process', 'color' => 'yellow'];
-        }
-    }
-
-    // Helper function to get costing feedback status
-    public function getCostingFeedbackStatus($request)
-    {
-        $items = $request->items ?? [];
-        
-        if (empty($items)) {
-            return ['status' => 'Open', 'color' => 'gray'];
-        }
-        
-        $totalItems = count($items);
-        $checkedCount = 0;
-        $onProcessCount = 0;
-        $openCount = 0;
-        
-        foreach ($items as $item) {
-            $verificationStatus = $item['verification_status'] ?? '';
-            
-            // 1. Jika verification_status = rejected, anggap sudah terisi
-            if ($verificationStatus === 'rejected') {
-                $checkedCount++;
-            } 
-            // 2. Jika costing_feedback terisi, anggap sudah terisi
-            elseif (!empty($item['costing_feedback'])) {
-                $checkedCount++;
-            }
-            // 3. Jika verification_status = approved dan costing_feedback kosong
-            elseif ($verificationStatus === 'approved' && empty($item['costing_feedback'])) {
-                $onProcessCount++;
-            }
-            // 4. Jika verification_status kosong atau lainnya
-            else {
-                $openCount++;
-            }
-        }
-        
-        // Semua sudah terisi (termasuk rejected)
-        if ($checkedCount == $totalItems) {
-            return ['status' => 'Checked', 'color' => 'green'];
-        }
-        
-        // Ada yang sudah terisi tapi belum semua
-        if ($checkedCount > 0 || $onProcessCount > 0) {
-            return ['status' => 'On Process', 'color' => 'yellow'];
-        }
-        
-        return ['status' => 'Open', 'color' => 'gray'];
     }
 
     public function render()

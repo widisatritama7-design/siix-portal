@@ -38,6 +38,9 @@ class NCP extends Model
         'updated_by',
         'deleted_by',
         'deleted_reason',
+        'serial_number_barcode',
+        'print_count',
+        'last_printed_at',
     ];
 
     protected $casts = [
@@ -48,6 +51,7 @@ class NCP extends Model
         'lot_qty' => 'integer',
         'rejected_qty' => 'integer',
         'failure_rate' => 'decimal:2',
+        'last_printed_at' => 'datetime',
     ];
 
     const STATUS_OPEN = 'open';
@@ -87,6 +91,36 @@ class NCP extends Model
             return ($this->rejected_qty / $this->lot_qty) * 100;
         }
         return null;
+    }
+
+    public static function generateSerialNumberBarcode()
+    {
+        // Format yang lebih aman: NCP-YYYYMMDD-XXXXX-XXXX
+        // Kombinasi tanggal + random number + hash
+        $date = now()->format('Ymd');
+        
+        // Generate 5 digit random number
+        $random = str_pad(random_int(10000, 99999), 5, '0', STR_PAD_LEFT);
+        
+        // Generate 4 digit hash dari kombinasi unik
+        $hash = substr(md5(uniqid() . microtime() . $random), 0, 4);
+        
+        $serialNumber = "NCP-{$date}-{$random}-{$hash}";
+        
+        // Pastikan unique
+        $exists = true;
+        $attempts = 0;
+        while ($exists && $attempts < 100) {
+            $exists = self::where('serial_number_barcode', $serialNumber)->exists();
+            if ($exists) {
+                $random = str_pad(random_int(10000, 99999), 5, '0', STR_PAD_LEFT);
+                $hash = substr(md5(uniqid() . microtime() . $random), 0, 4);
+                $serialNumber = "NCP-{$date}-{$random}-{$hash}";
+            }
+            $attempts++;
+        }
+        
+        return $serialNumber;
     }
 
     public function employee()

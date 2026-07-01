@@ -6,6 +6,7 @@ use App\Http\Controllers\InboxController;
 use App\Http\Controllers\PROD\Absence\AbsenceControlPrintController;
 use App\Http\Controllers\PROD\Absence\AbsenceReportPrintController;
 use App\Http\Controllers\PROD\Uniform\UniformRequestPrintController;
+use App\Http\Controllers\QAQC\NCPPrintController;
 use App\Http\Controllers\SearchController;
 use App\Livewire\DCC\DepartmentManagement;
 use App\Livewire\DCC\SubmissionManagement;
@@ -39,6 +40,8 @@ use App\Livewire\PROD\Uniform\MasterUniformManagement;
 use App\Livewire\PROD\Uniform\UniformRequestForm;
 use App\Livewire\PROD\Uniform\UniformRequestIndex;
 use App\Livewire\PROD\Uniform\UniformRequestShow;
+use App\Livewire\PROD\Uniform\UniformStockManagement;
+use App\Livewire\PROD\Uniform\UniformStockTransactionIndex;
 use App\Livewire\PROD\WIP\AddColumn;
 use App\Livewire\PROD\WIP\AddSheet;
 use App\Livewire\PROD\WIP\HistoryWipTransaction;
@@ -153,6 +156,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // QA-QC
     Route::get('/qaqc/ncp', NCPManagement::class)->name('qaqc.ncp');
     Route::get('/qaqc/ncp/report', NCPReport::class)->name('qaqc.ncp.report');
+    Route::get('/ncp/print/{id}', [NCPPrintController::class, 'print'])->name('ncp.print');
 
     // Doorlock
     Route::get('/doorlock/test-pin/{deviceId}', [DoorLockController::class, 'generatePin']);
@@ -164,6 +168,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/hr/uniform/request/edit/{id}', UniformRequestForm::class)->name('prod.uniform.request.edit');
     Route::get('/hr/uniform/request/show/{id}', UniformRequestShow::class)->name('prod.uniform.request.show');
     Route::get('/hr/uniform/request/print/{id}', [UniformRequestPrintController::class, 'print'])->name('prod.uniform.request.print');
+    Route::get('/hr/uniform/stock/manage', UniformStockManagement::class)->name('prod.uniform.stock.manage');
+    Route::get('/hr/uniform/stock/transactions', UniformStockTransactionIndex::class)->name('prod.uniform.stock.transactions');
 
     // Absence
     Route::get('/hr/attendance/report', AbsenceReportIndex::class)->name('prod.absence.report.index');

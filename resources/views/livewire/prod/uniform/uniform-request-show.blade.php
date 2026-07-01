@@ -53,6 +53,7 @@
             $hasApprovedItems = false;
             $hasManualItems = false;
             $hasRegularPendingItems = false;
+            $hasSignedManualItems = false;
             
             foreach($itemsDetail as $item) {
                 if (empty($item['admin_feedback'])) {
@@ -63,6 +64,10 @@
                 $isManual = isset($item['is_manual']) && $item['is_manual'];
                 if ($isManual) {
                     $hasManualItems = true;
+                    // Cek apakah manual sudah signed
+                    if (!empty($item['digital_signature'])) {
+                        $hasSignedManualItems = true;
+                    }
                 }
                 
                 // Costing feedback dianggap filled jika:
@@ -131,49 +136,117 @@
                 @endif
             @endcan
             
+            {{-- COSTING SECTION --}}
             @can('feedback uniform request costing')
-                @if($costingReady && !$allCostingCompleted)
-                    <div class="flex gap-2">
-                        <button wire:click="exportCostingFeedback" 
-                            class="inline-flex items-center gap-2 px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm whitespace-nowrap">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-                            </svg>
-                            Export Costing Feedback CSV
-                        </button>
-                        <button wire:click="openImportModal('costing')" 
-                            class="inline-flex items-center gap-2 px-3 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-colors text-sm whitespace-nowrap">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path>
-                            </svg>
-                            Import Costing Feedback CSV
-                        </button>
-                    </div>
-                    @if($hasManualItems && $hasRegularPendingItems)
-                        <div class="text-sm text-blue-600 bg-blue-50 dark:bg-blue-900/20 px-3 py-2 rounded-lg whitespace-nowrap">
-                            ℹ️ Manual items ready for costing, waiting for regular items verification
-                        </div>
-                    @endif
-                @elseif($costingReady && $allCostingCompleted)
-                    <div class="text-sm text-green-600 bg-green-50 dark:bg-green-900/20 px-3 py-2 rounded-lg whitespace-nowrap">
-                        ✓ All costing feedbacks have been filled
-                        @if($hasRejectedItems)
-                            <span class="text-xs text-zinc-500 ml-1">(Rejected items skipped)</span>
+                @php
+                    // Hitung item yang BUTUH COSTING ACTION (Approved tapi belum final)
+                    $needCostingItems = $itemsDetail->filter(function($item) {
+                        // Skip rejected
+                        if (isset($item['verification_status']) && $item['verification_status'] === 'rejected') {
+                            return false;
+                        }
+                        
+                        // Skip jika sudah final (stock_manual atau missc)
+                        $costingAction = $item['costing_action'] ?? null;
+                        if (in_array($costingAction, ['stock_manual', 'missc'])) {
+                            return false;
+                        }
+                        
+                        // Harus approved atau manual
+                        $isManual = isset($item['is_manual']) && $item['is_manual'];
+                        $isApproved = isset($item['verification_status']) && $item['verification_status'] === 'approved';
+                        
+                        if (!$isManual && !$isApproved) {
+                            return false;
+                        }
+                        
+                        // BUTUH COSTING: approved/manual dan belum final
+                        return true;
+                    });
+                    
+                    $hasNeedCostingItems = $needCostingItems->count() > 0;
+                    $needCostingCount = $needCostingItems->count();
+                    
+                    // Hitung item yang sudah punya costing feedback (Waiting List)
+                    $waitingListItems = $needCostingItems->filter(function($item) {
+                        return !empty($item['costing_feedback']);
+                    });
+                    $waitingListCount = $waitingListItems->count();
+                    
+                    // Hitung item yang approved tapi belum ada costing feedback
+                    $pendingCostingItems = $needCostingItems->filter(function($item) {
+                        return empty($item['costing_feedback']);
+                    });
+                    $pendingCount = $pendingCostingItems->count();
+                    
+                    // Hitung item yang sudah final
+                    $finalItems = $itemsDetail->filter(function($item) {
+                        if (isset($item['verification_status']) && $item['verification_status'] === 'rejected') {
+                            return false;
+                        }
+                        $costingAction = $item['costing_action'] ?? null;
+                        return in_array($costingAction, ['stock_manual', 'missc']);
+                    });
+                    $finalCount = $finalItems->count();
+                @endphp
+                
+                {{-- TOMBOL BULK COSTING ACTION --}}
+                @if($hasNeedCostingItems)
+                    <button wire:click="openBulkCostingModal" 
+                        class="inline-flex items-center gap-2 px-3 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors text-sm whitespace-nowrap">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                        </svg>
+                        Update Costing Action
+                        <span class="bg-white/20 text-white text-xs rounded-full px-2 py-0.5">
+                            {{ $needCostingCount }}
+                        </span>
+                    </button>
+                @endif
+                
+                {{-- STATUS INFO --}}
+                @if($needCostingCount > 0)
+                    <div class="text-sm 
+                        @if($pendingCount > 0) text-yellow-600 bg-yellow-50 dark:bg-yellow-900/20
+                        @elseif($waitingListCount > 0) text-blue-600 bg-blue-50 dark:bg-blue-900/20
+                        @else text-green-600 bg-green-50 dark:bg-green-900/20
+                        @endif 
+                        px-3 py-2 rounded-lg whitespace-nowrap">
+                        
+                        @if($pendingCount > 0)
+                            {{ $pendingCount }} item(s) need costing action
+                            @if($waitingListCount > 0)
+                                <span class="text-xs ml-1">({{ $waitingListCount }} waiting, {{ $finalCount }} finalized)</span>
+                            @endif
+                        @elseif($waitingListCount > 0)
+                            {{ $waitingListCount }} item(s) in Waiting List (can be updated)
+                            @if($finalCount > 0)
+                                <span class="text-xs ml-1">({{ $finalCount }} finalized)</span>
+                            @endif
+                        @else
+                            ✓ All items finalized ({{ $finalCount }} item(s))
                         @endif
                     </div>
-                @elseif(!$allVerificationFilled && !$hasManualItems)
-                    <div class="text-sm text-yellow-600 bg-yellow-50 dark:bg-yellow-900/20 px-3 py-2 rounded-lg whitespace-nowrap">
-                        ⏳ Waiting for all items to be verified before costing process
-                        ({{ collect($itemsDetail)->where('verification_status', null)->count() }} item(s) pending)
-                    </div>
-                @elseif($allVerificationFilled && !$hasApprovedItems && !$hasManualItems)
+                @else
                     <div class="text-sm text-blue-600 bg-blue-50 dark:bg-blue-900/20 px-3 py-2 rounded-lg whitespace-nowrap">
-                        ℹ️ All items are rejected. No costing feedback needed.
+                        No items require costing
                     </div>
-                @elseif($hasManualItems && !$hasApprovedItems && $allVerificationFilled)
-                    <div class="text-sm text-blue-600 bg-blue-50 dark:bg-blue-900/20 px-3 py-2 rounded-lg whitespace-nowrap">
-                        ℹ️ Only manual items available for costing. Regular items are rejected.
-                    </div>
+                @endif
+            @endcan
+            
+            {{-- BULK ACTION: Update Department for Manual Items --}}
+            @can('feedback uniform request admin')
+                @if($hasSignedManualItems)
+                    <button wire:click="openBulkDepartmentModal" 
+                        class="inline-flex items-center gap-2 px-3 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors text-sm whitespace-nowrap">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
+                        </svg>
+                        Bulk Update Department
+                        <span class="bg-white/20 text-white text-xs rounded-full px-2 py-0.5">
+                            {{ $itemsDetail->filter(fn($item) => isset($item['is_manual']) && $item['is_manual'] && !empty($item['digital_signature']))->count() }}
+                        </span>
+                    </button>
                 @endif
             @endcan
         </div>
@@ -223,26 +296,53 @@
                         
                         <!-- Admin Feedback Column -->
                         <td class="px-3 py-2 text-center text-sm whitespace-nowrap">
-                            <div class="space-y-1">
-                                @if($item['admin_feedback'])
+                            @php
+                                $isManual = isset($item['is_manual']) && $item['is_manual'];
+                            @endphp
+                            
+                            @if($isManual)
+                                <div class="flex items-center justify-center">
+                                    <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded-full dark:bg-blue-900/30 dark:text-blue-300 whitespace-nowrap">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                            <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
+                                        </svg>
+                                        N/A
+                                    </span>
+                                </div>
+                            @elseif($item['admin_feedback'])
+                                <div class="space-y-1">
                                     <div class="text-xs whitespace-nowrap">{{ $item['admin_feedback'] }}</div>
                                     @if($item['admin_feedback_datetime'])
-                                    <div class="text-[10px] text-zinc-400 whitespace-nowrap">{{ \Carbon\Carbon::parse($item['admin_feedback_datetime'])->format('d/m/Y H:i') }}</div>
+                                    <div class="text-[10px] text-zinc-400 whitespace-nowrap">
+                                        {{ \Carbon\Carbon::parse($item['admin_feedback_datetime'])->format('d/m/Y H:i') }}
+                                        @if($item['admin_feedback_by'])
+                                            <span class="text-zinc-500">by {{ $item['admin_feedback_by'] }}</span>
+                                        @endif
+                                    </div>
                                     @endif
-                                @else
-                                    <div class="text-xs text-zinc-400 italic whitespace-nowrap">Waiting</div>
-                                @endif
-                            </div>
+                                </div>
+                            @else
+                                <div class="text-xs text-zinc-400 italic whitespace-nowrap">Waiting</div>
+                            @endif
                         </td>
                         
                         @canany(['feedback uniform request admin', 'feedback uniform request costing'])
                             <!-- Salary Deduction Column -->
                             <td class="px-3 py-2 text-center text-sm whitespace-nowrap">
                                 @php
+                                    $isManual = isset($item['is_manual']) && $item['is_manual'];
                                     $isRejected = isset($item['verification_status']) && $item['verification_status'] === 'rejected';
                                 @endphp
                                 
-                                @if($isRejected)
+                                @if($isManual)
+                                    {{-- Manual items: N/A --}}
+                                    <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded-full dark:bg-blue-900/30 dark:text-blue-300 whitespace-nowrap">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                            <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
+                                        </svg>
+                                        N/A
+                                    </span>
+                                @elseif($isRejected)
                                     <span class="text-xs text-zinc-400 italic whitespace-nowrap">-</span>
                                 @elseif(isset($item['salary_deduction']))
                                     @if($item['salary_deduction'] === 'yes')
@@ -267,7 +367,8 @@
                                             $isClosed = !empty($item['admin_feedback']) && 
                                                         !empty($item['verification_status']) && 
                                                         !empty($item['costing_feedback']) && 
-                                                        !empty($item['digital_signature']);
+                                                        !empty($item['digital_signature']) &&
+                                                        $item['admin_feedback'] !== 'N/A (Manual Input)';
                                         @endphp
                                         @if($isClosed)
                                             <button type="button" 
@@ -290,10 +391,19 @@
                             <!-- Period Column -->
                             <td class="px-3 py-2 text-center text-sm whitespace-nowrap">
                                 @php
+                                    $isManual = isset($item['is_manual']) && $item['is_manual'];
                                     $isRejected = isset($item['verification_status']) && $item['verification_status'] === 'rejected';
                                 @endphp
                                 
-                                @if($isRejected)
+                                @if($isManual)
+                                    {{-- Manual items: N/A --}}
+                                    <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded-full dark:bg-blue-900/30 dark:text-blue-300 whitespace-nowrap">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                            <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
+                                        </svg>
+                                        N/A
+                                    </span>
+                                @elseif($isRejected)
                                     <span class="text-xs text-zinc-400 italic whitespace-nowrap">-</span>
                                 @elseif(isset($item['payroll_period']) && $item['payroll_period'])
                                     @php
@@ -330,7 +440,7 @@
                                         </svg>
                                         Approved
                                     </span>
-                                @else
+                                @elseif($item['verification_status'] === 'rejected')
                                     <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-red-700 bg-red-100 rounded-full dark:bg-red-900/30 dark:text-red-300 whitespace-nowrap">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
                                             <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z" clip-rule="evenodd" />
@@ -340,6 +450,9 @@
                                 @endif
                                 <div class="text-[10px] text-zinc-400 mt-0.5 whitespace-nowrap">
                                     {{ isset($item['verification_datetime']) ? \Carbon\Carbon::parse($item['verification_datetime'])->format('d/m/Y H:i') : '-' }}
+                                    @if(isset($item['verification_by']) && $item['verification_by'])
+                                        <span class="text-zinc-500">by {{ $item['verification_by'] }}</span>
+                                    @endif
                                 </div>
                             @else
                                 @can('verify uniform request')
@@ -363,109 +476,176 @@
 
                         <!-- Costing Feedback Column -->
                         <td class="px-3 py-2 text-center text-sm whitespace-nowrap">
-                            <div class="space-y-1">
-                                @if($item['costing_feedback'])
-                                    <div class="text-xs whitespace-nowrap">{{ $item['costing_feedback'] }}</div>
-                                    @if($item['costing_feedback_datetime'])
-                                    <div class="text-[10px] text-zinc-400 whitespace-nowrap">{{ \Carbon\Carbon::parse($item['costing_feedback_datetime'])->format('d/m/Y H:i') }}</div>
-                                    @endif
-                                @else
-                                    @php
-                                        $isManual = isset($item['is_manual']) && $item['is_manual'];
-                                    @endphp
-                                    
-                                    @if($isManual)
-                                        {{-- Manual input: menunggu costing feedback dari import --}}
-                                        <span class="text-xs text-zinc-400 italic whitespace-nowrap">Waiting</span>
-                                    @elseif(isset($item['verification_status']) && $item['verification_status'] === 'rejected')
-                                        <span class="text-xs text-zinc-500 italic whitespace-nowrap">-</span>
-                                    @elseif(isset($item['verification_status']) && $item['verification_status'] === 'approved')
-                                        <span class="text-xs text-zinc-400 italic whitespace-nowrap">Waiting</span>
+                            @php
+                                $isManual = isset($item['is_manual']) && $item['is_manual'];
+                                $isRejected = isset($item['verification_status']) && $item['verification_status'] === 'rejected';
+                            @endphp
+                            
+                            @if($isRejected)
+                                {{-- Jika rejected, tampilkan strip --}}
+                                <span class="text-xs text-zinc-400 whitespace-nowrap">-</span>
+                            @else
+                                <div class="space-y-1">
+                                    @if($item['costing_feedback'])
+                                        <div class="text-xs whitespace-nowrap">
+                                            {{ $item['costing_feedback'] }}
+                                            
+                                            {{-- Tampilkan status badge --}}
+                                            @if(isset($item['costing_action']))
+                                                @if($item['costing_action'] === 'waiting')
+                                                    <span class="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium text-blue-700 bg-blue-100 rounded dark:bg-blue-900/30 dark:text-blue-300 ml-1">
+                                                        Editable
+                                                    </span>
+                                                @elseif($item['costing_action'] === 'stock_manual')
+                                                    <span class="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium text-green-700 bg-green-100 rounded dark:bg-green-900/30 dark:text-green-300 ml-1">
+                                                        Final
+                                                    </span>
+                                                @elseif($item['costing_action'] === 'missc')
+                                                    <span class="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium text-purple-700 bg-purple-100 rounded dark:bg-purple-900/30 dark:text-purple-300 ml-1">
+                                                        Final
+                                                    </span>
+                                                @endif
+                                            @endif
+                                        </div>
+                                        
+                                        @if($item['costing_feedback_datetime'])
+                                        <div class="text-[10px] text-zinc-400 whitespace-nowrap">
+                                            {{ \Carbon\Carbon::parse($item['costing_feedback_datetime'])->format('d/m/Y H:i') }}
+                                            @if($item['costing_feedback_by'])
+                                                <span class="text-zinc-500">by {{ $item['costing_feedback_by'] }}</span>
+                                            @endif
+                                        </div>
+                                        @endif
                                     @else
-                                        <span class="text-xs text-zinc-400 italic whitespace-nowrap">Waiting from User</span>
+                                        @if($isManual)
+                                            <span class="text-xs text-zinc-400 italic whitespace-nowrap">Waiting</span>
+                                        @elseif(isset($item['verification_status']) && $item['verification_status'] === 'approved')
+                                            <span class="text-xs text-zinc-400 italic whitespace-nowrap">Waiting</span>
+                                        @else
+                                            <span class="text-xs text-zinc-400 italic whitespace-nowrap">Waiting from User</span>
+                                        @endif
                                     @endif
-                                @endif
-                            </div>
+                                </div>
+                            @endif
                         </td>
 
                         <!-- Digital Signature Column -->
                         <td class="px-3 py-2 text-center text-sm whitespace-nowrap">
-                            <div x-data="{ 
-                                showTooltip: false,
-                                tooltipPosition: { top: 0, left: 0 }
-                            }" 
-                            class="inline-block"
-                            @mouseenter="
-                                showTooltip = true;
-                                const rect = $event.target.closest('td').getBoundingClientRect();
-                                tooltipPosition.top = rect.top - 10;
-                                tooltipPosition.left = rect.left + (rect.width / 2);
-                            "
-                            @mouseleave="showTooltip = false">
-                                
-                                @if(isset($item['digital_signature']) && $item['digital_signature'])
-                                    <div class="flex items-center justify-center gap-1 whitespace-nowrap">
-                                        <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-indigo-700 bg-indigo-100 rounded-full dark:bg-indigo-900/30 dark:text-indigo-300 whitespace-nowrap">
-                                            Signed
-                                        </span>
-                                    </div>
-                                    <div class="text-[10px] text-zinc-400 mt-0.5 whitespace-nowrap">
-                                        {{ isset($item['signature_datetime']) ? \Carbon\Carbon::parse($item['signature_datetime'])->format('d/m/Y H:i') : '-' }}
-                                    </div>
-                                @else
-                                    @if(isset($item['verification_status']) && $item['verification_status'] === 'rejected')
-                                        <span class="text-xs text-zinc-400 italic whitespace-nowrap">-</span>
+                            @php
+                                $isRejected = isset($item['verification_status']) && $item['verification_status'] === 'rejected';
+                            @endphp
+                            
+                            @if($isRejected)
+                                {{-- Jika rejected, tampilkan strip --}}
+                                <span class="text-xs text-zinc-400 whitespace-nowrap">-</span>
+                            @else
+                                <div x-data="{ 
+                                    showTooltip: false,
+                                    tooltipPosition: { top: 0, left: 0 }
+                                }" 
+                                class="inline-block"
+                                @mouseenter="
+                                    showTooltip = true;
+                                    const rect = $event.target.closest('td').getBoundingClientRect();
+                                    tooltipPosition.top = rect.top - 10;
+                                    tooltipPosition.left = rect.left + (rect.width / 2);
+                                "
+                                @mouseleave="showTooltip = false">
+                                    
+                                    @if(isset($item['digital_signature']) && $item['digital_signature'])
+                                        <div class="flex items-center justify-center gap-1 whitespace-nowrap">
+                                            <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-indigo-700 bg-indigo-100 rounded-full dark:bg-indigo-900/30 dark:text-indigo-300 whitespace-nowrap">
+                                                Signed
+                                            </span>
+                                        </div>
+                                        <div class="text-[10px] text-zinc-400 mt-0.5 whitespace-nowrap">
+                                            {{ isset($item['signature_datetime']) ? \Carbon\Carbon::parse($item['signature_datetime'])->format('d/m/Y H:i') : '-' }}
+                                        </div>
                                     @else
-                                        @can('sign uniform request')
-                                            @if(isset($item['costing_feedback']) && $item['costing_feedback'])
+                                        @php
+                                            $isManual = isset($item['is_manual']) && $item['is_manual'];
+                                            $costingAction = $item['costing_action'] ?? null;
+                                            $hasCostingFeedback = !empty($item['costing_feedback']);
+                                            $isWaitingList = $costingAction === 'waiting' || $costingAction === null;
+                                            
+                                            // Bisa sign hanya jika:
+                                            // 1. Ada costing feedback
+                                            // 2. Bukan Waiting List (sudah final: stock_manual atau missc)
+                                            // 3. Bukan rejected (sudah dicek di atas)
+                                            $canSign = $hasCostingFeedback && in_array($costingAction, ['stock_manual', 'missc']);
+                                            
+                                            // Tampilkan pesan jika Waiting List
+                                            $isWaitingListWithFeedback = $hasCostingFeedback && $isWaitingList;
+                                        @endphp
+                                        
+                                        @if($isManual)
+                                            <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded-full dark:bg-blue-900/30 dark:text-blue-300 whitespace-nowrap">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                    <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
+                                                </svg>
+                                                N/A
+                                            </span>
+                                        @elseif($isWaitingListWithFeedback)
+                                            <span class="text-xs text-yellow-600 dark:text-yellow-400 whitespace-nowrap flex items-center gap-1 justify-center">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-4">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
+                                                </svg>
+                                                Waiting Costing
+                                            </span>
+                                        @elseif($canSign)
+                                            @can('sign uniform request')
                                                 <button type="button" 
                                                     wire:click="openSignatureModal({{ $item['index'] }})" 
                                                     class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-indigo-700 bg-indigo-100 rounded-lg hover:bg-indigo-200 dark:bg-indigo-900/30 dark:text-indigo-300 dark:hover:bg-indigo-900/50 transition-colors whitespace-nowrap">
                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
-                                                        <path d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32L19.513 8.2Z" />
+                                                        <path d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32l8.4-8.4Z" />
+                                                        <path d="M5.25 5.25a3 3 0 0 0-3 3v10.5a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3V13.5a.75.75 0 0 0-1.5 0v5.25a1.5 1.5 0 0 1-1.5 1.5H5.25a1.5 1.5 0 0 1-1.5-1.5V8.25a1.5 1.5 0 0 1 1.5-1.5h5.25a.75.75 0 0 0 0-1.5H5.25Z" />
                                                     </svg>
                                                     Sign
                                                 </button>
                                             @else
-                                                <span class="text-xs text-zinc-400 italic whitespace-nowrap">Waiting from Costing</span>
-                                            @endif
-                                        @else
+                                                <span class="text-xs text-zinc-400 italic whitespace-nowrap">Waiting for Sign</span>
+                                            @endcan
+                                        @elseif($hasCostingFeedback && !$isWaitingList && !$canSign)
                                             <span class="text-xs text-zinc-400 italic whitespace-nowrap">-</span>
-                                        @endcan
+                                        @else
+                                            <span class="text-xs text-zinc-400 italic whitespace-nowrap">Waiting from Costing</span>
+                                        @endif
                                     @endif
-                                @endif
-                                
-                                @if(isset($item['digital_signature']) && $item['digital_signature'])
-                                <div class="fixed z-[9999] pointer-events-none"
-                                    x-show="showTooltip"
-                                    x-transition:enter="transition ease-out duration-200"
-                                    x-transition:enter-start="opacity-0 scale-95"
-                                    x-transition:enter-end="opacity-100 scale-100"
-                                    x-cloak
-                                    :style="`top: ${tooltipPosition.top - 10}px; left: ${tooltipPosition.left}px; transform: translateX(-50%) translateY(-100%);`">
                                     
-                                    <div class="bg-zinc-900 text-white text-xs rounded-lg p-3 shadow-2xl min-w-[220px] max-w-[300px]">
-                                        <div class="space-y-1 text-left">
-                                            <p class="font-semibold text-zinc-300 border-b border-zinc-700 pb-1 mb-1">Signature Details</p>
-                                            <p><span class="text-zinc-400">Status:</span> <span class="text-indigo-400">✓ Signed</span></p>
-                                            <p><span class="text-zinc-400">Date:</span> {{ isset($item['signature_datetime']) ? \Carbon\Carbon::parse($item['signature_datetime'])->format('d/m/Y H:i') : '-' }}</p>
-                                            <p><span class="text-zinc-400">By:</span> {{ $item['signature_name'] ?? '-' }}</p>
-                                            @if(isset($item['digital_signature']) && $item['digital_signature'])
-                                                <div class="border-t border-zinc-700 pt-2 mt-1">
-                                                    <img src="{{ $item['digital_signature'] }}" 
-                                                        alt="Signature" 
-                                                        class="h-12 w-auto mx-auto border rounded dark:border-zinc-700 bg-white"
-                                                        style="cursor: pointer;"
-                                                        @click.stop="window.open('{{ $item['digital_signature'] }}', '_blank')">
-                                                    <p class="text-[10px] text-zinc-500 text-center mt-1">Click signature to enlarge</p>
-                                                </div>
-                                            @endif
+                                    <!-- Tooltip untuk signature -->
+                                    @if(isset($item['digital_signature']) && $item['digital_signature'])
+                                    <div class="fixed z-[9999] pointer-events-none"
+                                        x-show="showTooltip"
+                                        x-transition:enter="transition ease-out duration-200"
+                                        x-transition:enter-start="opacity-0 scale-95"
+                                        x-transition:enter-end="opacity-100 scale-100"
+                                        x-cloak
+                                        :style="`top: ${tooltipPosition.top - 10}px; left: ${tooltipPosition.left}px; transform: translateX(-50%) translateY(-100%);`">
+                                        
+                                        <div class="bg-zinc-900 text-white text-xs rounded-lg p-3 shadow-2xl min-w-[220px] max-w-[300px]">
+                                            <div class="space-y-1 text-left">
+                                                <p class="font-semibold text-zinc-300 border-b border-zinc-700 pb-1 mb-1">Signature Details</p>
+                                                <p><span class="text-zinc-400">Status:</span> <span class="text-indigo-400">✓ Signed</span></p>
+                                                <p><span class="text-zinc-400">Date:</span> {{ isset($item['signature_datetime']) ? \Carbon\Carbon::parse($item['signature_datetime'])->format('d/m/Y H:i') : '-' }}</p>
+                                                <p><span class="text-zinc-400">By:</span> {{ $item['signature_name'] ?? '-' }}</p>
+                                                @if(isset($item['digital_signature']) && $item['digital_signature'])
+                                                    <div class="border-t border-zinc-700 pt-2 mt-1">
+                                                        <img src="{{ $item['digital_signature'] }}" 
+                                                            alt="Signature" 
+                                                            class="h-12 w-auto mx-auto border rounded dark:border-zinc-700 bg-white"
+                                                            style="cursor: pointer;"
+                                                            @click.stop="window.open('{{ $item['digital_signature'] }}', '_blank')">
+                                                        <p class="text-[10px] text-zinc-500 text-center mt-1">Click signature to enlarge</p>
+                                                    </div>
+                                                @endif
+                                            </div>
+                                            <div class="absolute -bottom-1.5 left-1/2 transform -translate-x-1/2 rotate-45 w-3 h-3 bg-zinc-900"></div>
                                         </div>
-                                        <div class="absolute -bottom-1.5 left-1/2 transform -translate-x-1/2 rotate-45 w-3 h-3 bg-zinc-900"></div>
                                     </div>
+                                    @endif
                                 </div>
-                                @endif
-                            </div>
+                            @endif
                         </td>
                     </tr>
                     @endforeach
@@ -556,12 +736,30 @@
                                     <td class="px-3 py-2 font-medium text-zinc-600 dark:text-zinc-400">Item</td>
                                     <td class="px-3 py-2">: {{ $verificationItem['item_code'] ?? '-' }}</td>
                                 </tr>
+                                <tr class="border-b">
+                                    <td class="px-3 py-2 font-medium text-zinc-600 dark:text-zinc-400">Qty</td>
+                                    <td class="px-3 py-2">: {{ $verificationItem['qty'] ?? '-' }}</td>
+                                </tr>
                                 <tr>
                                     <td class="px-3 py-2 font-medium text-zinc-600 dark:text-zinc-400">Description</td>
                                     <td class="px-3 py-2">: {{ $verificationItem['description'] ?? '-' }}</td>
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                    
+                    <!-- Warning untuk Reject -->
+                    <div class="mb-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+                        <p class="text-xs text-yellow-700 dark:text-yellow-400 flex items-start gap-2">
+                            <svg class="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                            </svg>
+                            <span>
+                                <strong>If Rejected:</strong> Stock will be automatically returned 
+                                (<strong>{{ $verificationItem['qty'] ?? 0 }}</strong> units) to inventory.
+                                <br>
+                            </span>
+                        </p>
                     </div>
                     
                     <div class="mb-4">
@@ -619,8 +817,17 @@
                             Cancel
                         </button>
                         <button wire:click="saveVerification" 
-                            class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
-                            Save Verification
+                            wire:loading.attr="disabled"
+                            class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <svg wire:loading.remove class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <svg wire:loading class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <span wire:loading.remove>Save Verification</span>
+                            <span wire:loading>Saving...</span>
                         </button>
                     </div>
                 </div>
@@ -1269,6 +1476,382 @@
                             <span wire:loading wire:target="saveImport">Importing & Sending Email...</span>
                         </button>
                     @endif
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL BULK DEPARTMENT UPDATE -->
+    <div x-data="{ 
+        open: @entangle('showBulkDepartmentModal'), 
+        closeModal() { this.open = false; $wire.closeBulkDepartmentModal(); }
+    }" 
+    x-show="open" 
+    x-cloak>
+        <div class="fixed inset-0 bg-black/50 z-40" @click="closeModal()"></div>
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+                <div class="p-6 border-b border-zinc-200 dark:border-zinc-700 flex-shrink-0">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-xl font-bold">Bulk Update Department</h2>
+                        <button @click="closeModal()" class="text-zinc-500 hover:text-zinc-700">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
+                        Select manual items and update their department
+                    </p>
+                </div>
+                
+                <div class="p-6 flex-1 overflow-y-auto">
+                    <!-- Info Alert -->
+                    <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mb-4">
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                            </svg>
+                            <div>
+                                <p class="text-sm font-medium text-yellow-700 dark:text-yellow-300">
+                                    Select items manually and enter department
+                                </p>
+                                <p class="text-xs text-yellow-600 dark:text-yellow-400 mt-0.5">
+                                    Check the items you want to update. <strong>This cannot be undone!</strong>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Department Input -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-1">
+                            Department <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" 
+                            wire:model="bulkDepartment" 
+                            placeholder="Enter department name (e.g., GA, GB, GC, TA, TB, NS, 1)"
+                            class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        @error('bulkDepartment') 
+                            <span class="text-red-500 text-xs">{{ $message }}</span> 
+                        @enderror
+                    </div>
+                    
+                    <!-- Item List with Checkboxes -->
+                    @if(count($bulkManualItems) > 0)
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                                    {{ count($selectedItems) }} of {{ count($bulkManualItems) }} item(s) selected
+                                </span>
+                                <button type="button" 
+                                    wire:click="toggleSelectAll"
+                                    class="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
+                                    @if(count($selectedItems) === count($bulkManualItems))
+                                        Deselect All
+                                    @elseif(count($selectedItems) === 0)
+                                        Select All
+                                    @else
+                                        Select All ({{ count($bulkManualItems) - count($selectedItems) }} remaining)
+                                    @endif
+                                </button>
+                            </div>
+                            
+                            <div class="border rounded-lg dark:border-zinc-700 overflow-hidden">
+                                <table class="w-full text-sm">
+                                    <thead class="bg-zinc-50 dark:bg-zinc-800">
+                                        <tr>
+                                            <th class="px-3 py-2 text-center w-10">
+                                                <span class="sr-only">Select</span>
+                                            </th>
+                                            <th class="px-3 py-2 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase">#</th>
+                                            <th class="px-3 py-2 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase">NIK</th>
+                                            <th class="px-3 py-2 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase">NAME</th>
+                                            <th class="px-3 py-2 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase">CURRENT DEPT</th>
+                                            <th class="px-3 py-2 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase">ITEM</th>
+                                            <th class="px-3 py-2 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase">QTY</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
+                                        @foreach($bulkManualItems as $item)
+                                            @php
+                                                $isChecked = in_array($item['index'], $selectedItems);
+                                            @endphp
+                                            <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors {{ $isChecked ? 'bg-blue-50 dark:bg-blue-900/10' : '' }}">
+                                                <td class="px-3 py-2 text-center">
+                                                    <input type="checkbox" 
+                                                        wire:click="toggleSelectItem({{ $item['index'] }})"
+                                                        {{ $isChecked ? 'checked' : '' }}
+                                                        class="w-4 h-4 text-blue-600 border-zinc-300 rounded focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 cursor-pointer">
+                                                </td>
+                                                <td class="px-3 py-2 text-center text-xs">{{ $loop->iteration }}</td>
+                                                <td class="px-3 py-2 text-sm font-mono">{{ $item['manual_nik'] ?? $item['employee_nik'] }}</td>
+                                                <td class="px-3 py-2 text-sm">{{ $item['manual_name'] ?? $item['employee_name'] }}</td>
+                                                <td class="px-3 py-2 text-sm">
+                                                    @if(!empty($item['manual_department']))
+                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-green-100 text-green-800 rounded-full dark:bg-green-900/30 dark:text-green-300">
+                                                            {{ $item['manual_department'] }}
+                                                        </span>
+                                                    @else
+                                                        <span class="text-xs text-zinc-400 italic">-</span>
+                                                    @endif
+                                                </td>
+                                                <td class="px-3 py-2 text-sm font-mono">{{ $item['item_code'] }}</td>
+                                                <td class="px-3 py-2 text-center text-sm">{{ $item['qty'] }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <!-- Selected Summary -->
+                        <div class="mt-3 p-3 rounded-lg {{ count($selectedItems) > 0 ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800' : 'bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700' }}">
+                            <div class="flex justify-between items-center">
+                                <span class="text-xs {{ count($selectedItems) > 0 ? 'text-blue-700 dark:text-blue-300' : 'text-zinc-500 dark:text-zinc-400' }}">
+                                    <strong>{{ count($selectedItems) }}</strong> item(s) selected for update
+                                    @if(count($bulkManualItems) - count($selectedItems) > 0)
+                                        <span class="{{ count($selectedItems) > 0 ? 'text-blue-600 dark:text-blue-400' : 'text-zinc-400' }}">
+                                            ({{ count($bulkManualItems) - count($selectedItems) }} item(s) will be skipped)
+                                        </span>
+                                    @endif
+                                </span>
+                                @if(count($selectedItems) === 0)
+                                    <span class="text-xs text-yellow-600 dark:text-yellow-400">
+                                        ⚠️ Please select at least one item
+                                    </span>
+                                @endif
+                            </div>
+                        </div>
+                    @endif
+                </div>
+                
+                <div class="p-6 border-t border-zinc-200 dark:border-zinc-700 flex-shrink-0 flex justify-end gap-2">
+                    <button @click="closeModal()" 
+                        class="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
+                        Cancel
+                    </button>
+                    <button wire:click="saveBulkDepartment" 
+                        wire:loading.attr="disabled"
+                        :disabled="{{ count($selectedItems) === 0 || empty($bulkDepartment) ? 'true' : 'false' }}"
+                        class="px-4 py-2 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <svg wire:loading.remove class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                        <svg wire:loading class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span wire:loading.remove>Update Selected ({{ count($selectedItems) }})</span>
+                        <span wire:loading>Updating...</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL BULK COSTING ACTION -->
+    <div x-data="{ 
+        open: @entangle('showBulkCostingModal'), 
+        closeModal() { this.open = false; $wire.closeBulkCostingModal(); }
+    }" 
+    x-show="open" 
+    x-cloak>
+        <div class="fixed inset-0 bg-black/50 z-40" @click="closeModal()"></div>
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] flex flex-col">
+                <div class="p-6 border-b border-zinc-200 dark:border-zinc-700 flex-shrink-0">
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-xl font-bold">Update Costing Action</h2>
+                        <button @click="closeModal()" class="text-zinc-500 hover:text-zinc-700">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">
+                        Update items from <strong>Waiting List</strong> to final action
+                    </p>
+                </div>
+                
+                <div class="p-6 flex-1 overflow-y-auto">
+                    <!-- Info Alert -->
+                    <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-4">
+                        <div class="flex items-start gap-3">
+                            <svg class="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <div>
+                                <p class="text-sm font-medium text-blue-700 dark:text-blue-300">
+                                    {{ count($bulkCostingItems) }} item(s) in Waiting List
+                                </p>
+                                <p class="text-xs text-blue-600 dark:text-blue-400 mt-0.5">
+                                    Select items and choose final action. <strong>This action cannot be undone!</strong>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Action Selection -->
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium mb-2">
+                            Select Final Action <span class="text-red-500">*</span>
+                        </label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button type="button" 
+                                wire:click="$set('bulkCostingAction', 'stock_manual')"
+                                class="px-4 py-3 border-2 rounded-lg transition-all duration-200 text-center font-medium"
+                                :class="{
+                                    'border-green-600 bg-green-600 text-white shadow-lg shadow-green-200 dark:shadow-green-900/30 scale-[1.02]': $wire.bulkCostingAction === 'stock_manual',
+                                    'border-zinc-300 dark:border-zinc-600 hover:border-green-400 hover:bg-green-50 dark:hover:bg-green-900/10 text-zinc-700 dark:text-zinc-300': $wire.bulkCostingAction !== 'stock_manual'
+                                }">
+                                <div class="flex items-center justify-center gap-2">
+                                    <svg class="w-5 h-5" :class="{
+                                        'text-white': $wire.bulkCostingAction === 'stock_manual',
+                                        'text-green-600 dark:text-green-400': $wire.bulkCostingAction !== 'stock_manual'
+                                    }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <span>Create Stock Manual</span>
+                                </div>
+                            </button>
+                            
+                            <button type="button" 
+                                wire:click="$set('bulkCostingAction', 'missc')"
+                                class="px-4 py-3 border-2 rounded-lg transition-all duration-200 text-center font-medium"
+                                :class="{
+                                    'border-purple-600 bg-purple-600 text-white shadow-lg shadow-purple-200 dark:shadow-purple-900/30 scale-[1.02]': $wire.bulkCostingAction === 'missc',
+                                    'border-zinc-300 dark:border-zinc-600 hover:border-purple-400 hover:bg-purple-50 dark:hover:bg-purple-900/10 text-zinc-700 dark:text-zinc-300': $wire.bulkCostingAction !== 'missc'
+                                }">
+                                <div class="flex items-center justify-center gap-2">
+                                    <svg class="w-5 h-5" :class="{
+                                        'text-white': $wire.bulkCostingAction === 'missc',
+                                        'text-purple-600 dark:text-purple-400': $wire.bulkCostingAction !== 'missc'
+                                    }" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <span>Create Missc</span>
+                                </div>
+                            </button>
+                        </div>
+                        @error('bulkCostingAction') 
+                            <span class="text-red-500 text-xs">{{ $message }}</span> 
+                        @enderror
+                    </div>
+                    
+                    <!-- Item List with Checkboxes -->
+                    @if(count($bulkCostingItems) > 0)
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                                    {{ count($selectedCostingItems) }} of {{ count($bulkCostingItems) }} item(s) selected
+                                </span>
+                                <button type="button" 
+                                    wire:click="toggleSelectAllCosting"
+                                    class="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300">
+                                    @if(count($selectedCostingItems) === count($bulkCostingItems))
+                                        Deselect All
+                                    @elseif(count($selectedCostingItems) === 0)
+                                        Select All
+                                    @else
+                                        Select All ({{ count($bulkCostingItems) - count($selectedCostingItems) }} remaining)
+                                    @endif
+                                </button>
+                            </div>
+                            
+                            <div class="overflow-x-auto border rounded-lg dark:border-zinc-700">
+                                <table class="w-full text-sm" style="min-width: 1000px;">
+                                    <thead class="bg-zinc-50 dark:bg-zinc-800">
+                                        <tr>
+                                            <th class="px-3 py-2 text-center w-10 whitespace-nowrap">
+                                                <span class="sr-only">Select</span>
+                                            </th>
+                                            <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase whitespace-nowrap">#</th>
+                                            <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase whitespace-nowrap">NIK</th>
+                                            <th class="px-3 py-2 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase whitespace-nowrap">NAME</th>
+                                            <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase whitespace-nowrap">ITEM</th>
+                                            <th class="px-3 py-2 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase whitespace-nowrap">DESC</th>
+                                            <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase whitespace-nowrap">QTY</th>
+                                            <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase whitespace-nowrap">CURRENT STATUS</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
+                                        @foreach($bulkCostingItems as $item)
+                                            @php
+                                                $isChecked = in_array($item['index'], $selectedCostingItems);
+                                                $isManual = isset($item['is_manual']) && $item['is_manual'];
+                                            @endphp
+                                            <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors {{ $isChecked ? 'bg-blue-50 dark:bg-blue-900/10' : '' }}">
+                                                <td class="px-3 py-2 text-center whitespace-nowrap">
+                                                    <input type="checkbox" 
+                                                        wire:click="toggleSelectCostingItem({{ $item['index'] }})"
+                                                        {{ $isChecked ? 'checked' : '' }}
+                                                        class="w-4 h-4 text-blue-600 border-zinc-300 rounded focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-700 cursor-pointer">
+                                                </td>
+                                                <td class="px-3 py-2 text-center text-xs whitespace-nowrap">{{ $loop->iteration }}</td>
+                                                <td class="px-3 py-2 text-center font-mono whitespace-nowrap">{{ $item['employee_nik'] }}</td>
+                                                <td class="px-3 py-2 text-sm whitespace-nowrap">{{ $item['employee_name'] }}</td>
+                                                <td class="px-3 py-2 text-center font-mono whitespace-nowrap">{{ $item['item_code'] }}</td>
+                                                <td class="px-3 py-2 text-sm whitespace-nowrap">{{ $item['description'] }}</td>
+                                                <td class="px-3 py-2 text-center text-sm whitespace-nowrap">{{ $item['qty'] }}</td>
+                                                <td class="px-3 py-2 text-center whitespace-nowrap">
+                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-blue-700 bg-blue-100 rounded-full dark:bg-blue-900/30 dark:text-blue-300 whitespace-nowrap">
+                                                        Waiting List
+                                                    </span>
+                                                    @if($isManual)
+                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-gray-700 bg-gray-100 rounded-full dark:bg-gray-900/30 dark:text-gray-300 ml-1 whitespace-nowrap">
+                                                            Manual
+                                                        </span>
+                                                    @else
+                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium text-green-700 bg-green-100 rounded-full dark:bg-green-900/30 dark:text-green-300 ml-1 whitespace-nowrap">
+                                                            Approved Costing
+                                                        </span>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- Selected Summary -->
+                            <div class="mt-3 p-3 rounded-lg {{ count($selectedCostingItems) > 0 ? 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800' : 'bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700' }}">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-xs {{ count($selectedCostingItems) > 0 ? 'text-blue-700 dark:text-blue-300' : 'text-zinc-500 dark:text-zinc-400' }}">
+                                        <strong>{{ count($selectedCostingItems) }}</strong> item(s) will be updated to 
+                                        @if($bulkCostingAction === 'stock_manual')
+                                            <strong class="text-green-600">Create Stock Manual</strong>
+                                        @elseif($bulkCostingAction === 'missc')
+                                            <strong class="text-purple-600">Create Missc</strong>
+                                        @else
+                                            <span class="text-zinc-400">(select action above)</span>
+                                        @endif
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+                </div>
+                
+                <div class="p-6 border-t border-zinc-200 dark:border-zinc-700 flex-shrink-0 flex justify-end gap-2">
+                    <button @click="closeModal()" 
+                        class="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
+                        Cancel
+                    </button>
+                    <button wire:click="saveBulkCosting" 
+                        wire:loading.attr="disabled"
+                        :disabled="{{ count($selectedCostingItems) === 0 || empty($bulkCostingAction) ? 'true' : 'false' }}"
+                        class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors inline-flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+                        <svg wire:loading.remove class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                        </svg>
+                        <svg wire:loading class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <span wire:loading.remove>Update {{ count($selectedCostingItems) }} Item(s)</span>
+                        <span wire:loading>Updating...</span>
+                    </button>
                 </div>
             </div>
         </div>

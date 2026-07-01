@@ -62,6 +62,17 @@ class UniformRequestShow extends Component
     public $availableYears = [];
     public $availableMonths = [];
 
+    public $showBulkDepartmentModal = false;
+    public $bulkDepartment = '';
+    public $bulkManualItems = [];
+    public $selectedItems = []; // Array untuk menyimpan item yang dipilih
+
+    // Tambahkan properties baru di bagian atas class
+    public $showBulkCostingModal = false;
+    public $bulkCostingItems = [];
+    public $selectedCostingItems = [];
+    public $bulkCostingAction = ''; // 'waiting', 'stock_manual', 'missc'
+
     protected $listeners = ['refreshTable' => '$refresh'];
 
     public function resetPage()
@@ -78,6 +89,160 @@ class UniformRequestShow extends Component
             session()->flash('error', 'Request not found!');
             return redirect()->route('prod.uniform.request.index');
         }
+    }
+
+    public function openBulkCostingModal()
+    {
+        // Debug: Log untuk cek
+        \Log::info('openBulkCostingModal called by: ' . auth()->user()->name);
+        
+        // Cek permission
+        if (!auth()->user()->can('feedback uniform request costing')) {
+            session()->flash('error', 'You do not have permission to update costing!');
+            return;
+        }
+        
+        // Ambil items yang BUTUH COSTING (approved/manual tapi belum final)
+        $costingItems = $this->items_detail->filter(function($item) {
+            // Skip rejected items
+            if (isset($item['verification_status']) && $item['verification_status'] === 'rejected') {
+                return false;
+            }
+            
+            // Skip jika sudah final (stock_manual atau missc)
+            $costingAction = $item['costing_action'] ?? null;
+            if (in_array($costingAction, ['stock_manual', 'missc'])) {
+                return false;
+            }
+            
+            // Hanya item yang sudah approved atau manual
+            $isManual = isset($item['is_manual']) && $item['is_manual'];
+            $isApproved = isset($item['verification_status']) && $item['verification_status'] === 'approved';
+            
+            if (!$isManual && !$isApproved) {
+                return false;
+            }
+            
+            // Debug: Log item yang lolos
+            \Log::info('Item lolos: ' . $item['item_code'] . ' - Manual: ' . ($isManual ? 'Yes' : 'No') . ' - Approved: ' . ($isApproved ? 'Yes' : 'No'));
+            
+            return true;
+        })->values()->toArray();
+        
+        // Debug: Log jumlah
+        \Log::info('Jumlah costingItems: ' . count($costingItems));
+        
+        if (empty($costingItems)) {
+            session()->flash('error', 'No items need costing action!');
+            return;
+        }
+        
+        $this->selectedCostingItems = [];
+        $this->bulkCostingItems = $costingItems;
+        $this->bulkCostingAction = '';
+        $this->showBulkCostingModal = true;
+    }
+
+    public function toggleSelectAllCosting()
+    {
+        $allIndices = collect($this->bulkCostingItems)->pluck('index')->toArray();
+        
+        if (count($this->selectedCostingItems) === count($allIndices)) {
+            $this->selectedCostingItems = [];
+        } else {
+            $this->selectedCostingItems = $allIndices;
+        }
+    }
+
+    public function toggleSelectCostingItem($index)
+    {
+        if (in_array($index, $this->selectedCostingItems)) {
+            $this->selectedCostingItems = array_values(array_diff($this->selectedCostingItems, [$index]));
+        } else {
+            $this->selectedCostingItems[] = $index;
+        }
+    }
+
+    public function saveBulkCosting()
+    {
+        if (empty($this->bulkCostingAction)) {
+            session()->flash('error', 'Please select an action!');
+            return;
+        }
+        
+        if (empty($this->selectedCostingItems)) {
+            session()->flash('error', 'Please select at least one item!');
+            return;
+        }
+        
+        $items = $this->request->items;
+        $updatedCount = 0;
+        $updatedItems = [];
+        $skippedCount = 0;
+        $skippedItems = [];
+        $currentDateTime = now()->toDateTimeString();
+        $currentUser = auth()->user()->name;
+        
+        // Map action ke feedback text
+        $actionMap = [
+            'waiting' => 'Waiting List',
+            'stock_manual' => 'Create Stock Manual',
+            'missc' => 'Create Missc'
+        ];
+        
+        $feedbackText = $actionMap[$this->bulkCostingAction] ?? $this->bulkCostingAction;
+        
+        foreach ($this->bulkCostingItems as $costingItem) {
+            $index = $costingItem['index'];
+            
+            if (in_array($index, $this->selectedCostingItems) && isset($items[$index])) {
+                // Cek apakah item masih Waiting List (bisa diedit)
+                $currentAction = $items[$index]['costing_action'] ?? null;
+                
+                if (in_array($currentAction, ['stock_manual', 'missc'])) {
+                    // Skip item yang sudah final
+                    $skippedCount++;
+                    $skippedItems[] = $costingItem['employee_name'] . ' (' . $costingItem['item_code'] . ')';
+                    continue;
+                }
+                
+                // Update costing feedback
+                $items[$index]['costing_feedback'] = $feedbackText;
+                $items[$index]['costing_feedback_datetime'] = $currentDateTime;
+                $items[$index]['costing_feedback_by'] = $currentUser;
+                $items[$index]['costing_action'] = $this->bulkCostingAction;
+                $updatedCount++;
+                $updatedItems[] = $costingItem['employee_name'] . ' (' . $costingItem['item_code'] . ') → ' . $feedbackText;
+            }
+        }
+        
+        if ($updatedCount === 0 && $skippedCount === 0) {
+            session()->flash('error', 'No items were updated!');
+            return;
+        }
+        
+        $this->request->update(['items' => $items]);
+        $this->request = UniformRequest::with('creator')->find($this->requestId);
+        
+        $message = "Successfully updated {$updatedCount} item(s)";
+        if (!empty($updatedItems)) {
+            $message .= ": " . implode(', ', $updatedItems);
+        }
+        if ($skippedCount > 0) {
+            $message .= ". Skipped {$skippedCount} finalized item(s): " . implode(', ', $skippedItems);
+        }
+        
+        session()->flash('success', $message);
+        
+        $this->closeBulkCostingModal();
+    }
+
+    public function closeBulkCostingModal()
+    {
+        $this->showBulkCostingModal = false;
+        $this->bulkCostingItems = [];
+        $this->selectedCostingItems = [];
+        $this->bulkCostingAction = '';
     }
 
     // ==================== SALARY DEDUCTION FUNCTIONS ====================
@@ -132,16 +297,22 @@ class UniformRequestShow extends Component
         // Set data salary deduction yang sudah ada atau default
         $this->salaryDeduction = $item['salary_deduction'] ?? 'no';
         
-        // Set periode dari data yang sudah ada atau default ke bulan sekarang
-        if (!empty($item['payroll_period'])) {
-            $parts = explode('-', $item['payroll_period']);
-            $this->payrollYear = $parts[0] ?? date('Y');
-            $this->payrollMonth = $parts[1] ?? date('m');
-            $this->payrollPeriod = $item['payroll_period'];
+        // Set periode dari data yang sudah ada atau auto generate (HANYA JIKA YES)
+        if ($this->salaryDeduction === 'yes') {
+            if (!empty($item['payroll_period'])) {
+                $parts = explode('-', $item['payroll_period']);
+                $this->payrollYear = $parts[0] ?? date('Y');
+                $this->payrollMonth = $parts[1] ?? date('m');
+                $this->payrollPeriod = $item['payroll_period'];
+            } else {
+                // Auto-generate period based on signature date
+                $this->autoGeneratePeriod($item);
+            }
         } else {
-            $this->payrollYear = date('Y');
-            $this->payrollMonth = date('m');
-            $this->payrollPeriod = date('Y-m');
+            // Jika No, period kosong
+            $this->payrollPeriod = null;
+            $this->payrollYear = '';
+            $this->payrollMonth = '';
         }
 
         // Generate available years (5 tahun kebelakang)
@@ -171,6 +342,41 @@ class UniformRequestShow extends Component
         $this->salaryRowIndex = $rowIndex;
         $this->salaryItem = $item;
         $this->showSalaryModal = true;
+    }
+
+    /**
+     * Auto generate payroll period based on signature date
+     * Rule: 18 May - 17 June 2026 = June 2026
+     *       18 June - 17 July 2026 = July 2026
+     */
+    private function autoGeneratePeriod($item)
+    {
+        $signatureDate = null;
+        
+        // Get signature date from item
+        if (!empty($item['signature_datetime'])) {
+            $signatureDate = \Carbon\Carbon::parse($item['signature_datetime']);
+        } else {
+            // Jika belum ada signature, gunakan tanggal sekarang
+            $signatureDate = now();
+        }
+        
+        $day = (int) $signatureDate->format('d');
+        
+        // Rule: Jika tanggal 18-31, periode = bulan depan
+        //        Jika tanggal 1-17, periode = bulan ini
+        if ($day >= 18) {
+            // Bulan depan
+            $nextMonth = $signatureDate->copy()->addMonth();
+            $this->payrollYear = $nextMonth->format('Y');
+            $this->payrollMonth = $nextMonth->format('m');
+        } else {
+            // Bulan ini
+            $this->payrollYear = $signatureDate->format('Y');
+            $this->payrollMonth = $signatureDate->format('m');
+        }
+        
+        $this->payrollPeriod = $this->payrollYear . '-' . $this->payrollMonth;
     }
 
     public function saveSalaryDeduction()
@@ -216,18 +422,19 @@ class UniformRequestShow extends Component
                 return;
             }
 
-            // Validasi tahun dan bulan (wajib jika YES)
-            if (empty($this->payrollYear) || empty($this->payrollMonth)) {
-                session()->flash('error', 'Please select payroll year and month for deduction!');
-                return;
+            // Auto generate period jika belum ada
+            if (empty($this->payrollPeriod)) {
+                $this->autoGeneratePeriod($itemDetail ?? []);
+            } else {
+                // Format periode: YYYY-MM
+                $this->payrollPeriod = $this->payrollYear . '-' . $this->payrollMonth;
             }
-
-            // Format periode: YYYY-MM
-            $this->payrollPeriod = $this->payrollYear . '-' . $this->payrollMonth;
         } else {
             // Jika NO, reset period dan amount
             $this->payrollPeriod = null;
             $this->salaryAmount = null;
+            $this->payrollYear = '';
+            $this->payrollMonth = '';
         }
 
         // Simpan data ke items
@@ -259,6 +466,100 @@ class UniformRequestShow extends Component
         $this->availableMonths = [];
     }
 
+    // ==================== BULK DEPARTMENT FUNCTIONS ====================
+
+    public function openBulkDepartmentModal()
+    {
+        // Ambil manual items yang sudah signed
+        $manualItems = $this->items_detail->filter(function($item) {
+            return isset($item['is_manual']) && 
+                $item['is_manual'] && 
+                !empty($item['digital_signature']);
+        })->values()->toArray();
+        
+        if (empty($manualItems)) {
+            session()->flash('error', 'No manual items with signature found!');
+            return;
+        }
+        
+        // JANGAN AUTO SELECT - biarkan kosong
+        $this->selectedItems = [];
+        $this->bulkManualItems = $manualItems;
+        $this->bulkDepartment = '';
+        $this->showBulkDepartmentModal = true;
+    }
+
+    public function toggleSelectAll()
+    {
+        $allIndices = collect($this->bulkManualItems)->pluck('index')->toArray();
+        
+        // Jika semua sudah terpilih, unselect semua
+        if (count($this->selectedItems) === count($allIndices)) {
+            $this->selectedItems = [];
+        } else {
+            $this->selectedItems = $allIndices;
+        }
+    }
+
+    public function toggleSelectItem($index)
+    {
+        if (in_array($index, $this->selectedItems)) {
+            $this->selectedItems = array_values(array_diff($this->selectedItems, [$index]));
+        } else {
+            $this->selectedItems[] = $index;
+        }
+    }
+
+    public function saveBulkDepartment()
+    {
+        if (empty($this->bulkDepartment)) {
+            session()->flash('error', 'Please enter a department!');
+            return;
+        }
+        
+        if (empty($this->selectedItems)) {
+            session()->flash('error', 'Please select at least one item!');
+            return;
+        }
+        
+        $items = $this->request->items;
+        $updatedCount = 0;
+        $updatedItems = [];
+        
+        foreach ($this->bulkManualItems as $manualItem) {
+            $index = $manualItem['index'];
+            
+            // Hanya update yang terpilih
+            if (in_array($index, $this->selectedItems) && isset($items[$index])) {
+                $items[$index]['manual_department'] = $this->bulkDepartment;
+                $items[$index]['bulk_updated_at'] = now()->toDateTimeString();
+                $items[$index]['bulk_updated_by'] = auth()->user()->name;
+                $updatedCount++;
+                $updatedItems[] = $manualItem['employee_name'] . ' (' . $manualItem['item_code'] . ')';
+            }
+        }
+        
+        if ($updatedCount === 0) {
+            session()->flash('error', 'No items were updated!');
+            return;
+        }
+        
+        $this->request->update(['items' => $items]);
+        $this->request = UniformRequest::with('creator')->find($this->requestId);
+        
+        session()->flash('success', "Successfully updated department for {$updatedCount} manual item(s): " . implode(', ', $updatedItems));
+        
+        $this->closeBulkDepartmentModal();
+    }
+
+    public function closeBulkDepartmentModal()
+    {
+        $this->showBulkDepartmentModal = false;
+        $this->bulkDepartment = '';
+        $this->bulkManualItems = [];
+        $this->selectedItems = [];
+    }
+
     // ==================== VERIFICATION FUNCTIONS ====================
 
     public function openVerificationModal($rowIndex)
@@ -288,6 +589,12 @@ class UniformRequestShow extends Component
             return;
         }
 
+        // Cek jika item manual, skip verifikasi
+        if (isset($item['is_manual']) && $item['is_manual']) {
+            session()->flash('error', 'Manual items do not require verification!');
+            return;
+        }
+
         $this->verificationRowIndex = $rowIndex;
         $this->verificationItem = $item;
         $this->verificationStatus = null;
@@ -310,6 +617,11 @@ class UniformRequestShow extends Component
             return;
         }
 
+        // Ambil item detail untuk mendapatkan qty dan data employee
+        $itemDetail = $this->items_detail[$this->verificationRowIndex] ?? null;
+        $previousStatus = $items[$index]['verification_status'] ?? null;
+        
+        // Simpan verification
         $items[$index]['verification_status'] = $this->verificationStatus;
         $items[$index]['verification_datetime'] = now()->toDateTimeString();
         $items[$index]['verification_by'] = auth()->user()->name;
@@ -317,11 +629,69 @@ class UniformRequestShow extends Component
 
         $this->request->update(['items' => $items]);
         
+        // ==================== HANDLE STOCK RETURN IF REJECTED ====================
+        $qtyRequested = 0;
+        if ($this->verificationStatus === 'rejected' && $previousStatus !== 'rejected') {
+            $qtyRequested = (int) ($itemDetail['qty'] ?? 0);
+            $uniformId = $itemDetail['master_uniform_id'] ?? null;
+            
+            $employeeNik = $itemDetail['employee_nik'] ?? '-';
+            $employeeName = $itemDetail['employee_name'] ?? '-';
+            $employeeDepartment = $itemDetail['employee_department'] ?? '-';
+            $employeeInfo = $employeeNik . ' - ' . $employeeName . ' (' . $employeeDepartment . ')';
+            
+            if ($uniformId && $qtyRequested > 0) {
+                $uniform = MasterUniform::find($uniformId);
+                if ($uniform) {
+                    $oldQty = $uniform->qty;
+                    $newQty = $oldQty + $qtyRequested;
+                    
+                    $uniform->qty = $newQty;
+                    $uniform->save();
+                    
+                    try {
+                        \App\Models\PROD\Uniform\UniformStockTransaction::create([
+                            'master_uniform_id' => $uniform->id,
+                            'transaction_type' => 'IN',
+                            'qty_change' => $qtyRequested,
+                            'qty_before' => $oldQty,
+                            'qty_after' => $newQty,
+                            'reference_id' => $this->request->request_number,
+                            'reference_type' => 'uniform_request_rejected',
+                            'description' => 'Pengembalian Uniform After Rejected - Request: ' . $this->request->request_number . ' - ' . $employeeInfo,
+                            'performed_by' => auth()->user()->name,
+                            'performed_at' => now(),
+                        ]);
+                    } catch (\Exception $e) {
+                        \Log::error('Failed to create stock return transaction: ' . $e->getMessage());
+                    }
+                }
+            }
+        }
+        // ==================== END HANDLE STOCK RETURN ====================
+        
         $statusText = $this->verificationStatus === 'approved' ? 'Approved' : 'Rejected';
-        session()->flash('success', "Item has been {$statusText} successfully!");
+        $message = "Item has been {$statusText} successfully!";
+        
+        if ($this->verificationStatus === 'rejected') {
+            $items[$index]['costing_feedback'] = 'Rejected';
+            $items[$index]['costing_feedback_datetime'] = now()->toDateTimeString();
+            $items[$index]['costing_feedback_by'] = auth()->user()->name;
+            $items[$index]['costing_action'] = 'rejected';
+            $this->request->update(['items' => $items]);
+        }
+        
+        session()->flash('success', $message);
 
         $this->closeVerificationModal();
+        
+        // ==================== REFRESH DATA ====================
+        // Refresh request data dari database
         $this->request = UniformRequest::with('creator')->find($this->requestId);
+        
+        // Dispatch event untuk refresh table
+        $this->dispatch('refreshTable');
+        // ==================== END REFRESH DATA ====================
     }
 
     public function closeVerificationModal()
@@ -350,19 +720,26 @@ class UniformRequestShow extends Component
 
         $item = $items[$rowIndex];
         
-        // Cek apakah verification status = rejected
+        // CEK: Apakah item rejected?
         if (isset($item['verification_status']) && $item['verification_status'] === 'rejected') {
             session()->flash('error', 'Cannot sign rejected item!');
             return;
         }
         
-        // Check if costing feedback exists for this item
+        // CEK: Harus sudah ada costing feedback
         if (empty($item['costing_feedback'])) {
             session()->flash('error', 'Costing feedback must be filled before signing!');
             return;
         }
+        
+        // CEK: Harus sudah final (stock_manual atau missc), BUKAN Waiting List
+        $costingAction = $item['costing_action'] ?? null;
+        if (!in_array($costingAction, ['stock_manual', 'missc'])) {
+            session()->flash('error', 'Cannot sign item with "Waiting List" status! Please update to final action (Stock Manual or Missc) first.');
+            return;
+        }
 
-        // Check if already signed
+        // CEK: Apakah sudah di-sign?
         if (!empty($item['digital_signature'])) {
             session()->flash('error', 'This item has already been signed!');
             return;
@@ -401,13 +778,107 @@ class UniformRequestShow extends Component
             return;
         }
 
+        // CEK: Harus sudah final (stock_manual atau missc)
+        $costingAction = $items[$index]['costing_action'] ?? null;
+        if (!in_array($costingAction, ['stock_manual', 'missc'])) {
+            session()->flash('error', 'Cannot sign item with "Waiting List" status! Please update to final action first.');
+            return;
+        }
+
+        // CEK: Apakah sudah di-sign?
+        if (!empty($items[$index]['digital_signature'])) {
+            session()->flash('error', 'This item has already been signed!');
+            return;
+        }
+
+        // Cek salary deduction status
+        $salaryDeduction = $items[$index]['salary_deduction'] ?? 'no';
+        
+        // Hanya isi period jika salary_deduction = yes
+        if ($salaryDeduction === 'yes') {
+            // Auto generate payroll period based on signature date
+            $this->autoGeneratePeriod($this->signatureItem);
+            $items[$index]['payroll_period'] = $this->payrollPeriod;
+            $items[$index]['payroll_year'] = $this->payrollYear;
+            $items[$index]['payroll_month'] = $this->payrollMonth;
+        } else {
+            // Jika No, period tetap null
+            $items[$index]['payroll_period'] = null;
+            $items[$index]['payroll_year'] = null;
+            $items[$index]['payroll_month'] = null;
+        }
+
         $items[$index]['digital_signature'] = $this->signatureImage;
         $items[$index]['signature_datetime'] = now()->toDateTimeString();
         $items[$index]['signature_name'] = $this->signatureName;
 
         $this->request->update(['items' => $items]);
         
-        session()->flash('success', 'Digital signature has been applied successfully!');
+        // ==================== RECORD STOCK OUT ====================
+        // Kurangi stock dari MasterUniform
+        $uniform = MasterUniform::find($this->signatureItem['master_uniform_id']);
+        if ($uniform) {
+            $oldQty = $uniform->qty;
+            $qtyRequested = (int) $this->signatureItem['qty'];
+            $newQty = $oldQty - $qtyRequested;
+            
+            // Pastikan stock tidak negatif (tapi tetap catat)
+            if ($newQty < 0) {
+                // Log warning tapi tetap lanjutkan
+                \Log::warning('Stock negative for uniform: ' . $uniform->item_code . ' - Request: ' . $this->request->request_number . ' - Old: ' . $oldQty . ', Requested: ' . $qtyRequested);
+                $newQty = 0;
+            }
+            
+            // Update qty di MasterUniform
+            $uniform->qty = $newQty;
+            $uniform->save();
+            
+            // Ambil data employee untuk deskripsi
+            $employeeNik = $this->signatureItem['employee_nik'] ?? '-';
+            $employeeName = $this->signatureItem['employee_name'] ?? '-';
+            $employeeDepartment = $this->signatureItem['employee_department'] ?? '-';
+            $employeeInfo = $employeeNik . ' - ' . $employeeName . ' (' . $employeeDepartment . ')';
+            
+            // Create transaction history
+            try {
+                \App\Models\PROD\Uniform\UniformStockTransaction::create([
+                    'master_uniform_id' => $uniform->id,
+                    'transaction_type' => 'OUT',
+                    'qty_change' => -$qtyRequested,
+                    'qty_before' => $oldQty,
+                    'qty_after' => $newQty,
+                    'reference_id' => $this->request->request_number,
+                    'reference_type' => 'uniform_request',
+                    'description' => 'Request: ' . $this->request->request_number . ' - ' . $employeeInfo,
+                    'performed_by' => auth()->user()->name,
+                    'performed_at' => now(),
+                ]);
+            } catch (\Exception $e) {
+                \Log::error('Failed to create stock transaction: ' . $e->getMessage());
+            }
+        } else {
+            \Log::warning('Uniform not found for stock deduction: ' . ($this->signatureItem['master_uniform_id'] ?? 'null'));
+        }
+        // ==================== END RECORD STOCK OUT ====================
+        
+        $message = 'Digital signature has been applied successfully!';
+        if ($salaryDeduction === 'yes') {
+            $message .= ' Payroll period: ' . \Carbon\Carbon::parse($this->payrollPeriod . '-01')->format('F Y');
+        } else {
+            $message .= ' (No salary deduction)';
+        }
+        
+        // Tambahkan info stock ke message
+        if ($uniform) {
+            $message .= ' Stock remaining: ' . $uniform->qty;
+            if ($uniform->qty <= 5 && $uniform->qty > 0) {
+                $message .= ' (Low stock!)';
+            } elseif ($uniform->qty == 0) {
+                $message .= ' (Out of stock!)';
+            }
+        }
+        
+        session()->flash('success', $message);
 
         $this->closeSignatureModal();
         $this->request = UniformRequest::with('creator')->find($this->requestId);
@@ -436,6 +907,21 @@ class UniformRequestShow extends Component
             
             $isManual = isset($item['is_manual']) && $item['is_manual'];
             
+            // Jika manual, set admin_feedback, verification_status, salary_deduction ke N/A
+            $adminFeedback = $item['admin_feedback'] ?? null;
+            $verificationStatus = $item['verification_status'] ?? null;
+            $salaryDeduction = $item['salary_deduction'] ?? null;
+            $payrollPeriod = $item['payroll_period'] ?? null;
+            $deductionAmount = $item['deduction_amount'] ?? null;
+            
+            if ($isManual) {
+                $adminFeedback = 'N/A (Manual Input)';
+                $verificationStatus = 'N/A (Manual Input)';
+                $salaryDeduction = 'N/A (Manual Input)';
+                $payrollPeriod = null;
+                $deductionAmount = null;
+            }
+            
             $details[] = [
                 'index' => $index,
                 'employee_id' => $item['employee_id'] ?? null,
@@ -452,22 +938,27 @@ class UniformRequestShow extends Component
                 'request_date' => $item['request_date'],
                 'remarks' => $item['remarks'] ?? '',
                 // Admin Feedback
-                'admin_feedback' => $item['admin_feedback'] ?? null,
+                'admin_feedback' => $adminFeedback,
                 'admin_feedback_datetime' => $item['admin_feedback_datetime'] ?? null,
+                'admin_feedback_by' => $item['admin_feedback_by'] ?? null,
                 // Salary Deduction
-                'salary_deduction' => $item['salary_deduction'] ?? null,
-                'deduction_amount' => $item['deduction_amount'] ?? null,
-                'payroll_period' => $item['payroll_period'] ?? null,
+                'salary_deduction' => $salaryDeduction,
+                'deduction_amount' => $deductionAmount,
+                'payroll_period' => $payrollPeriod,
+                'payroll_year' => $item['payroll_year'] ?? null,
+                'payroll_month' => $item['payroll_month'] ?? null,
                 'salary_updated_by' => $item['salary_updated_by'] ?? null,
                 'salary_updated_at' => $item['salary_updated_at'] ?? null,
                 // Verification
-                'verification_status' => $item['verification_status'] ?? null,
+                'verification_status' => $verificationStatus,
                 'verification_datetime' => $item['verification_datetime'] ?? null,
                 'verification_by' => $item['verification_by'] ?? null,
                 'verification_note' => $item['verification_note'] ?? null,
                 // Costing Feedback
                 'costing_feedback' => $item['costing_feedback'] ?? null,
                 'costing_feedback_datetime' => $item['costing_feedback_datetime'] ?? null,
+                'costing_feedback_by' => $item['costing_feedback_by'] ?? null,
+                'costing_action' => $item['costing_action'] ?? null, // <-- TAMBAHKAN INI
                 // Digital Signature
                 'digital_signature' => $item['digital_signature'] ?? null,
                 'signature_datetime' => $item['signature_datetime'] ?? null,
@@ -530,15 +1021,18 @@ class UniformRequestShow extends Component
         }
         
         $items = $this->request->items;
+        $currentUser = auth()->user()->name;
         
         if (isset($items[$this->selectedRowIndex])) {
             if ($this->selectedFeedbackType === 'admin') {
                 $items[$this->selectedRowIndex]['admin_feedback'] = $this->feedback_input;
                 $items[$this->selectedRowIndex]['admin_feedback_datetime'] = now()->toDateTimeString();
+                $items[$this->selectedRowIndex]['admin_feedback_by'] = $currentUser;
                 $message = 'Admin feedback added successfully!';
             } else {
                 $items[$this->selectedRowIndex]['costing_feedback'] = $this->feedback_input;
                 $items[$this->selectedRowIndex]['costing_feedback_datetime'] = now()->toDateTimeString();
+                $items[$this->selectedRowIndex]['costing_feedback_by'] = $currentUser;
                 $message = 'Costing feedback added successfully!';
             }
             
@@ -596,7 +1090,7 @@ class UniformRequestShow extends Component
         $csvData[] = [];
         $csvData[] = [];
         
-        // Data Table Header - Tambahkan DEPARTMENT dan IS_MANUAL
+        // Data Table Header - HAPUS PERIOD
         $csvData[] = [
             'NIK', 
             'NAME',
@@ -611,18 +1105,11 @@ class UniformRequestShow extends Component
             'REMARKS',
             'ADMIN FEEDBACK',
             'SALARY DEDUCTION',
-            'PERIOD',
-            'IS_MANUAL'  // TAMBAHKAN untuk identifikasi manual input
+            'IS_MANUAL'
         ];
         
         // Data rows
         foreach ($items as $item) {
-            $periodDisplay = '';
-            if (!empty($item['payroll_period'])) {
-                $periodDate = \Carbon\Carbon::parse($item['payroll_period'] . '-01');
-                $periodDisplay = $periodDate->format('F Y');
-            }
-            
             // Tentukan nilai NIK, NAME, DEPARTMENT berdasarkan manual atau tidak
             $isManual = isset($item['is_manual']) && $item['is_manual'];
             $nik = $isManual ? ($item['manual_nik'] ?? $item['employee_nik']) : $item['employee_nik'];
@@ -643,7 +1130,6 @@ class UniformRequestShow extends Component
                 $item['remarks'] ?? '',
                 $item['admin_feedback'] ?? '',
                 isset($item['salary_deduction']) ? ucfirst($item['salary_deduction']) : '',
-                $periodDisplay,
                 $isManual ? 'Yes' : 'No',
             ];
         }
@@ -668,7 +1154,7 @@ class UniformRequestShow extends Component
         $csvData[] = [];
         $csvData[] = [];
         
-        // Data Table Header - Tambahkan DEPARTMENT dan IS_MANUAL
+        // Data Table Header
         $csvData[] = [
             'NIK', 
             'NAME',
@@ -688,7 +1174,7 @@ class UniformRequestShow extends Component
             'VERIFIED BY', 
             'VERIFICATION NOTE',
             'COSTING FEEDBACK',
-            'IS_MANUAL'  // TAMBAHKAN
+            'IS_MANUAL'
         ];
         
         // Data rows
@@ -878,13 +1364,13 @@ class UniformRequestShow extends Component
         
         // Expected headers based on import type
         if ($this->importType === 'admin') {
+            // HAPUS PERIOD dari expected headers
             $expectedHeaders = [
                 'NIK', 'NAME', 'DEPARTMENT', 'ITEM CODE', 'DESCRIPTION', 'SIZE', 'QTY', 
                 'GROUP', 'REQUEST DATE', 'REASON', 'REMARKS',
-                'ADMIN FEEDBACK', 'SALARY DEDUCTION', 'PERIOD'
+                'ADMIN FEEDBACK', 'SALARY DEDUCTION'
             ];
         } else {
-            // Costing import - Tambahkan DEPARTMENT juga
             $expectedHeaders = [
                 'NIK', 'NAME', 'DEPARTMENT', 'ITEM CODE', 'DESCRIPTION', 'SIZE', 'QTY', 
                 'GROUP', 'REQUEST DATE', 'REASON', 'REMARKS',
@@ -917,10 +1403,6 @@ class UniformRequestShow extends Component
             }
             
             if (!$found) {
-                // Untuk SALARY DEDUCTION dan PERIOD, tidak wajib (opsional)
-                if ($this->importType === 'admin' && in_array($expectedHeader, ['SALARY DEDUCTION', 'PERIOD'])) {
-                    continue;
-                }
                 $missingHeaders[] = $expectedHeader;
             }
         }
@@ -967,16 +1449,6 @@ class UniformRequestShow extends Component
                     }
                 }
                 $rowData[$expectedHeader] = $value;
-            }
-            
-            // Jika SALARY DEDUCTION dan PERIOD tidak ada di header, set default
-            if ($this->importType === 'admin') {
-                if (!isset($rowData['SALARY DEDUCTION'])) {
-                    $rowData['SALARY DEDUCTION'] = '';
-                }
-                if (!isset($rowData['PERIOD'])) {
-                    $rowData['PERIOD'] = '';
-                }
             }
             
             // Validate required fields
@@ -1094,7 +1566,7 @@ class UniformRequestShow extends Component
                 
                 // Cek apakah admin feedback sudah ada
                 $dbAdminFeedback = $matchingItem['admin_feedback'] ?? '';
-                if (!empty($dbAdminFeedback)) {
+                if (!empty($dbAdminFeedback) && $dbAdminFeedback !== 'N/A (Manual Input)') {
                     // Jika sudah ada, cek apakah sama
                     if (strtolower(trim($adminFeedback)) !== strtolower(trim($dbAdminFeedback))) {
                         $this->importErrors[] = [
@@ -1109,12 +1581,10 @@ class UniformRequestShow extends Component
                 
                 // ==================== VALIDASI SALARY DEDUCTION ====================
                 $salaryDeduction = null;
-                $salaryPeriod = null;
                 $salaryAmount = null;
                 $salaryError = null;
 
                 $csvDeduction = strtolower(trim($rowData['SALARY DEDUCTION'] ?? ''));
-                $csvPeriod = trim($rowData['PERIOD'] ?? '');
 
                 // Cek apakah item rejected
                 $isRejected = isset($matchingItem['verification_status']) && $matchingItem['verification_status'] === 'rejected';
@@ -1122,7 +1592,6 @@ class UniformRequestShow extends Component
                 // Jika item rejected, salary deduction otomatis N/A (tidak perlu diisi)
                 if ($isRejected) {
                     $salaryDeduction = null;
-                    $salaryPeriod = null;
                     $salaryAmount = null;
                 } 
                 // Jika ada data salary deduction di CSV
@@ -1131,46 +1600,16 @@ class UniformRequestShow extends Component
                         $salaryError = 'SALARY DEDUCTION must be "Yes" or "No"!';
                     } elseif ($csvDeduction === 'yes') {
                         $salaryDeduction = 'yes';
+                        $uniform = MasterUniform::where('item_code', $matchingItem['item_code'])->first();
+                        $salaryAmount = $uniform ? $uniform->price : 0;
                         
-                        if (empty($csvPeriod)) {
-                            $salaryError = 'PERIOD is required when SALARY DEDUCTION is Yes!';
-                        } else {
-                            try {
-                                $date = \Carbon\Carbon::createFromFormat('F Y', $csvPeriod);
-                                if (!$date) {
-                                    $date = \Carbon\Carbon::createFromFormat('M Y', $csvPeriod);
-                                }
-                                if (!$date) {
-                                    $date = \Carbon\Carbon::createFromFormat('M-y', $csvPeriod);
-                                }
-                                if (!$date) {
-                                    $date = \Carbon\Carbon::createFromFormat('m-Y', $csvPeriod);
-                                }
-                                if (!$date) {
-                                    throw new \Exception('Invalid format');
-                                }
-                                $salaryPeriod = $date->format('Y-m');
-                                
-                                $uniform = MasterUniform::where('item_code', $matchingItem['item_code'])->first();
-                                $salaryAmount = $uniform ? $uniform->price : 0;
-                                
-                                if ($salaryAmount <= 0) {
-                                    $salaryError = 'Price not found in Master Uniform!';
-                                }
-                            } catch (\Exception $e) {
-                                $salaryError = 'Invalid PERIOD format! Use: July 2026, Jul-26, 07-2026, etc.';
-                            }
+                        if ($salaryAmount <= 0) {
+                            $salaryError = 'Price not found in Master Uniform!';
                         }
                     } else {
-                        // Jika No, tidak perlu period
+                        // Jika No
                         $salaryDeduction = 'no';
-                        $salaryPeriod = null;
                         $salaryAmount = null;
-                        
-                        // Jika No tapi period diisi, error
-                        if (!empty($csvPeriod)) {
-                            $salaryError = 'PERIOD must be empty when SALARY DEDUCTION is No!';
-                        }
                     }
                 } 
                 else {
@@ -1205,10 +1644,7 @@ class UniformRequestShow extends Component
                     'feedback' => $adminFeedback,
                     'is_rejected' => $isRejected,
                     'salary_deduction' => $salaryDeduction,
-                    'salary_period' => $salaryPeriod,
                     'salary_amount' => $salaryAmount,
-                    'salary_period_display' => $csvPeriod,
-                    'salary_error' => $salaryError,
                 ];
                 $this->importSuccessCount++;
             }
@@ -1369,7 +1805,7 @@ class UniformRequestShow extends Component
                     }
                     
                     // Cek apakah admin feedback sudah terisi di database
-                    if (empty($dbAdminFeedback)) {
+                    if (empty($dbAdminFeedback) || $dbAdminFeedback === 'N/A (Manual Input)') {
                         $this->importErrors[] = [
                             'row' => $rowNumber,
                             'message' => 'Admin feedback must be filled before costing feedback! NIK: ' . $rowData['NIK'],
@@ -1475,6 +1911,7 @@ class UniformRequestShow extends Component
         $updatedCount = 0;
         $skippedCount = 0;
         $currentDateTime = now()->toDateTimeString();
+        $currentUser = auth()->user()->name;
         
         foreach ($this->importPreview as $preview) {
             // Skip rejected items (untuk costing)
@@ -1488,19 +1925,22 @@ class UniformRequestShow extends Component
             if ($this->importType === 'admin') {
                 $items[$itemIndex]['admin_feedback'] = $preview['feedback'];
                 $items[$itemIndex]['admin_feedback_datetime'] = $currentDateTime;
+                $items[$itemIndex]['admin_feedback_by'] = $currentUser;
                 
                 // Update salary deduction (SELALU UPDATE jika ada data di preview)
                 if (array_key_exists('salary_deduction', $preview)) {
                     $items[$itemIndex]['salary_deduction'] = $preview['salary_deduction'];
                     $items[$itemIndex]['deduction_amount'] = $preview['salary_amount'];
-                    $items[$itemIndex]['payroll_period'] = $preview['salary_period'];
-                    $items[$itemIndex]['salary_updated_by'] = auth()->user()->name;
+                    // Period akan auto generate saat signature
+                    $items[$itemIndex]['payroll_period'] = null;
+                    $items[$itemIndex]['salary_updated_by'] = $currentUser;
                     $items[$itemIndex]['salary_updated_at'] = $currentDateTime;
                 }
             } else {
                 // Update costing feedback
                 $items[$itemIndex]['costing_feedback'] = $preview['feedback'];
                 $items[$itemIndex]['costing_feedback_datetime'] = $currentDateTime;
+                $items[$itemIndex]['costing_feedback_by'] = $currentUser;
             }
             
             $updatedCount++;

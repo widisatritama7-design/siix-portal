@@ -27,7 +27,7 @@ class ScheduleWristStrap extends Command
                 'register_no'       => $record->register_no,
                 'remarks'           => 'Schedule On',
                 'next_date'         => Carbon::parse($record->next_date)->addMonth(),
-                'created_by'        => 504,
+                'created_by'        => 574,
                 'created_at'        => now(),
                 'updated_at'        => now(),
             ]);

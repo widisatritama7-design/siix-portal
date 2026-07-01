@@ -266,6 +266,9 @@
                                 {{ \Carbon\Carbon::parse($item['admin_feedback_datetime'])->format('d/m/Y H:i') }}
                             </span>
                         @endif
+                        @if($item['admin_feedback_by'] && $item['admin_feedback_by'] != '-')
+                            <br><span class="text-muted" style="font-size: 6px;">{{ $item['admin_feedback_by'] }}</span>
+                        @endif
                     </td>
                     <td class="text-center">
                         @if($item['is_manual'])
@@ -303,6 +306,9 @@
                             <br><span class="text-muted" style="font-size: 6px;">
                                 {{ \Carbon\Carbon::parse($item['costing_feedback_datetime'])->format('d/m/Y H:i') }}
                             </span>
+                        @endif
+                        @if($item['costing_feedback_by'] && $item['costing_feedback_by'] != '-')
+                            <br><span class="text-muted" style="font-size: 6px;">{{ $item['costing_feedback_by'] }}</span>
                         @endif
                     </td>
                     <td class="text-center">

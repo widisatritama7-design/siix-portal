@@ -104,6 +104,7 @@
                                     <option value="On Process Measure">On Process Measure</option>
                                     <option value="Finish">Finish</option>
                                     <option value="Available">Available</option>
+                                    <option value="NG">NG (Process Request)</option> <!-- TAMBAHKAN INI -->
                                 </select>
                             </div>
 
@@ -212,6 +213,7 @@
                                                 <option value="On Process Measure">On Process Measure</option>
                                                 <option value="Finish">Finish</option>
                                                 <option value="Available">Available</option>
+                                                <option value="NG">NG (Process Request)</option> <!-- TAMBAHKAN INI -->
                                             </select>
                                         @else
                                             <div class="flex items-center gap-1">
@@ -329,17 +331,18 @@
                                     </td>
                                     <td class="px-3 py-2" wire:key="status-right-{{ $locker->id }}">
                                         @if($editingId === $locker->id)
-                                            <select 
-                                                wire:model.live="editingStatus"
-                                                wire:keydown.enter="updateStatus({{ $locker->id }})"
-                                                wire:blur="updateStatus({{ $locker->id }})"
-                                                class="w-full px-2 py-1 text-xs border rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:border-zinc-700"
-                                                autofocus>
-                                                <option value="Filled">Filled</option>
-                                                <option value="On Process Measure">On Process Measure</option>
-                                                <option value="Finish">Finish</option>
-                                                <option value="Available">Available</option>
-                                            </select>
+                                        <select 
+                                            wire:model.live="editingStatus"
+                                            wire:keydown.enter="updateStatus({{ $locker->id }})"
+                                            wire:blur="updateStatus({{ $locker->id }})"
+                                            class="w-full px-2 py-1 text-xs border rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:border-zinc-700"
+                                            autofocus>
+                                            <option value="Filled">Filled</option>
+                                            <option value="On Process Measure">On Process Measure</option>
+                                            <option value="Finish">Finish</option>
+                                            <option value="Available">Available</option>
+                                            <option value="NG">NG (Process Request)</option> <!-- TAMBAHKAN INI -->
+                                        </select>
                                         @else
                                             <div class="flex items-center gap-1">
                                                 <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-{{ $statusColor }}-100 text-{{ $statusColor }}-800 dark:bg-{{ $statusColor }}-900/30 dark:text-{{ $statusColor }}-400">
@@ -476,6 +479,7 @@
                                             <option value="Filled">Filled</option>
                                             <option value="On Process Measure">On Process Measure</option>
                                             <option value="Finish">Finish</option>
+                                            <option value="NG">NG (Process Request)</option> <!-- TAMBAHKAN INI -->
                                         </select>
                                         @error('status') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                     </div>

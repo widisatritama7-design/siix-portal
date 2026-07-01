@@ -27,7 +27,7 @@ class ScheduleJig extends Command
                 'jigs_id'          => $record->jigs_id,
                 'remarks'          => 'Schedule On',
                 'next_date'        => Carbon::parse($record->next_date)->addYear(), // tahun depan
-                'created_by'       => 504,
+                'created_by'       => 574,
                 'created_at'       => now(),
                 'updated_at'       => now(),
             ]);

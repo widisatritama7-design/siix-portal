@@ -214,57 +214,62 @@
                 </p>
             </div>
         @else
-            <div class="overflow-x-auto flex-1">
-                <table class="w-full">
+            <div class="overflow-x-auto flex-1" style="overflow-x: auto !important; -webkit-overflow-scrolling: touch;">
+                <table class="w-full" style="min-width: 1200px; white-space: nowrap;">
                     <thead>
                         <tr class="bg-zinc-50 dark:bg-zinc-800/50">
-                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">#</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">NCP Number</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Employee</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Section</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Status</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Remarks</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Created At</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 50px;">#</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 130px;">NCP Number</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 80px;">NIK</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 150px;">Name</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 120px;">Department</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 100px;">Status</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 150px;">Remarks</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 120px;">Date</th>
                             @if($activeTab === 'deleted')
-                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Deleted By</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Deleted Reason</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 120px;">Deleted By</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 150px;">Deleted Reason</th>
                             @else
-                            <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Actions</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 200px;">Actions</th>
                             @endif
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
                         @forelse($ncps as $index => $ncp)
                         <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors" wire:key="ncp-{{ $ncp->id }}">
-                            <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400">
+                            <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400 text-center">
                                 {{ $ncps->firstItem() + $index }}
                             </td>
-                            <td class="px-4 py-3">
-                                <div class="flex items-center gap-3">
+                            <td class="px-4 py-3 text-center">
+                                <div class="flex items-center justify-center gap-3">
                                     <div>
                                         <span class="text-sm font-semibold text-zinc-800 dark:text-white block">
                                             {{ $ncp->ncp_number }}
                                         </span>
                                         @if($activeTab === 'deleted' && $ncp->deleted_reason)
                                         <span class="text-xs text-red-500 dark:text-red-400">
-                                            Deleted: {{ \Carbon\Carbon::parse($ncp->deleted_at)->format('d/m/Y H:i') }}
+                                            Deleted Date : {{ \Carbon\Carbon::parse($ncp->deleted_at)->format('d/m/Y H:i') }}
                                         </span>
                                         @endif
                                     </div>
                                 </div>
                             </td>
-                            <td class="px-4 py-3">
-                                <div class="text-sm">
-                                    <div class="font-medium text-zinc-800 dark:text-white">{{ $ncp->employee->name ?? 'N/A' }}</div>
-                                    <div class="text-xs text-zinc-500">{{ $ncp->employee->department ?? '-' }}</div>
+                            <td class="px-4 py-3 text-center">
+                                <div class="flex items-center justify-center gap-3">
+                                    <span class="text-sm font-semibold text-zinc-800 dark:text-white block">{{ $ncp->employee->nik ?? 'N/A' }}</span>
                                 </div>
                             </td>
-                            <td class="px-4 py-3">
-                                <span class="text-sm text-zinc-700 dark:text-zinc-300">
-                                    {{ $ncp->section ?? '-' }}
-                                </span>
+                            <td class="px-4 py-3 text-left">
+                                <div class="flex items-left justify-left gap-3">
+                                    <span class="text-sm font-semibold text-zinc-800 dark:text-white block">{{ $ncp->employee->name ?? 'N/A' }}</span>
+                                </div>
                             </td>
-                            <td class="px-4 py-3">
+                            <td class="px-4 py-3 text-center">
+                                <div class="flex items-center justify-center gap-3">
+                                    <span class="text-sm font-semibold text-zinc-800 dark:text-white block">{{ $ncp->employee->department ?? '-' }}</span>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 text-center">
                                 @php
                                     $statusColors = [
                                         'open' => 'yellow',
@@ -279,65 +284,126 @@
                                         'rejected' => 'Rejected',
                                     ];
                                 @endphp
-                                <flux:badge size="sm" color="{{ $statusColors[$ncp->status] ?? 'gray' }}">
-                                    {{ $statusTexts[$ncp->status] ?? ucfirst($ncp->status) }}
-                                </flux:badge>
+                                <div class="flex items-center justify-center">
+                                    <flux:badge size="sm" color="{{ $statusColors[$ncp->status] ?? 'gray' }}">
+                                        {{ $statusTexts[$ncp->status] ?? ucfirst($ncp->status) }}
+                                    </flux:badge>
+                                </div>
                             </td>
-                            <td class="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400 max-w-md truncate" title="{{ $ncp->remarks }}">
-                                {{ $ncp->remarks ?: '-' }}
+                            <!-- Remarks Column -->
+                            <td class="px-4 py-3 text-center">
+                                @php
+                                    $remarks = $ncp->remarks ?: '-';
+                                    $wordCount = str_word_count($remarks);
+                                    $isLong = $wordCount > 10;
+                                @endphp
+                                
+                                @if($remarks !== '-')
+                                    @if($isLong)
+                                        <div x-data="{ show: false }" 
+                                            class="relative inline-block"
+                                            @mouseenter="show = true"
+                                            @mouseleave="show = false">
+                                            <span class="text-sm text-zinc-600 dark:text-zinc-400 cursor-help border-b border-dashed border-zinc-400 dark:border-zinc-500">
+                                                {{ Str::limit($remarks, 20) }}
+                                            </span>
+                                            <div x-show="show" 
+                                                x-cloak
+                                                x-transition:enter="transition ease-out duration-200"
+                                                x-transition:enter-start="opacity-0 scale-95"
+                                                x-transition:enter-end="opacity-100 scale-100"
+                                                class="absolute z-50 bottom-full left-1/2 -translate-x-1/2 mb-2 
+                                                        bg-zinc-800 dark:bg-zinc-700 text-white text-xs rounded-lg px-3 py-2 
+                                                        min-w-[200px] max-w-sm shadow-lg text-left whitespace-normal"
+                                                style="display: none;">
+                                                {{ $remarks }}
+                                                <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-zinc-800 dark:bg-zinc-700 rotate-45"></div>
+                                            </div>
+                                        </div>
+                                    @else
+                                        <span class="text-sm text-zinc-600 dark:text-zinc-400">
+                                            {{ $remarks }}
+                                        </span>
+                                    @endif
+                                @else
+                                    <span class="text-sm text-zinc-400">-</span>
+                                @endif
                             </td>
-                            <td class="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400">
+                            <td class="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400 text-center">
                                 {{ $ncp->created_at ? \Carbon\Carbon::parse($ncp->created_at)->format('d/m/Y H:i') : '-' }}
                             </td>
                             
                             @if($activeTab === 'deleted')
-                            <td class="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400">
+                            <td class="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400 text-center">
                                 {{ $ncp->deleter->name ?? '-' }}
                             </td>
-                            <td class="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400 max-w-md">
-                                <div class="truncate max-w-xs" title="{{ $ncp->deleted_reason }}">
+                            <td class="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400 max-w-md text-center">
+                                <div class="truncate max-w-xs inline-block" title="{{ $ncp->deleted_reason }}">
                                     {{ $ncp->deleted_reason ?: '-' }}
                                 </div>
                             </td>
                             @else
-                            <td class="px-4 py-3 text-right">
-                                <div class="flex items-center justify-end gap-1">
+                            <td class="px-4 py-3 text-center">
+                                <div class="flex items-center justify-center gap-1" style="flex-wrap: nowrap;">
+                                    @php
+                                        $canPrint = $this->canPrintNCP($ncp->id);
+                                        $canPrintStatus = $ncp->status === 'open'; // Hanya status open yang bisa print
+                                    @endphp
+
+                                    @if($canPrint && $canPrintStatus)
+                                        <flux:tooltip content="Print NCP" position="top">
+                                            <a href="{{ route('ncp.print', $ncp->id) }}" target="_blank">
+                                                <flux:button 
+                                                    size="sm"
+                                                    icon="printer"
+                                                    variant="primary"
+                                                    color="green"
+                                                    class="!p-2 flex-shrink-0"
+                                                />
+                                            </a>
+                                        </flux:tooltip>
+                                    @endif
+                                    
                                     @can('view ncp')
-                                    <flux:button 
-                                        wire:click="view({{ $ncp->id }})" 
-                                        size="sm"
-                                        icon="eye"
-                                        variant="primary"
-                                        color="blue"
-                                        class="!p-2"
-                                        title="View NCP"
-                                    />
+                                    <flux:tooltip content="View NCP" position="top">
+                                        <flux:button 
+                                            wire:click="view({{ $ncp->id }})" 
+                                            size="sm"
+                                            icon="eye"
+                                            variant="primary"
+                                            color="blue"
+                                            class="!p-2 flex-shrink-0"
+                                        />
+                                    </flux:tooltip>
                                     @endcan
+                                    
                                     @can('edit ncp')
                                         @if(!in_array($ncp->status, ['closed', 'rejected']))
-                                        <flux:button 
-                                            wire:click="edit({{ $ncp->id }})" 
-                                            size="sm"
-                                            icon="pencil-square"
-                                            variant="primary"
-                                            color="yellow"
-                                            class="!p-2"
-                                            title="Edit NCP"
-                                        />
+                                        <flux:tooltip content="Edit NCP" position="top">
+                                            <flux:button 
+                                                wire:click="edit({{ $ncp->id }})" 
+                                                size="sm"
+                                                icon="pencil-square"
+                                                variant="primary"
+                                                color="yellow"
+                                                class="!p-2 flex-shrink-0"
+                                            />
+                                        </flux:tooltip>
                                         @endif
                                     @endcan
 
                                     @can('delete ncp')
                                         @if(!in_array($ncp->status, ['closed', 'rejected']))
-                                        <flux:button 
-                                            wire:click="confirmDelete({{ $ncp->id }})" 
-                                            size="sm"
-                                            icon="trash"
-                                            variant="primary"
-                                            color="red"
-                                            class="!p-2"
-                                            title="Delete NCP"
-                                        />
+                                        <flux:tooltip content="Delete NCP" position="top">
+                                            <flux:button 
+                                                wire:click="confirmDelete({{ $ncp->id }})" 
+                                                size="sm"
+                                                icon="trash"
+                                                variant="primary"
+                                                color="red"
+                                                class="!p-2 flex-shrink-0"
+                                            />
+                                        </flux:tooltip>
                                         @endif
                                     @endcan
                                 </div>
@@ -346,7 +412,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="{{ $activeTab === 'deleted' ? '9' : '8' }}" class="px-4 py-8 text-center">
+                            <td colspan="{{ $activeTab === 'deleted' ? '11' : '10' }}" class="px-4 py-8 text-center">
                                 <div class="flex flex-col items-center justify-center gap-2 py-6">
                                     <div class="w-16 h-16 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
                                         <flux:icon name="document-text" class="w-8 h-8 text-zinc-400 dark:text-zinc-500" />
@@ -494,7 +560,7 @@
                                                     <div>
                                                         <flux:label>FAILURE RATE</flux:label>
                                                         <div class="px-3 py-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg text-center font-semibold">
-                                                            {{ $failure_rate ? $failure_rate . '%' : '0%' }}
+                                                            {{ $failure_rate ? number_format((float)$failure_rate, 2, '.', '') . '%' : '0.00%' }}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -660,6 +726,7 @@
                                             </flux:select>
                                         </div>
                                         
+                                        <!-- Di bagian File Attachment -->
                                         <div>
                                             <flux:label>File Attachment</flux:label>
                                             
@@ -813,7 +880,12 @@
                                     
                                     <div class="mb-4">
                                         <flux:label>Section</flux:label>
-                                        <flux:input wire:model="section" type="text" placeholder="Enter section" />
+                                        <flux:input 
+                                            wire:model.live="section" 
+                                            type="text" 
+                                            placeholder="Enter section"
+                                            class="uppercase"
+                                        />
                                     </div>
                                     
                                     <div class="mb-4">
@@ -1287,4 +1359,11 @@
             scrollbar-width: none;
         }
     </style>
+    <script>
+        document.addEventListener('livewire:init', function () {
+            Livewire.on('print-ncp-pdf', (ncpId) => {
+                window.open('/ncp/print/' + ncpId, '_blank');
+            });
+        });
+    </script>
 </div>
