@@ -11,10 +11,11 @@ use App\Models\HR\Employee;
 use App\Mail\PROD\UniformRequestCreatedMail;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Livewire\WithFileUploads; // TAMBAHKAN
 
 class UniformRequestForm extends Component
 {
-    use WithPagination;
+    use WithPagination, WithFileUploads;
 
     public $requestId;
     public $rows = [];
@@ -51,12 +52,17 @@ class UniformRequestForm extends Component
     public $uniformPerPage = 5;
     protected $listeners = ['refreshUniformPage' => '$refresh'];
 
+    public $current_reason_type = 'others'; // TAMBAHKAN
+    public $current_reason_file = null; // TAMBAHKAN
+
     protected $rules = [
         'rows' => 'required|array|min:1',
         'rows.*.employee_id' => 'nullable|exists:tb_hr_employee,id',
         'rows.*.master_uniform_id' => 'required|exists:tb_prod_master_uniform,id',
         'rows.*.qty' => 'required|integer|min:1',
         'rows.*.reason' => 'required|string',
+        'rows.*.reason_type' => 'required|in:ng_esd,others', // TAMBAHKAN
+        'rows.*.reason_file' => 'nullable|file|mimes:pdf|max:5120', // TAMBAHKAN
         'rows.*.group' => 'required|string|max:100',
         'rows.*.request_date' => 'required|date',
         'rows.*.remarks' => 'nullable|string',
@@ -67,6 +73,10 @@ class UniformRequestForm extends Component
         'rows.*.master_uniform_id.required' => 'Uniform is required.',
         'rows.*.qty.min' => 'Quantity must be at least 1.',
         'rows.*.group.required' => 'Group is required.',
+        'rows.*.reason_type.required' => 'Reason type is required.', // TAMBAHKAN
+        'rows.*.reason_file.required' => 'PDF file is required for NG ESD reason.', // TAMBAHKAN
+        'rows.*.reason_file.mimes' => 'File must be PDF format.', // TAMBAHKAN
+        'rows.*.reason_file.max' => 'File size must not exceed 5MB.', // TAMBAHKAN
     ];
 
     public function getCanManualInputProperty()
@@ -246,32 +256,79 @@ class UniformRequestForm extends Component
         }
     }
 
-    // Add uniform to current employee's uniform list
+    public function validateReason($row)
+    {
+        if ($row['reason_type'] === 'ng_esd' && empty($row['reason_file'])) {
+            $this->addError('rows.*.reason_file', 'PDF file is required for NG ESD reason.');
+            return false;
+        }
+        if ($row['reason_type'] === 'others' && empty($row['reason'])) {
+            $this->addError('rows.*.reason', 'Reason text is required for Others.');
+            return false;
+        }
+        return true;
+    }
+
     public function addUniformToCurrent()
     {
+        // Validasi dasar
         $this->validate([
             'current_master_uniform_id' => 'required|exists:tb_prod_master_uniform,id',
             'current_qty' => 'required|integer|min:1',
-            'current_reason' => 'required|string',
+            'current_reason_type' => 'required|in:ng_esd,others',
             'current_remarks' => 'nullable|string',
         ]);
 
+        // Validasi khusus berdasarkan tipe reason
+        if ($this->current_reason_type === 'ng_esd') {
+            $this->validate([
+                'current_reason_file' => 'required|file|mimes:pdf|max:5120',
+            ], [
+                'current_reason_file.required' => 'PDF file is required for NG ESD reason.',
+                'current_reason_file.mimes' => 'File must be PDF format.',
+                'current_reason_file.max' => 'File size must not exceed 5MB.',
+            ]);
+        } else {
+            $this->validate([
+                'current_reason' => 'required|string|min:3',
+            ], [
+                'current_reason.required' => 'Reason text is required for Others.',
+                'current_reason.min' => 'Reason must be at least 3 characters.',
+            ]);
+        }
+
+        // Cek apakah uniform dipilih
         $uniform = MasterUniform::find($this->current_master_uniform_id);
-        
+        if (!$uniform) {
+            session()->flash('error', 'Uniform not found!');
+            return;
+        }
+
         // Cek stock tersedia
         if ($uniform->qty < $this->current_qty) {
             session()->flash('error', 'Insufficient stock! Available: ' . $uniform->qty . ', Requested: ' . $this->current_qty);
             return;
         }
-        
-        // Check if uniform already added
+
+        // Check if uniform already added to cart
         $exists = collect($this->current_uniforms)->contains('master_uniform_id', $this->current_master_uniform_id);
-        
         if ($exists) {
             session()->flash('error', 'This uniform has already been added for this employee!');
             return;
         }
 
+        // Upload file jika NG ESD
+        $filePath = null;
+        if ($this->current_reason_type === 'ng_esd' && $this->current_reason_file) {
+            try {
+                $filePath = $this->current_reason_file->store('uniform-reason-files', 'public');
+            } catch (\Exception $e) {
+                session()->flash('error', 'Failed to upload file: ' . $e->getMessage());
+                return;
+            }
+        }
+
+        // Tambahkan ke cart
         $this->current_uniforms[] = [
             'master_uniform_id' => $this->current_master_uniform_id,
             'item_code' => $uniform->item_code ?? '-',
@@ -279,16 +336,23 @@ class UniformRequestForm extends Component
             'size' => $uniform->size ?? '-',
             'qty' => $this->current_qty,
             'reason' => $this->current_reason,
+            'reason_type' => $this->current_reason_type,
+            'reason_file' => $filePath,
+            'reason_file_name' => $this->current_reason_file ? $this->current_reason_file->getClientOriginalName() : null,
             'remarks' => $this->current_remarks,
             'stock_available' => $uniform->qty,
         ];
 
-        // Reset uniform fields
+        // Reset semua fields setelah berhasil ditambahkan
         $this->current_master_uniform_id = null;
         $this->current_qty = 1;
+        $this->current_reason = '';
+        $this->current_reason_type = 'others';
+        $this->current_reason_file = null;
+        $this->current_remarks = '';
         $this->uniformSearch = '';
 
-        session()->flash('success', 'Uniform added to list!');
+        session()->flash('success', 'Uniform "' . $uniform->item_code . '" added to list!');
     }
 
     // Remove uniform from current employee's list
@@ -303,16 +367,22 @@ class UniformRequestForm extends Component
     public function addRow()
     {
         $isAdmin = auth()->user()->can('feedback uniform request admin');
-        
-        // Validasi berdasarkan mode
+
+        // Validasi berdasarkan mode (manual atau search)
         if ($this->isManualInput && $isAdmin) {
             $this->validate([
-                'manualNik' => 'required|string',
-                'manualName' => 'required|string',
-                'manualDepartment' => 'required|string',
+                'manualNik' => 'required|string|max:50',
+                'manualName' => 'required|string|max:100',
+                'manualDepartment' => 'required|string|max:100',
                 'current_uniforms' => 'required|array|min:1',
                 'current_group' => 'required|string|max:100',
                 'current_request_date' => 'required|date',
+            ], [
+                'manualNik.required' => 'NIK is required for manual input.',
+                'manualName.required' => 'Name is required for manual input.',
+                'manualDepartment.required' => 'Department is required for manual input.',
+                'current_uniforms.min' => 'Please add at least one uniform to cart.',
+                'current_group.required' => 'Group is required.',
             ]);
         } else {
             $this->validate([
@@ -320,36 +390,58 @@ class UniformRequestForm extends Component
                 'current_uniforms' => 'required|array|min:1',
                 'current_group' => 'required|string|max:100',
                 'current_request_date' => 'required|date',
+            ], [
+                'current_employee_id.required' => 'Please select an employee.',
+                'current_uniforms.min' => 'Please add at least one uniform to cart.',
+                'current_group.required' => 'Group is required.',
             ]);
+        }
+
+        // Validasi reason untuk setiap uniform di cart
+        foreach ($this->current_uniforms as $index => $uniformItem) {
+            if ($uniformItem['reason_type'] === 'ng_esd') {
+                if (empty($uniformItem['reason_file'])) {
+                    session()->flash('error', 'PDF file is required for NG ESD reason on item: ' . $uniformItem['item_code']);
+                    return;
+                }
+            } elseif ($uniformItem['reason_type'] === 'others') {
+                if (empty($uniformItem['reason'])) {
+                    session()->flash('error', 'Reason text is required for Others on item: ' . $uniformItem['item_code']);
+                    return;
+                }
+            }
         }
 
         // Get employee data
         $employee = null;
         $isManual = false;
-        
+        $employeeData = [];
+
         if ($this->isManualInput && $isAdmin) {
             $isManual = true;
             $employeeData = [
-                'nik' => $this->manualNik,
-                'name' => $this->manualName,
-                'department' => $this->manualDepartment,
+                'nik' => trim($this->manualNik),
+                'name' => trim($this->manualName),
+                'department' => trim($this->manualDepartment),
             ];
         } else {
             $employee = Employee::find($this->current_employee_id);
-            
+
             if (!$employee) {
                 session()->flash('error', 'Employee not found!');
                 return;
             }
-            
+
+            // Cek status employee (harus aktif: 1,2,3)
             if (!in_array($employee->status, [1, 2, 3])) {
                 session()->flash('error', 'Employee ' . $employee->nik . ' - ' . $employee->name . ' is not active!');
                 return;
             }
-            
+
+            // Cek akses department
             $isOneUser = auth()->user()->can('view uniform request one user');
             $isFullAccess = auth()->user()->can('view uniform request');
-            
+
             if ($isOneUser && !$isFullAccess && $this->userDepartment) {
                 if ($employee->department !== $this->userDepartment) {
                     session()->flash('error', 'You can only select employees from your department: ' . $this->userDepartment);
@@ -358,8 +450,10 @@ class UniformRequestForm extends Component
             }
         }
 
-        // Create rows for each uniform
+        // Create rows for each uniform in cart
+        $addedCount = 0;
         foreach ($this->current_uniforms as $uniformItem) {
+            // Siapkan data dasar
             $rowData = [
                 'master_uniform_id' => $uniformItem['master_uniform_id'],
                 'item_code' => $uniformItem['item_code'],
@@ -367,6 +461,9 @@ class UniformRequestForm extends Component
                 'size' => $uniformItem['size'],
                 'qty' => $uniformItem['qty'],
                 'reason' => $uniformItem['reason'],
+                'reason_type' => $uniformItem['reason_type'],
+                'reason_file' => $uniformItem['reason_file'] ?? null,
+                'reason_file_name' => $uniformItem['reason_file_name'] ?? null,
                 'group' => $this->current_group,
                 'request_date' => $this->current_request_date,
                 'remarks' => $uniformItem['remarks'] ?? null,
@@ -376,6 +473,7 @@ class UniformRequestForm extends Component
                 'costing_feedback_datetime' => null,
             ];
 
+            // Tambahkan data employee (manual atau dari database)
             if ($isManual) {
                 $rowData['employee_id'] = null;
                 $rowData['employee_nik'] = $employeeData['nik'];
@@ -397,16 +495,17 @@ class UniformRequestForm extends Component
             }
 
             $this->rows[] = $rowData;
+            $addedCount++;
         }
 
-        $countUniforms = count($this->current_uniforms);
-        
-        // RESET FORM
+        // RESET semua form fields
         $this->current_employee_id = null;
         $this->current_master_uniform_id = null;
         $this->current_qty = 1;
         $this->current_uniforms = [];
         $this->current_reason = '';
+        $this->current_reason_type = 'others';
+        $this->current_reason_file = null;
         $this->current_group = '';
         $this->current_request_date = date('Y-m-d');
         $this->current_remarks = '';
@@ -417,9 +516,12 @@ class UniformRequestForm extends Component
         $this->manualName = '';
         $this->manualDepartment = '';
 
+        // Reset pagination
         $this->resetPage();
 
-        session()->flash('success', $countUniforms . ' uniform(s) added successfully for employee!');
+        // Success message
+        $employeeName = $isManual ? $employeeData['name'] : $employee->name;
+        session()->flash('success', $addedCount . ' uniform(s) added successfully for employee: ' . $employeeName . '!');
     }
 
     public function removeRow($index)
@@ -439,28 +541,51 @@ class UniformRequestForm extends Component
     public function save()
     {
         $this->isSaving = true;
-        
+
         try {
+            // Validasi dasar
             $this->validate();
 
+            // Validasi additional untuk reason di semua rows
+            $errors = [];
+            foreach ($this->rows as $index => $row) {
+                if ($row['reason_type'] === 'ng_esd') {
+                    if (empty($row['reason_file'])) {
+                        $errors[] = 'PDF file is required for NG ESD reason on row ' . ($index + 1) . ' (Item: ' . $row['item_code'] . ')';
+                    }
+                } elseif ($row['reason_type'] === 'others') {
+                    if (empty($row['reason'])) {
+                        $errors[] = 'Reason text is required for Others on row ' . ($index + 1) . ' (Item: ' . $row['item_code'] . ')';
+                    }
+                }
+            }
+
+            if (!empty($errors)) {
+                session()->flash('error', implode('<br>', $errors));
+                $this->isSaving = false;
+                return;
+            }
+
+            // Cek permission
             $isOneUser = auth()->user()->can('view uniform request one user');
             $isFullAccess = auth()->user()->can('view uniform request');
-            
-            // CEK STOCK SEBELUM CREATE
+
+            // CEK STOCK SEBELUM CREATE/UPDATE
             $stockErrors = [];
             $stockData = [];
+
             foreach ($this->rows as $row) {
                 $uniform = MasterUniform::find($row['master_uniform_id']);
                 if (!$uniform) {
                     $stockErrors[] = "Uniform not found! (ID: " . $row['master_uniform_id'] . ")";
                     continue;
                 }
-                
+
                 // Cek stock tersedia
                 if ($uniform->qty < $row['qty']) {
                     $stockErrors[] = "Insufficient stock for {$uniform->item_code} - {$uniform->description} ({$uniform->size}). Available: {$uniform->qty}, Requested: {$row['qty']}";
                 }
-                
+
                 $stockData[] = [
                     'uniform' => $uniform,
                     'qty_requested' => $row['qty'],
@@ -469,33 +594,34 @@ class UniformRequestForm extends Component
                     'employee_department' => $row['employee_department'] ?? $row['manual_department'] ?? '-',
                 ];
             }
-            
+
             if (!empty($stockErrors)) {
                 session()->flash('error', implode('<br>', $stockErrors));
                 $this->isSaving = false;
                 return;
             }
-            
-            // Validasi employee
+
+            // Validasi employee untuk setiap row
             foreach ($this->rows as $row) {
+                // Skip untuk manual input
                 if (isset($row['is_manual']) && $row['is_manual']) {
                     continue;
                 }
-                
+
                 $employee = Employee::find($row['employee_id']);
-                
+
                 if (!$employee) {
                     session()->flash('error', 'Employee not found! (ID: ' . $row['employee_id'] . ')');
                     $this->isSaving = false;
                     return;
                 }
-                
+
                 if (!in_array($employee->status, [1, 2, 3])) {
                     session()->flash('error', 'Employee ' . $employee->nik . ' - ' . $employee->name . ' is not active!');
                     $this->isSaving = false;
                     return;
                 }
-                
+
                 if ($isOneUser && !$isFullAccess && $this->userDepartment) {
                     if ($employee->department !== $this->userDepartment) {
                         session()->flash('error', 'You can only create requests for employees from your department: ' . $this->userDepartment);
@@ -505,6 +631,7 @@ class UniformRequestForm extends Component
                 }
             }
 
+            // Siapkan data items untuk database
             $itemsForDb = [];
             foreach ($this->rows as $row) {
                 $itemData = [
@@ -512,6 +639,9 @@ class UniformRequestForm extends Component
                     'master_uniform_id' => $row['master_uniform_id'],
                     'qty' => $row['qty'],
                     'reason' => $row['reason'],
+                    'reason_type' => $row['reason_type'] ?? 'others',
+                    'reason_file' => $row['reason_file'] ?? null,
+                    'reason_file_name' => $row['reason_file_name'] ?? null,
                     'group' => $row['group'],
                     'request_date' => $row['request_date'],
                     'remarks' => $row['remarks'] ?? null,
@@ -520,25 +650,44 @@ class UniformRequestForm extends Component
                     'costing_feedback' => $row['costing_feedback'] ?? null,
                     'costing_feedback_datetime' => $row['costing_feedback_datetime'] ?? null,
                 ];
-                
+
+                // Tambahkan data manual jika ada
                 if (isset($row['is_manual']) && $row['is_manual']) {
-                    $itemData['manual_nik'] = $row['manual_nik'];
-                    $itemData['manual_name'] = $row['manual_name'];
-                    $itemData['manual_department'] = $row['manual_department'];
+                    $itemData['manual_nik'] = $row['manual_nik'] ?? null;
+                    $itemData['manual_name'] = $row['manual_name'] ?? null;
+                    $itemData['manual_department'] = $row['manual_department'] ?? null;
                     $itemData['is_manual'] = true;
+                    $itemData['employee_nik'] = $row['employee_nik'] ?? null;
+                    $itemData['employee_name'] = $row['employee_name'] ?? null;
+                    $itemData['employee_department'] = $row['employee_department'] ?? null;
+                } else {
+                    $itemData['manual_nik'] = null;
+                    $itemData['manual_name'] = null;
+                    $itemData['manual_department'] = null;
+                    $itemData['is_manual'] = false;
+                    $itemData['employee_nik'] = $row['employee_nik'] ?? null;
+                    $itemData['employee_name'] = $row['employee_name'] ?? null;
+                    $itemData['employee_department'] = $row['employee_department'] ?? null;
                 }
-                
+
                 $itemsForDb[] = $itemData;
             }
 
             $isUpdate = false;
             $request = null;
-            
+
             if ($this->requestId) {
-                // UPDATE: Kurangi stock sesuai perubahan qty
+                // ============ UPDATE MODE ============
                 $request = UniformRequest::find($this->requestId);
+
+                if (!$request) {
+                    session()->flash('error', 'Request not found!');
+                    $this->isSaving = false;
+                    return;
+                }
+
                 $oldItems = $request->items ?? [];
-                
+
                 // Hitung selisih qty per uniform
                 $qtyDiff = [];
                 foreach ($oldItems as $oldItem) {
@@ -549,25 +698,25 @@ class UniformRequestForm extends Component
                     $key = $newItem['master_uniform_id'];
                     $qtyDiff[$key] = ($qtyDiff[$key] ?? 0) + $newItem['qty'];
                 }
-                
+
                 // Update stock berdasarkan selisih
                 foreach ($qtyDiff as $uniformId => $diff) {
                     if ($diff == 0) continue;
-                    
+
                     $uniform = MasterUniform::find($uniformId);
                     if ($uniform) {
                         $oldQty = $uniform->qty;
                         $newQty = $oldQty - $diff;
-                        
+
                         if ($newQty < 0) {
                             session()->flash('error', "Insufficient stock for {$uniform->item_code}! Available: {$oldQty}, Need: " . ($diff));
                             $this->isSaving = false;
                             return;
                         }
-                        
+
                         $uniform->qty = $newQty;
                         $uniform->save();
-                        
+
                         // Catat transaksi
                         UniformStockTransaction::create([
                             'master_uniform_id' => $uniform->id,
@@ -583,26 +732,28 @@ class UniformRequestForm extends Component
                         ]);
                     }
                 }
-                
+
+                // Update request
                 $request->update(['items' => $itemsForDb]);
-                session()->flash('success', 'Request updated successfully! Stock adjusted.');
+                session()->flash('success', 'Request updated successfully! Stock has been adjusted.');
                 $isUpdate = true;
+
             } else {
-                // CREATE: Kurangi stock
+                // ============ CREATE MODE ============
                 $request = UniformRequest::create(['items' => $itemsForDb]);
-                
+
                 // Kurangi stock untuk setiap item
                 foreach ($stockData as $data) {
                     $uniform = $data['uniform'];
                     $oldQty = $uniform->qty;
                     $newQty = $oldQty - $data['qty_requested'];
-                    
+
                     $uniform->qty = $newQty;
                     $uniform->save();
-                    
+
                     // Buat deskripsi dengan NIK, Name, Department
                     $employeeInfo = $data['employee_nik'] . ' - ' . $data['employee_name'] . ' (' . $data['employee_department'] . ')';
-                    
+
                     // Catat transaksi OUT
                     UniformStockTransaction::create([
                         'master_uniform_id' => $uniform->id,
@@ -617,10 +768,11 @@ class UniformRequestForm extends Component
                         'performed_at' => now(),
                     ]);
                 }
-                
+
                 session()->flash('success', 'Request created successfully! Stock has been updated.');
             }
 
+            // Kirim email notifikasi
             try {
                 Mail::to('SEK.Admin01@siix-global.com')
                     ->send(new UniformRequestCreatedMail($request, $isUpdate));
@@ -629,10 +781,14 @@ class UniformRequestForm extends Component
             }
 
             $this->isSaving = false;
+
+            // Redirect ke index
             return redirect()->route('prod.uniform.request.index');
-            
+
         } catch (\Exception $e) {
             $this->isSaving = false;
+            \Log::error('Error saving uniform request: ' . $e->getMessage());
+            session()->flash('error', 'An error occurred: ' . $e->getMessage());
             throw $e;
         }
     }

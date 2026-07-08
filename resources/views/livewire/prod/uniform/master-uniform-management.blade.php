@@ -328,7 +328,8 @@
                             <input type="text" 
                                 wire:model="item_code"
                                 placeholder="e.g., UNF-001, SFT-001"
-                                class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                {{ $uniform_id ? 'disabled' : '' }}
+                                class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent {{ $uniform_id ? 'bg-zinc-100 dark:bg-zinc-700 cursor-not-allowed opacity-75' : '' }}">
                             @error('item_code') <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span> @enderror
                         </div>
 
@@ -337,14 +338,16 @@
                             <input type="text" 
                                 wire:model="description"
                                 placeholder="e.g., Kaos Polos, Jaket Proyek, Sepatu Safety"
-                                class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                {{ $uniform_id ? 'disabled' : '' }}
+                                class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent {{ $uniform_id ? 'bg-zinc-100 dark:bg-zinc-700 cursor-not-allowed opacity-75' : '' }}">
                             @error('description') <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span> @enderror
                         </div>
 
                         <div class="mb-4">
                             <label class="block text-sm font-medium mb-1">Size <span class="text-red-500">*</span></label>
                             <select wire:model="size" 
-                                    class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                {{ $uniform_id ? 'disabled' : '' }}
+                                class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent {{ $uniform_id ? 'bg-zinc-100 dark:bg-zinc-700 cursor-not-allowed opacity-75' : '' }}">
                                 <option value="">Select Size</option>
                                 <option value="ALL SIZE">ALL SIZE</option>
                                 <option value="S">S</option>
@@ -374,7 +377,8 @@
                                 <input type="text" 
                                     wire:model="size"
                                     placeholder="Or enter custom size"
-                                    class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm">
+                                    {{ $uniform_id ? 'disabled' : '' }}
+                                    class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm {{ $uniform_id ? 'bg-zinc-100 dark:bg-zinc-700 cursor-not-allowed opacity-75' : '' }}">
                                 <p class="text-xs text-zinc-500 mt-1">You can select from dropdown or type custom size</p>
                             </div>
                         </div>

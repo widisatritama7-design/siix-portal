@@ -6,6 +6,7 @@ use App\Models\HR\Employee;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class UniformRequest extends Model
 {
@@ -115,6 +116,16 @@ class UniformRequest extends Model
         }
         
         return $details;
+    }
+
+    public function getItemsWithFilesAttribute()
+    {
+        return collect($this->items)->map(function ($item) {
+            if (isset($item['reason_file']) && !empty($item['reason_file'])) {
+                $item['reason_file_url'] = Storage::url($item['reason_file']);
+            }
+            return $item;
+        });
     }
 
     public function creator()

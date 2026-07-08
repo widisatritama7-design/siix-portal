@@ -5,6 +5,8 @@ use App\Http\Controllers\DoorLockController;
 use App\Http\Controllers\InboxController;
 use App\Http\Controllers\PROD\Absence\AbsenceControlPrintController;
 use App\Http\Controllers\PROD\Absence\AbsenceReportPrintController;
+use App\Http\Controllers\PROD\FCT\LeaderController;
+use App\Http\Controllers\PROD\FCT\ScanPcbController;
 use App\Http\Controllers\PROD\Uniform\UniformRequestPrintController;
 use App\Http\Controllers\QAQC\NCPPrintController;
 use App\Http\Controllers\SearchController;
@@ -27,6 +29,10 @@ use App\Livewire\PROD\Absence\AbsenceDashboard;
 use App\Livewire\PROD\Absence\AbsenceReportForm;
 use App\Livewire\PROD\Absence\AbsenceReportIndex;
 use App\Livewire\PROD\Absence\AbsenceReportShow;
+use App\Livewire\PROD\FCT\FctScanner;
+use App\Livewire\PROD\FCT\LeaderPanel;
+use App\Livewire\PROD\FCT\LedTestScanner;
+use App\Livewire\PROD\FCT\VisualScanner;
 use App\Livewire\PROD\Kaizen\KaizenManagement;
 use App\Livewire\PROD\MS\Rack\MasterRackSampleCreate;
 use App\Livewire\PROD\MS\Rack\MasterRackSampleManagement;
@@ -182,6 +188,26 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/hr/attendance/control/print/{startDate}/{endDate}/{department?}/{group?}', [AbsenceControlPrintController::class, 'print'])->name('prod.absence.control.print');
     Route::get('/hr/attendance/dashboard', AbsenceDashboard::class)->name('prod.absence.dashboard');
 
+    // FCT
+    Route::get('/pcb-scan/fct', FctScanner::class)->name('pcb-scan.fct');
+    Route::get('/pcb-scan/led-test', LedTestScanner::class)->name('pcb-scan.led-test');
+    Route::get('/pcb-scan/visual-inspection', VisualScanner::class)->name('pcb-scan.visual-inspection');
+    Route::get('/pcb-scan/leader', LeaderPanel::class)->name('pcb-scan.leader.index');
+    Route::get('/pcb-scan', [ScanPcbController::class, 'index'])->name('pcb-scan.dashboard');
+    Route::post('/pcb-scan/process/{process}', [ScanPcbController::class, 'processScan'])->name('pcb-scan.process');
+    Route::get('/pcb-scan/leader/unlock/{id}', [LeaderController::class, 'showUnlockForm'])->name('pcb-scan.leader.unlock.form');
+    Route::post('/pcb-scan/leader/unlock/{id}', [LeaderController::class, 'unlock'])->name('pcb-scan.leader.unlock');
+    Route::get('/pcb-scan/leader/settings', [LeaderController::class, 'settings'])->name('pcb-scan.leader.settings');
+    Route::post('/pcb-scan/leader/generate-code', [LeaderController::class, 'generateCode'])->name('pcb-scan.leader.generate-code');
+    Route::post('/pcb-scan/leader/store', [LeaderController::class, 'storeLeader'])->name('pcb-scan.leader.store');
+    Route::put('/pcb-scan/leader/update/{id}', [LeaderController::class, 'updateLeader'])->name('pcb-scan.leader.update');
+    Route::prefix('api')->group(function () {
+        Route::get('/check-system-lock', [ScanPcbController::class, 'checkSystemLock']);
+        Route::get('/recent-scans/{process}', [ScanPcbController::class, 'getRecentScans']);
+        Route::get('/today-stats/{process}', [ScanPcbController::class, 'getTodayStats']);
+        Route::get('/visual-inspection-stats', [ScanPcbController::class, 'getVisualStats']);
+        Route::get('/dashboard-stats', [ScanPcbController::class, 'getDashboardStats']);
+    });
 });
 
 require __DIR__.'/settings.php';

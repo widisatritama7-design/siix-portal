@@ -56,9 +56,9 @@
     <!-- Filters -->
     <div class="flex flex-col sm:flex-row gap-3 justify-between mb-4">
         <div class="flex flex-wrap gap-2">
-            <div class="w-48">
+            <div class="w-48 select-with-add">
                 <select wire:model.live="filterCustomer" 
-                        class="w-full px-3 py-2 pr-6 border rounded-lg bg-white dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none cursor-pointer"
+                        class="w-full px-3 py-2 pr-10 border rounded-lg bg-white dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent appearance-none cursor-pointer"
                         style="background-position: right 0.5rem center; background-size: 1rem; background-repeat: no-repeat; background-image: url('data:image/svg+xml,%3Csvg xmlns=\'http://www.w3.org/2000/svg\' fill=\'none\' viewBox=\'0 0 24 24\' stroke=\'currentColor\'%3E%3Cpath stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M19 9l-7 7-7-7\'%3E%3C/path%3E%3C/svg%3E');">
                     <option value="">All Customers</option>
                     @if(is_array($customerFilterOptions) || is_object($customerFilterOptions))
@@ -570,16 +570,28 @@
                                         @error('model_name') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                                     </div>
 
+                                    <!-- Di dalam modal form, bagian TAB 1 -->
                                     <div>
                                         <label class="block text-sm font-medium mb-1">Customer Code <span class="text-red-500">*</span></label>
-                                        <select wire:model="customer" class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:border-zinc-700">
-                                            <option value="">Select Customer</option>
-                                            @if(is_array($customerOptions) || is_object($customerOptions))
-                                                @foreach($customerOptions as $key => $value)
-                                                    <option value="{{ $key }}">{{ $value }}</option>
-                                                @endforeach
-                                            @endif
-                                        </select>
+                                        <div class="flex gap-2">
+                                            <select wire:model="customer" 
+                                                    class="flex-1 px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:border-zinc-700">
+                                                <option value="">Select Customer</option>
+                                                @if(is_array($customerOptions) || is_object($customerOptions))
+                                                    @foreach($customerOptions as $key => $value)
+                                                        <option value="{{ $key }}">{{ $value }}</option>
+                                                    @endforeach
+                                                @endif
+                                            </select>
+                                            <button type="button" 
+                                                    x-on:click="$dispatch('open-modal', 'add-customer-modal')"
+                                                    class="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-1 whitespace-nowrap">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                                </svg>
+                                                Add New
+                                            </button>
+                                        </div>
                                         @error('customer') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                                     </div>
 
@@ -979,6 +991,65 @@
         </div>
     </div>
 
+    <!-- MODAL ADD CUSTOMER -->
+    <div x-data="{ open: false }" 
+        x-show="open" 
+        @open-modal.window="if ($event.detail === 'add-customer-modal') open = true"
+        @close-modal.window="if ($event.detail === 'add-customer-modal') open = false"
+        x-cloak>
+
+        <div class="fixed inset-0 bg-black/50 z-40" @click="open = false"></div>
+
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-xl w-full max-w-md">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold">Add New Customer</h3>
+                        <button @click="open = false" class="text-zinc-500 hover:text-zinc-700">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Customer Code <span class="text-red-500">*</span></label>
+                            <input type="text" 
+                                wire:model.defer="newCustomerCode" 
+                                placeholder="e.g., CUST001"
+                                class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:border-zinc-700">
+                            @error('newCustomerCode') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Customer Name <span class="text-red-500">*</span></label>
+                            <input type="text" 
+                                wire:model.defer="newCustomerName" 
+                                placeholder="e.g., PT Customer Name"
+                                class="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:border-zinc-700">
+                            @error('newCustomerName') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-end gap-2 mt-6">
+                        <button type="button" 
+                                @click="open = false"
+                                class="px-4 py-2 border rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                            Cancel
+                        </button>
+                        <button type="button" 
+                                wire:click="addNewCustomer"
+                                @click="open = false"
+                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                            Add Customer
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Notifikasi -->
     <div x-data="{ show: false, message: '', type: 'success' }" 
          x-on:notify.window="show = true; message = $event.detail.message; type = $event.detail.type || 'success'; setTimeout(() => show = false, 3000)"
@@ -998,5 +1069,37 @@
 
     <style>
         [x-cloak] { display: none !important; }
+        /* Style untuk dropdown dengan input manual */
+        .select-with-add {
+            position: relative;
+        }
+        
+        .select-with-add select {
+            width: 100%;
+            padding-right: 2.5rem;
+        }
+        
+        .select-with-add .add-btn {
+            position: absolute;
+            right: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #3b82f6;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 0.375rem;
+            transition: all 0.2s;
+        }
+        
+        .select-with-add .add-btn:hover {
+            background: #eff6ff;
+            color: #2563eb;
+        }
+        
+        .dark .select-with-add .add-btn:hover {
+            background: #1e293b;
+        }
     </style>
 </div>

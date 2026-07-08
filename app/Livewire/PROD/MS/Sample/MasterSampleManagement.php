@@ -63,6 +63,10 @@ class MasterSampleManagement extends Component
 
     public $rackSearch = '';
 
+    // Tambahkan property baru
+    public $newCustomerCode = '';
+    public $newCustomerName = '';
+
     protected function rules()
     {
         return [
@@ -101,6 +105,54 @@ class MasterSampleManagement extends Component
         $this->loadOptions();
         $this->initDetail();
         $this->updateTabCounts();
+    }
+
+    // Tambahkan method untuk menambah customer baru
+    public function addNewCustomer()
+    {
+        $this->validate([
+            'newCustomerCode' => 'required|string|max:255|unique:tb_prod_master_samples,customer',
+            'newCustomerName' => 'required|string|max:255',
+        ], [
+            'newCustomerCode.required' => 'Customer code is required.',
+            'newCustomerCode.unique' => 'Customer code already exists.',
+            'newCustomerName.required' => 'Customer name is required.',
+        ]);
+        
+        // Simpan customer baru ke database
+        // Karena customer disimpan di tabel master_samples, kita perlu membuat 
+        // record baru atau menambahkan ke daftar options
+        
+        // Opsi 1: Buat record baru di tb_prod_master_samples
+        // Ini akan membuat record baru dengan minimal data
+        MasterSample::create([
+            'customer' => $this->newCustomerCode,
+            'model_name' => 'TEMP - ' . $this->newCustomerCode,
+            'name_or_mc' => 'TEMP',
+            'status' => 'NOT USE',
+        ]);
+        
+        // Opsi 2: Tambahkan ke array options dan reload
+        $this->customerOptions[$this->newCustomerCode] = $this->newCustomerName;
+        
+        // Set customer yang baru ditambahkan sebagai selected
+        $this->customer = $this->newCustomerCode;
+        
+        // Reset input
+        $this->newCustomerCode = '';
+        $this->newCustomerName = '';
+        
+        // Reload options
+        $this->loadOptions();
+        
+        $this->dispatch('notify', message: 'Customer added successfully!');
+    }
+
+    // Tambahkan method untuk add customer dari filter (jika diperlukan)
+    public function addCustomerFromFilter()
+    {
+        // Bisa sama dengan addNewCustomer atau dengan logic berbeda
+        $this->addNewCustomer();
     }
 
     public function clearRackSelection()
@@ -145,9 +197,11 @@ class MasterSampleManagement extends Component
 
     public function loadOptions()
     {
-        // Load customer options
+        // Load customer options dari database
         $this->customerOptions = MasterSample::query()
             ->whereNotNull('customer')
+            ->where('customer', '!=', '')
+            ->where('customer', 'NOT LIKE', 'TEMP - %') // Filter temporary data
             ->distinct()
             ->pluck('customer', 'customer')
             ->toArray();
@@ -156,11 +210,12 @@ class MasterSampleManagement extends Component
         $this->nameOrMcOptions = MasterSample::query()
             ->whereNotNull('name_or_mc')
             ->where('name_or_mc', '!=', '')
+            ->where('name_or_mc', 'NOT LIKE', 'TEMP%')
             ->distinct()
             ->pluck('name_or_mc', 'name_or_mc')
             ->toArray();
             
-        // Load available racks (unused racks)
+        // Load available racks
         $this->loadAvailableRacks();
     }
     

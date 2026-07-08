@@ -259,7 +259,7 @@
                         <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">#</th>
                         <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">NIK</th>
                         <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">NAME</th>
-                        <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">DEPARTMENT</th>  {{-- TAMBAHKAN --}}
+                        <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">DEPARTMENT</th>
                         <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">ITEM CODE</th>
                         <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">DESCRIPTION</th>
                         <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">SIZE</th>
@@ -267,6 +267,8 @@
                         <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">GROUP</th>
                         <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">REQUEST DATE</th>
                         <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">REASON</th>
+                        <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">REASON TYPE</th>  {{-- TAMBAHKAN --}}
+                        <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">REASON FILE</th>   {{-- TAMBAHKAN --}}
                         <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">REMARKS</th>
                         <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">ADMIN FEEDBACK</th>
                         @canany(['feedback uniform request admin', 'feedback uniform request costing'])
@@ -284,7 +286,7 @@
                         <td class="px-3 py-2 text-center text-sm whitespace-nowrap">{{ $loop->iteration }}</td>
                         <td class="px-3 py-2 text-center text-sm whitespace-nowrap">{{ $item['employee_nik'] }}</td>
                         <td class="px-3 py-2 text-left text-sm whitespace-nowrap">{{ $item['employee_name'] }}</td>
-                        <td class="px-3 py-2 text-left text-sm whitespace-nowrap">{{ $item['employee_department'] }}</td>  {{-- TAMBAHKAN --}}
+                        <td class="px-3 py-2 text-left text-sm whitespace-nowrap">{{ $item['employee_department'] }}</td>
                         <td class="px-3 py-2 text-center text-sm font-mono whitespace-nowrap">{{ $item['item_code'] }}</td>
                         <td class="px-3 py-2 text-center text-sm whitespace-nowrap">{{ $item['description'] }}</td>
                         <td class="px-3 py-2 text-center text-sm whitespace-nowrap">{{ $item['size'] }}</td>
@@ -292,6 +294,47 @@
                         <td class="px-3 py-2 text-center text-sm whitespace-nowrap">{{ $item['group'] }}</td>
                         <td class="px-3 py-2 text-center text-sm whitespace-nowrap">{{ \Carbon\Carbon::parse($item['request_date'])->format('d/m/Y') }}</td>
                         <td class="px-3 py-2 text-center text-sm whitespace-nowrap">{{ $item['reason'] }}</td>
+                        
+                        <!-- REASON TYPE -->
+                        <td class="px-3 py-2 text-center text-sm whitespace-nowrap">
+                            @if(isset($item['reason_type']) && $item['reason_type'] === 'ng_esd')
+                                <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-red-700 bg-red-100 rounded-full dark:bg-red-900/30 dark:text-red-300 whitespace-nowrap">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                        <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z" clip-rule="evenodd" />
+                                    </svg>
+                                    NG ESD
+                                </span>
+                            @else
+                                <span class="inline-flex items-center gap-1 px-2 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded-full dark:bg-blue-900/30 dark:text-blue-300 whitespace-nowrap">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                        <path fill-rule="evenodd" d="M16.5 3.75a1.5 1.5 0 0 1 1.5 1.5v13.5a1.5 1.5 0 0 1-1.5 1.5h-6a1.5 1.5 0 0 1-1.5-1.5V15a.75.75 0 0 0-1.5 0v3.75a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V5.25a3 3 0 0 0-3-3h-6a3 3 0 0 0-3 3V9A.75.75 0 1 0 9 9V5.25a1.5 1.5 0 0 1 1.5-1.5h6Zm-5.03 4.72a.75.75 0 0 0 0 1.06l1.72 1.72H2.25a.75.75 0 0 0 0 1.5h10.94l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3a.75.75 0 0 0 0-1.06l-3-3a.75.75 0 0 0-1.06 0Z" clip-rule="evenodd" />
+                                    </svg>
+                                    Others
+                                </span>
+                            @endif
+                        </td>
+                        
+                        <!-- REASON FILE -->
+                        <td class="px-3 py-2 text-center text-sm whitespace-nowrap">
+                            @if(isset($item['reason_type']) && $item['reason_type'] === 'ng_esd' && !empty($item['reason_file']))
+                                <a href="{{ Storage::url($item['reason_file']) }}" target="_blank" 
+                                    class="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium text-blue-700 bg-blue-100 rounded-lg hover:bg-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:hover:bg-blue-900/50 transition-colors whitespace-nowrap">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                        <path fill-rule="evenodd" d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625ZM7.5 15a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 7.5 15Zm.75 2.25a.75.75 0 0 0 0 1.5h7.5a.75.75 0 0 0 0-1.5h-7.5Z" clip-rule="evenodd" />
+                                        <path d="M12.971 1.816A5.23 5.23 0 0 1 14.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 0 1 3.434 1.279 9.768 9.768 0 0 0-6.963-6.963Z" />
+                                    </svg>
+                                    View PDF
+                                </a>
+                                @if(!empty($item['reason_file_name']))
+                                    <span class="text-[10px] text-zinc-400 dark:text-zinc-500 block truncate max-w-[100px]">
+                                        {{ $item['reason_file_name'] }}
+                                    </span>
+                                @endif
+                            @else
+                                <span class="text-xs text-zinc-400">-</span>
+                            @endif
+                        </td>
+                        
                         <td class="px-3 py-2 text-center text-sm whitespace-nowrap">{{ $item['remarks'] }}</td>
                         
                         <!-- Admin Feedback Column -->
