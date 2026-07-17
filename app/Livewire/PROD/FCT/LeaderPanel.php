@@ -49,6 +49,9 @@ class LeaderPanel extends Component
         
         // Pastikan search kosong
         $this->search = '';
+        
+        // Tambahkan ini untuk reset input di frontend
+        $this->dispatch('reset-search');
     }
 
     /**

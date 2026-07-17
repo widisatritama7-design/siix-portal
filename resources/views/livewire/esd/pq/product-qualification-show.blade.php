@@ -238,6 +238,7 @@
                                             {{ Str::limit($detail->description, 60) }}
                                         </div>
                                     </td>
+                                    <!-- Data Sheet Column -->
                                     <td class="px-4 py-3">
                                         @if($detail->data_sheet)
                                             <a href="{{ $detail->data_sheet }}" target="_blank" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 inline-flex items-center gap-1">
@@ -250,6 +251,8 @@
                                             <span class="text-gray-400">-</span>
                                         @endif
                                     </td>
+
+                                    <!-- Test Report Column -->
                                     <td class="px-4 py-3">
                                         @if($detail->test_report)
                                             <a href="{{ $detail->test_report }}" target="_blank" class="text-blue-600 hover:text-blue-800 dark:text-blue-400 inline-flex items-center gap-1">

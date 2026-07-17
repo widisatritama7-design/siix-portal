@@ -152,24 +152,24 @@ class ProductQualificationShow extends Component
                 return;
             }
         }
-    
+
         $this->qualification_id = $this->qualification->id;
-    
+
         // Validate
         $this->validate();
-    
+
         $data = [
             'product_qualification_id' => $this->qualification_id,
             'supplier_name' => $this->supplier_name,
             'description' => $this->description,
             'status' => $this->status,
         ];
-    
+
         // Handle Data Sheet
         if ($this->remove_data_sheet) {
             // Delete existing file
             if ($this->existing_data_sheet) {
-                $oldPath = str_replace('/storage', 'public', $this->existing_data_sheet);
+                $oldPath = str_replace('/storage/', '', $this->existing_data_sheet);
                 Storage::disk('public')->delete($oldPath);
             }
             $data['data_sheet'] = null;
@@ -177,28 +177,25 @@ class ProductQualificationShow extends Component
         } elseif ($this->data_sheet_file) {
             // Delete old file if exists
             if ($this->existing_data_sheet) {
-                $oldPath = str_replace('/storage', 'public', $this->existing_data_sheet);
+                $oldPath = str_replace('/storage/', '', $this->existing_data_sheet);
                 Storage::disk('public')->delete($oldPath);
             }
             
-            // Upload new file
-            $originalName = pathinfo($this->data_sheet_file->getClientOriginalName(), PATHINFO_FILENAME);
-            $extension = $this->data_sheet_file->getClientOriginalExtension();
-            $safeName = preg_replace('/[^a-zA-Z0-9]/', '_', $originalName);
-            $fileName = time() . '_' . $safeName . '.' . $extension;
-            $filePath = $this->data_sheet_file->storeAs('pq/data_sheets', $fileName, 'public');
-            $data['data_sheet'] = Storage::url($filePath);
+            // Upload new file to product-data-sheets directory
+            $originalName = $this->data_sheet_file->getClientOriginalName();
+            $filePath = $this->data_sheet_file->storeAs('product-data-sheets', $originalName, 'public');
+            $data['data_sheet'] = '/storage/' . $filePath;
             $this->existing_data_sheet = $data['data_sheet'];
         } elseif ($this->detail_id && $this->existing_data_sheet) {
             // Keep existing file
             $data['data_sheet'] = $this->existing_data_sheet;
         }
-    
+
         // Handle Test Report
         if ($this->remove_test_report) {
             // Delete existing file
             if ($this->existing_test_report) {
-                $oldPath = str_replace('/storage', 'public', $this->existing_test_report);
+                $oldPath = str_replace('/storage/', '', $this->existing_test_report);
                 Storage::disk('public')->delete($oldPath);
             }
             $data['test_report'] = null;
@@ -206,23 +203,20 @@ class ProductQualificationShow extends Component
         } elseif ($this->test_report_file) {
             // Delete old file if exists
             if ($this->existing_test_report) {
-                $oldPath = str_replace('/storage', 'public', $this->existing_test_report);
+                $oldPath = str_replace('/storage/', '', $this->existing_test_report);
                 Storage::disk('public')->delete($oldPath);
             }
             
-            // Upload new file
-            $originalName = pathinfo($this->test_report_file->getClientOriginalName(), PATHINFO_FILENAME);
-            $extension = $this->test_report_file->getClientOriginalExtension();
-            $safeName = preg_replace('/[^a-zA-Z0-9]/', '_', $originalName);
-            $fileName = time() . '_' . $safeName . '.' . $extension;
-            $filePath = $this->test_report_file->storeAs('pq/test_reports', $fileName, 'public');
-            $data['test_report'] = Storage::url($filePath);
+            // Upload new file to product-test-reports directory
+            $originalName = $this->test_report_file->getClientOriginalName();
+            $filePath = $this->test_report_file->storeAs('product-test-reports', $originalName, 'public');
+            $data['test_report'] = '/storage/' . $filePath;
             $this->existing_test_report = $data['test_report'];
         } elseif ($this->detail_id && $this->existing_test_report) {
             // Keep existing file
             $data['test_report'] = $this->existing_test_report;
         }
-    
+
         if ($this->detail_id) {
             $detail = ProductQualificationDetail::find($this->detail_id);
             if (!$detail) {
@@ -236,7 +230,7 @@ class ProductQualificationShow extends Component
             ProductQualificationDetail::create($data);
             $message = 'Qualification detail created successfully!';
         }
-    
+
         $this->resetForm();
         $this->dispatch('notify', message: $message);
         $this->dispatch('close-modal', 'detail-form-modal');
@@ -248,18 +242,19 @@ class ProductQualificationShow extends Component
             $this->dispatch('notify', message: 'You do not have permission!', type: 'error');
             return;
         }
-    
+
         $detail = ProductQualificationDetail::with('productQualification')->find($id);
-    
+
         if (!$detail) {
             $this->dispatch('notify', message: 'Record not found!', type: 'error');
             return;
         }
-    
+
         $this->detail_id = $detail->id;
         $this->qualification_id = $detail->product_qualification_id;
         $this->supplier_name = $detail->supplier_name;
         $this->description = $detail->description;
+        // Store the full URL path including /storage/
         $this->existing_data_sheet = $detail->data_sheet;
         $this->existing_test_report = $detail->test_report;
         $this->status = $detail->status;
@@ -307,11 +302,11 @@ class ProductQualificationShow extends Component
 
         // Delete files from storage
         if ($detail->data_sheet) {
-            $path = str_replace('/storage', 'public', $detail->data_sheet);
+            $path = str_replace('/storage/', '', $detail->data_sheet);
             Storage::disk('public')->delete($path);
         }
         if ($detail->test_report) {
-            $path = str_replace('/storage', 'public', $detail->test_report);
+            $path = str_replace('/storage/', '', $detail->test_report);
             Storage::disk('public')->delete($path);
         }
 

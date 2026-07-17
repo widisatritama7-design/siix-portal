@@ -17,7 +17,7 @@
         </flux:breadcrumbs.item>
     </flux:breadcrumbs>
 
-    <!-- Header section - Sama seperti MasterSampleManagement -->
+    <!-- Header section -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-2">
         <div>
             <h1 class="text-3xl font-bold text-zinc-800 dark:text-white flex items-center gap-3">
@@ -27,23 +27,24 @@
                 Manage locked PCBs and unlock system
             </p>
         </div>
-        <div class="flex items-center gap-2">
-            <!-- Search input - Sama seperti MasterSampleManagement -->
-            <flux:input 
+    </div>
+
+    <!-- Search -->
+    <div class="flex justify-end">
+        <div class="w-full sm:w-64">
+            <flux:input
+                x-data
+                x-init="$el.value = ''"
                 wire:model.live.debounce.300ms="search"
                 placeholder="Search serial number..."
                 icon="magnifying-glass"
                 clearable
-                size="sm"
-                class="w-48"
+                autocomplete="off"
             />
-            <flux:button wire:click="$refresh" size="sm" icon="arrow-path" variant="primary" color="gray">
-                Refresh
-            </flux:button>
         </div>
     </div>
 
-    <!-- Tabs Navigation - Sama seperti MasterSampleManagement -->
+    <!-- Tabs Navigation -->
     <div class="mt-6 border-b border-zinc-200 dark:border-zinc-700">
         <div class="relative">
             <div class="overflow-x-auto scrollbar-hide">
@@ -636,30 +637,17 @@
                 <div class="p-6">
                     <div class="text-center mb-4">
                         <div class="w-16 h-16 mx-auto mb-4 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-8 text-blue-600 dark:text-blue-400">
-                                <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 0 0-6.75 6.75v1.875c0 1.169.584 2.225 1.462 2.875A5.25 5.25 0 0 0 7.5 18.75h9.75a5.25 5.25 0 0 0 3.063-9.75c.878-.65 1.462-1.706 1.462-2.875V10.5a6.75 6.75 0 0 0-6.75-6.75h-4.5Zm4.5 9.75a.75.75 0 0 1 .75-.75h.008a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75h-.008a.75.75 0 0 1-.75-.75v-.008Zm-4.5 0a.75.75 0 0 1 .75-.75h.008a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75h-.008a.75.75 0 0 1-.75-.75v-.008Zm-4.5 0a.75.75 0 0 1 .75-.75h.008a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75h-.008a.75.75 0 0 1-.75-.75v-.008Z" clip-rule="evenodd" />
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                                <path fill-rule="evenodd" d="M12 1.5a5.25 5.25 0 0 0-5.25 5.25v3a3 3 0 0 0-3 3v6.75a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3v-6.75a3 3 0 0 0-3-3v-3c0-2.9-2.35-5.25-5.25-5.25Zm3.75 8.25v-3a3.75 3.75 0 1 0-7.5 0v3h7.5Z" clip-rule="evenodd" />
                             </svg>
                         </div>
                         <h3 class="text-xl font-bold text-zinc-800 dark:text-white">View Unlock Code</h3>
                         <p class="text-sm text-zinc-500 dark:text-zinc-400">Enter your password to view the unlock code</p>
                     </div>
 
-                    <div class="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-4 mb-4">
-                        <div class="grid grid-cols-2 gap-2 text-sm">
-                            <div>
-                                <span class="text-zinc-500 dark:text-zinc-400">Serial Number</span>
-                                <div class="font-mono font-bold text-zinc-800 dark:text-zinc-200">{{ $selectedBoxForCode->serial_number ?? '-' }}</div>
-                            </div>
-                            <div>
-                                <span class="text-zinc-500 dark:text-zinc-400">Blocked Process</span>
-                                <div class="font-bold text-zinc-800 dark:text-zinc-200 uppercase">{{ isset($selectedBoxForCode) ? str_replace('_', ' ', $selectedBoxForCode->blocked_at_process) : '-' }}</div>
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2 text-center">
-                            Enter Your Password <span class="text-red-500">*</span>
+                           Login Password <span class="text-red-500">*</span>
                         </label>
                         <div class="relative max-w-xs mx-auto">
                             <input 
@@ -724,6 +712,22 @@
     @push('scripts')
     <script>
     document.addEventListener('livewire:initialized', function () {
+        // Reset search value saat mount
+        @this.on('reset-search', function () {
+            const searchInput = document.querySelector('input[wire\\:model*="search"]');
+            if (searchInput) {
+                searchInput.value = '';
+            }
+        });
+
+        // Force reset search saat tab switch
+        document.addEventListener('livewire:navigated', function () {
+            const searchInput = document.querySelector('input[wire\\:model*="search"]');
+            if (searchInput) {
+                searchInput.value = '';
+            }
+        });
+
         @this.on('close-modal-delay', function () {
             setTimeout(function() {
                 @this.closeUnlockModal();
@@ -737,12 +741,57 @@
                 modalElement.__x.$data.unlockCode = data.code;
             }
         });
-
-        // ============================================
-        // TIDAK ADA SETINTERVAL UNTUK AUTO REFRESH
-        // HANYA REFRESH MANUAL VIA TOMBOL REFRESH
-        // ============================================
     });
+
+    // Add the copy function globally
+    function copyToClipboard(text) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            // Use Clipboard API
+            navigator.clipboard.writeText(text).then(() => {
+                showCopySuccess();
+            }).catch(err => {
+                // Fallback to older method
+                fallbackCopy(text);
+            });
+        } else {
+            // Fallback for older browsers
+            fallbackCopy(text);
+        }
+    }
+
+    function fallbackCopy(text) {
+        const textArea = document.createElement('textarea');
+        textArea.value = text;
+        textArea.style.position = 'fixed';
+        textArea.style.opacity = '0';
+        textArea.style.left = '-999999px';
+        textArea.style.top = '-999999px';
+        document.body.appendChild(textArea);
+        textArea.select();
+        
+        try {
+            const successful = document.execCommand('copy');
+            if (successful) {
+                showCopySuccess();
+            } else {
+                console.error('Copy failed');
+            }
+        } catch (err) {
+            console.error('Copy failed:', err);
+        } finally {
+            document.body.removeChild(textArea);
+        }
+    }
+
+    function showCopySuccess() {
+        const successElement = document.getElementById('copy-success');
+        if (successElement) {
+            successElement.style.opacity = '1';
+            setTimeout(() => {
+                successElement.style.opacity = '0';
+            }, 2000);
+        }
+    }
     </script>
     @endpush
 
@@ -760,5 +809,6 @@
         .animate-slideDown {
             animation: slideDown 0.3s ease-out;
         }
+        [x-cloak] { display: none !important; }
     </style>
 </div>
