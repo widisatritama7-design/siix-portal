@@ -941,7 +941,7 @@
 
                 <!-- STEP 1: GENERAL -->
                 @php
-                    $step1Fields = ['body_cover'];
+                    $step1Fields = ['body_cover', 'lamp_alarm_change_model']; // TAMBAHKAN
                     $step1Incomplete = isStepIncomplete($selectedDailyFuji, $step1Fields);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step1Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
@@ -958,7 +958,8 @@
                             @endif
                         </div>
                     </div>
-                    <div class="p-4">
+                    <div class="p-4 space-y-4">
+                        <!-- Body Cover -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
                                 <p class="font-medium text-zinc-800 dark:text-white">Body Cover</p>
@@ -968,6 +969,20 @@
                             <div class="text-right ml-4">
                                 <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->body_cover) }}">
                                     Value : {{ ucfirst($selectedDailyFuji->body_cover ?? '-') }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- Lamp Alarm & Change Model (BARU) -->
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <p class="font-medium text-zinc-800 dark:text-white">Lamp Alarm & Change Model</p>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Make sure lamp Alarm & Change Model Lamp clean</p>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No Dust and clean</p>
+                            </div>
+                            <div class="text-right ml-4">
+                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->lamp_alarm_change_model) }}">
+                                    Value : {{ ucfirst($selectedDailyFuji->lamp_alarm_change_model ?? '-') }}
                                 </span>
                             </div>
                         </div>
@@ -1501,7 +1516,7 @@
 
                 <!-- STEP 8: REFLOW -->
                 @php
-                    $step8Fields = ['abandonment', 'fire_posibilty', 'rail_and_transfer_unit', 'n2_presure', 'oxygent_density_sek', 'oxygent_density_special', 'fire_posibilty_2'];
+                    $step8Fields = ['abandonment', 'fire_posibilty', 'flashlight', 'rail_and_transfer_unit', 'n2_presure', 'oxygent_density_sek', 'oxygent_density_special', 'fire_posibilty_2'];
                     $step8Incomplete = isStepIncomplete($selectedDailyFuji, $step8Fields);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step8Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
@@ -1519,6 +1534,7 @@
                         </div>
                     </div>
                     <div class="p-4 space-y-4">
+                        <!-- Abandonment (17) -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
                                 <p class="font-medium text-zinc-800 dark:text-white">Abandonment (17)</p>
@@ -1532,6 +1548,7 @@
                             </div>
                         </div>
                         
+                        <!-- Fire Possibility (17.a) -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
                                 <p class="font-medium text-zinc-800 dark:text-white">Fire Possibility (17.a)</p>
@@ -1545,6 +1562,21 @@
                             </div>
                         </div>
                         
+                        <!-- Flashlight (17.b) -->
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <p class="font-medium text-zinc-800 dark:text-white">Flashlight (17.b)</p>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : On/Off Check</p>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : On</p>
+                            </div>
+                            <div class="text-right ml-4">
+                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->flashlight) }}">
+                                    Value : {{ ucfirst($selectedDailyFuji->flashlight ?? '-') }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- Rail & Transfer Unit (18) -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
                                 <p class="font-medium text-zinc-800 dark:text-white">Rail & Transfer Unit (18)</p>
@@ -1558,6 +1590,7 @@
                             </div>
                         </div>
                         
+                        <!-- N2 Pressure (19) -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
                                 <p class="font-medium text-zinc-800 dark:text-white">N2 Pressure (19)</p>
@@ -1571,6 +1604,7 @@
                             </div>
                         </div>
                         
+                        <!-- Oxygen Density SEK (20) -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
                                 <p class="font-medium text-zinc-800 dark:text-white">Oxygen Density SEK (20)</p>
@@ -1584,6 +1618,7 @@
                             </div>
                         </div>
                         
+                        <!-- Oxygen Density Special (20) -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
                                 <p class="font-medium text-zinc-800 dark:text-white">Oxygen Density Special (20)</p>
@@ -1597,6 +1632,7 @@
                             </div>
                         </div>
                         
+                        <!-- Fire Possibility (20.a) -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
                                 <p class="font-medium text-zinc-800 dark:text-white">Fire Possibility (20.a)</p>
@@ -2250,7 +2286,7 @@
 
                 <!-- STEP 1: GENERAL -->
                 @php
-                    $step1Fields = ['body_cover'];
+                    $step1Fields = ['body_cover', 'lamp_alarm_change_model']; // TAMBAHKAN lamp_alarm_change_model
                     $step1Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step1Fields);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step1Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
@@ -2267,7 +2303,8 @@
                             @endif
                         </div>
                     </div>
-                    <div class="p-4">
+                    <div class="p-4 space-y-4">
+                        <!-- Body Cover -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
                                 <p class="font-medium text-zinc-800 dark:text-white">Body Cover</p>
@@ -2277,6 +2314,20 @@
                             <div class="text-right ml-4">
                                 <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->body_cover) }}">
                                     Value : {{ ucfirst($selectedDailyPanasonic->body_cover ?? '-') }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- Lamp Alarm & Change Model (BARU) -->
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <p class="font-medium text-zinc-800 dark:text-white">Lamp Alarm & Change Model</p>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Make sure lamp Alarm & Change Model Lamp clean</p>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No Dust and clean</p>
+                            </div>
+                            <div class="text-right ml-4">
+                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->lamp_alarm_change_model) }}">
+                                    Value : {{ ucfirst($selectedDailyPanasonic->lamp_alarm_change_model ?? '-') }}
                                 </span>
                             </div>
                         </div>
@@ -2833,7 +2884,7 @@
 
                 <!-- STEP 8: REFLOW -->
                 @php
-                    $step8Fields = ['abandonment', 'fire_posibilty', 'rail_and_transfer_unit', 'n2_presure', 'oxygent_density_sek', 'oxygent_density_special', 'fire_posibilty_2'];
+                    $step8Fields = ['abandonment', 'fire_posibilty', 'flashlight', 'rail_and_transfer_unit', 'n2_presure', 'oxygent_density_sek', 'oxygent_density_special', 'fire_posibilty_2'];
                     $step8Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step8Fields);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step8Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
@@ -2851,6 +2902,7 @@
                         </div>
                     </div>
                     <div class="p-4 space-y-4">
+                        <!-- Abandonment (17) -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
                                 <p class="font-medium text-zinc-800 dark:text-white">Abandonment (17)</p>
@@ -2864,6 +2916,7 @@
                             </div>
                         </div>
                         
+                        <!-- Fire Possibility (17.a) -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
                                 <p class="font-medium text-zinc-800 dark:text-white">Fire Possibility (17.a)</p>
@@ -2877,6 +2930,21 @@
                             </div>
                         </div>
                         
+                        <!-- Flashlight (17.b) -->
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <p class="font-medium text-zinc-800 dark:text-white">Flashlight (17.b)</p>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : On/Off Check</p>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : On</p>
+                            </div>
+                            <div class="text-right ml-4">
+                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->flashlight) }}">
+                                    Value : {{ ucfirst($selectedDailyPanasonic->flashlight ?? '-') }}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <!-- Rail & Transfer Unit (18) -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
                                 <p class="font-medium text-zinc-800 dark:text-white">Rail & Transfer Unit (18)</p>
@@ -2890,6 +2958,7 @@
                             </div>
                         </div>
                         
+                        <!-- N2 Pressure (19) -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
                                 <p class="font-medium text-zinc-800 dark:text-white">N2 Pressure (19)</p>
@@ -2903,6 +2972,7 @@
                             </div>
                         </div>
                         
+                        <!-- Oxygen Density SEK (20) -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
                                 <p class="font-medium text-zinc-800 dark:text-white">Oxygen Density SEK (20)</p>
@@ -2916,6 +2986,7 @@
                             </div>
                         </div>
                         
+                        <!-- Oxygen Density Special (20) -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
                                 <p class="font-medium text-zinc-800 dark:text-white">Oxygen Density Special (20)</p>
@@ -2929,6 +3000,7 @@
                             </div>
                         </div>
                         
+                        <!-- Fire Possibility (20.a) -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
                                 <p class="font-medium text-zinc-800 dark:text-white">Fire Possibility (20.a)</p>
@@ -3524,11 +3596,6 @@
                     </p>
                     @endif
                 </div>
-                <button wire:click="closeActivityModal" class="text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-300">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
             </div>
 
             @if($selectedRecordForActivity)

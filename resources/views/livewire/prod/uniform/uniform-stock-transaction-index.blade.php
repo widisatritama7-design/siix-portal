@@ -60,6 +60,15 @@
             </select>
         </div>
         <div>
+            <select wire:model.live="uniformStatus" 
+                class="w-full px-3 py-2 text-sm bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-zinc-700 dark:text-zinc-300">
+                <option value="">All Status</option>
+                <option value="Manual">Manual</option>
+                <option value="System">System (Misc)</option>
+                <option value="Not Use">Not Use</option>
+            </select>
+        </div>
+        <div>
             <input type="date" 
                 wire:model.live="dateFrom"
                 class="w-full px-3 py-2 text-sm bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-zinc-700 dark:text-zinc-300">
@@ -69,18 +78,9 @@
                 wire:model.live="dateTo"
                 class="w-full px-3 py-2 text-sm bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-zinc-700 dark:text-zinc-300">
         </div>
-        <div>
-            <select wire:model.live="perPage" 
-                class="w-full px-3 py-2 text-sm bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-zinc-700 dark:text-zinc-300">
-                <option value="10">10 per page</option>
-                <option value="25">25 per page</option>
-                <option value="50">50 per page</option>
-                <option value="100">100 per page</option>
-            </select>
-        </div>
     </div>
 
-    @if($search || $transactionType || $dateFrom || $dateTo)
+    @if($search || $transactionType || $uniformStatus || $dateFrom || $dateTo)
         <div class="flex justify-end">
             <button wire:click="resetFilters" 
                 class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 dark:bg-red-700 dark:hover:bg-red-800 transition-colors">
@@ -94,8 +94,23 @@
 
     <!-- Transactions Table -->
     <flux:card class="p-6 shadow-lg">
+        <div class="flex justify-between items-center mb-4">
+            <div class="text-sm text-zinc-500 dark:text-zinc-400">
+                Showing <strong>{{ $transactions->firstItem() ?? 0 }}</strong> - <strong>{{ $transactions->lastItem() ?? 0 }}</strong> of <strong>{{ $transactions->total() ?? 0 }}</strong> transactions
+            </div>
+            <div>
+                <select wire:model.live="perPage" 
+                    class="px-3 py-1 text-sm bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-zinc-700 dark:text-zinc-300">
+                    <option value="10">10 per page</option>
+                    <option value="25">25 per page</option>
+                    <option value="50">50 per page</option>
+                    <option value="100">100 per page</option>
+                </select>
+            </div>
+        </div>
+
         <div class="overflow-x-auto" style="overflow-x: auto !important; white-space: nowrap !important;">
-            <table class="w-full text-sm" style="min-width: 1400px;">
+            <table class="w-full text-sm" style="min-width: 1500px;">
                 <thead class="bg-zinc-100 dark:bg-zinc-800">
                     <tr>
                         <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">#</th>
@@ -103,6 +118,7 @@
                         <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Item Code</th>
                         <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Description</th>
                         <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Size</th>
+                        <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Status</th>
                         <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Type</th>
                         <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Change</th>
                         <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">Before</th>
@@ -129,6 +145,21 @@
                             </td>
                             <td class="px-3 py-2 text-center whitespace-nowrap">
                                 <flux:badge size="xs" color="purple" class="text-xs">{{ $transaction->uniform->size ?? '-' }}</flux:badge>
+                            </td>
+                            <td class="px-3 py-2 text-center whitespace-nowrap">
+                                @if($transaction->uniform)
+                                    @if($transaction->uniform->status == 'Manual')
+                                        <flux:badge size="xs" color="blue">Manual</flux:badge>
+                                    @elseif($transaction->uniform->status == 'System')
+                                        <flux:badge size="xs" color="green">System</flux:badge>
+                                    @elseif($transaction->uniform->status == 'Not Use')
+                                        <flux:badge size="xs" color="gray">Not Use</flux:badge>
+                                    @else
+                                        <flux:badge size="xs" color="yellow">{{ $transaction->uniform->status }}</flux:badge>
+                                    @endif
+                                @else
+                                    <span class="text-xs text-zinc-400">-</span>
+                                @endif
                             </td>
                             <td class="px-3 py-2 text-center whitespace-nowrap">
                                 @if($transaction->transaction_type == 'IN')
@@ -162,7 +193,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="12" class="px-4 py-12 text-center">
+                            <td colspan="13" class="px-4 py-12 text-center">
                                 <div class="flex flex-col items-center gap-3">
                                     <svg class="w-16 h-16 text-zinc-300 dark:text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
@@ -204,6 +235,23 @@
             </div>
         @endif
     </flux:card>
+
+    <!-- Notifikasi -->
+    <div x-data="{ show: false, message: '', type: 'success' }" 
+         x-on:notify.window="show = true; message = $event.detail.message; type = $event.detail.type || 'success'; setTimeout(() => show = false, 3000)"
+         x-show="show"
+         x-transition
+         class="fixed bottom-4 right-4 z-50"
+         :class="{
+             'bg-green-500': type === 'success',
+             'bg-red-500': type === 'error',
+             'bg-yellow-500': type === 'warning'
+         }"
+         style="display: none;">
+        <div class="text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2">
+            <span x-text="message"></span>
+        </div>
+    </div>
 
     <style>
         [x-cloak] { display: none !important; }

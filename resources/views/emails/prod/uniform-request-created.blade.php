@@ -114,7 +114,7 @@
         </div>
         
         <div class="content">
-            <p>Dear <strong>Admin & Costing Team</strong>,</p>
+            <p>Dear <strong>Admin Team</strong>,</p>
             
             <p>A uniform request has been <strong>{{ $isUpdate ? 'updated' : 'created' }}</strong> with the following details:</p>
             
@@ -134,7 +134,7 @@
                 <div class="info-row">
                     <div class="info-label">Status</div>
                     <div class="info-value">
-                        <span class="status-pending">⏳ Pending</span>
+                        <span class="status-pending">Pending</span>
                     </div>
                 </div>
             </div>
@@ -143,7 +143,7 @@
             
             <div class="text-center">
                 <a href="{{ route('prod.uniform.request.show', $request->id) }}" class="button">
-                    🔍 View Request Details
+                    View Request Details
                 </a>
             </div>
             

@@ -17,6 +17,7 @@ class DailyFujiEdit extends Component
     
     // STEP 1: GENERAL
     public $body_cover;
+    public $lamp_alarm_change_model; // TAMBAHKAN
     
     // STEP 2: LOADER
     public $cylinder;
@@ -63,6 +64,7 @@ class DailyFujiEdit extends Component
     // STEP 8: REFLOW
     public $abandonment;
     public $fire_posibilty;
+    public $flashlight; // TAMBAHKAN
     public $rail_and_transfer_unit;
     public $n2_presure;
     public $oxygent_density_sek;
@@ -121,11 +123,14 @@ class DailyFujiEdit extends Component
 
     // Field toggle yang perlu dicek
     protected $toggleFields = [
-        'body_cover', 'cylinder', 'rail_and_magazine_pcb', 'cover_magazine', 'brush',
+        'body_cover',
+        'lamp_alarm_change_model', // TAMBAHKAN
+        'cylinder', 'rail_and_magazine_pcb', 'cover_magazine', 'brush',
         'vacume_brush', 'cleaning_roller', 'ionizer', 'ipa_solvent',
         'box_1', 'vaccuum_parameter_1', 'expire_date_1',
         'box_2', 'vaccuum_parameter_2', 'expire_date_2',
         'abandonment', 'fire_posibilty', 'rail_and_transfer_unit', 'fire_posibilty_2',
+        // FLASHLIGHT DIHAPUS DARI SINI
         'cylinder_2', 'rail_and_magazine_pcb_2', 'cover_magazine_2',
         'angle_and_filter', 'lamp_indicator', 'fan_unit_1', 'fan_unit_2',
         'water_reservoirs', 'filter', 'angle_and_filter_2'
@@ -182,7 +187,9 @@ class DailyFujiEdit extends Component
     protected function loadData()
     {
         $fillableFields = [
-            'body_cover', 'cylinder', 'rail_and_magazine_pcb', 'cover_magazine',
+            'body_cover',
+            'lamp_alarm_change_model', // TAMBAHKAN
+            'cylinder', 'rail_and_magazine_pcb', 'cover_magazine',
             'brush', 'air_presure', 'vacume_presure_unitech', 'vacume_presure_nix',
             'vacume_brush', 'cleaning_roller', 'ionizer', 'conveyor_speed',
             'ipa_solvent', 'temperature_control_1', 'humidity_control_1', 'clamp_presure',
@@ -190,6 +197,7 @@ class DailyFujiEdit extends Component
             'capability_index', 'air_presure_supply', 'vaccuum_pump_1', 'box_1',
             'vaccuum_parameter_1', 'expire_date_1', 'air_presure_supply_2', 'vaccuum_pump_2',
             'box_2', 'vaccuum_parameter_2', 'expire_date_2', 'abandonment', 'fire_posibilty',
+            'flashlight', // TAMBAHKAN
             'rail_and_transfer_unit', 'n2_presure', 'oxygent_density_sek', 'oxygent_density_special',
             'fire_posibilty_2', 'air_presure_2', 'cylinder_2', 'rail_and_magazine_pcb_2',
             'cover_magazine_2', 'angle_and_filter', 'lamp_indicator', 'temperature_chiller',
@@ -229,13 +237,12 @@ class DailyFujiEdit extends Component
         } else {
             $this->overallStatus = 'danger';
             $this->overallStatusText = 'Some parameters are invalid or not filled';
-            // Jangan auto-update status ke On Progress karena bisa jadi memang sudah Checked sebelumnya
-            // Biarkan status tetap seperti yang sudah ada
         }
     }
 
     protected function checkOverallStatus(): bool
     {
+        // Cek toggle fields (checked/na)
         foreach ($this->toggleFields as $field) {
             $value = $this->{$field};
             if ($value === null || $value === '' || !in_array($value, ['checked', 'na'])) {
@@ -243,6 +250,12 @@ class DailyFujiEdit extends Component
             }
         }
 
+        // CEK FLASHLIGHT KHUSUS (on/off/na)
+        if ($this->flashlight === null || $this->flashlight === '' || !in_array($this->flashlight, ['on', 'off', 'na'])) {
+            return false;
+        }
+
+        // Cek numeric fields
         foreach ($this->numericRanges as $field => $range) {
             $value = $this->{$field};
             
@@ -301,7 +314,19 @@ class DailyFujiEdit extends Component
 
     public function getFieldColorClass($field, $value)
     {
-        if ($value === null || $value === '' || $value === '-') {
+        if ($value === null || $value === '') {
+            return 'border-red-500 bg-red-50 dark:bg-red-950/20';
+        }
+        
+        if ($value === '-') {
+            return 'border-green-500 bg-green-50 dark:bg-green-950/20';
+        }
+        
+        // Khusus untuk flashlight (on/off/na)
+        if ($field === 'flashlight') {
+            if (in_array($value, ['on', 'na'])) {
+                return 'border-green-500 bg-green-50 dark:bg-green-950/20';
+            }
             return 'border-red-500 bg-red-50 dark:bg-red-950/20';
         }
         
@@ -330,7 +355,9 @@ class DailyFujiEdit extends Component
         
         $data = [];
         $fillableFields = [
-            'body_cover', 'cylinder', 'rail_and_magazine_pcb', 'cover_magazine',
+            'body_cover',
+            'lamp_alarm_change_model', // TAMBAHKAN
+            'cylinder', 'rail_and_magazine_pcb', 'cover_magazine',
             'brush', 'air_presure', 'vacume_presure_unitech', 'vacume_presure_nix',
             'vacume_brush', 'cleaning_roller', 'ionizer', 'conveyor_speed',
             'ipa_solvent', 'temperature_control_1', 'humidity_control_1', 'clamp_presure',
@@ -338,6 +365,7 @@ class DailyFujiEdit extends Component
             'capability_index', 'air_presure_supply', 'vaccuum_pump_1', 'box_1',
             'vaccuum_parameter_1', 'expire_date_1', 'air_presure_supply_2', 'vaccuum_pump_2',
             'box_2', 'vaccuum_parameter_2', 'expire_date_2', 'abandonment', 'fire_posibilty',
+            'flashlight', // TAMBAHKAN
             'rail_and_transfer_unit', 'n2_presure', 'oxygent_density_sek', 'oxygent_density_special',
             'fire_posibilty_2', 'air_presure_2', 'cylinder_2', 'rail_and_magazine_pcb_2',
             'cover_magazine_2', 'angle_and_filter', 'lamp_indicator', 'temperature_chiller',

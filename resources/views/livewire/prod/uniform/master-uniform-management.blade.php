@@ -108,6 +108,7 @@
                         <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Size</th>
                         <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Price (IDR)</th>
                         <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Stock</th>
+                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Location</th>
                         <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Actions</th>
                     </tr>
                 </thead>
@@ -152,6 +153,17 @@
                                     <flux:badge size="xs" color="red">Out of Stock</flux:badge>
                                 @endif
                             </div>
+                        </td>
+                        <td class="px-4 py-3 text-center">
+                            @if($uniform->status == 'Manual')
+                                <flux:badge color="blue" size="sm">Manual</flux:badge>
+                            @elseif($uniform->status == 'System')
+                                <flux:badge color="green" size="sm">System (Misc)</flux:badge>
+                            @elseif($uniform->status == 'Not Use')
+                                <flux:badge color="gray" size="sm">Not Use</flux:badge>
+                            @else
+                                <flux:badge color="yellow" size="sm">{{ $uniform->status }}</flux:badge>
+                            @endif
                         </td>
                         <td class="px-4 py-3 text-center">
                             <div class="flex items-center justify-center gap-1 flex-wrap">
@@ -237,7 +249,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="px-4 py-12 text-center">
+                        <td colspan="8" class="px-4 py-12 text-center">
                             <div class="flex flex-col items-center gap-3">
                                 <div class="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
                                     <svg xmlns="http://www.w3.org/2000/svg" class="w-10 h-10 text-zinc-400 dark:text-zinc-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -318,11 +330,15 @@
         <div class="fixed inset-0 bg-black/50 z-40" @click="open = false"></div>
 
         <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-xl w-full max-w-md">
-                <div class="p-6">
-                    <h2 class="text-xl font-bold mb-4">{{ $modalTitle }}</h2>
+            <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-xl w-full max-w-md max-h-[90vh] flex flex-col">
+                <!-- Header - Fixed -->
+                <div class="p-6 border-b border-zinc-200 dark:border-zinc-700 flex-shrink-0">
+                    <h2 class="text-xl font-bold">{{ $modalTitle }}</h2>
+                </div>
 
-                    <form wire:submit="save">
+                <!-- Form - Scrollable -->
+                <div class="p-6 overflow-y-auto flex-1">
+                    <form wire:submit="save" id="uniform-form">
                         <div class="mb-4">
                             <label class="block text-sm font-medium mb-1">Item Code <span class="text-red-500">*</span></label>
                             <input type="text" 
@@ -414,6 +430,26 @@
                             @error('price') <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span> @enderror
                         </div>
 
+                        <!-- Status -->
+                        <div class="mb-4">
+                            <label class="block text-sm font-medium mb-1">Location <span class="text-red-500">*</span></label>
+                            <select wire:model="status" 
+                                {{ $uniform_id ? 'disabled' : '' }}
+                                class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent {{ $uniform_id ? 'bg-zinc-100 dark:bg-zinc-700 cursor-not-allowed opacity-75' : '' }}">
+                                <option value="">Select Status</option>
+                                <option value="Manual">Manual</option>
+                                <option value="System">System (Misc)</option>
+                            </select>
+                            @error('status') <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span> @enderror
+                            <p class="text-xs text-zinc-500 mt-1">
+                                <strong>Manual:</strong> Manually entered data<br>
+                                <strong>System (Misc):</strong> System-generated for miscellaneous items<br>
+                                @if($uniform_id)
+                                    <br><span class="text-yellow-600 dark:text-yellow-400">Status cannot be changed in edit mode</span>
+                                @endif
+                            </p>
+                        </div>
+
                         <!-- HANYA TAMPIL SAAT CREATE (BUKAN EDIT) -->
                         @if(!$uniform_id)
                         <div class="mb-4">
@@ -427,19 +463,23 @@
                             @error('qty') <span class="text-red-500 text-sm mt-1 block">{{ $message }}</span> @enderror
                         </div>
                         @endif
-
-                        <div class="flex justify-end gap-2 mt-6">
-                            <button type="button" 
-                                    @click="open = false"
-                                    class="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
-                                Cancel
-                            </button>
-                            <button type="submit" 
-                                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                                {{ $uniform_id ? 'Update' : 'Create' }}
-                            </button>
-                        </div>
                     </form>
+                </div>
+
+                <!-- Footer - Fixed -->
+                <div class="p-6 border-t border-zinc-200 dark:border-zinc-700 flex-shrink-0">
+                    <div class="flex justify-end gap-2">
+                        <button type="button" 
+                                @click="open = false"
+                                class="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
+                            Cancel
+                        </button>
+                        <button type="submit" 
+                                form="uniform-form"
+                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                            {{ $uniform_id ? 'Update' : 'Create' }}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -468,6 +508,18 @@
                         </p>
                         <p class="text-sm text-zinc-600 dark:text-zinc-400">
                             <strong>Current Stock:</strong> {{ $stockUniform?->qty ?? 0 }}
+                        </p>
+                        <p class="text-sm text-zinc-600 dark:text-zinc-400">
+                            <strong>Status:</strong> 
+                            @if($stockUniform?->status == 'Manual')
+                                <span class="text-blue-600">Manual</span>
+                            @elseif($stockUniform?->status == 'System')
+                                <span class="text-green-600">System (Misc)</span>
+                            @elseif($stockUniform?->status == 'Not Use')
+                                <span class="text-gray-600">Not Use</span>
+                            @else
+                                <span>{{ $stockUniform?->status }}</span>
+                            @endif
                         </p>
                     </div>
 
@@ -558,6 +610,18 @@
                     </div>
                     <p class="text-sm text-zinc-600 dark:text-zinc-400">
                         <strong>Item:</strong> {{ $historyUniform?->display_name }}
+                    </p>
+                    <p class="text-sm text-zinc-600 dark:text-zinc-400">
+                        <strong>Status:</strong> 
+                        @if($historyUniform?->status == 'Manual')
+                            <span class="text-blue-600">Manual</span>
+                        @elseif($historyUniform?->status == 'System')
+                            <span class="text-green-600">System (Misc)</span>
+                        @elseif($historyUniform?->status == 'Not Use')
+                            <span class="text-gray-600">Not Use</span>
+                        @else
+                            <span>{{ $historyUniform?->status }}</span>
+                        @endif
                     </p>
                     <p class="text-sm text-zinc-600 dark:text-zinc-400">
                         <strong>Total Transactions:</strong> {{ count($historyTransactions) }}

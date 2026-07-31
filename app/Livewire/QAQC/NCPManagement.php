@@ -934,14 +934,19 @@ class NCPManagement extends Component
                 break;
         }
         
-        // Apply search filter
+        // Apply search filter - UPDATED untuk mencari berdasarkan NIK dan Name
         if ($this->search) {
             $query->where(function($q) {
                 $q->where('ncp_number', 'like', '%' . $this->search . '%')
                     ->orWhere('section', 'like', '%' . $this->search . '%')
                     ->orWhere('remarks', 'like', '%' . $this->search . '%')
                     ->orWhere('part_number', 'like', '%' . $this->search . '%')
-                    ->orWhere('part_description', 'like', '%' . $this->search . '%');
+                    ->orWhere('part_description', 'like', '%' . $this->search . '%')
+                    // Tambahkan pencarian berdasarkan NIK dan Name melalui relasi employee
+                    ->orWhereHas('employee', function($empQuery) {
+                        $empQuery->where('nik', 'like', '%' . $this->search . '%')
+                            ->orWhere('name', 'like', '%' . $this->search . '%');
+                    });
             });
         }
         

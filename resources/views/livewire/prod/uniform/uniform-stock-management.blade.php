@@ -122,7 +122,8 @@
                                                 <th class="px-3 py-2 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase">Item Code</th>
                                                 <th class="px-3 py-2 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase">Description</th>
                                                 <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase">Size</th>
-                                                <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase">Last Stock</th>
+                                                <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase">Status</th>
+                                                <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase">Stock</th>
                                                 <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase">Price</th>
                                             </tr>
                                         </thead>
@@ -134,6 +135,17 @@
                                                     <td class="px-3 py-2 text-sm">{{ $uniform->description }}</td>
                                                     <td class="px-3 py-2 text-center">
                                                         <flux:badge size="xs" color="purple">{{ $uniform->size }}</flux:badge>
+                                                    </td>
+                                                    <td class="px-3 py-2 text-center">
+                                                        @if($uniform->status == 'Manual')
+                                                            <flux:badge size="xs" color="blue">Manual</flux:badge>
+                                                        @elseif($uniform->status == 'System')
+                                                            <flux:badge size="xs" color="green">System (Misc)</flux:badge>
+                                                        @elseif($uniform->status == 'Not Use')
+                                                            <flux:badge size="xs" color="gray">Not Use</flux:badge>
+                                                        @else
+                                                            <flux:badge size="xs" color="yellow">{{ $uniform->status }}</flux:badge>
+                                                        @endif
                                                     </td>
                                                     <td class="px-3 py-2 text-center">
                                                         <span class="text-sm font-semibold {{ $uniform->qty <= 5 ? 'text-red-600' : 'text-green-600' }}">
@@ -169,7 +181,23 @@
                                 <div>
                                     <p class="text-xs text-blue-600 dark:text-blue-400">Selected Uniform</p>
                                     <p class="font-semibold">{{ $currentUniform->item_code }} - {{ $currentUniform->description }}</p>
-                                    <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Size: {{ $currentUniform->size }} | Price: Rp {{ number_format($currentUniform->price, 0, ',', '.') }}</p>
+                                    <div class="flex items-center gap-2 mt-1">
+                                        <p class="text-sm text-zinc-600 dark:text-zinc-400">Size: {{ $currentUniform->size }}</p>
+                                        <span class="text-zinc-300 dark:text-zinc-600">|</span>
+                                        <p class="text-sm text-zinc-600 dark:text-zinc-400">Price: Rp {{ number_format($currentUniform->price, 0, ',', '.') }}</p>
+                                        <span class="text-zinc-300 dark:text-zinc-600">|</span>
+                                        <div>
+                                            @if($currentUniform->status == 'Manual')
+                                                <flux:badge size="xs" color="blue">Manual</flux:badge>
+                                            @elseif($currentUniform->status == 'System')
+                                                <flux:badge size="xs" color="green">System (Misc)</flux:badge>
+                                            @elseif($currentUniform->status == 'Not Use')
+                                                <flux:badge size="xs" color="gray">Not Use</flux:badge>
+                                            @else
+                                                <flux:badge size="xs" color="yellow">{{ $currentUniform->status }}</flux:badge>
+                                            @endif
+                                        </div>
+                                    </div>
                                 </div>
                                 <div class="text-right">
                                     <p class="text-sm text-zinc-500">Current Stock</p>
@@ -265,6 +293,21 @@
                                         <div>
                                             <span class="font-mono text-xs text-gray-500">{{ $item['uniform']->item_code }}</span>
                                             <p class="text-sm font-medium">{{ $item['uniform']->description }}</p>
+                                            <div class="flex items-center gap-2 mt-0.5">
+                                                <span class="text-xs text-gray-500">Size: {{ $item['uniform']->size }}</span>
+                                                <span class="text-xs text-gray-300">|</span>
+                                                <div>
+                                                    @if($item['uniform']->status == 'Manual')
+                                                        <flux:badge size="xs" color="blue">Manual</flux:badge>
+                                                    @elseif($item['uniform']->status == 'System')
+                                                        <flux:badge size="xs" color="green">System</flux:badge>
+                                                    @elseif($item['uniform']->status == 'Not Use')
+                                                        <flux:badge size="xs" color="gray">Not Use</flux:badge>
+                                                    @else
+                                                        <flux:badge size="xs" color="yellow">{{ $item['uniform']->status }}</flux:badge>
+                                                    @endif
+                                                </div>
+                                            </div>
                                         </div>
                                         <span class="px-2 py-1 rounded-full text-xs font-bold {{ $transactionType === 'in' ? 'bg-green-100 text-green-800' : 'bg-purple-100 text-purple-800' }}">
                                             {{ strtoupper($transactionType === 'in' ? 'IN' : 'OPNAME') }}

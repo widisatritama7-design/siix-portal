@@ -4,8 +4,10 @@ namespace App\Livewire\PROD\Uniform;
 
 use App\Models\PROD\Uniform\MasterUniform;
 use App\Models\PROD\Uniform\UniformRequest;
+use App\Models\PROD\Uniform\UniformRequestLock;
 use Livewire\Component;
 use Livewire\WithPagination;
+use App\Models\HR\Employee;
 
 class UniformRequestIndex extends Component
 {
@@ -15,7 +17,6 @@ class UniformRequestIndex extends Component
     
     // Filter properties
     public $adminFeedbackFilter = '';
-    public $costingFeedbackFilter = '';
     public $misscStatusFilter = '';
     public $dateFrom = '';
     public $dateTo = '';
@@ -32,8 +33,12 @@ class UniformRequestIndex extends Component
     // Tambahkan di class UniformRequestIndex
     public $selectedRequests = [];
     public $selectAll = false;
+
+    // Di bagian properties
     public $showBulkModal = false;
     public $bulkData = [];
+
+    public $allItemsSigned = false;
 
     protected $listeners = ['refreshTable' => '$refresh'];
 
@@ -43,11 +48,6 @@ class UniformRequestIndex extends Component
     }
 
     public function updatedAdminFeedbackFilter()
-    {
-        $this->resetPage();
-    }
-
-    public function updatedCostingFeedbackFilter()
     {
         $this->resetPage();
     }
@@ -88,37 +88,125 @@ class UniformRequestIndex extends Component
         $this->selectAll = count($this->selectedRequests) == $this->getTotalCount();
     }
 
+    // TAMBAHKAN: Method untuk cek lock status
+    public function getLockStatus($requestId)
+    {
+        // Hapus lock yang expired
+        UniformRequestLock::where('expires_at', '<', now())->delete();
+        
+        $lock = UniformRequestLock::where('request_id', $requestId)
+            ->where('expires_at', '>', now())
+            ->first();
+        
+        if ($lock) {
+            return [
+                'is_locked' => true,
+                'locked_by' => $lock->user_name,
+                'expires_at' => $lock->expires_at,
+                'is_owner' => $lock->session_id === session()->getId()
+            ];
+        }
+        
+        return [
+            'is_locked' => false,
+            'locked_by' => null,
+            'expires_at' => null,
+            'is_owner' => false
+        ];
+    }
+
+    // TAMBAHKAN: Method untuk force release lock (opsional untuk admin)
+    public function forceReleaseLock($requestId)
+    {
+        if (!auth()->user()->can('feedback uniform request admin')) {
+            $this->dispatch('notify', message: 'You do not have permission to force release lock!', type: 'error');
+            return;
+        }
+        
+        UniformRequestLock::where('request_id', $requestId)->delete();
+        $this->dispatch('notify', message: 'Lock released successfully!', type: 'success');
+        $this->dispatch('refreshTable');
+    }
+
+    public function forceReleaseCreateLock()
+    {
+        if (!auth()->user()->can('feedback uniform request admin')) {
+            $this->dispatch('notify', message: 'You do not have permission to force release lock!', type: 'error');
+            return;
+        }
+        
+        \App\Models\PROD\Uniform\UniformRequestLock::whereNull('request_id')->delete();
+        $this->dispatch('notify', message: 'Create lock released successfully!', type: 'success');
+        $this->dispatch('refreshTable');
+    }
+
     public function toggleSelectAll()
     {
-        // Hanya select request yang costing statusnya On Process atau Checked
-        $selectableIds = [];
-        foreach ($this->getFilteredRequests() as $request) {
-            $costingStatus = $this->getCostingFeedbackStatus($request);
-            if (in_array($costingStatus['status'], ['On Process', 'Checked'])) {
-                $selectableIds[] = $request->id;
+    // Hanya select request yang memenuhi syarat
+    $selectableIds = [];
+    foreach ($this->getFilteredRequests() as $request) {
+        // Cek missc_status
+        if (!isset($request->missc_status) || $request->missc_status !== 'On Process') {
+            continue;
+        }
+        
+        $items = $request->items ?? [];
+        $hasSelectableItem = false;
+        
+        foreach ($items as $item) {
+            // ============ GUNAKAN NULL COALESCING UNTUK AMAN ============
+            $isManual = isset($item['is_manual']) && $item['is_manual'] === true;
+            $isNewEmployee = isset($item['reason_type']) && $item['reason_type'] === 'new_employee';
+            $verificationStatus = $item['verification_status'] ?? null;
+            
+            // Manual atau New Employee: LANGSUNG BISA
+            if ($isManual || $isNewEmployee) {
+                $hasSelectableItem = true;
+                break;
+            }
+            
+            // System: harus sudah diverifikasi
+            if ($verificationStatus === 'approved') {
+                $hasSelectableItem = true;
+                break;
             }
         }
         
-        // Jika semua selectable sudah dipilih, unselect semua
-        $allSelected = count(array_intersect($this->selectedRequests, $selectableIds)) === count($selectableIds);
-        
-        if ($allSelected) {
-            $this->selectedRequests = array_diff($this->selectedRequests, $selectableIds);
-            $this->selectAll = false;
-        } else {
-            // Tambahkan semua selectable yang belum dipilih
-            $this->selectedRequests = array_unique(array_merge($this->selectedRequests, $selectableIds));
-            $this->selectAll = true;
+        if ($hasSelectableItem) {
+            $selectableIds[] = $request->id;
         }
+    }
+    
+    // Jika semua selectable sudah dipilih, unselect semua
+    $allSelected = count(array_intersect($this->selectedRequests, $selectableIds)) === count($selectableIds) && count($selectableIds) > 0;
+    
+    if ($allSelected) {
+        $this->selectedRequests = array_diff($this->selectedRequests, $selectableIds);
+        $this->selectAll = false;
+    } else {
+        // Tambahkan semua selectable yang belum dipilih
+        $this->selectedRequests = array_unique(array_merge($this->selectedRequests, $selectableIds));
+        $this->selectAll = true;
+    }
     }
 
     private function getFilteredRequests()
     {
-        // Ambil request yang sedang ditampilkan (sesuai filter)
         $query = UniformRequest::query();
         
         if (auth()->user()->can('view uniform request one user')) {
-            $query->where('created_by', auth()->user()->name);
+            $employee = Employee::where('nik', auth()->user()->nik)->first();
+            $userDepartment = $employee ? $employee->department : null;
+            
+            if ($userDepartment) {
+                $query->where(function($q) use ($userDepartment) {
+                    $q->where('items', 'like', '%"employee_department":"' . $userDepartment . '"%')
+                    ->orWhere('items', 'like', '%"manual_department":"' . $userDepartment . '"%')
+                    ->orWhere('items', 'like', '%"reason_type":"new_employee"%');
+                });
+            } else {
+                $query->where('items', 'like', '%"reason_type":"new_employee"%');
+            }
         }
         
         $query->when($this->search, function ($query) {
@@ -142,8 +230,19 @@ class UniformRequestIndex extends Component
     {
         $count = 0;
         foreach ($this->getFilteredRequests() as $request) {
-            $costingStatus = $this->getCostingFeedbackStatus($request);
-            if (in_array($costingStatus['status'], ['On Process', 'Checked'])) {
+            // Cek apakah ada item yang System atau Manual
+            $items = $request->items ?? [];
+            $hasSystemOrManual = false;
+            
+            foreach ($items as $item) {
+                // Cek jika item bukan manual (System)
+                if (!isset($item['is_manual']) || $item['is_manual'] !== true) {
+                    $hasSystemOrManual = true;
+                    break;
+                }
+            }
+            
+            if ($hasSystemOrManual) {
                 $count++;
             }
         }
@@ -177,6 +276,8 @@ class UniformRequestIndex extends Component
         return count($this->selectedRequests);
     }
 
+    // ==================== BULK CREATE MISSC FUNCTIONS ====================
+
     public function openBulkModal()
     {
         if (empty($this->selectedRequests)) {
@@ -184,80 +285,117 @@ class UniformRequestIndex extends Component
             return;
         }
         
-        // Filter hanya request yang costing statusnya On Process atau Checked
-        $validRequests = [];
-        foreach ($this->selectedRequests as $id) {
-            $request = UniformRequest::find($id);
-            if ($request) {
-                $costingStatus = $this->getCostingFeedbackStatus($request);
-                if (in_array($costingStatus['status'], ['On Process', 'Checked'])) {
-                    $validRequests[] = $id;
-                }
-            }
-        }
-        
-        if (empty($validRequests)) {
-            $this->dispatch('notify', message: 'No valid requests selected! Only requests with "On Process" or "Checked" costing feedback can be bulk processed.', type: 'error');
-            return;
-        }
-        
-        // Update selected requests dengan yang valid saja
-        $this->selectedRequests = $validRequests;
-        
         $this->bulkData = [];
-        $costingData = [];
+        $misscData = [];
         
         foreach ($this->selectedRequests as $id) {
             $request = UniformRequest::find($id);
             if (!$request) continue;
             
+            // ============ CEK STATUS MISSC ============
+            if (!isset($request->missc_status) || $request->missc_status !== 'On Process') {
+                continue;
+            }
+            
             $items = $request->items ?? [];
             
-            foreach ($items as $index => $item) {
-                // Cek apakah item memiliki costing_feedback
-                if (empty($item['costing_feedback'])) {
-                    continue;
+            foreach ($items as $item) {
+                // ============ CEK STATUS ITEM ============
+                $isManual = isset($item['is_manual']) && $item['is_manual'] === true;
+                $isNewEmployee = isset($item['reason_type']) && $item['reason_type'] === 'new_employee';
+                $verificationStatus = $item['verification_status'] ?? null;
+                
+                // ============ CEK KELAYAKAN ============
+                $canBeProcessed = false;
+                $statusLabel = '';
+                $statusColor = '';
+                $reasonNotProcessed = '';
+                $typeLabel = '';
+                
+                if ($isManual) {
+                    // MANUAL: Langsung bisa diproses
+                    $canBeProcessed = true;
+                    $statusLabel = 'Ready';
+                    $statusColor = 'green';
+                    $typeLabel = 'Manual';
+                } elseif ($isNewEmployee) {
+                    // NEW EMPLOYEE: Langsung bisa diproses
+                    $canBeProcessed = true;
+                    $statusLabel = 'Ready';
+                    $statusColor = 'green';
+                    $typeLabel = 'New Employee';
+                } elseif ($verificationStatus === 'approved') {
+                    // SYSTEM: Harus sudah diverifikasi
+                    $canBeProcessed = true;
+                    $statusLabel = 'Verified';
+                    $statusColor = 'blue';
+                    $typeLabel = 'System';
+                } else {
+                    // SYSTEM: Belum diverifikasi atau rejected
+                    $canBeProcessed = false;
+                    $statusLabel = $verificationStatus === 'rejected' ? 'Rejected' : 'Pending';
+                    $statusColor = 'red';
+                    $typeLabel = 'System';
+                    $reasonNotProcessed = $verificationStatus === 'rejected' ? 'Item has been rejected' : 'Waiting for user verification';
                 }
                 
-                // Cek status costing_feedback (Create Missc atau Create Stock Manual)
-                $costingFeedback = $item['costing_feedback'];
-                $isCreateMissc = stripos($costingFeedback, 'Create Missc') !== false;
-                $isCreateStockManual = stripos($costingFeedback, 'Create Stock Manual') !== false;
+                // ============ AMBIL DATA ============
+                $uniform = MasterUniform::find($item['master_uniform_id'] ?? null);
+                $itemCode = $uniform ? $uniform->item_code : 'N/A';
+                $description = $uniform ? $uniform->description : 'N/A';
                 
-                // Jika Create Missc atau Create Stock Manual, tambahkan ke data
-                if ($isCreateMissc || $isCreateStockManual) {
-                    $uniform = MasterUniform::find($item['master_uniform_id']);
-                    $itemCode = $uniform ? $uniform->item_code : 'N/A';
-                    $description = $uniform ? $uniform->description : 'N/A';
-                    
-                    $type = $isCreateMissc ? 'Create Missc' : 'Create Stock Manual';
-                    $qty = $item['qty'] ?? 0;
-                    
-                    $key = $itemCode . '|' . $type;
-                    
-                    if (!isset($costingData[$key])) {
-                        $costingData[$key] = [
-                            'item_code' => $itemCode,
-                            'description' => $description,
-                            'qty' => 0,
-                            'type' => $type,
-                            'request_numbers' => []
-                        ];
-                    }
-                    
-                    $costingData[$key]['qty'] += $qty;
-                    if (!in_array($request->request_number, $costingData[$key]['request_numbers'])) {
-                        $costingData[$key]['request_numbers'][] = $request->request_number;
-                    }
+                $qty = $item['qty'] ?? 0;
+                $department = $item['employee_department'] ?? $item['manual_department'] ?? 'N/A';
+                
+                $key = $itemCode . '|' . $department . '|' . ($isNewEmployee ? 'new_employee' : 'regular') . '|' . ($isManual ? 'manual' : 'system');
+                
+                if (!isset($misscData[$key])) {
+                    $misscData[$key] = [
+                        'item_code' => $itemCode,
+                        'description' => $description,
+                        'qty' => 0,
+                        'department' => $department,
+                        'is_new_employee' => $isNewEmployee,
+                        'is_manual' => $isManual,
+                        'type' => $typeLabel,
+                        'status' => $statusLabel,
+                        'status_color' => $statusColor,
+                        'can_be_processed' => $canBeProcessed,
+                        'reason_not_processed' => $reasonNotProcessed,
+                        'verification_status' => $verificationStatus,
+                        'request_numbers' => []
+                    ];
+                }
+                
+                $misscData[$key]['qty'] += $qty;
+                if (!in_array($request->request_number, $misscData[$key]['request_numbers'])) {
+                    $misscData[$key]['request_numbers'][] = $request->request_number;
                 }
             }
         }
         
-        $this->bulkData = array_values($costingData);
+        // Kelompokkan berdasarkan new_employee
+        $groupedData = [
+            'regular' => [],
+            'new_employee' => []
+        ];
+        
+        foreach ($misscData as $key => $data) {
+            if ($data['is_new_employee']) {
+                $groupedData['new_employee'][] = $data;
+            } else {
+                $groupedData['regular'][] = $data;
+            }
+        }
+        
+        $this->bulkData = $groupedData;
         $this->showBulkModal = true;
         
-        if (empty($this->bulkData)) {
-            $this->dispatch('notify', message: 'No items with Costing Feedback (Create Missc/Create Stock Manual) found in selected requests!', type: 'warning');
+        // Cek apakah ada data
+        $totalItems = count($groupedData['regular']) + count($groupedData['new_employee']);
+        
+        if ($totalItems === 0) {
+            $this->dispatch('notify', message: 'No items found in selected requests with status "On Process"!', type: 'warning');
             $this->showBulkModal = false;
         }
     }
@@ -328,54 +466,6 @@ class UniformRequestIndex extends Component
         }
     }
 
-    // Helper function to get costing feedback status
-    public function getCostingFeedbackStatus($request)
-    {
-        $items = $request->items ?? [];
-        
-        if (empty($items)) {
-            return ['status' => 'Open', 'color' => 'gray'];
-        }
-        
-        $totalItems = count($items);
-        $checkedCount = 0;
-        $onProcessCount = 0;
-        $openCount = 0;
-        
-        foreach ($items as $item) {
-            $verificationStatus = $item['verification_status'] ?? '';
-            
-            // 1. Jika verification_status = rejected, anggap sudah terisi
-            if ($verificationStatus === 'rejected') {
-                $checkedCount++;
-            } 
-            // 2. Jika costing_feedback terisi, anggap sudah terisi
-            elseif (!empty($item['costing_feedback'])) {
-                $checkedCount++;
-            }
-            // 3. Jika verification_status = approved dan costing_feedback kosong
-            elseif ($verificationStatus === 'approved' && empty($item['costing_feedback'])) {
-                $onProcessCount++;
-            }
-            // 4. Jika verification_status kosong atau lainnya
-            else {
-                $openCount++;
-            }
-        }
-        
-        // Semua sudah terisi (termasuk rejected)
-        if ($checkedCount == $totalItems) {
-            return ['status' => 'Checked', 'color' => 'green'];
-        }
-        
-        // Ada yang sudah terisi tapi belum semua
-        if ($checkedCount > 0 || $onProcessCount > 0) {
-            return ['status' => 'On Process', 'color' => 'yellow'];
-        }
-        
-        return ['status' => 'Open', 'color' => 'gray'];
-    }
-
     // Helper function to get verification status
     public function getVerificationStatus($request)
     {
@@ -391,17 +481,22 @@ class UniformRequestIndex extends Component
         $rejectedCount = 0;
         $manualCount = 0;
         $pendingCount = 0;
+        $systemCount = 0;
         
         foreach ($items as $item) {
             $verificationStatus = $item['verification_status'] ?? '';
-            $isManual = isset($item['is_manual']) && $item['is_manual'];
+            $isManual = isset($item['is_manual']) && $item['is_manual'] === true;
+            $isNewEmployee = isset($item['reason_type']) && $item['reason_type'] === 'new_employee';
             
-            // Jika manual, skip verification (dianggap completed)
-            if ($isManual) {
+            // Jika manual atau new employee, skip verification (dianggap N/A)
+            if ($isManual || $isNewEmployee) {
                 $completedCount++;
                 $manualCount++;
                 continue;
             }
+            
+            // Ini adalah system item
+            $systemCount++;
             
             if ($verificationStatus === 'approved') {
                 $completedCount++;
@@ -414,26 +509,22 @@ class UniformRequestIndex extends Component
             }
         }
         
-        // Jika semua item adalah manual
-        if ($manualCount == $totalItems) {
+        // Jika tidak ada system items (semua manual/new employee)
+        if ($systemCount == 0) {
             return ['status' => 'N/A', 'color' => 'gray'];
         }
         
-        // Jika semua sudah selesai (approved, rejected, atau manual)
-        if ($completedCount == $totalItems) {
-            // Jika semua approved (tidak ada rejected dan tidak ada manual)
-            if ($approvedCount == $totalItems) {
+        // Jika semua system items sudah selesai (approved atau rejected)
+        if ($pendingCount == 0) {
+            // Jika semua system items approved
+            if ($rejectedCount == 0) {
                 return ['status' => 'Approved', 'color' => 'green'];
             }
-            // Jika ada manual, tapi tidak ada pending
-            if ($manualCount > 0 && $pendingCount == 0) {
-                return ['status' => 'Completed', 'color' => 'blue'];
-            }
-            // Jika ada yang rejected (selesai semua)
+            // Ada yang rejected
             return ['status' => 'Completed', 'color' => 'blue'];
         }
         
-        // Jika ada yang sudah selesai tapi belum semua
+        // Jika ada system items yang masih pending
         if ($completedCount > 0) {
             return ['status' => 'On Process', 'color' => 'yellow'];
         }
@@ -519,10 +610,176 @@ class UniformRequestIndex extends Component
 
         $request = UniformRequest::find($id);
         
-        if ($request) {
-            $request->delete();
-            $this->dispatch('notify', message: 'Request deleted successfully!');
+        if (!$request) {
+            $this->dispatch('notify', message: 'Request not found!', type: 'error');
+            return;
         }
+
+        // ==================== CEK: Apakah request sudah ACCEPTED? ====================
+        if ($request->missc_status === 'Accepted') {
+            $this->dispatch('notify', message: 'Cannot delete request! Status already Accepted.', type: 'error');
+            return;
+        }
+        // ==================== END CEK ====================
+
+        // ==================== CEK: Apakah ada item yang sudah SIGNED? ====================
+        $items = $request->items ?? [];
+        $hasSignature = false;
+        foreach ($items as $item) {
+            if (!empty($item['digital_signature'])) {
+                $hasSignature = true;
+                break;
+            }
+        }
+        
+        if ($hasSignature) {
+            $this->dispatch('notify', message: 'Cannot delete request! Items already signed.', type: 'error');
+            return;
+        }
+        // ==================== END CEK ====================
+
+        // CEK: Apakah request sudah memiliki admin feedback?
+        $items = $request->items ?? [];
+        $hasAdminFeedback = false;
+        $nonManualItems = [];
+        
+        foreach ($items as $item) {
+            // Skip manual items
+            if (isset($item['is_manual']) && $item['is_manual'] === true) {
+                continue;
+            }
+            
+            $nonManualItems[] = $item;
+            
+            // Cek apakah ada admin_feedback yang terisi
+            if (!empty($item['admin_feedback']) && $item['admin_feedback'] !== 'N/A (Manual Input)') {
+                $hasAdminFeedback = true;
+            }
+        }
+        
+        // Jika ada admin feedback, tidak boleh dihapus
+        if ($hasAdminFeedback) {
+            $this->dispatch('notify', message: 'Cannot delete request! Admin feedback already exists.', type: 'error');
+            return;
+        }
+        
+        // Jika tidak ada non-manual items (semua manual), bisa dihapus langsung tanpa return stock
+        if (empty($nonManualItems)) {
+            $request->delete();
+            $this->dispatch('notify', message: 'Request deleted successfully! (All items are manual, no stock to return)', type: 'success');
+            return;
+        }
+
+        // ============ KEMBALIKAN STOCK UNTUK ITEM SYSTEM ============
+        try {
+            foreach ($nonManualItems as $item) {
+                $uniform = MasterUniform::find($item['master_uniform_id']);
+                if ($uniform) {
+                    $oldQty = $uniform->qty;
+                    $newQty = $oldQty + $item['qty'];
+                    
+                    $uniform->qty = $newQty;
+                    $uniform->save();
+                    
+                    // Catat transaksi
+                    \App\Models\PROD\Uniform\UniformStockTransaction::create([
+                        'master_uniform_id' => $uniform->id,
+                        'transaction_type' => 'IN',
+                        'qty_change' => $item['qty'],
+                        'qty_before' => $oldQty,
+                        'qty_after' => $newQty,
+                        'reference_id' => $request->request_number,
+                        'reference_type' => 'uniform_request_deletion',
+                        'description' => 'Delete request: ' . $request->request_number . ' - Return stock for ' . $uniform->item_code,
+                        'performed_by' => auth()->user()->name,
+                        'performed_at' => now(),
+                    ]);
+                }
+            }
+            
+            // Hapus request setelah stock dikembalikan
+            $request->delete();
+            
+            $this->dispatch('notify', message: 'Request deleted successfully! Stock has been returned for ' . count($nonManualItems) . ' item(s).', type: 'success');
+            $this->dispatch('refreshTable');
+            
+        } catch (\Exception $e) {
+            \Log::error('Error deleting uniform request: ' . $e->getMessage());
+            $this->dispatch('notify', message: 'Error deleting request: ' . $e->getMessage(), type: 'error');
+        }
+    }
+
+    public function canDeleteRequest($request)
+    {
+        // Cek department access
+        if (auth()->user()->can('view uniform request one user')) {
+            if (!$this->checkItemDepartmentAccess($request)) {
+                return false;
+            }
+        }
+        
+        // ==================== CEK: Apakah request sudah ACCEPTED? ====================
+        if ($request->missc_status === 'Accepted') {
+            return false;
+        }
+        // ==================== END CEK ====================
+        
+        // ==================== CEK: Apakah ada item yang sudah SIGNED? ====================
+        $items = $request->items ?? [];
+        foreach ($items as $item) {
+            if (!empty($item['digital_signature'])) {
+                return false;
+            }
+        }
+        // ==================== END CEK ====================
+        
+        $items = $request->items ?? [];
+        
+        foreach ($items as $item) {
+            // Skip manual items
+            if (isset($item['is_manual']) && $item['is_manual'] === true) {
+                continue;
+            }
+            
+            // Jika ada admin_feedback yang terisi, tidak boleh dihapus
+            if (!empty($item['admin_feedback']) && $item['admin_feedback'] !== 'N/A (Manual Input)') {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+
+    /**
+     * Cek apakah ada item yang sudah signed
+     */
+    public function hasSignedItems($request)
+    {
+        $items = $request->items ?? [];
+        foreach ($items as $item) {
+            if (!empty($item['digital_signature'])) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public function hasAdminFeedback($request)
+    {
+        $items = $request->items ?? [];
+        
+        foreach ($items as $item) {
+            // Skip manual items
+            if (isset($item['is_manual']) && $item['is_manual'] === true) {
+                continue;
+            }
+            
+            if (!empty($item['admin_feedback']) && $item['admin_feedback'] !== 'N/A (Manual Input)') {
+                return true;
+            }
+        }
+        
+        return false;
     }
 
     public function openMisscModal($id)
@@ -545,10 +802,69 @@ class UniformRequestIndex extends Component
             return;
         }
 
+        // ==================== CEK VERIFICATION STATUS ====================
+        $items = $request->items ?? [];
+        $hasPendingVerification = false;
+        $hasSystemItems = false;
+        $allItemsSigned = true;
+        
+        foreach ($items as $item) {
+            $isManual = isset($item['is_manual']) && $item['is_manual'];
+            $isNewEmployee = isset($item['reason_type']) && $item['reason_type'] === 'new_employee';
+            
+            if ($isManual || $isNewEmployee) {
+                if (empty($item['digital_signature'])) {
+                    $allItemsSigned = false;
+                }
+                continue;
+            }
+            
+            $hasSystemItems = true;
+            $verificationStatus = $item['verification_status'] ?? '';
+            
+            if ($verificationStatus !== 'approved' && $verificationStatus !== 'rejected') {
+                $hasPendingVerification = true;
+                break;
+            }
+            
+            if (empty($item['digital_signature'])) {
+                $allItemsSigned = false;
+            }
+        }
+        
+        if (!$hasSystemItems) {
+            foreach ($items as $item) {
+                if (empty($item['digital_signature'])) {
+                    $allItemsSigned = false;
+                    break;
+                }
+            }
+        }
+        
+        $this->allItemsSigned = $allItemsSigned;
+        
+        if ($hasPendingVerification) {
+            $this->dispatch('notify', message: 'Cannot update MISSC Status - System items must be verified (Approved or Rejected) first!', type: 'error');
+            return;
+        }
+        // ==================== END CEK ====================
+
+        // ==================== AUTO SELECT STATUS ====================
+        $currentStatus = $request->missc_status ?? 'Waiting';
+        
+        if ($currentStatus === 'Waiting') {
+            $this->selectedStatus = 'On Process';
+        } elseif ($currentStatus === 'On Process' && $allItemsSigned) {
+            $this->selectedStatus = 'Accepted';
+        } else {
+            $this->selectedStatus = ''; // Tidak ada perubahan
+        }
+        // ==================== END AUTO SELECT ====================
+
+        // Set modal properties
         $this->selectedRequestId = $id;
         $this->selectedRequestNumber = $request->request_number;
         $this->currentMisscStatus = $request->missc_status;
-        $this->selectedStatus = '';
         $this->showMisscModal = true;
     }
 
@@ -559,12 +875,14 @@ class UniformRequestIndex extends Component
         $this->selectedRequestNumber = '';
         $this->currentMisscStatus = '';
         $this->selectedStatus = '';
+        $this->allItemsSigned = false; // Reset
     }
 
     public function confirmUpdateMisscStatus()
     {
         if (empty($this->selectedStatus)) {
-            $this->dispatch('notify', message: 'Please select a status!', type: 'error');
+            $this->dispatch('notify', message: 'No status change needed!', type: 'warning');
+            $this->closeMisscModal();
             return;
         }
 
@@ -576,7 +894,6 @@ class UniformRequestIndex extends Component
             return;
         }
 
-        // Validate status transition
         if ($request->missc_status === 'Accepted') {
             $this->dispatch('notify', message: 'Cannot change status - already Accepted!', type: 'error');
             $this->closeMisscModal();
@@ -584,16 +901,34 @@ class UniformRequestIndex extends Component
         }
 
         if ($request->missc_status === $this->selectedStatus) {
-            $this->dispatch('notify', message: 'Status is already ' . $this->selectedStatus, type: 'error');
+            $this->dispatch('notify', message: 'Status is already ' . $this->selectedStatus, type: 'warning');
             $this->closeMisscModal();
             return;
         }
 
+        // ==================== VALIDASI UNTUK ACCEPT ====================
+        if ($this->selectedStatus === 'Accepted') {
+            $items = $request->items ?? [];
+            $allItemsSigned = true;
+            foreach ($items as $item) {
+                if (empty($item['digital_signature'])) {
+                    $allItemsSigned = false;
+                    break;
+                }
+            }
+            
+            if (!$allItemsSigned) {
+                $this->dispatch('notify', message: 'Cannot accept - All items must be signed first!', type: 'error');
+                return;
+            }
+        }
+        // ==================== END VALIDASI ====================
+
         $request->updateMisscStatus($this->selectedStatus);
         
         $message = $this->selectedStatus === 'Accepted' 
-            ? 'Request accepted successfully!' 
-            : 'Request status updated to ' . $this->selectedStatus;
+            ? '✅ Request accepted successfully!' 
+            : '🔄 Request status updated to ' . $this->selectedStatus;
             
         $this->dispatch('notify', message: $message);
         $this->closeMisscModal();
@@ -603,7 +938,6 @@ class UniformRequestIndex extends Component
     public function resetFilters()
     {
         $this->adminFeedbackFilter = '';
-        $this->costingFeedbackFilter = '';
         $this->misscStatusFilter = '';
         $this->verificationFilter = '';
         $this->signatureFilter = '';
@@ -611,6 +945,189 @@ class UniformRequestIndex extends Component
         $this->dateTo = '';
         $this->search = '';
         $this->resetPage();
+    }
+
+    /**
+     * Cek apakah request memiliki item dengan department user atau New Employee
+     */
+    private function checkItemDepartmentAccess($request)
+    {
+        if (!auth()->user()->can('view uniform request one user')) {
+            return true;
+        }
+        
+        $employee = Employee::where('nik', auth()->user()->nik)->first();
+        if (!$employee) {
+            return false;
+        }
+        
+        $userDepartment = $employee->department;
+        $items = $request->items ?? [];
+        
+        foreach ($items as $item) {
+            // HAPUS pengecekan reason_type 'new_employee' - ini yang menyebabkan semua bisa lihat
+            
+            // Cek employee_department
+            if (isset($item['employee_department']) && $item['employee_department'] === $userDepartment) {
+                return true;
+            }
+            
+            // Cek manual_department
+            if (isset($item['manual_department']) && $item['manual_department'] === $userDepartment) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
+    public function debugItems()
+    {
+        $items = $this->request->items ?? [];
+        $employee = Employee::where('nik', auth()->user()->nik)->first();
+        $userDepartment = $employee ? $employee->department : null;
+        
+        $results = [];
+        foreach ($items as $index => $item) {
+            $results[] = [
+                'index' => $index,
+                'employee_department' => $item['employee_department'] ?? null,
+                'manual_department' => $item['manual_department'] ?? null,
+                'reason_type' => $item['reason_type'] ?? null,
+                'is_manual' => $item['is_manual'] ?? null,
+                'matches_user_department' => (
+                    ($item['employee_department'] ?? '') === $userDepartment ||
+                    ($item['manual_department'] ?? '') === $userDepartment ||
+                    ($item['reason_type'] ?? '') === 'new_employee'
+                )
+            ];
+        }
+        
+        dd([
+            'user_department' => $userDepartment,
+            'items' => $results
+        ]);
+    }
+
+    public function debugDepartmentAccess()
+    {
+        $employee = Employee::where('nik', auth()->user()->nik)->first();
+        $userDepartment = $employee ? $employee->department : null;
+        
+        // Ambil semua request
+        $allRequests = UniformRequest::all();
+        $results = [];
+        
+        foreach ($allRequests as $request) {
+            $items = $request->items ?? [];
+            $hasAccess = false;
+            $matchedDepartments = [];
+            
+            foreach ($items as $item) {
+                // Cek employee_department
+                if (isset($item['employee_department'])) {
+                    $matchedDepartments[] = $item['employee_department'];
+                    if ($item['employee_department'] === $userDepartment) {
+                        $hasAccess = true;
+                    }
+                }
+                
+                // Cek manual_department
+                if (isset($item['manual_department'])) {
+                    $matchedDepartments[] = $item['manual_department'];
+                    if ($item['manual_department'] === $userDepartment) {
+                        $hasAccess = true;
+                    }
+                }
+            }
+            
+            $results[] = [
+                'request_number' => $request->request_number,
+                'user_department' => $userDepartment,
+                'request_departments' => array_unique($matchedDepartments),
+                'has_access' => $hasAccess,
+                'should_be_visible' => $hasAccess // Karena kita sudah hapus pengecualian new_employee
+            ];
+        }
+        
+        dd($results);
+    }
+
+    public function canEditRequest($request)
+    {
+        // Cek department access
+        if (auth()->user()->can('view uniform request one user')) {
+            if (!$this->checkItemDepartmentAccess($request)) {
+                return false;
+            }
+        }
+        
+        // Cek missc status - hanya bisa edit jika masih Waiting
+        if ($request->missc_status != 'Waiting') {
+            return false;
+        }
+        
+        $items = $request->items ?? [];
+        
+        if (empty($items)) {
+            return false;
+        }
+        
+        foreach ($items as $item) {
+            // Cek apakah sudah ada signature
+            if (!empty($item['digital_signature'])) {
+                return false;
+            }
+            
+            // Cek apakah sudah ada admin_feedback (bukan N/A)
+            $adminFeedback = $item['admin_feedback'] ?? '';
+            if (!empty($adminFeedback) && 
+                $adminFeedback !== 'N/A (Manual Input)' &&
+                $adminFeedback !== 'N/A (New Employee)') {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+
+    /**
+     * End edit session untuk user sendiri
+     */
+    public function endEditSession()
+    {
+        $sessionId = session()->getId();
+        
+        // Cari lock edit milik sendiri
+        $lock = UniformRequestLock::whereNotNull('request_id')
+            ->where('session_id', $sessionId)
+            ->first();
+        
+        if ($lock) {
+            // Hapus lock dari database
+            $lock->delete();
+            
+            $this->dispatch('notify', message: 'Edit session ended successfully! You can now create a new request.', type: 'success');
+            $this->dispatch('refreshTable');
+        } else {
+            $this->dispatch('notify', message: 'No active edit session found.', type: 'warning');
+        }
+    }
+
+    public function forceReleaseAllLocks()
+    {
+        if (!auth()->user()->can('feedback uniform request admin')) {
+            $this->dispatch('notify', message: 'You do not have permission to force release lock!', type: 'error');
+            return;
+        }
+        
+        // Hapus semua lock yang ada
+        UniformRequestLock::truncate(); // Hati-hati dengan truncate
+        // Atau gunakan delete jika tidak mau truncate
+        // UniformRequestLock::whereNotNull('id')->delete();
+        
+        $this->dispatch('notify', message: 'All locks released successfully!', type: 'success');
+        $this->dispatch('refreshTable');
     }
 
     public function render()
@@ -622,11 +1139,7 @@ class UniformRequestIndex extends Component
 
         $query = UniformRequest::with('creator');
 
-        // PRIORITAS: Jika user memiliki 'view uniform request one user'
-        if (auth()->user()->can('view uniform request one user')) {
-            $query->where('created_by', auth()->user()->name);
-        }
-
+        // Apply basic filters first
         $query->when($this->search, function ($query) {
                 $query->where('request_number', 'like', '%' . $this->search . '%');
             })
@@ -641,41 +1154,45 @@ class UniformRequestIndex extends Component
             })
             ->orderByDesc('id');
 
-        $requests = $query->paginate(10);
+        // Get all requests first (tanpa pagination)
+        $allRequests = $query->get();
 
-        // Apply feedback status filters manually after pagination
-        if ($this->adminFeedbackFilter || $this->costingFeedbackFilter || 
+        // Filter by department using collection
+        if (auth()->user()->can('view uniform request one user')) {
+            $allRequests = $allRequests->filter(function($request) {
+                return $this->checkItemDepartmentAccess($request);
+            });
+        }
+
+        // Apply feedback status filters
+        if ($this->adminFeedbackFilter || 
             $this->verificationFilter || $this->signatureFilter) {
             
-            $filteredRequests = [];
-            foreach ($requests as $request) {
+            $allRequests = $allRequests->filter(function($request) {
                 $adminStatus = $this->getAdminFeedbackStatus($request);
-                $costingStatus = $this->getCostingFeedbackStatus($request);
                 $verificationStatus = $this->getVerificationStatus($request);
                 $signatureStatus = $this->getSignatureStatus($request);
                 
                 $adminMatch = !$this->adminFeedbackFilter || $adminStatus['status'] == $this->adminFeedbackFilter;
-                $costingMatch = !$this->costingFeedbackFilter || $costingStatus['status'] == $this->costingFeedbackFilter;
                 $verificationMatch = !$this->verificationFilter || $verificationStatus['status'] == $this->verificationFilter;
                 $signatureMatch = !$this->signatureFilter || $signatureStatus['status'] == $this->signatureFilter;
                 
-                if ($adminMatch && $costingMatch && $verificationMatch && $signatureMatch) {
-                    $filteredRequests[] = $request;
-                }
-            }
-            
-            // Re-paginate filtered results
-            $currentPage = request()->get('page', 1);
-            $perPage = 10;
-            $total = count($filteredRequests);
-            $requests = new \Illuminate\Pagination\LengthAwarePaginator(
-                array_slice($filteredRequests, ($currentPage - 1) * $perPage, $perPage),
-                $total,
-                $perPage,
-                $currentPage,
-                ['path' => request()->url(), 'query' => request()->query()]
-            );
+                return $adminMatch && $verificationMatch && $signatureMatch;
+            });
         }
+
+        // Paginate manually
+        $currentPage = request()->get('page', 1);
+        $perPage = 10;
+        $total = $allRequests->count();
+        
+        $requests = new \Illuminate\Pagination\LengthAwarePaginator(
+            $allRequests->forPage($currentPage, $perPage)->values(),
+            $total,
+            $perPage,
+            $currentPage,
+            ['path' => request()->url(), 'query' => request()->query()]
+        );
 
         return view('livewire.prod.uniform.uniform-request-index', [
             'requests' => $requests,

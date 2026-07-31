@@ -298,21 +298,36 @@
                                     <h3 class="font-semibold text-base text-blue-800 dark:text-blue-300">GENERAL</h3>
                                 </div>
                             </div>
-                            <div class="p-6">
-                                <div class="space-y-4">
-                                    <div>
-                                        <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Body Cover</label>
-                                        <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Make sure all machine cover clean | Standard : No Dust and clean</p>
-                                        <div class="flex gap-6">
-                                            <label class="inline-flex items-center gap-2">
-                                                <input type="radio" wire:model.live="body_cover" value="checked" class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500">
-                                                <span class="text-sm">Checked ✓</span>
-                                            </label>
-                                            <label class="inline-flex items-center gap-2">
-                                                <input type="radio" wire:model.live="body_cover" value="na" class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500">
-                                                <span class="text-sm">N/A (Not Applicable)</span>
-                                            </label>
-                                        </div>
+                            <div class="p-6 space-y-4">
+                                <!-- Body Cover -->
+                                <div>
+                                    <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Body Cover</label>
+                                    <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Make sure all machine cover clean | Standard : No Dust and clean</p>
+                                    <div class="flex gap-6">
+                                        <label class="inline-flex items-center gap-2">
+                                            <input type="radio" wire:model.live="body_cover" value="checked" class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500">
+                                            <span class="text-sm">Checked ✓</span>
+                                        </label>
+                                        <label class="inline-flex items-center gap-2">
+                                            <input type="radio" wire:model.live="body_cover" value="na" class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500">
+                                            <span class="text-sm">N/A (Not Applicable)</span>
+                                        </label>
+                                    </div>
+                                </div>
+                                
+                                <!-- Lamp Alarm & Change Model (BARU) -->
+                                <div>
+                                    <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Lamp Alarm & Change Model</label>
+                                    <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Make sure lamp Alarm & Change Model Lamp clean | Standard : No Dust and clean</p>
+                                    <div class="flex gap-6">
+                                        <label class="inline-flex items-center gap-2">
+                                            <input type="radio" wire:model.live="lamp_alarm_change_model" value="checked" class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500">
+                                            <span class="text-sm">Checked ✓</span>
+                                        </label>
+                                        <label class="inline-flex items-center gap-2">
+                                            <input type="radio" wire:model.live="lamp_alarm_change_model" value="na" class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500">
+                                            <span class="text-sm">N/A (Not Applicable)</span>
+                                        </label>
                                     </div>
                                 </div>
                             </div>
@@ -802,6 +817,26 @@
                                         </label>
                                         <label class="inline-flex items-center gap-2">
                                             <input type="radio" wire:model.live="fire_posibilty" value="na" class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500">
+                                            <span class="text-sm">N/A (Not Applicable)</span>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <!-- Flashlight (17.b) - BARU -->
+                                <div>
+                                    <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Flashlight (17.b)</label>
+                                    <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : On/Off Check | Standard : On</p>
+                                    <div class="flex gap-6">
+                                        <label class="inline-flex items-center gap-2">
+                                            <input type="radio" wire:model.live="flashlight" value="on" class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500">
+                                            <span class="text-sm">On ✓</span>
+                                        </label>
+                                        <label class="inline-flex items-center gap-2">
+                                            <input type="radio" wire:model.live="flashlight" value="off" class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500">
+                                            <span class="text-sm">Off ✗</span>
+                                        </label>
+                                        <label class="inline-flex items-center gap-2">
+                                            <input type="radio" wire:model.live="flashlight" value="na" class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500">
                                             <span class="text-sm">N/A (Not Applicable)</span>
                                         </label>
                                     </div>

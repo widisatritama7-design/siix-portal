@@ -203,10 +203,10 @@
 <body>
     <div class="no-print">
         <button onclick="window.print()" style="padding: 6px 12px; background: #3498db; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 11px;">
-            🖨️ Print Checklist
+            Print Checklist
         </button>
         <button onclick="window.close()" style="padding: 6px 12px; background: #e74c3c; color: white; border: none; border-radius: 3px; cursor: pointer; margin-left: 8px; font-size: 11px;">
-            ❌ Close
+            Close
         </button>
     </div>
 
@@ -326,6 +326,8 @@
                     if ($value === null || $value === '') return 'N/A';
                     if ($value === 'checked') return '✓';
                     if ($value === 'na') return '-';
+                    if ($value === 'on') return 'ON';
+                    if ($value === 'off') return 'OFF';
                     return $value;
                 }
 
@@ -376,6 +378,23 @@
                     @if($dailyFuji->body_cover === 'checked')
                         <span class="status-badge status-checked">OK</span>
                     @elseif($dailyFuji->body_cover === 'na')
+                        <span class="status-badge status-na">N/A</span>
+                    @else
+                        <span style="color: #dc3545;">NOT CHECKED</span>
+                    @endif
+                </td>
+            </tr>
+            <!-- Lamp Alarm & Change Model (BARU) -->
+            <tr>
+                <td class="item-name">Lamp Alarm & Change Model</td>
+                <td class="item-standard">Standard: No Dust and clean</td>
+                <td class="item-value {{ getValueClass($dailyFuji->lamp_alarm_change_model, 'checked') }}">
+                    {{ displayValue($dailyFuji->lamp_alarm_change_model) }}
+                </td>
+                <td class="item-status">
+                    @if($dailyFuji->lamp_alarm_change_model === 'checked')
+                        <span class="status-badge status-checked">OK</span>
+                    @elseif($dailyFuji->lamp_alarm_change_model === 'na')
                         <span class="status-badge status-na">N/A</span>
                     @else
                         <span style="color: #dc3545;">NOT CHECKED</span>
@@ -1104,6 +1123,25 @@
                         <span class="status-badge status-checked">OK</span>
                     @elseif($dailyFuji->fire_posibilty === 'na')
                         <span class="status-badge status-na">N/A</span>
+                    @else
+                        <span style="color: #dc3545;">NOT CHECKED</span>
+                    @endif
+                </td>
+            </tr>
+            <!-- Flashlight (17.b) - BARU -->
+            <tr>
+                <td class="item-name">Flashlight (17.b)</td>
+                <td class="item-standard">Standard: On</td>
+                <td class="item-value {{ getValueClass($dailyFuji->flashlight, 'on') }}">
+                    {{ displayValue($dailyFuji->flashlight) }}
+                </td>
+                <td class="item-status">
+                    @if($dailyFuji->flashlight === 'on')
+                        <span class="status-badge status-checked">OK</span>
+                    @elseif($dailyFuji->flashlight === 'na')
+                        <span class="status-badge status-na">N/A</span>
+                    @elseif($dailyFuji->flashlight === 'off')
+                        <span style="color: #dc3545;">NOT OK</span>
                     @else
                         <span style="color: #dc3545;">NOT CHECKED</span>
                     @endif

@@ -82,7 +82,9 @@ class DailyPanasonic extends Model
         'approval',
         'group',
         'status',
-        'approved_by'
+        'approved_by',
+        'lamp_alarm_change_model',
+        'flashlight',
     ];
 
     protected $casts = [
@@ -157,7 +159,9 @@ class DailyPanasonic extends Model
             'approval',
             'group',
             'status',
-            'approved_by'
+            'approved_by',
+            'lamp_alarm_change_model',
+            'flashlight',
         ]);
     }
 
@@ -196,13 +200,14 @@ class DailyPanasonic extends Model
 
     public function getOverallStatusAttribute(): string
     {
+        // Toggle fields untuk checked/na
         $toggleFields = [
             'body_cover', 'cylinder', 'rail_and_magazine_pcb', 'cover_magazine', 'brush',
             'vacume_brush', 'cleaning_roller', 'ionizer', 'ipa_solvent', 'box', 'vaccuum_parameter',
             'box_2', 'vaccuum_parameter_2', 'abandonment', 'fire_posibilty', 'rail_and_transfer_unit',
             'fire_posibilty_2', 'cylinder_2', 'rail_and_magazine_pcb_2', 'cover_magazine_2',
             'angle_and_filter', 'lamp_indicator', 'box_3', 'box_4', 'water_reservoirs', 'filter',
-            'angle_and_filter_2', 'expire_date', 'expire_date_2'
+            'angle_and_filter_2', 'expire_date', 'expire_date_2', 'lamp_alarm_change_model',
         ];
 
         foreach ($toggleFields as $field) {
@@ -211,6 +216,12 @@ class DailyPanasonic extends Model
             if ($value === null || $value === '' || !in_array($value, ['checked', 'na'])) {
                 return 'danger';
             }
+        }
+
+        // CEK FLASHLIGHT KHUSUS (on/off/na)
+        $flashlightValue = $this->flashlight;
+        if ($flashlightValue === null || $flashlightValue === '' || !in_array($flashlightValue, ['on', 'off', 'na'])) {
+            return 'danger';
         }
 
         $numericRanges = [
@@ -266,13 +277,11 @@ class DailyPanasonic extends Model
             if ($max !== null && $floatValue > $max) {
                 return 'danger';
             }
-
         }
 
-
-            if ($this->group === null || $this->group === '') {
-                return 'danger';
-            }
+        if ($this->group === null || $this->group === '') {
+            return 'danger';
+        }
 
         return 'success';
     }

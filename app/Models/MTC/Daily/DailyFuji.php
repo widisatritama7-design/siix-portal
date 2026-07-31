@@ -21,6 +21,7 @@ class DailyFuji extends Model
     protected $fillable = [
         'master_line_id',
         'body_cover',
+        'lamp_alarm_change_model', // TAMBAHKAN
         'cylinder',
         'rail_and_magazine_pcb',
         'cover_magazine',
@@ -53,6 +54,7 @@ class DailyFuji extends Model
         'expire_date_2',
         'abandonment',
         'fire_posibilty',
+        'flashlight', // TAMBAHKAN
         'rail_and_transfer_unit',
         'n2_presure',
         'oxygent_density_sek',
@@ -81,7 +83,6 @@ class DailyFuji extends Model
         'created_by',
         'updated_by',
         'approved_by'
-        
     ];
 
     protected $casts = [
@@ -95,6 +96,7 @@ class DailyFuji extends Model
         ->logOnly([
             'master_line_id',
             'body_cover',
+            'lamp_alarm_change_model', // TAMBAHKAN
             'cylinder',
             'rail_and_magazine_pcb',
             'cover_magazine',
@@ -127,6 +129,7 @@ class DailyFuji extends Model
             'expire_date_2',
             'abandonment',
             'fire_posibilty',
+            'flashlight', // TAMBAHKAN
             'rail_and_transfer_unit',
             'n2_presure',
             'oxygent_density_sek',
@@ -193,8 +196,11 @@ class DailyFuji extends Model
 
     public function getOverallStatusAttribute(): string
     {
+        // Toggle fields untuk checked/na
         $toggleFields = [
-            'body_cover', 'cylinder', 'rail_and_magazine_pcb', 'cover_magazine', 'brush',
+            'body_cover', 
+            'lamp_alarm_change_model', // TAMBAHKAN
+            'cylinder', 'rail_and_magazine_pcb', 'cover_magazine', 'brush',
             'vacume_brush', 'cleaning_roller', 'ionizer', 'ipa_solvent', 
             'box_1', 'vaccuum_parameter_1', 'expire_date_1',
             'box_2', 'vaccuum_parameter_2', 'expire_date_2',
@@ -210,6 +216,12 @@ class DailyFuji extends Model
             if ($value === null || $value === '' || !in_array($value, ['checked', 'na'])) {
                 return 'danger';
             }
+        }
+
+        // CEK FLASHLIGHT KHUSUS (on/off/na)
+        $flashlightValue = $this->flashlight;
+        if ($flashlightValue === null || $flashlightValue === '' || !in_array($flashlightValue, ['on', 'off', 'na'])) {
+            return 'danger';
         }
 
         $numericRanges = [
@@ -263,7 +275,6 @@ class DailyFuji extends Model
             }
         }
 
-
         if ($this->group === null || $this->group === '') {
             return 'danger';
         }
@@ -273,7 +284,6 @@ class DailyFuji extends Model
 
     public function getOverallStatusIconAttribute(): string
     {
-        // Return icon name yang valid di Flux
         return $this->overall_status === 'success' ? 'check-circle' : 'x-circle';
     }
 

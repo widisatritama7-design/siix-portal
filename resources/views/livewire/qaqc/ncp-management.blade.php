@@ -76,12 +76,12 @@
         @endcan
     </div>
 
-    <!-- Search -->
+    <!-- Search - UPDATED dengan placeholder dinamis -->
     <div class="flex justify-end">
-        <div class="w-full sm:w-64">
+        <div class="w-full sm:w-80">
             <flux:input
                 wire:model.live.debounce.300ms="search"
-                placeholder="Search NCP number or section..."
+                placeholder="Search by NCP No, NIK, Name, Part, Section..."
                 icon="magnifying-glass"
                 clearable
             />

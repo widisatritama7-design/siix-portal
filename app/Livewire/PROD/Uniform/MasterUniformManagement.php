@@ -16,7 +16,8 @@ class MasterUniformManagement extends Component
     public $description;
     public $size;
     public $price;
-    public $qty; // Tambahkan ini
+    public $qty;
+    public $status; // Tambahkan status
 
     public $search = '';
     public $modalTitle = 'Add New Uniform';
@@ -52,7 +53,8 @@ class MasterUniformManagement extends Component
             'description' => 'required|string|max:255',
             'size' => 'required|string|max:50',
             'price' => 'required|numeric|min:0|max:999999999.99',
-            'qty' => 'nullable|integer|min:0', // Validasi qty
+            'qty' => 'nullable|integer|min:0',
+            'status' => 'required|in:Manual,System,Not Use', // Validasi status
         ];
     }
 
@@ -67,11 +69,13 @@ class MasterUniformManagement extends Component
         'price.max' => 'Price is too high.',
         'qty.integer' => 'Qty must be a number.',
         'qty.min' => 'Qty cannot be negative.',
+        'status.required' => 'Status is required.',
+        'status.in' => 'Invalid status selected.',
     ];
 
     public function resetForm()
     {
-        $this->reset(['uniform_id', 'item_code', 'description', 'size', 'price', 'qty']);
+        $this->reset(['uniform_id', 'item_code', 'description', 'size', 'price', 'qty', 'status']);
         $this->modalTitle = 'Add New Uniform';
         $this->resetValidation();
     }
@@ -106,6 +110,7 @@ class MasterUniformManagement extends Component
             'size' => $this->size,
             'price' => $cleanPrice,
             'qty' => $this->qty ?? 0,
+            'status' => $this->status ?? 'Manual', // Default Manual
         ];
 
         if ($this->uniform_id) {
@@ -147,6 +152,7 @@ class MasterUniformManagement extends Component
         $this->size = $uniform->size;
         $this->price = $uniform->price;
         $this->qty = $uniform->qty;
+        $this->status = $uniform->status ?? 'Manual'; // Ambil status
         $this->modalTitle = 'Edit Uniform';
     }
 

@@ -19,7 +19,8 @@ class MasterUniform extends Model
         'description',
         'size',
         'price',
-        'qty', // Tambahkan kolom qty
+        'qty',
+        'status', // Tambahkan status di fillable
         'created_by',
         'updated_by',
     ];
@@ -29,6 +30,39 @@ class MasterUniform extends Model
         'updated_at' => 'datetime',
         'price' => 'decimal:2',
         'qty' => 'integer',
+    ];
+
+    // Konstanta untuk status
+    const STATUS_MANUAL = 'Manual';
+    const STATUS_SYSTEM = 'System';
+    const STATUS_NOT_USE = 'Not Use';
+
+    // Array semua status
+    const STATUSES = [
+        self::STATUS_MANUAL,
+        self::STATUS_SYSTEM,
+        self::STATUS_NOT_USE,
+    ];
+
+    // Array status dengan label
+    const STATUS_LABELS = [
+        self::STATUS_MANUAL => 'Manual',
+        self::STATUS_SYSTEM => 'System (Misc)',
+        self::STATUS_NOT_USE => 'Not Use',
+    ];
+
+    // Array status dengan warna badge
+    const STATUS_COLORS = [
+        self::STATUS_MANUAL => 'blue',
+        self::STATUS_SYSTEM => 'green',
+        self::STATUS_NOT_USE => 'gray',
+    ];
+
+    // Array status dengan icon
+    const STATUS_ICONS = [
+        self::STATUS_MANUAL => 'user',
+        self::STATUS_SYSTEM => 'cpu-chip',
+        self::STATUS_NOT_USE => 'x-mark',
     ];
 
     public function getFormattedItemCodeAttribute(): string
@@ -66,6 +100,69 @@ class MasterUniform extends Model
         return (int) $value;
     }
 
+    // Accessor untuk status dengan label
+    public function getStatusLabelAttribute(): string
+    {
+        return self::STATUS_LABELS[$this->status] ?? $this->status;
+    }
+
+    // Accessor untuk status dengan warna
+    public function getStatusColorAttribute(): string
+    {
+        return self::STATUS_COLORS[$this->status] ?? 'gray';
+    }
+
+    // Accessor untuk status dengan icon
+    public function getStatusIconAttribute(): string
+    {
+        return self::STATUS_ICONS[$this->status] ?? 'circle';
+    }
+
+    // Accessor untuk mengecek apakah status aktif
+    public function getIsActiveAttribute(): bool
+    {
+        return $this->status !== self::STATUS_NOT_USE;
+    }
+
+    // Accessor untuk mengecek apakah status Manual
+    public function getIsManualAttribute(): bool
+    {
+        return $this->status === self::STATUS_MANUAL;
+    }
+
+    // Accessor untuk mengecek apakah status System
+    public function getIsSystemAttribute(): bool
+    {
+        return $this->status === self::STATUS_SYSTEM;
+    }
+
+    // Accessor untuk mengecek apakah status Not Use
+    public function getIsNotUseAttribute(): bool
+    {
+        return $this->status === self::STATUS_NOT_USE;
+    }
+
+    // Scope untuk filter status
+    public function scopeManual($query)
+    {
+        return $query->where('status', self::STATUS_MANUAL);
+    }
+
+    public function scopeSystem($query)
+    {
+        return $query->where('status', self::STATUS_SYSTEM);
+    }
+
+    public function scopeNotUse($query)
+    {
+        return $query->where('status', self::STATUS_NOT_USE);
+    }
+
+    public function scopeActive($query)
+    {
+        return $query->where('status', '!=', self::STATUS_NOT_USE);
+    }
+
     // Relasi ke User
     public function creator()
     {
@@ -100,6 +197,9 @@ class MasterUniform extends Model
             }
             if ($model->qty === null) {
                 $model->qty = 0;
+            }
+            if ($model->status === null) {
+                $model->status = self::STATUS_MANUAL; // Default status Manual
             }
         });
 
