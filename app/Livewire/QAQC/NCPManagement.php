@@ -74,7 +74,7 @@ class NCPManagement extends Component
     protected function rules()
     {
         $rules = [
-            'employee_id' => 'required',
+            'employee_id' => 'required|exists:tb_hr_employee,id',
             'name' => 'required|string|max:255',
             'department' => 'required|string|max:100',
             'section' => 'nullable|string|max:100',
@@ -310,7 +310,11 @@ class NCPManagement extends Component
             ->get()
             ->map(fn($employee) => [
                 'id' => $employee->id,
-                'label' => $employee->nik . ' - ' . $employee->name . ' (' . $employee->department . ')'
+                'nik' => $employee->nik ?? '-',
+                'name' => $employee->name ?? '-',
+                'department' => $employee->department ?? '-',
+                'section' => $employee->section ?? '-',
+                'label' => ($employee->nik ?? '') . ' - ' . ($employee->name ?? '') . ' (' . ($employee->department ?? '') . ')'
             ]);
     }
 
@@ -336,8 +340,8 @@ class NCPManagement extends Component
                     $this->userDepartment = $employee->department;
                     $this->hasValidEmployee = true;
                     
-                    // Auto-fill employee data for new NCP
-                    $this->employee_id = $employee->id;
+                    // HANYA set data untuk tampilan, JANGAN set employee_id
+                    // Biarkan user memilih employee sendiri
                     $this->nik = $employee->nik;
                     $this->name = $employee->name;
                     $this->department = $employee->department;
@@ -347,6 +351,9 @@ class NCPManagement extends Component
                         3 => 'Magang',
                         default => 'Unknown',
                     };
+                    
+                    // HAPUS INI:
+                    // $this->employee_id = $employee->id; // <-- JANGAN DIISI!
                 } else {
                     \Log::warning('No active employee (status 1,2,3) found with NIK: ' . $userNik);
                     $this->userDepartment = null;
@@ -421,10 +428,12 @@ class NCPManagement extends Component
             'approved_by', 'defect_details'
         ]);
         
-        // Auto-fill with current user's employee data if valid
+        // JANGAN auto-fill employee_id di resetForm!
+        // Biarkan user memilih employee
+        // Hanya set data user untuk tampilan
         $currentUserEmployee = $this->getCurrentUserEmployee();
         if ($currentUserEmployee) {
-            $this->employee_id = $currentUserEmployee->id;
+            // Hanya set untuk tampilan, JANGAN set employee_id
             $this->nik = $currentUserEmployee->nik;
             $this->name = $currentUserEmployee->name;
             $this->department = $currentUserEmployee->department;
@@ -486,6 +495,10 @@ class NCPManagement extends Component
             
         if (!$employee) {
             $this->dispatch('notify', message: 'Invalid employee selection!', type: 'error');
+            $this->employee_id = null;
+            $this->nik = null;
+            $this->name = null;
+            $this->department = null;
             return;
         }
         
@@ -502,11 +515,22 @@ class NCPManagement extends Component
         
         $this->employeeSearch = '';
         $this->showEmployeeDropdown = false;
+        
+        // Reset error
+        $this->resetErrorBag('employee_id');
     }
 
     public function clearEmployee()
     {
-        $this->reset(['employee_id', 'nik','name', 'department', 'status_display']);
+        $this->employee_id = null;
+        $this->nik = null;
+        $this->name = null;
+        $this->department = null;
+        $this->status_display = null;
+        $this->section = null;
+        
+        // Reset form validation
+        $this->resetValidation();
     }
 
     private function toRomanNumeral($number)
@@ -636,6 +660,34 @@ class NCPManagement extends Component
             return;
         }
 
+        // Validasi employee_id harus diisi DAN valid
+        if (empty($this->employee_id)) {
+            $this->addError('employee_id', 'Please select an employee first!');
+            $this->dispatch('notify', message: 'Please select an employee first!', type: 'error');
+            return;
+        }
+
+        // Cek apakah employee_id yang dipilih valid
+        $selectedEmployee = Employee::where('id', $this->employee_id)
+            ->whereIn('status', [1, 2, 3])
+            ->first();
+            
+        if (!$selectedEmployee) {
+            $this->addError('employee_id', 'Selected employee is not active!');
+            $this->dispatch('notify', message: 'Selected employee is not active!', type: 'error');
+            $this->employee_id = null;
+            $this->nik = null;
+            $this->name = null;
+            $this->department = null;
+            return;
+        }
+        
+        // Set employee data
+        $this->nik = $selectedEmployee->nik;
+        $this->name = $selectedEmployee->name;
+        $this->department = $selectedEmployee->department;
+
+        // Permission check
         if ($this->ncp_id) {
             if (!auth()->user()->can('edit ncp')) {
                 $this->dispatch('notify', message: 'You do not have permission!', type: 'error');
@@ -648,26 +700,7 @@ class NCPManagement extends Component
             }
         }
 
-        // Validate that selected employee exists and is active
-        $canViewAll = $this->canViewAll();
-        
-        if ($this->employee_id) {
-            $query = Employee::where('id', $this->employee_id)
-                ->whereIn('status', [1, 2, 3]);
-            
-            // Jika tidak memiliki akses all, filter berdasarkan department
-            if (!$canViewAll) {
-                $query->where('department', $currentUserEmployee->department);
-            }
-            
-            $selectedEmployee = $query->first();
-                
-            if (!$selectedEmployee) {
-                $this->dispatch('notify', message: 'Selected employee is not active or not in your department!', type: 'error');
-                return;
-            }
-        }
-
+        // Validasi lainnya
         $this->validate();
 
         $dispositionString = null;
@@ -696,6 +729,7 @@ class NCPManagement extends Component
             'lot_no' => $this->lot_no,
             'lot_qty' => $this->lot_qty ?: null,
             'rejected_qty' => $this->rejected_qty ?: null,
+            'failure_rate' => $this->failure_rate ?: null,
             'do_no' => $this->do_no,
             'packing_list_no' => $this->packing_list_no,
             'disposition' => $dispositionString,
@@ -703,6 +737,7 @@ class NCPManagement extends Component
         ];
 
         if ($this->ncp_id) {
+            // EDIT MODE
             $ncp = NCP::find($this->ncp_id);
             if (!$ncp) {
                 $this->dispatch('notify', message: 'NCP not found!', type: 'error');
@@ -717,6 +752,7 @@ class NCPManagement extends Component
 
             $ncp->update($data);
 
+            // Handle file upload
             if ($this->removeFile) {
                 if ($ncp->file && \Storage::disk('public')->exists($ncp->file)) {
                     \Storage::disk('public')->delete($ncp->file);
@@ -735,11 +771,21 @@ class NCPManagement extends Component
 
             $message = 'NCP updated successfully!';
         } else {
+            // CREATE MODE
             $data['status'] = 'open';
             $data['ncp_number'] = $this->generateNCPNumber();
             $data['created_by'] = auth()->id();
             
-            NCP::create($data);
+            $ncp = NCP::create($data);
+
+            // Handle file upload for new NCP
+            if ($this->newFile) {
+                $fileName = time() . '_' . $this->newFile->getClientOriginalName();
+                $filePath = $this->newFile->storeAs('ncp-files', $fileName, 'public');
+                $ncp->file = $filePath;
+                $ncp->save();
+            }
+
             $message = 'NCP created successfully!';
         }
 

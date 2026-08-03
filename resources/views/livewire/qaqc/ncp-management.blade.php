@@ -21,33 +21,6 @@
             <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
                 Manage (NCP) records
             </p>
-            
-            <!-- Show user validation status -->
-            @if($hasValidRecord && $userDepartment)
-                <div class="flex items-center gap-2 mt-1">
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300">
-                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                        </svg>
-                        Valid Employee
-                    </span>
-                    <span class="text-xs text-zinc-600 dark:text-zinc-400">
-                        Department: <span class="font-semibold text-blue-600 dark:text-blue-400">{{ $userDepartment }}</span>
-                    </span>
-                </div>
-            @else
-                <div class="flex items-center gap-2 mt-1">
-                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-300">
-                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
-                        </svg>
-                        No Valid Employee Record
-                    </span>
-                    <span class="text-xs text-zinc-500 dark:text-zinc-400">
-                        Please ensure your NIK is registered in HR Dept
-                    </span>
-                </div>
-            @endif
         </div>
 
         <!-- Tombol Add NCP -->
@@ -88,110 +61,92 @@
         </div>
     </div>
 
-    <div class="mt-6 border-b border-zinc-200 dark:border-zinc-700">
+    <div class="mt-6 border-b border-zinc-200 dark:border-zinc-700 pb-4">
         <div class="relative">
             <div class="overflow-x-auto scrollbar-hide">
-                <div class="flex flex-nowrap gap-1 justify-center">
+                <div class="flex flex-nowrap gap-2 justify-center">
                     <!-- All Tab -->
                     <button 
                         wire:click="setTab('all')"
-                        class="px-5 py-2.5 text-sm font-medium transition-all duration-200 relative whitespace-nowrap {{ $activeTab === 'all' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200' }}"
+                        class="px-5 py-2.5 text-sm font-medium transition-all duration-200 relative whitespace-nowrap rounded-lg {{ $activeTab === 'all' ? 'bg-blue-600 text-white shadow-md hover:bg-blue-700' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700' }}"
                     >
                         <svg class="inline w-4 h-4 mr-1.5 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
                         </svg>
                         All
-                        <span class="ml-2 px-2 py-0.5 text-xs rounded-full {{ $activeTab === 'all' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' : 'bg-gray-100 text-gray-600 dark:bg-zinc-800 dark:text-gray-400' }}">
+                        <span class="ml-2 px-2 py-0.5 text-xs rounded-full {{ $activeTab === 'all' ? 'bg-white/20 text-white' : 'bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400' }}">
                             {{ $tabCounts['all'] ?? 0 }}
                         </span>
-                        @if($activeTab === 'all')
-                            <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 dark:bg-blue-400 rounded-t-full"></div>
-                        @endif
                     </button>
 
                     <!-- Open Tab -->
                     <button 
                         wire:click="setTab('open')"
-                        class="px-5 py-2.5 text-sm font-medium transition-all duration-200 relative whitespace-nowrap {{ $activeTab === 'open' ? 'text-yellow-600 dark:text-yellow-400' : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200' }}"
+                        class="px-5 py-2.5 text-sm font-medium transition-all duration-200 relative whitespace-nowrap rounded-lg {{ $activeTab === 'open' ? 'bg-yellow-500 text-white shadow-md hover:bg-yellow-600' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700' }}"
                     >
                         <svg class="inline w-4 h-4 mr-1.5 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                         Open
-                        <span class="ml-2 px-2 py-0.5 text-xs rounded-full {{ $activeTab === 'open' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300' : 'bg-gray-100 text-gray-600 dark:bg-zinc-800 dark:text-gray-400' }}">
+                        <span class="ml-2 px-2 py-0.5 text-xs rounded-full {{ $activeTab === 'open' ? 'bg-white/20 text-white' : 'bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400' }}">
                             {{ $tabCounts['open'] ?? 0 }}
                         </span>
-                        @if($activeTab === 'open')
-                            <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-yellow-600 dark:bg-yellow-400 rounded-t-full"></div>
-                        @endif
                     </button>
 
                     <!-- In Progress Tab -->
                     <button 
                         wire:click="setTab('in_progress')"
-                        class="px-5 py-2.5 text-sm font-medium transition-all duration-200 relative whitespace-nowrap {{ $activeTab === 'in_progress' ? 'text-blue-600 dark:text-blue-400' : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200' }}"
+                        class="px-5 py-2.5 text-sm font-medium transition-all duration-200 relative whitespace-nowrap rounded-lg {{ $activeTab === 'in_progress' ? 'bg-blue-600 text-white shadow-md hover:bg-blue-700' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700' }}"
                     >
                         <svg class="inline w-4 h-4 mr-1.5 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                         In Progress
-                        <span class="ml-2 px-2 py-0.5 text-xs rounded-full {{ $activeTab === 'in_progress' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' : 'bg-gray-100 text-gray-600 dark:bg-zinc-800 dark:text-gray-400' }}">
+                        <span class="ml-2 px-2 py-0.5 text-xs rounded-full {{ $activeTab === 'in_progress' ? 'bg-white/20 text-white' : 'bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400' }}">
                             {{ $tabCounts['in_progress'] ?? 0 }}
                         </span>
-                        @if($activeTab === 'in_progress')
-                            <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-600 dark:bg-blue-400 rounded-t-full"></div>
-                        @endif
                     </button>
 
                     <!-- Closed Tab -->
                     <button 
                         wire:click="setTab('closed')"
-                        class="px-5 py-2.5 text-sm font-medium transition-all duration-200 relative whitespace-nowrap {{ $activeTab === 'closed' ? 'text-green-600 dark:text-green-400' : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200' }}"
+                        class="px-5 py-2.5 text-sm font-medium transition-all duration-200 relative whitespace-nowrap rounded-lg {{ $activeTab === 'closed' ? 'bg-green-600 text-white shadow-md hover:bg-green-700' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700' }}"
                     >
                         <svg class="inline w-4 h-4 mr-1.5 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                         </svg>
                         Closed
-                        <span class="ml-2 px-2 py-0.5 text-xs rounded-full {{ $activeTab === 'closed' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' : 'bg-gray-100 text-gray-600 dark:bg-zinc-800 dark:text-gray-400' }}">
+                        <span class="ml-2 px-2 py-0.5 text-xs rounded-full {{ $activeTab === 'closed' ? 'bg-white/20 text-white' : 'bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400' }}">
                             {{ $tabCounts['closed'] ?? 0 }}
                         </span>
-                        @if($activeTab === 'closed')
-                            <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-green-600 dark:bg-green-400 rounded-t-full"></div>
-                        @endif
                     </button>
 
                     <!-- Rejected Tab -->
                     <button 
                         wire:click="setTab('rejected')"
-                        class="px-5 py-2.5 text-sm font-medium transition-all duration-200 relative whitespace-nowrap {{ $activeTab === 'rejected' ? 'text-red-600 dark:text-red-400' : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200' }}"
+                        class="px-5 py-2.5 text-sm font-medium transition-all duration-200 relative whitespace-nowrap rounded-lg {{ $activeTab === 'rejected' ? 'bg-red-600 text-white shadow-md hover:bg-red-700' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700' }}"
                     >
                         <svg class="inline w-4 h-4 mr-1.5 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                         Rejected
-                        <span class="ml-2 px-2 py-0.5 text-xs rounded-full {{ $activeTab === 'rejected' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' : 'bg-gray-100 text-gray-600 dark:bg-zinc-800 dark:text-gray-400' }}">
+                        <span class="ml-2 px-2 py-0.5 text-xs rounded-full {{ $activeTab === 'rejected' ? 'bg-white/20 text-white' : 'bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400' }}">
                             {{ $tabCounts['rejected'] ?? 0 }}
                         </span>
-                        @if($activeTab === 'rejected')
-                            <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-red-600 dark:bg-red-400 rounded-t-full"></div>
-                        @endif
                     </button>
 
                     <!-- Deleted Tab -->
                     <button 
                         wire:click="setTab('deleted')"
-                        class="px-5 py-2.5 text-sm font-medium transition-all duration-200 relative whitespace-nowrap {{ $activeTab === 'deleted' ? 'text-gray-600 dark:text-gray-400' : 'text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-200' }}"
+                        class="px-5 py-2.5 text-sm font-medium transition-all duration-200 relative whitespace-nowrap rounded-lg {{ $activeTab === 'deleted' ? 'bg-zinc-600 text-white shadow-md hover:bg-zinc-700' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-200 dark:hover:bg-zinc-700' }}"
                     >
                         <svg class="inline w-4 h-4 mr-1.5 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                         </svg>
                         Deleted
-                        <span class="ml-2 px-2 py-0.5 text-xs rounded-full {{ $activeTab === 'deleted' ? 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-300' : 'bg-gray-100 text-gray-600 dark:bg-zinc-800 dark:text-gray-400' }}">
+                        <span class="ml-2 px-2 py-0.5 text-xs rounded-full {{ $activeTab === 'deleted' ? 'bg-white/20 text-white' : 'bg-zinc-200 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-400' }}">
                             {{ $tabCounts['deleted'] ?? 0 }}
                         </span>
-                        @if($activeTab === 'deleted')
-                            <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-600 dark:bg-gray-400 rounded-t-full"></div>
-                        @endif
                     </button>
                 </div>
             </div>
@@ -294,8 +249,8 @@
                             <td class="px-4 py-3 text-center">
                                 @php
                                     $remarks = $ncp->remarks ?: '-';
-                                    $wordCount = str_word_count($remarks);
-                                    $isLong = $wordCount > 10;
+                                    $formattedRemarks = $remarks !== '-' ? ucwords(strtolower($remarks)) : '-';
+                                    $isLong = strlen($formattedRemarks) > 30;
                                 @endphp
                                 
                                 @if($remarks !== '-')
@@ -304,8 +259,8 @@
                                             class="relative inline-block"
                                             @mouseenter="show = true"
                                             @mouseleave="show = false">
-                                            <span class="text-sm text-zinc-600 dark:text-zinc-400 cursor-help border-b border-dashed border-zinc-400 dark:border-zinc-500">
-                                                {{ Str::limit($remarks, 20) }}
+                                            <span class="text-sm font-semibold text-zinc-800 dark:text-white cursor-help border-b border-dashed border-zinc-400 dark:border-zinc-500">
+                                                {{ Str::limit($formattedRemarks, 30) }}
                                             </span>
                                             <div x-show="show" 
                                                 x-cloak
@@ -316,17 +271,17 @@
                                                         bg-zinc-800 dark:bg-zinc-700 text-white text-xs rounded-lg px-3 py-2 
                                                         min-w-[200px] max-w-sm shadow-lg text-left whitespace-normal"
                                                 style="display: none;">
-                                                {{ $remarks }}
+                                                {{ $formattedRemarks }}
                                                 <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 bg-zinc-800 dark:bg-zinc-700 rotate-45"></div>
                                             </div>
                                         </div>
                                     @else
-                                        <span class="text-sm text-zinc-600 dark:text-zinc-400">
-                                            {{ $remarks }}
+                                        <span class="text-sm font-semibold text-zinc-800 dark:text-white">
+                                            {{ $formattedRemarks }}
                                         </span>
                                     @endif
                                 @else
-                                    <span class="text-sm text-zinc-400">-</span>
+                                    <span class="text-sm font-semibold text-zinc-400">-</span>
                                 @endif
                             </td>
                             <td class="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400 text-center">
@@ -338,8 +293,12 @@
                                 {{ $ncp->deleter->name ?? '-' }}
                             </td>
                             <td class="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400 max-w-md text-center">
-                                <div class="truncate max-w-xs inline-block" title="{{ $ncp->deleted_reason }}">
-                                    {{ $ncp->deleted_reason ?: '-' }}
+                                @php
+                                    $deletedReason = $ncp->deleted_reason ?: '-';
+                                    $formattedDeletedReason = $deletedReason !== '-' ? ucwords(strtolower($deletedReason)) : '-';
+                                @endphp
+                                <div class="truncate max-w-xs inline-block" title="{{ $formattedDeletedReason }}">
+                                    {{ $formattedDeletedReason }}
                                 </div>
                             </td>
                             @else
@@ -501,8 +460,8 @@
                         @if($ncp_id)
                             <!-- Card 1: Product & Quality Information -->
                             <div class="bg-white dark:bg-zinc-800/50 rounded-lg border border-zinc-200 dark:border-zinc-700 mb-4 shadow-sm overflow-hidden">
-                                <div class="px-4 py-3 border-b" style="background-color: #cffafe;">
-                                    <h3 class="text-md font-semibold flex items-center gap-2 text-zinc-800 dark:text-zinc-800">
+                                <div class="px-4 py-3 border-b bg-zinc-100 dark:bg-zinc-700">
+                                    <h3 class="text-md font-semibold flex items-center gap-2 text-zinc-800 dark:text-zinc-200">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
                                         </svg>
@@ -572,8 +531,8 @@
 
                             <!-- Card 2: Defect Details -->
                             <div class="bg-white dark:bg-zinc-800/50 rounded-lg border border-zinc-200 dark:border-zinc-700 mb-4 shadow-sm overflow-hidden">
-                                <div class="px-4 py-3 border-b flex justify-between items-center" style="background-color: #fed7aa;">
-                                    <h3 class="text-md font-semibold flex items-center gap-2 text-zinc-800 dark:text-zinc-800">
+                                <div class="px-4 py-3 border-b bg-zinc-100 dark:bg-zinc-700 flex items-center justify-between">
+                                    <h3 class="text-md font-semibold flex items-center gap-2 text-zinc-800 dark:text-zinc-200">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                                         </svg>
@@ -633,8 +592,8 @@
 
                             <!-- Card 3: Document Information -->
                             <div class="bg-white dark:bg-zinc-800/50 rounded-lg border border-zinc-200 dark:border-zinc-700 mb-4 shadow-sm overflow-hidden">
-                                <div class="px-4 py-3 border-b" style="background-color: #a7f3d0;">
-                                    <h3 class="text-md font-semibold flex items-center gap-2 text-zinc-800 dark:text-zinc-800">
+                                <div class="px-4 py-3 border-b bg-zinc-100 dark:bg-zinc-700">
+                                    <h3 class="text-md font-semibold flex items-center gap-2 text-zinc-800 dark:text-zinc-200">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                         </svg>
@@ -662,8 +621,8 @@
 
                             <!-- Card 4: DISPOSITION -->
                             <div class="bg-white dark:bg-zinc-800/50 rounded-lg border border-zinc-200 dark:border-zinc-700 mb-4 shadow-sm overflow-hidden">
-                                <div class="px-4 py-3 border-b" style="background-color: #ddd6fe;">
-                                    <h3 class="text-md font-semibold flex items-center gap-2 text-zinc-800 dark:text-zinc-800">
+                                <div class="px-4 py-3 border-b bg-zinc-100 dark:bg-zinc-700">
+                                    <h3 class="text-md font-semibold flex items-center gap-2 text-zinc-800 dark:text-zinc-200">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                                         </svg>
@@ -707,8 +666,8 @@
 
                             <!-- Card 5: Status & File Attachment -->
                             <div class="bg-white dark:bg-zinc-800/50 rounded-lg border border-zinc-200 dark:border-zinc-700 mb-4 shadow-sm overflow-hidden">
-                                <div class="px-4 py-3 border-b" style="background-color: #fde68a;">
-                                    <h3 class="text-md font-semibold flex items-center gap-2 text-zinc-800 dark:text-zinc-800">
+                                <div class="px-4 py-3 border-b bg-zinc-100 dark:bg-zinc-700">
+                                    <h3 class="text-md font-semibold flex items-center gap-2 text-zinc-800 dark:text-zinc-200">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
                                         </svg>
@@ -758,8 +717,8 @@
 
                         <!-- ALWAYS SHOW: Card 6: Prepared By, Section & Remarks -->
                         <div class="bg-white dark:bg-zinc-800/50 rounded-lg border border-zinc-200 dark:border-zinc-700 mb-4 shadow-sm overflow-hidden">
-                            <div class="px-4 py-3 border-b" style="background-color: #fecaca;">
-                                <h3 class="text-md font-semibold flex items-center gap-2 text-zinc-800 dark:text-zinc-800">
+                            <div class="px-4 py-3 border-b bg-zinc-100 dark:bg-zinc-700">
+                                <h3 class="text-md font-semibold flex items-center gap-2 text-zinc-800 dark:text-zinc-200">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                     </svg>
@@ -803,94 +762,165 @@
                                         <input type="hidden" wire:model="employee_id">
                                     </div>
                                 @else
-                                    <div class="mb-4">
-                                        <flux:label required>Search Employee (NIK or Name)</flux:label>
-                                        
-                                        <div x-data="{ 
-                                            show: false, 
-                                            search: '', 
-                                            employees: [],
-                                            loading: false,
-                                            searchTimeout: null,
-                                            loadEmployees() {
-                                                if (this.search.length < 2) {
-                                                    this.employees = [];
-                                                    return;
-                                                }
-                                                
-                                                clearTimeout(this.searchTimeout);
-                                                this.searchTimeout = setTimeout(() => {
-                                                    this.loading = true;
-                                                    @this.call('searchEmployees', this.search).then(result => {
-                                                        this.employees = result;
-                                                        this.loading = false;
-                                                    }).catch(() => {
-                                                        this.loading = false;
-                                                    });
-                                                }, 300);
+                                    <!-- FORM PENCARIAN - Hanya muncul jika belum ada employee yang dipilih -->
+                                    <div x-data="{ 
+                                        search: '', 
+                                        employees: [],
+                                        loading: false,
+                                        searchTimeout: null,
+                                        selectedEmployee: null,
+                                        isSearching: false,
+                                        loadEmployees() {
+                                            if (this.search.length < 2) {
+                                                this.employees = [];
+                                                this.isSearching = false;
+                                                return;
                                             }
-                                        }" class="relative">
-                                            <input 
-                                                type="text"
-                                                x-model="search"
-                                                @input="loadEmployees(); show = search.length >= 2"
-                                                @focus="show = search.length >= 2"
-                                                placeholder="Search by NIK or name (min 2 characters)..."
-                                                class="w-full px-3 py-2 border border-zinc-300 rounded-lg 
-                                                    focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
-                                                    dark:bg-zinc-800 dark:border-zinc-600 dark:text-white"
-                                            >
-                                            <div x-show="loading" class="absolute z-50 w-full mt-1 bg-white dark:bg-zinc-800 p-2 text-center rounded-lg shadow-lg">
-                                                <svg class="animate-spin h-5 w-5 mx-auto text-blue-500" fill="none" viewBox="0 0 24 24">
-                                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                                </svg>
-                                            </div>
-                                            <div 
-                                                x-show="show && !loading && employees.length > 0"
-                                                x-transition
-                                                @click.outside="show = false"
-                                                class="absolute z-50 w-full mt-1 bg-white dark:bg-zinc-800 
-                                                    border border-zinc-300 dark:border-zinc-600 rounded-lg shadow-lg 
-                                                    max-h-60 overflow-y-auto"
-                                                style="display: none;"
-                                            >
-                                                <template x-for="emp in employees" :key="emp.id">
-                                                    <div 
-                                                        @click="
-                                                            $wire.selectEmployee(emp.id); 
-                                                            show = false;
-                                                            search = emp.label;
-                                                        "
-                                                        class="px-3 py-2 hover:bg-zinc-100 dark:hover:bg-zinc-700 cursor-pointer text-sm border-b border-zinc-100 dark:border-zinc-700 last:border-0"
-                                                        x-text="emp.label"
-                                                    >
+                                            
+                                            this.isSearching = true;
+                                            clearTimeout(this.searchTimeout);
+                                            this.searchTimeout = setTimeout(() => {
+                                                this.loading = true;
+                                                @this.call('searchEmployees', this.search).then(result => {
+                                                    this.employees = result;
+                                                    this.loading = false;
+                                                    this.isSearching = true;
+                                                }).catch(() => {
+                                                    this.loading = false;
+                                                    this.isSearching = true;
+                                                });
+                                            }, 300);
+                                        },
+                                        selectEmployee(emp) {
+                                            this.selectedEmployee = emp;
+                                            this.search = emp.label;
+                                            this.employees = [];
+                                            this.isSearching = false;
+                                            $wire.selectEmployee(emp.id);
+                                        },
+                                        clearSelection() {
+                                            this.selectedEmployee = null;
+                                            this.search = '';
+                                            this.employees = [];
+                                            this.isSearching = false;
+                                            $wire.call('clearEmployee');
+                                        }
+                                    }">
+                                        <!-- Tampilkan form pencarian hanya jika belum ada employee yang dipilih -->
+                                        <template x-if="!selectedEmployee">
+                                            <div>
+                                                <flux:label required>Search Employee (NIK or Name)</flux:label>
+                                                
+                                                <input 
+                                                    type="text"
+                                                    x-model="search"
+                                                    @input="loadEmployees()"
+                                                    @focus="if(search.length >= 2) loadEmployees()"
+                                                    placeholder="Search by NIK or name (min 2 characters)..."
+                                                    class="w-full px-3 py-2 border border-zinc-300 rounded-lg 
+                                                        focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+                                                        dark:bg-zinc-800 dark:border-zinc-600 dark:text-white mb-4"
+                                                >
+                                                
+                                                <!-- Loading Indicator -->
+                                                <div x-show="loading" class="mb-4 p-2 bg-zinc-100 dark:bg-zinc-800 rounded-lg text-center">
+                                                    <svg class="animate-spin h-5 w-5 mx-auto text-blue-500" fill="none" viewBox="0 0 24 24">
+                                                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                                    </svg>
+                                                    <span class="text-sm text-zinc-600 dark:text-zinc-400">Searching...</span>
+                                                </div>
+                                                
+                                                <!-- Results Table dengan Scroll -->
+                                                <div x-show="!loading && employees.length > 0" 
+                                                    x-transition
+                                                    class="mb-4 overflow-x-auto">
+                                                    <!-- Container dengan max-height dan scroll -->
+                                                    <div class="border border-zinc-200 dark:border-zinc-700 rounded-lg overflow-hidden">
+                                                        <!-- Tambahkan style untuk scroll jika lebih dari 5 data -->
+                                                        <div x-bind:style="employees.length > 5 ? 'max-height: 300px; overflow-y: auto;' : ''">
+                                                            <table class="w-full">
+                                                                <thead class="bg-zinc-50 dark:bg-zinc-800 sticky top-0 z-10">
+                                                                    <tr>
+                                                                        <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 border-b border-zinc-200 dark:border-zinc-700">NIK</th>
+                                                                        <th class="px-3 py-2 text-left text-xs font-medium text-zinc-500 border-b border-zinc-200 dark:border-zinc-700">NAME</th>
+                                                                        <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 border-b border-zinc-200 dark:border-zinc-700">DEPARTMENT</th>
+                                                                        <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 border-b border-zinc-200 dark:border-zinc-700">ACTION</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <template x-for="(emp, index) in employees" :key="emp.id">
+                                                                        <tr class="border-b border-zinc-200 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800/50" 
+                                                                            x-bind:class="index === employees.length - 1 ? 'border-b-0' : ''">
+                                                                            <td class="px-3 py-2 text-sm text-zinc-700 dark:text-zinc-300 text-center" x-text="emp.nik || '-'"></td>
+                                                                            <td class="px-3 py-2 text-sm text-zinc-700 dark:text-zinc-300" x-text="emp.name || '-'"></td>
+                                                                            <td class="px-3 py-2 text-sm text-zinc-700 dark:text-zinc-300 text-center" x-text="emp.department || '-'"></td>
+                                                                            <td class="px-3 py-2 text-center">
+                                                                                <button 
+                                                                                    @click="selectEmployee(emp)"
+                                                                                    class="px-3 py-1 text-xs bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                                                                                    Select
+                                                                                </button>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </template>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
                                                     </div>
-                                                </template>
+                                                    <!-- Info jumlah data -->
+                                                    <div class="mt-2 text-xs text-zinc-500 dark:text-zinc-400" x-text="employees.length + ' Employee(s) found'"></div>
+                                                </div>
+                                                
+                                                <!-- No Results -->
+                                                <div x-show="!loading && employees.length === 0 && search.length >= 2 && isSearching" 
+                                                    x-cloak
+                                                    class="mb-4 p-4 text-center text-sm text-zinc-500 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg">
+                                                    No active employees found matching your search
+                                                </div>
+                                                
+                                                @error('employee_id') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                                             </div>
-                                            <div x-show="show && !loading && employees.length === 0 && search.length >= 2" 
-                                                x-cloak
-                                                class="absolute z-50 w-full mt-1 bg-white dark:bg-zinc-800 p-3 text-center text-sm text-zinc-500 rounded-lg shadow-lg">
-                                                No active employees found in your department
-                                            </div>
-                                        </div>
+                                        </template>
                                         
-                                        @error('employee_id') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
-                                    </div>
-                                    
-                                    <div class="mb-4">
-                                        <flux:label>Section</flux:label>
-                                        <flux:input 
-                                            wire:model.live="section" 
-                                            type="text" 
-                                            placeholder="Enter section"
-                                            class="uppercase"
-                                        />
-                                    </div>
-                                    
-                                    <div class="mb-4">
-                                        <flux:label>Remarks</flux:label>
-                                        <flux:textarea wire:model="remarks" rows="3" placeholder="Enter remarks..." />
+                                        <!-- Tampilkan employee yang dipilih dan tombol Clear -->
+                                        <template x-if="selectedEmployee">
+                                            <div>
+                                                <div class="mb-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                                                    <div class="flex items-center justify-between">
+                                                        <div>
+                                                            <span class="text-sm font-medium text-green-800 dark:text-green-300">Selected Employee:</span>
+                                                            <span class="text-sm text-green-700 dark:text-green-400 ml-2" x-text="selectedEmployee ? selectedEmployee.label : ''"></span>
+                                                        </div>
+                                                        <button 
+                                                            @click="clearSelection()"
+                                                            class="p-1.5 text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                                                            title="Clear selection">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                                                                <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z" clip-rule="evenodd" />
+                                                            </svg>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                
+                                                <!-- Section Field -->
+                                                <div class="mb-4">
+                                                    <flux:label>Section</flux:label>
+                                                    <flux:input 
+                                                        wire:model.live="section" 
+                                                        type="text" 
+                                                        placeholder="Enter section"
+                                                        class="uppercase"
+                                                    />
+                                                </div>
+                                                
+                                                <!-- Remarks Field -->
+                                                <div class="mb-4">
+                                                    <flux:label>Remarks</flux:label>
+                                                    <flux:textarea wire:model="remarks" rows="3" placeholder="Enter remarks..." />
+                                                </div>
+                                            </div>
+                                        </template>
                                     </div>
                                 @endif
                             </div>
@@ -907,11 +937,11 @@
                             Cancel
                         </button>
                         <button type="submit" 
-                                form="ncp-form"
-                                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
-                                wire:loading.attr="disabled"
-                                wire:target="save"
-                                @if(!$hasValidRecord) disabled @endif>
+                            form="ncp-form"
+                            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            wire:loading.attr="disabled"
+                            wire:target="save"
+                            @if(!$employee_id || !$hasValidRecord) disabled @endif>
                             <span wire:loading.remove wire:target="save">{{ $ncp_id ? 'Update' : 'Create' }}</span>
                             <span wire:loading wire:target="save" class="flex items-center gap-2">
                                 <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
