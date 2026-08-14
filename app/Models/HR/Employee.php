@@ -2,6 +2,8 @@
 
 namespace App\Models\HR;
 
+use App\Models\ESD\Locker\Locker;
+use App\Models\ESD\Locker\UniformTransaction;
 use App\Models\HR\EmployeeCall;
 use App\Models\HR\ViolationEmployee;
 use App\Models\PROD\Absence\AbsenceControl;
@@ -42,6 +44,31 @@ class Employee extends Model
     public function setAttribute($key, $value)
     {
         return null;
+    }
+
+    public function esdUniformTransactions()
+    {
+        return $this->hasMany(UniformTransaction::class, 'employee_id', 'id');
+    }
+
+    public function esdLockers()
+    {
+        return $this->hasMany(Locker::class, 'employee_id', 'id');
+    }
+
+    public function getLatestEsdTransaction()
+    {
+        return $this->esdUniformTransactions()
+                    ->whereIn('status', ['pending', 'on_progress', 'waiting_pickup'])
+                    ->latest()
+                    ->first();
+    }
+
+    public function hasActiveEsdTransaction()
+    {
+        return $this->esdUniformTransactions()
+                    ->whereIn('status', ['pending', 'on_progress', 'waiting_pickup'])
+                    ->exists();
     }
 
     public function comelateEmployees()

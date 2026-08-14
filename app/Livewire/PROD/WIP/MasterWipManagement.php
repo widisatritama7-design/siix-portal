@@ -108,20 +108,24 @@ class MasterWipManagement extends Component
             }
         }
 
-        // 2. CEK APAKAH ADA DETAIL WIP YANG SUDAH TERDAFTAR DI RACK
-        $hasWipInRack = DetailWip::whereNotNull('rack_lose_pack_id')
-                                ->whereNotNull('master_wips_id')
+        // 2. VALIDASI FORM (PINDAHKAN KE SINI)
+        $this->validate();
+
+        // 3. CEK APAKAH ADA DETAIL WIP DARI MODEL INI YANG SUDAH TERDAFTAR DI RACK
+        // Cari semua MasterWip dengan model yang sama
+        $masterWips = MasterWip::where('model', $this->model)->get();
+        $masterWipIds = $masterWips->pluck('id')->toArray();
+        
+        // CEK APAKAH ADA YANG SUDAH DI RACK
+        $hasWipInRack = DetailWip::whereIn('master_wips_id', $masterWipIds)
+                                ->whereNotNull('rack_lose_pack_id')
                                 ->exists();
         
         if ($hasWipInRack) {
-            // TAMBAHKAN ERROR BAG AGAR WARNING TAMPIL DI MODAL
-            $this->addError('rack_warning', 'Tidak bisa menambah/mengubah WIP karena ada WIP yang sudah terdaftar di Rack!');
-            $this->dispatch('notify', message: 'Tidak bisa menambah/mengubah WIP karena ada WIP yang sudah terdaftar di Rack!', type: 'error');
+            $this->addError('rack_warning', "Tidak bisa menambah/mengubah WIP untuk model '{$this->model}' karena ada WIP yang sudah terdaftar di Rack!");
+            $this->dispatch('notify', message: "Tidak bisa menambah/mengubah WIP untuk model '{$this->model}' karena ada WIP yang sudah terdaftar di Rack!", type: 'error');
             return;
         }
-
-        // 3. VALIDASI FORM
-        $this->validate();
 
         // 4. PERSIAPAN DATA
         $data = [
@@ -151,7 +155,7 @@ class MasterWipManagement extends Component
         // 6. RESET FORM
         $this->resetForm();
         
-        // 7. SIMPAN MESSAGE KE SESSION (untuk ditampilkan setelah redirect)
+        // 7. SIMPAN MESSAGE KE SESSION
         session()->flash('success', $message);
         
         // 8. REDIRECT

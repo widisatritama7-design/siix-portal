@@ -64,6 +64,7 @@ use App\Livewire\Ticket\TicketView;
 use App\Livewire\User\Permission\PermissionManagement;
 use App\Livewire\User\Role\RoleManagement;
 use App\Livewire\User\UserManagement;
+use App\Services\MicrosoftGraphService;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -208,6 +209,45 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/visual-inspection-stats', [ScanPcbController::class, 'getVisualStats']);
         Route::get('/dashboard-stats', [ScanPcbController::class, 'getDashboardStats']);
     });
+});
+
+Route::get('/test-microsoft', function (MicrosoftGraphService $graph) {
+    $token = $graph->getAccessToken();
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Microsoft Graph authentication berhasil!',
+        'token_received' => !empty($token),
+    ]);
+});
+
+Route::get('/test-microsoft-email', function (MicrosoftGraphService $graph) {
+
+    $graph->sendEmail(
+        'sek.esd@siix-global.com',
+        'Test Microsoft Graph - Laravel',
+        '
+        <h2>Test Email</h2>
+        <p>Email ini dikirim dari Laravel menggunakan Microsoft Graph API.</p>
+        <p><strong>Sender:</strong> sek.apps-notification@siix-global.com</p>
+        <p>Jika email ini diterima, berarti integrasi Microsoft Graph sudah berhasil.</p>
+        '
+    );
+
+    return response()->json([
+        'success' => true,
+        'message' => 'Email berhasil dikirim.'
+    ]);
+});
+
+Route::get('/test-microsoft-sender', function (MicrosoftGraphService $graph) {
+
+    $response = $graph->testSender();
+
+    return response()->json([
+        'status' => $response->status(),
+        'body' => $response->json(),
+    ]);
 });
 
 require __DIR__.'/settings.php';

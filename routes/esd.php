@@ -26,7 +26,12 @@ use App\Livewire\ESD\Ionizer\IonizerShow;
 use App\Livewire\ESD\Jig\JigDetailManagement;
 use App\Livewire\ESD\Jig\JigManagement;
 use App\Livewire\ESD\Jig\JigShow;
+use App\Livewire\ESD\Locker\LockerInfo;
+use App\Livewire\ESD\Locker\LockerManagement;
 use App\Livewire\ESD\Locker\LockerStatusManagement;
+use App\Livewire\ESD\Locker\TeknisiManagement;
+use App\Livewire\ESD\Locker\TeknisiReturn;
+use App\Livewire\ESD\Locker\TeknisiTake;
 use App\Livewire\ESD\Magazine\MagazineDetailManagement;
 use App\Livewire\ESD\Magazine\MagazineManagement;
 use App\Livewire\ESD\Magazine\MagazineShow;
@@ -151,8 +156,13 @@ Route::get('/locker-status', [LockerStatusController::class, 'index'])->name('lo
 Route::post('/locker-status', [LockerStatusController::class, 'store'])->name('locker-status.store');
 Route::put('/locker-status/{lockerStatus}', [LockerStatusController::class, 'update'])->name('locker-status.update');
 Route::post('/locker/update', [LockerStatusController::class, 'update'])->name('locker.update');
-Route::get('/employee/{nik}', [App\Http\Controllers\LockerStatusController::class, 'getEmployee'])->name('employee.get');
+Route::get('/employee/{nik}', [LockerStatusController::class, 'getEmployee'])->name('employee.get');
 Route::get('/locker-status/data', [LockerStatusController::class, 'getLockerData'])->name('locker.status');
-Route::get('/employees', function () {
-    return Employee::select('nik as nik', 'name as name', 'department as dept')->get();
-});
+Route::get('/employees', function () { return Employee::select('nik as nik', 'name as name', 'department as dept')->get(); });
+
+Route::get('/esd/lockers', LockerManagement::class)->name('esd.lockers');;
+Route::get('/teknisi/management', TeknisiManagement::class)->name('esd.teknisi.management');
+Route::get('/teknisi/take', TeknisiTake::class)->name('esd.teknisi.take');
+Route::get('/teknisi/return', TeknisiReturn::class)->name('esd.teknisi.return');
+Route::get('/esd/locker-info', LockerInfo::class)->name('esd.locker-info');
+Route::get('/esd/print/{id}', function($id) {return view('livewire.esd.locker.print-label', ['id' => $id]);})->name('esd.print-label-thermal');
