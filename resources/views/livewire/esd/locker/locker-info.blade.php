@@ -1,14 +1,19 @@
 <div class="p-1 space-y-2">
     @section('title', 'ESD Locker - Information')
     
-    <!-- Breadcrumbs -->
-    <nav class="flex items-center space-x-2 text-sm text-gray-500 dark:text-gray-400 mb-4">
-        <a href="{{ route('dashboard') }}" class="hover:text-blue-600 dark:hover:text-blue-400">Dashboard</a>
-        <span>/</span>
-        <span class="text-gray-700 dark:text-gray-300">ESD</span>
-        <span>/</span>
-        <span class="text-blue-600 dark:text-blue-400 font-semibold">Locker Info</span>
-    </nav>
+    <div class="w-full">
+        <flux:breadcrumbs class="mb-1">
+            <flux:breadcrumbs.item href="{{ route('dashboard') }}" wire:navigate separator="slash">
+                Dashboard
+            </flux:breadcrumbs.item>
+            <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
+                ESD
+            </flux:breadcrumbs.item>
+            <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
+                Locker Info
+            </flux:breadcrumbs.item>
+        </flux:breadcrumbs>
+    </div>
 
     <!-- Header -->
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-2">

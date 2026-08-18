@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DashboardRefreshController;
 use App\Http\Controllers\DoorLockController;
+use App\Http\Controllers\ESD\LockerController;
 use App\Http\Controllers\InboxController;
 use App\Http\Controllers\PROD\Absence\AbsenceControlPrintController;
 use App\Http\Controllers\PROD\Absence\AbsenceReportPrintController;
@@ -248,6 +249,20 @@ Route::get('/test-microsoft-sender', function (MicrosoftGraphService $graph) {
         'status' => $response->status(),
         'body' => $response->json(),
     ]);
+});
+
+// Halaman
+Route::get('/esd-locker', function () {
+    return view('esd.locker.index');
+})->name('esd.locker');
+
+// API endpoints untuk ESD Locker
+Route::prefix('api/esd')->group(function () {
+    Route::get('/lockers', [LockerController::class, 'getLockers'])->name('api.esd.lockers');
+    Route::post('/check-nik', [LockerController::class, 'checkNik'])->name('api.esd.check-nik');
+    Route::post('/store-uniform', [LockerController::class, 'storeUniform'])->name('api.esd.store-uniform');
+    Route::post('/check-take', [LockerController::class, 'checkTake'])->name('api.esd.check-take');
+    Route::post('/open-take-locker', [LockerController::class, 'openTakeLocker'])->name('api.esd.open-take-locker');
 });
 
 require __DIR__.'/settings.php';

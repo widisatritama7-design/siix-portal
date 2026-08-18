@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>@yield('title', 'ESD Locker System')</title>
+    <meta name="csrf-token" content="<?php echo e(csrf_token()); ?>">
+    <title><?php echo $__env->yieldContent('title', 'ESD Locker System'); ?></title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -78,7 +78,7 @@
         }
     </style>
 
-    @stack('styles')
+    <?php echo $__env->yieldPushContent('styles'); ?>
 </head>
 <body class="bg-gray-50 dark:bg-zinc-950 text-gray-900 dark:text-gray-100">
     <!-- Navigation -->
@@ -99,9 +99,10 @@
                     
                     <!-- User Menu -->
                     <div class="flex items-center space-x-3">
-                        <span class="text-sm text-gray-600 dark:text-gray-400">{{ Auth::user()->name ?? 'Guest' }}</span>
+                        <span class="text-sm text-gray-600 dark:text-gray-400"><?php echo e(Auth::user()->name ?? 'Guest'); ?></span>
                         <div class="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white font-semibold">
-                            {{ substr(Auth::user()->name ?? 'G', 0, 1) }}
+                            <?php echo e(substr(Auth::user()->name ?? 'G', 0, 1)); ?>
+
                         </div>
                     </div>
                 </div>
@@ -111,7 +112,7 @@
 
     <!-- Main Content -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        @yield('content')
+        <?php echo $__env->yieldContent('content'); ?>
     </div>
 
     <script>
@@ -180,6 +181,6 @@
         }
     </script>
 
-    @stack('scripts')
+    <?php echo $__env->yieldPushContent('scripts'); ?>
 </body>
-</html>
+</html><?php /**PATH /www/wwwroot/testings.siix-ems.co.id/siix-portal/resources/views/layouts/esd.blade.php ENDPATH**/ ?>
