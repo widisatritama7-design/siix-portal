@@ -1,163 +1,205 @@
-<?php # [BlazeFolded]:{flux::breadcrumbs.item}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/breadcrumbs/item.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::breadcrumbs.item}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/breadcrumbs/item.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::breadcrumbs}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/breadcrumbs/index.blade.php}:{1776985208} ?>
 <div class="p-1 space-y-2">
     <?php $__env->startSection('title', 'ESD Locker - Information'); ?>
-    
-    <div class="w-full">
-        <?php ob_start(); ?><div class="flex mb-1" data-flux-breadcrumbs>
-    <?php ob_start(); ?>
-            <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/breadcrumbs/item.blade.php', $__blaze->compiledPath.'/028777b3eb06dbd0c29b11890d068895.php'); ?>
-<?php if (isset($__slots028777b3eb06dbd0c29b11890d068895)) { $__slotsStack028777b3eb06dbd0c29b11890d068895[] = $__slots028777b3eb06dbd0c29b11890d068895; } ?>
-<?php if (isset($__attrs028777b3eb06dbd0c29b11890d068895)) { $__attrsStack028777b3eb06dbd0c29b11890d068895[] = $__attrs028777b3eb06dbd0c29b11890d068895; } ?>
-<?php $__attrs028777b3eb06dbd0c29b11890d068895 = ['href' => e(route('dashboard')),'wire:navigate' => true,'separator' => 'slash']; ?>
-<?php $__slots028777b3eb06dbd0c29b11890d068895 = []; ?>
-<?php $__blaze->pushData($__attrs028777b3eb06dbd0c29b11890d068895); ?>
-<?php ob_start(); ?>
-                Dashboard
-            <?php $__slots028777b3eb06dbd0c29b11890d068895['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
-<?php $__blaze->pushSlots($__slots028777b3eb06dbd0c29b11890d068895); ?>
-<?php _028777b3eb06dbd0c29b11890d068895($__blaze, $__attrs028777b3eb06dbd0c29b11890d068895, $__slots028777b3eb06dbd0c29b11890d068895, ['wire:navigate'], [], $__this ?? (isset($this) ? $this : null)); ?>
-<?php if (! empty($__slotsStack028777b3eb06dbd0c29b11890d068895)) { $__slots028777b3eb06dbd0c29b11890d068895 = array_pop($__slotsStack028777b3eb06dbd0c29b11890d068895); } ?>
-<?php if (! empty($__attrsStack028777b3eb06dbd0c29b11890d068895)) { $__attrs028777b3eb06dbd0c29b11890d068895 = array_pop($__attrsStack028777b3eb06dbd0c29b11890d068895); } ?>
-<?php $__blaze->popData(); ?>
-            <?php ob_start(); ?><div class="flex items-center text-sm font-medium group/breadcrumb font-semibold text-blue-600 dark:text-blue-400" data-flux-breadcrumbs-item>
-            <div class="text-gray-500 dark:text-white/80">
-                            <?php ob_start(); ?>
-                ESD
-            <?php echo trim(ob_get_clean()); ?>
-
-                    </div>
-    
-    <!--[if BLOCK]><![endif]-->        <svg class="shrink-0 [:where(&amp;)]:size-5 mx-1 text-zinc-300 dark:text-white/80 group-last/breadcrumb:hidden rtl:-scale-x-100" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-  <path fill-rule="evenodd" d="M12.528 3.047a.75.75 0 0 1 .449.961L8.433 16.504a.75.75 0 1 1-1.41-.512l4.544-12.496a.75.75 0 0 1 .961-.449Z" clip-rule="evenodd"/>
-</svg>
-
-            <!--[if ENDBLOCK]><![endif]--></div>
-<?php echo ltrim(ob_get_clean()); ?>
-            <?php ob_start(); ?><div class="flex items-center text-sm font-medium group/breadcrumb font-semibold text-blue-600 dark:text-blue-400" data-flux-breadcrumbs-item>
-            <div class="text-gray-500 dark:text-white/80">
-                            <?php ob_start(); ?>
-                Locker Info
-            <?php echo trim(ob_get_clean()); ?>
-
-                    </div>
-    
-    <!--[if BLOCK]><![endif]-->        <svg class="shrink-0 [:where(&amp;)]:size-5 mx-1 text-zinc-300 dark:text-white/80 group-last/breadcrumb:hidden rtl:-scale-x-100" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-  <path fill-rule="evenodd" d="M12.528 3.047a.75.75 0 0 1 .449.961L8.433 16.504a.75.75 0 1 1-1.41-.512l4.544-12.496a.75.75 0 0 1 .961-.449Z" clip-rule="evenodd"/>
-</svg>
-
-            <!--[if ENDBLOCK]><![endif]--></div>
-<?php echo ltrim(ob_get_clean()); ?>
-        <?php echo trim(ob_get_clean()); ?>
-
-</div>
-<?php echo ltrim(ob_get_clean()); ?>
-    </div>
 
     <!-- Header -->
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-2">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1 mt-2">
         <div>
             <h1 class="text-3xl font-bold text-zinc-800 dark:text-white">
                 ESD Locker System
             </h1>
-            <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-                Lihat status loker dan pilih layanan
-            </p>
         </div>
     </div>
 
     <!-- Main Content: 2 Columns -->
     <div class="flex flex-col lg:flex-row gap-4 mt-4">
-        <!-- LEFT COLUMN: 70% - Daftar Locker -->
+        <!-- LEFT COLUMN: 70% - Flow Steps -->
         <div class="w-full lg:w-[70%]">
-            <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-lg border border-zinc-200 dark:border-zinc-800 p-4">
+            
+            <!-- CARD STORE -->
+            <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-4 mb-4 shadow-sm">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="text-sm font-bold text-green-700 dark:text-green-400">STORE</span>
+                    <span class="text-xs text-green-600 dark:text-green-500">- Menyimpan Seragam</span>
+                </div>
+                
+                <div class="flex items-center justify-between gap-2 px-1">
+                    <!-- Step 1: Pilih Store -->
+                    <div class="flex flex-col items-center flex-1 group">
+                        <div class="w-14 h-14 rounded-full bg-green-500 text-white flex items-center justify-center shadow-lg shadow-green-500/30 transition-all duration-300 hover:scale-110 hover:shadow-xl animate-pulse-slow">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                        </div>
+                        <span class="text-xs font-medium text-green-700 dark:text-green-300 mt-2 text-center leading-tight">Pilih Store</span>
+                    </div>
 
-                <!-- Legend Status - CENTER -->
-                <div class="mb-4 pb-4 border-b border-zinc-200 dark:border-zinc-700">
-                    <div class="flex flex-wrap items-center justify-center gap-4 text-xs">
-                        <div class="flex items-center gap-1.5">
-                            <span class="inline-block w-3 h-3 rounded-full bg-green-500"></span>
-                            <span class="text-zinc-600 dark:text-zinc-400">Available</span>
+                    <!-- Arrow 1 -->
+                    <svg class="w-6 h-6 text-green-300 dark:text-green-700 flex-shrink-0 animate-pulse-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm4.28 10.28a.75.75 0 0 0 0-1.06l-3-3a.75.75 0 1 0-1.06 1.06l1.72 1.72H8.25a.75.75 0 0 0 0 1.5h5.69l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3Z" clip-rule="evenodd" />
+                    </svg>
+
+                    <!-- Step 2: Input NIK & WA -->
+                    <div class="flex flex-col items-center flex-1 group">
+                        <div class="w-14 h-14 rounded-full bg-blue-500 text-white flex items-center justify-center shadow-lg shadow-blue-500/30 transition-all duration-300 hover:scale-110 hover:shadow-xl animate-pulse-slow" style="animation-delay: 0.5s">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                                <path fill-rule="evenodd" d="M18.685 19.097A9.723 9.723 0 0 0 21.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 0 0 3.065 7.097A9.716 9.716 0 0 0 12 21.75a9.716 9.716 0 0 0 6.685-2.653Zm-12.54-1.285A7.486 7.486 0 0 1 12 15a7.486 7.486 0 0 1 5.855 2.812A8.224 8.224 0 0 1 12 20.25a8.224 8.224 0 0 1-5.855-2.438ZM15.75 9a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" clip-rule="evenodd" />
+                            </svg>
                         </div>
-                        <div class="flex items-center gap-1.5">
-                            <span class="inline-block w-3 h-3 rounded-full bg-yellow-500"></span>
-                            <span class="text-zinc-600 dark:text-zinc-400">Open</span>
+                        <span class="text-xs font-medium text-blue-700 dark:text-blue-300 mt-2 text-center leading-tight">Input NIK & WA</span>
+                    </div>
+
+                    <!-- Arrow 2 -->
+                    <svg class="w-6 h-6 text-blue-300 dark:text-blue-700 flex-shrink-0 animate-pulse-arrow" style="animation-delay: 0.5s" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm4.28 10.28a.75.75 0 0 0 0-1.06l-3-3a.75.75 0 1 0-1.06 1.06l1.72 1.72H8.25a.75.75 0 0 0 0 1.5h5.69l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3Z" clip-rule="evenodd" />
+                    </svg>
+
+                    <!-- Step 3: Konfirmasi -->
+                    <div class="flex flex-col items-center flex-1 group">
+                        <div class="w-14 h-14 rounded-full bg-yellow-500 text-white flex items-center justify-center shadow-lg shadow-yellow-500/30 transition-all duration-300 hover:scale-110 hover:shadow-xl animate-pulse-slow" style="animation-delay: 1s">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                                <path fill-rule="evenodd" d="M4.5 3.75a3 3 0 0 0-3 3v10.5a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3V6.75a3 3 0 0 0-3-3h-15Zm4.125 3a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5Zm-3.873 8.703a4.126 4.126 0 0 1 7.746 0 .75.75 0 0 1-.351.92 7.47 7.47 0 0 1-3.522.877 7.47 7.47 0 0 1-3.522-.877.75.75 0 0 1-.351-.92ZM15 8.25a.75.75 0 0 0 0 1.5h3.75a.75.75 0 0 0 0-1.5H15ZM14.25 12a.75.75 0 0 1 .75-.75h3.75a.75.75 0 0 1 0 1.5H15a.75.75 0 0 1-.75-.75Zm.75 2.25a.75.75 0 0 0 0 1.5h3.75a.75.75 0 0 0 0-1.5H15Z" clip-rule="evenodd" />
+                            </svg>
                         </div>
-                        <div class="flex items-center gap-1.5">
-                            <span class="inline-block w-3 h-3 rounded-full bg-blue-500"></span>
-                            <span class="text-zinc-600 dark:text-zinc-400">In Progress</span>
+                        <span class="text-xs font-medium text-yellow-700 dark:text-yellow-300 mt-2 text-center leading-tight">Konfirmasi Data</span>
+                    </div>
+
+                    <!-- Arrow 3 -->
+                    <svg class="w-6 h-6 text-yellow-300 dark:text-yellow-700 flex-shrink-0 animate-pulse-arrow" style="animation-delay: 1s" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm4.28 10.28a.75.75 0 0 0 0-1.06l-3-3a.75.75 0 1 0-1.06 1.06l1.72 1.72H8.25a.75.75 0 0 0 0 1.5h5.69l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3Z" clip-rule="evenodd" />
+                    </svg>
+
+                    <!-- Step 4: Loker Dibuka -->
+                    <div class="flex flex-col items-center flex-1 group">
+                        <div class="w-14 h-14 rounded-full bg-indigo-500 text-white flex items-center justify-center shadow-lg shadow-indigo-500/30 transition-all duration-300 hover:scale-110 hover:shadow-xl animate-pulse-slow" style="animation-delay: 1.5s">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                                <path d="M18 1.5c2.9 0 5.25 2.35 5.25 5.25v3.75a.75.75 0 0 1-1.5 0V6.75a3.75 3.75 0 1 0-7.5 0v3a3 3 0 0 1 3 3v6.75a3 3 0 0 1-3 3H3.75a3 3 0 0 1-3-3v-6.75a3 3 0 0 1 3-3h9v-3c0-2.9 2.35-5.25 5.25-5.25Z" />
+                            </svg>
                         </div>
-                        <div class="flex items-center gap-1.5">
-                            <span class="inline-block w-3 h-3 rounded-full bg-red-500"></span>
-                            <span class="text-zinc-600 dark:text-zinc-400">NG</span>
+                        <span class="text-xs font-medium text-indigo-700 dark:text-indigo-300 mt-2 text-center leading-tight">Loker Dibuka</span>
+                    </div>
+
+                    <!-- Arrow 4 -->
+                    <svg class="w-6 h-6 text-indigo-300 dark:text-indigo-700 flex-shrink-0 animate-pulse-arrow" style="animation-delay: 1.5s" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm4.28 10.28a.75.75 0 0 0 0-1.06l-3-3a.75.75 0 1 0-1.06 1.06l1.72 1.72H8.25a.75.75 0 0 0 0 1.5h5.69l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3Z" clip-rule="evenodd" />
+                    </svg>
+
+                    <!-- Step 5: Selesai -->
+                    <div class="flex flex-col items-center flex-1 group">
+                        <div class="w-14 h-14 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-500/30 transition-all duration-300 hover:scale-110 hover:shadow-xl animate-pulse-slow" style="animation-delay: 2s">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                                <path d="M12 1.5a.75.75 0 0 1 .75.75V7.5h-1.5V2.25A.75.75 0 0 1 12 1.5ZM11.25 7.5v5.69l-1.72-1.72a.75.75 0 0 0-1.06 1.06l3 3a.75.75 0 0 0 1.06 0l3-3a.75.75 0 1 0-1.06-1.06l-1.72 1.72V7.5h3.75a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-9a3 3 0 0 1 3-3h3.75Z" />
+                            </svg>
                         </div>
-                        <div class="flex items-center gap-1.5">
-                            <span class="inline-block w-3 h-3 rounded-full bg-gray-500"></span>
-                            <span class="text-zinc-600 dark:text-zinc-400">Finished</span>
-                        </div>
+                        <span class="text-xs font-medium text-emerald-700 dark:text-emerald-300 mt-2 text-center leading-tight">Simpan</span>
                     </div>
                 </div>
+            </div>
 
-                <!-- Locker Grid -->
-                <div class="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 gap-2 max-h-[450px] overflow-y-auto pr-2">
-                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $lockers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $locker): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
-                    <?php
-                        $statusColors = [
-                            'available' => 'bg-green-500 hover:bg-green-600',
-                            'open' => 'bg-yellow-500 hover:bg-yellow-600',
-                            'in_progress' => 'bg-blue-500 hover:bg-blue-600',
-                            'ng' => 'bg-red-500 hover:bg-red-600',
-                            'finished' => 'bg-gray-500 hover:bg-gray-600'
-                        ];
-                        $statusLabels = [
-                            'available' => 'Available',
-                            'open' => 'Open',
-                            'in_progress' => 'In Progress',
-                            'ng' => 'NG',
-                            'finished' => 'Finished'
-                        ];
-                    ?>
-                    <div class="rounded-lg <?php echo e($statusColors[$locker->status] ?? 'bg-gray-500'); ?> text-white p-3 text-center font-bold shadow hover:shadow-lg transition-all duration-200 cursor-default">
-                        <div class="text-sm">
-                            <?php echo e($locker->code); ?>
-
+            <!-- CARD TAKE -->
+            <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-4 shadow-sm">
+                <div class="flex items-center gap-2 mb-3">
+                    <span class="text-sm font-bold text-purple-700 dark:text-purple-400">TAKE</span>
+                    <span class="text-xs text-purple-600 dark:text-purple-500">- Mengambil Seragam</span>
+                </div>
+                
+                <div class="flex items-center justify-between gap-2 px-1">
+                    <!-- Step 1: Pilih Take -->
+                    <div class="flex flex-col items-center flex-1 group">
+                        <div class="w-14 h-14 rounded-full bg-purple-500 text-white flex items-center justify-center shadow-lg shadow-purple-500/30 transition-all duration-300 hover:scale-110 hover:shadow-xl animate-pulse-slow" style="animation-delay: 0.3s">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                            </svg>
                         </div>
+                        <span class="text-xs font-medium text-purple-700 dark:text-purple-300 mt-2 text-center leading-tight">Pilih Take</span>
                     </div>
-                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
-                    <div class="col-span-full text-center py-8 text-zinc-500 dark:text-zinc-400">
-                        No lockers available
+
+                    <!-- Arrow 1 -->
+                    <svg class="w-6 h-6 text-purple-300 dark:text-purple-700 flex-shrink-0 animate-pulse-arrow" style="animation-delay: 0.8s" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm4.28 10.28a.75.75 0 0 0 0-1.06l-3-3a.75.75 0 1 0-1.06 1.06l1.72 1.72H8.25a.75.75 0 0 0 0 1.5h5.69l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3Z" clip-rule="evenodd" />
+                    </svg>
+
+                    <!-- Step 2: Input Access Code -->
+                    <div class="flex flex-col items-center flex-1 group">
+                        <div class="w-14 h-14 rounded-full bg-pink-500 text-white flex items-center justify-center shadow-lg shadow-pink-500/30 transition-all duration-300 hover:scale-110 hover:shadow-xl animate-pulse-slow" style="animation-delay: 1s">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                                <path fill-rule="evenodd" d="M15.75 1.5a6.75 6.75 0 0 0-6.651 7.906c.067.39-.032.717-.221.906l-6.5 6.499a3 3 0 0 0-.878 2.121v2.818c0 .414.336.75.75.75H6a.75.75 0 0 0 .75-.75v-1.5h1.5A.75.75 0 0 0 9 19.5V18h1.5a.75.75 0 0 0 .53-.22l2.658-2.658c.19-.189.517-.288.906-.22A6.75 6.75 0 1 0 15.75 1.5Zm0 3a.75.75 0 0 0 0 1.5A2.25 2.25 0 0 1 18 8.25a.75.75 0 0 0 1.5 0 3.75 3.75 0 0 0-3.75-3.75Z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <span class="text-xs font-medium text-pink-700 dark:text-pink-300 mt-2 text-center leading-tight">Input Access Code</span>
                     </div>
-                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+
+                    <!-- Arrow 2 -->
+                    <svg class="w-6 h-6 text-pink-300 dark:text-pink-700 flex-shrink-0 animate-pulse-arrow" style="animation-delay: 1.3s" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm4.28 10.28a.75.75 0 0 0 0-1.06l-3-3a.75.75 0 1 0-1.06 1.06l1.72 1.72H8.25a.75.75 0 0 0 0 1.5h5.69l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3Z" clip-rule="evenodd" />
+                    </svg>
+
+                    <!-- Step 3: Detail Transaksi -->
+                    <div class="flex flex-col items-center flex-1 group">
+                        <div class="w-14 h-14 rounded-full bg-orange-500 text-white flex items-center justify-center shadow-lg shadow-orange-500/30 transition-all duration-300 hover:scale-110 hover:shadow-xl animate-pulse-slow" style="animation-delay: 1.6s">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                                <path fill-rule="evenodd" d="M12 5.25c1.213 0 2.415.046 3.605.135a3.256 3.256 0 0 1 3.01 3.01c.044.583.077 1.17.1 1.759L17.03 8.47a.75.75 0 1 0-1.06 1.06l3 3a.75.75 0 0 0 1.06 0l3-3a.75.75 0 0 0-1.06-1.06l-1.752 1.751c-.023-.65-.06-1.296-.108-1.939a4.756 4.756 0 0 0-4.392-4.392 49.422 49.422 0 0 0-7.436 0A4.756 4.756 0 0 0 3.89 8.282c-.017.224-.033.447-.046.672a.75.75 0 1 0 1.497.092c.013-.217.028-.434.044-.651a3.256 3.256 0 0 1 3.01-3.01c1.19-.09 2.392-.135 3.605-.135Zm-6.97 6.22a.75.75 0 0 0-1.06 0l-3 3a.75.75 0 1 0 1.06 1.06l1.752-1.751c.023.65.06 1.296.108 1.939a4.756 4.756 0 0 0 4.392 4.392 49.413 49.413 0 0 0 7.436 0 4.756 4.756 0 0 0 4.392-4.392c.017-.223.032-.447.046-.672a.75.75 0 0 0-1.497-.092c-.013.217-.028.434-.044.651a3.256 3.256 0 0 1-3.01 3.01 47.953 47.953 0 0 1-7.21 0 3.256 3.256 0 0 1-3.01-3.01 47.759 47.759 0 0 1-.1-1.759L6.97 15.53a.75.75 0 0 0 1.06-1.06l-3-3Z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                        <span class="text-xs font-medium text-orange-700 dark:text-orange-300 mt-2 text-center leading-tight">Detail Transaksi</span>
+                    </div>
+
+                    <!-- Arrow 3 -->
+                    <svg class="w-6 h-6 text-orange-300 dark:text-orange-700 flex-shrink-0 animate-pulse-arrow" style="animation-delay: 1.9s" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm4.28 10.28a.75.75 0 0 0 0-1.06l-3-3a.75.75 0 1 0-1.06 1.06l1.72 1.72H8.25a.75.75 0 0 0 0 1.5h5.69l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3Z" clip-rule="evenodd" />
+                    </svg>
+
+                    <!-- Step 4: Buka Loker -->
+                    <div class="flex flex-col items-center flex-1 group">
+                        <div class="w-14 h-14 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-lg shadow-rose-500/30 transition-all duration-300 hover:scale-110 hover:shadow-xl animate-pulse-slow" style="animation-delay: 2.2s">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                                <path d="M18 1.5c2.9 0 5.25 2.35 5.25 5.25v3.75a.75.75 0 0 1-1.5 0V6.75a3.75 3.75 0 1 0-7.5 0v3a3 3 0 0 1 3 3v6.75a3 3 0 0 1-3 3H3.75a3 3 0 0 1-3-3v-6.75a3 3 0 0 1 3-3h9v-3c0-2.9 2.35-5.25 5.25-5.25Z" />
+                            </svg>
+                        </div>
+                        <span class="text-xs font-medium text-rose-700 dark:text-rose-300 mt-2 text-center leading-tight">Loker Dibuka</span>
+                    </div>
+
+                    <!-- Arrow 4 -->
+                    <svg class="w-6 h-6 text-rose-300 dark:text-rose-700 flex-shrink-0 animate-pulse-arrow" style="animation-delay: 2.5s" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm4.28 10.28a.75.75 0 0 0 0-1.06l-3-3a.75.75 0 1 0-1.06 1.06l1.72 1.72H8.25a.75.75 0 0 0 0 1.5h5.69l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3Z" clip-rule="evenodd" />
+                    </svg>
+
+                    <!-- Step 5: Ambil -->
+                    <div class="flex flex-col items-center flex-1 group">
+                        <div class="w-14 h-14 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-500/30 transition-all duration-300 hover:scale-110 hover:shadow-xl animate-pulse-slow" style="animation-delay: 2.8s">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                                <path d="M11.47 1.72a.75.75 0 0 1 1.06 0l3 3a.75.75 0 0 1-1.06 1.06l-1.72-1.72V7.5h-1.5V4.06L9.53 5.78a.75.75 0 0 1-1.06-1.06l3-3ZM11.25 7.5V15a.75.75 0 0 0 1.5 0V7.5h3.75a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-9a3 3 0 0 1 3-3h3.75Z" />
+                            </svg>
+                        </div>
+                        <span class="text-xs font-medium text-emerald-700 dark:text-emerald-300 mt-2 text-center leading-tight">Ambil</span>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- RIGHT COLUMN: 30% - Tombol Store & Take -->
         <div class="w-full lg:w-[30%]">
-            <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-lg border border-zinc-200 dark:border-zinc-800 p-4">
+            <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-lg border border-zinc-200 dark:border-zinc-800 p-4 sticky top-4">
                 
-                <div class="space-y-4">
-                    <!-- Button Store -->
-                    <button wire:click="openModal('store')" 
-                            class="w-full bg-green-500 hover:bg-green-600 text-white rounded-lg p-6 shadow-lg transition duration-200 flex flex-col items-center justify-center">
-                        <svg class="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                        </svg>
-                        <span class="text-xl font-bold">Store</span>
-                        <span class="text-sm opacity-75">Menyimpan seragam</span>
-                    </button>
 
-                    <!-- Button Take -->
-                    <button wire:click="openModal('take')" 
-                            class="w-full bg-purple-500 hover:bg-purple-600 text-white rounded-lg p-6 shadow-lg transition duration-200 flex flex-col items-center justify-center">
-                        <svg class="w-12 h-12 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-                        </svg>
-                        <span class="text-xl font-bold">Take (Pick Up)</span>
-                        <span class="text-sm opacity-75">Mengambil seragam</span>
-                    </button>
-                </div>
+                <!-- Button Store -->
+                <button wire:click="openModal('store')" 
+                        class="w-full bg-green-500 hover:bg-green-600 text-white rounded-lg p-5 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-xl flex flex-col items-center justify-center mb-3 group">
+                    <svg class="w-10 h-10 mb-1.5 group-hover:rotate-12 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    <span class="text-xl font-bold">Store</span>
+                    <span class="text-xs opacity-75">Menyimpan seragam</span>
+                </button>
+
+                <!-- Button Take -->
+                <button wire:click="openModal('take')" 
+                        class="w-full bg-purple-500 hover:bg-purple-600 text-white rounded-lg p-5 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-xl flex flex-col items-center justify-center group">
+                    <svg class="w-10 h-10 mb-1.5 group-hover:translate-y-[-4px] transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                    </svg>
+                    <span class="text-xl font-bold">Take</span>
+                    <span class="text-xs opacity-75">Mengambil seragam</span>
+                </button>
             </div>
         </div>
     </div>
@@ -167,139 +209,256 @@
     <!-- ============================================================ -->
     <div x-data="{ 
         open: <?php if ((object) ('modalStore') instanceof \Livewire\WireDirective) : ?>window.Livewire.find('<?php echo e($__livewire->getId()); ?>').entangle('<?php echo e('modalStore'->value()); ?>')<?php echo e('modalStore'->hasModifier('live') ? '.live' : ''); ?><?php else : ?>window.Livewire.find('<?php echo e($__livewire->getId()); ?>').entangle('<?php echo e('modalStore'); ?>')<?php endif; ?>,
-        storeNik: <?php if ((object) ('store_nik') instanceof \Livewire\WireDirective) : ?>window.Livewire.find('<?php echo e($__livewire->getId()); ?>').entangle('<?php echo e('store_nik'->value()); ?>')<?php echo e('store_nik'->hasModifier('live') ? '.live' : ''); ?><?php else : ?>window.Livewire.find('<?php echo e($__livewire->getId()); ?>').entangle('<?php echo e('store_nik'); ?>')<?php endif; ?>.live || ''
+        storeNik: <?php if ((object) ('store_nik') instanceof \Livewire\WireDirective) : ?>window.Livewire.find('<?php echo e($__livewire->getId()); ?>').entangle('<?php echo e('store_nik'->value()); ?>')<?php echo e('store_nik'->hasModifier('live') ? '.live' : ''); ?><?php else : ?>window.Livewire.find('<?php echo e($__livewire->getId()); ?>').entangle('<?php echo e('store_nik'); ?>')<?php endif; ?>.live || '',
+        storePhone: <?php if ((object) ('store_phone') instanceof \Livewire\WireDirective) : ?>window.Livewire.find('<?php echo e($__livewire->getId()); ?>').entangle('<?php echo e('store_phone'->value()); ?>')<?php echo e('store_phone'->hasModifier('live') ? '.live' : ''); ?><?php else : ?>window.Livewire.find('<?php echo e($__livewire->getId()); ?>').entangle('<?php echo e('store_phone'); ?>')<?php endif; ?>.live || '',
+        activeInput: 'nik',
+        countdown: 10,
+        countdownInterval: null,
+        isSuccess: false
     }" 
         x-show="open" 
         x-cloak
         class="fixed inset-0 z-50 flex items-center justify-center p-4"
-        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="opacity-0 scale-95"
-        x-transition:enter-end="opacity-100 scale-100">
+        x-transition:enter-end="opacity-100 scale-100"
+        @auto-close-store.window="
+            isSuccess = true;
+            countdown = 10;
+            if (countdownInterval) clearInterval(countdownInterval);
+            countdownInterval = setInterval(() => {
+                countdown--;
+                if (countdown <= 0) {
+                    clearInterval(countdownInterval);
+                    countdownInterval = null;
+                    open = false;
+                    $wire.resetStore();
+                }
+            }, 1000);
+        ">
         
-        <div class="fixed inset-0 bg-black/60" @click="open = false"></div>
+        <div class="fixed inset-0 bg-black/60" @click="
+            if (countdownInterval) clearInterval(countdownInterval);
+            open = false; 
+            $wire.resetStore()
+        "></div>
         
-        <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto relative z-10 border border-zinc-200 dark:border-zinc-700">
-            <div class="p-6">
-                <!-- Header -->
-                <div class="flex justify-between items-center mb-6">
+        <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-3xl max-h-[85vh] relative z-10 border border-zinc-200 dark:border-zinc-700 flex flex-col">
+            <!-- Header - Fixed -->
+            <div class="flex-shrink-0 p-4 pb-3 border-b border-zinc-200 dark:border-zinc-700">
+                <div class="flex justify-between items-center">
                     <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                            <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="w-8 h-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                            <svg class="w-4 h-4 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                             </svg>
                         </div>
-                        <h2 class="text-2xl font-bold text-zinc-800 dark:text-white">Store Uniform</h2>
+                        <h2 class="text-xl font-bold text-zinc-800 dark:text-white">Store Uniform</h2>
                     </div>
-                    <button @click="open = false; $wire.resetStore()" class="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <button @click="
+                        if (countdownInterval) clearInterval(countdownInterval);
+                        open = false; 
+                        $wire.resetStore()
+                    " class="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
                     </button>
                 </div>
+            </div>
 
-                <!-- Step 1: Input NIK -->
+            <!-- Content - Scrollable dengan 2 kolom -->
+            <div class="flex-1 overflow-y-auto p-4">
                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($store_step == 1): ?>
-                    <div class="space-y-6">
-                        <div class="text-center">
-                            <p class="text-gray-600 dark:text-gray-400">Enter your NIK to start storing your uniform</p>
-                        </div>
+                    <div class="flex flex-col lg:flex-row gap-4 h-full">
+                        <!-- KIRI: Form -->
+                        <div class="flex-1 space-y-3">
+                            <div class="text-center">
+                                <p class="text-sm text-gray-600 dark:text-gray-400">Enter your NIK and WhatsApp number</p>
+                            </div>
 
-                        <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">NIK</label>
-                            <input type="text" 
-                                x-model="storeNik"
-                                @input="$wire.set('store_nik', storeNik || '')"
-                                class="w-full px-4 py-3 border border-zinc-300 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-zinc-800 dark:text-white text-center text-2xl font-mono tracking-wider transition"
-                                placeholder="Enter your NIK">
-                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['store_nik'];
+                            <!-- NIK -->
+                            <div>
+                                <label class="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">NIK</label>
+                                <input type="text" 
+                                    x-model="storeNik"
+                                    @focus="activeInput = 'nik'"
+                                    @input="$wire.set('store_nik', storeNik || '')"
+                                    class="w-full px-3 py-2 border-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-zinc-800 dark:text-white text-center text-xl font-mono tracking-wider transition"
+                                    :class="activeInput === 'nik' ? 'border-green-500 ring-2 ring-green-200 dark:ring-green-900' : 'border-zinc-300 dark:border-zinc-700'"
+                                    placeholder="Scan Or Enter your NIK">
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['store_nik'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?> 
-                                <span class="text-red-500 text-sm mt-1 block"><?php echo e($message); ?></span> 
-                            <?php unset($message);
+                                    <span class="text-red-500 text-xs mt-1 block"><?php echo e($message); ?></span> 
+                                <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-                        </div>
+                            </div>
 
-                        <!-- Numpad -->
-                        <div class="text-center">
-                            <p class="text-xs text-zinc-400 dark:text-zinc-500 mb-2">Or use numpad below</p>
-                        </div>
-                        <div class="grid grid-cols-3 gap-2 max-w-xs mx-auto">
-                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = ['1','2','3','4','5','6','7','8','9','clear','0','backspace']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
-                                <button type="button"
-                                        @click="
-                                            if ('<?php echo e($key); ?>' === 'clear') {
-                                                storeNik = '';
-                                            } else if ('<?php echo e($key); ?>' === 'backspace') {
-                                                storeNik = storeNik ? storeNik.slice(0, -1) : '';
-                                            } else {
-                                                storeNik = (storeNik || '') + '<?php echo e($key); ?>';
+                            <!-- WhatsApp Number -->
+                            <div>
+                                <label class="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">WhatsApp Number</label>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm font-medium text-zinc-500 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-3 rounded-lg border-2 border-zinc-300 dark:border-zinc-700 flex items-center justify-center h-[44px] min-w-[44px]">
+                                        +62
+                                    </span>
+                                    <input type="tel" 
+                                        x-model="storePhone"
+                                        @focus="activeInput = 'wa'"
+                                        @input="
+                                            if (storePhone && storePhone.startsWith('0')) {
+                                                storePhone = storePhone.replace(/^0+/, '');
                                             }
-                                            $wire.set('store_nik', storeNik || '');
+                                            $wire.set('store_phone', storePhone || '');
                                         "
-                                        class="numpad-btn <?php echo e($key === 'clear' ? 'bg-red-500 hover:bg-red-600 text-white' : ($key === 'backspace' ? 'bg-yellow-500 hover:bg-yellow-600 text-white' : 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white')); ?> py-3 rounded-lg font-bold text-xl transition">
-                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($key === 'clear'): ?>
-                                        <svg class="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                        </svg>
-                                    <?php elseif($key === 'backspace'): ?>
-                                        <svg class="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414a2 2 0 001.414.586H19a2 2 0 002-2V7a2 2 0 00-2-2h-8.172a2 2 0 00-1.414.586L3 12z"></path>
-                                        </svg>
-                                    <?php else: ?>
-                                        <?php echo e($key); ?>
+                                        class="flex-1 px-3 py-2 border-2 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-zinc-800 dark:text-white text-base transition h-[44px]"
+                                        :class="activeInput === 'wa' ? 'border-green-500 ring-2 ring-green-200 dark:ring-green-900' : 'border-zinc-300 dark:border-zinc-700'"
+                                        placeholder="81234567890">
+                                </div>
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['store_phone'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> 
+                                    <span class="text-red-500 text-xs mt-1 block"><?php echo e($message); ?></span> 
+                                <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                <p class="text-[10px] text-zinc-400 dark:text-zinc-500 mt-1">
+                                    Masukkan nomor WhatsApp aktif untuk menerima kode akses
+                                </p>
+                            </div>
 
-                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                            <!-- Tombol Switch Input -->
+                            <div class="flex gap-2 text-xs">
+                                <button type="button"
+                                        @click="activeInput = 'nik'; document.querySelector('input[placeholder=\'Scan Or Enter your NIK\']').focus()"
+                                        class="flex-1 py-1 rounded-lg transition"
+                                        :class="activeInput === 'nik' ? 'bg-green-500 text-white' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400'">
+                                    NIK
                                 </button>
-                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
+                                <button type="button"
+                                        @click="activeInput = 'wa'; document.querySelector('input[placeholder=\'81234567890\']').focus()"
+                                        class="flex-1 py-1 rounded-lg transition"
+                                        :class="activeInput === 'wa' ? 'bg-green-500 text-white' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400'">
+                                    WhatsApp
+                                </button>
+                            </div>
+
+                            <!-- Informasi Input Aktif -->
+                            <div class="text-center text-[10px] text-zinc-400 dark:text-zinc-500">
+                                <span x-show="activeInput === 'nik'">Sedang mengisi <strong class="text-green-600 dark:text-green-400">NIK</strong></span>
+                                <span x-show="activeInput === 'wa'">Sedang mengisi <strong class="text-green-600 dark:text-green-400">WhatsApp</strong></span>
+                                <span class="mx-1">|</span>
+                                <span>Klik field atau tombol di atas untuk switch</span>
+                            </div>
                         </div>
 
-                        <button wire:click="checkStoreNik" 
-                                wire:loading.attr="disabled"
-                                class="w-full bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg transition duration-200 font-medium shadow-lg shadow-green-600/20">
-                            <span wire:loading.remove>Check NIK</span>
-                            <span wire:loading>Checking...</span>
-                        </button>
+                        <!-- KANAN: Numpad + Action -->
+                        <div class="flex-1 space-y-3">
+                            <!-- Numpad -->
+                            <div class="grid grid-cols-3 gap-1.5 w-full">
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = ['1','2','3','4','5','6','7','8','9','clear','0','backspace']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                                    <button type="button"
+                                            @click="
+                                                if ('<?php echo e($key); ?>' === 'clear') {
+                                                    if (activeInput === 'nik') {
+                                                        storeNik = '';
+                                                    } else {
+                                                        storePhone = '';
+                                                    }
+                                                } else if ('<?php echo e($key); ?>' === 'backspace') {
+                                                    if (activeInput === 'nik') {
+                                                        storeNik = storeNik ? storeNik.slice(0, -1) : '';
+                                                    } else {
+                                                        storePhone = storePhone ? storePhone.slice(0, -1) : '';
+                                                    }
+                                                } else {
+                                                    if (activeInput === 'nik') {
+                                                        storeNik = (storeNik || '') + '<?php echo e($key); ?>';
+                                                    } else {
+                                                        let newPhone = (storePhone || '') + '<?php echo e($key); ?>';
+                                                        if (!newPhone.startsWith('0')) {
+                                                            storePhone = newPhone;
+                                                        }
+                                                    }
+                                                }
+                                                $wire.set('store_nik', storeNik || '');
+                                                $wire.set('store_phone', storePhone || '');
+                                            "
+                                            class="numpad-btn <?php echo e($key === 'clear' ? 'bg-red-500 hover:bg-red-600 text-white' : ($key === 'backspace' ? 'bg-yellow-500 hover:bg-yellow-600 text-white' : 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white')); ?> py-1.5 rounded-lg font-black text-2xl transition active:scale-95 h-[48px] shadow-sm hover:shadow-md flex items-center justify-center">
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($key === 'clear'): ?>
+                                            <svg class="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path>
+                                            </svg>
+                                        <?php elseif($key === 'backspace'): ?>
+                                            <svg class="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414a2 2 0 001.414.586H19a2 2 0 002-2V7a2 2 0 00-2-2h-8.172a2 2 0 00-1.414.586L3 12z"></path>
+                                            </svg>
+                                        <?php else: ?>
+                                            <?php echo e($key); ?>
+
+                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                    </button>
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
+                            </div>
+
+                            <!-- Button Check NIK -->
+                            <button wire:click="checkStoreNik" 
+                                    wire:loading.attr="disabled"
+                                    class="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg transition duration-200 font-medium shadow-lg shadow-green-600/20 hover:scale-[1.02] active:scale-95 text-sm">
+                                <span wire:loading.remove>Check NIK</span>
+                                <span wire:loading>Checking...</span>
+                            </button>
+                        </div>
                     </div>
 
                 <!-- Step 2: Confirm Employee Data -->
                 <?php elseif($store_step == 2): ?>
-                    <div class="space-y-6">
-                        <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-5">
-                            <h3 class="font-semibold text-green-800 dark:text-green-300 mb-3 flex items-center gap-2">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                                </svg>
-                                Confirm Employee Data
-                            </h3>
-                            <div class="space-y-2 text-zinc-700 dark:text-zinc-300">
-                                <div class="flex justify-between py-1 border-b border-zinc-200 dark:border-zinc-700">
-                                    <span class="font-medium">NIK</span>
-                                    <span><?php echo e($store_employee->nik); ?></span>
-                                </div>
-                                <div class="flex justify-between py-1 border-b border-zinc-200 dark:border-zinc-700">
-                                    <span class="font-medium">Name</span>
-                                    <span><?php echo e($store_employee->name); ?></span>
-                                </div>
-                                <div class="flex justify-between py-1">
-                                    <span class="font-medium">Department</span>
-                                    <span><?php echo e($store_employee->department); ?></span>
+                    <div class="flex flex-col lg:flex-row gap-4 h-full">
+                        <div class="flex-1 space-y-4">
+                            <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4 animate-fade-in">
+                                <h3 class="font-semibold text-green-800 dark:text-green-300 mb-2 flex items-center gap-2 text-sm">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                    Confirm Employee Data
+                                </h3>
+                                <div class="space-y-1 text-sm text-zinc-700 dark:text-zinc-300">
+                                    <div class="flex justify-between py-1 border-b border-zinc-200 dark:border-zinc-700">
+                                        <span class="font-medium">NIK</span>
+                                        <span><?php echo e($store_employee->nik); ?></span>
+                                    </div>
+                                    <div class="flex justify-between py-1 border-b border-zinc-200 dark:border-zinc-700">
+                                        <span class="font-medium">Name</span>
+                                        <span><?php echo e($store_employee->name); ?></span>
+                                    </div>
+                                    <div class="flex justify-between py-1 border-b border-zinc-200 dark:border-zinc-700">
+                                        <span class="font-medium">Department</span>
+                                        <span><?php echo e($store_employee->department); ?></span>
+                                    </div>
+                                    <div class="flex justify-between py-1">
+                                        <span class="font-medium">WhatsApp</span>
+                                        <span>+<?php echo e($store_phone); ?></span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="flex gap-3">
+                        <div class="flex-1 flex flex-col justify-center gap-3">
                             <button wire:click="storeUniform" 
                                     wire:loading.attr="disabled"
-                                    class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg transition duration-200 font-medium shadow-lg shadow-blue-600/20">
+                                    class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 px-4 rounded-lg transition duration-200 font-medium shadow-lg shadow-blue-600/20 hover:scale-[1.02] active:scale-95 text-sm">
                                 <span wire:loading.remove>Confirm Store</span>
                                 <span wire:loading>Processing...</span>
                             </button>
                             <button wire:click="resetStore" 
-                                    class="px-6 bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 py-3 rounded-lg hover:bg-zinc-300 dark:hover:bg-zinc-600 transition duration-200">
+                                    class="w-full bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 py-2.5 px-4 rounded-lg hover:bg-zinc-300 dark:hover:bg-zinc-600 transition duration-200 text-sm">
                                 Cancel
                             </button>
                         </div>
@@ -307,36 +466,57 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
 
                 <!-- Step 3: Success -->
                 <?php else: ?>
-                    <div class="text-center py-4">
-                        <div class="w-24 h-24 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-green-500/20">
-                            <svg class="w-12 h-12 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="flex flex-col items-center justify-center py-2 animate-fade-in">
+                        <div class="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg shadow-green-500/20 animate-bounce-slow">
+                            <svg class="w-10 h-10 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                             </svg>
                         </div>
                         
-                        <h3 class="text-2xl font-bold text-green-600 dark:text-green-400 mb-2">Locker Opened!</h3>
-                        <p class="text-lg text-zinc-700 dark:text-zinc-300 mb-4">
+                        <h3 class="text-xl font-bold text-green-600 dark:text-green-400 mb-1">Locker Opened!</h3>
+                        <p class="text-base text-zinc-700 dark:text-zinc-300 mb-3">
                             Locker <span class="font-bold text-blue-600 dark:text-blue-400"><?php echo e($locker_code); ?></span> is now open
                         </p>
                         
-                        <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4 mb-4">
-                            <div class="flex items-center justify-center gap-3 text-sm text-zinc-600 dark:text-zinc-400">
-                                <svg class="w-5 h-5 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-3 mb-3 w-full max-w-md">
+                            <div class="flex items-center justify-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
+                                <svg class="w-4 h-4 text-yellow-600 dark:text-yellow-400 animate-spin-slow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
                                 <span>Door will close automatically in <strong class="text-red-600 dark:text-red-400">15 seconds</strong></span>
                             </div>
-                            <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-2 text-center">Access code has been sent to your WhatsApp</p>
+                            <p class="text-xs text-zinc-600 dark:text-zinc-400 mt-1 text-center">Notifikasi telah dikirim ke WhatsApp Anda</p>
+                        </div>
+                
+                        <!-- Informasi Store -->
+                        <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-3 mb-3 border border-blue-200 dark:border-blue-800 w-full max-w-md">
+                            <div class="flex items-center justify-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
+                                <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                <span>Seragam berhasil disimpan di locker <strong class="text-blue-600 dark:text-blue-400"><?php echo e($locker_code); ?></strong></span>
+                            </div>
+                            <p class="text-[10px] text-zinc-500 dark:text-zinc-400 mt-1 text-center">
+                                Anda akan mendapat notifikasi WhatsApp setelah seragam selesai diperiksa
+                            </p>
                         </div>
 
-                        <div class="bg-zinc-50 dark:bg-zinc-800/50 rounded-xl p-5 mb-6 border border-zinc-200 dark:border-zinc-700">
-                            <p class="text-sm text-zinc-500 dark:text-zinc-400">Your Access Code</p>
-                            <p class="text-3xl font-mono font-bold text-zinc-800 dark:text-white tracking-wider"><?php echo e($access_code); ?></p>
-                            <p class="text-xs text-zinc-400 dark:text-zinc-500 mt-1">Valid for 24 hours</p>
+                        <!-- Progress Bar & Countdown -->
+                        <div x-show="isSuccess" class="mt-2 w-full max-w-md">
+                            <div class="flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400 mb-1">
+                                <span>Menutup otomatis...</span>
+                                <span x-text="countdown + 's'" class="font-bold text-blue-600 dark:text-blue-400"></span>
+                            </div>
+                            <div class="w-full h-1.5 bg-zinc-200 dark:bg-zinc-700 rounded-full overflow-hidden">
+                                <div class="h-full bg-blue-600 dark:bg-blue-400 rounded-full transition-all duration-1000 ease-linear"
+                                    :style="'width: ' + (countdown / 10 * 100) + '%'">
+                                </div>
+                            </div>
                         </div>
-
+                
                         <button wire:click="resetStore" 
-                                class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-8 py-2.5 rounded-lg transition duration-200 font-medium shadow-lg shadow-blue-600/20">
+                                @click="if (countdownInterval) clearInterval(countdownInterval)"
+                                class="mt-3 inline-block bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition duration-200 font-medium shadow-lg shadow-blue-600/20 hover:scale-[1.05] active:scale-95 text-sm">
                             Close
                         </button>
                     </div>
@@ -350,16 +530,37 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
     <!-- ============================================================ -->
     <div x-data="{ 
         open: <?php if ((object) ('modalTake') instanceof \Livewire\WireDirective) : ?>window.Livewire.find('<?php echo e($__livewire->getId()); ?>').entangle('<?php echo e('modalTake'->value()); ?>')<?php echo e('modalTake'->hasModifier('live') ? '.live' : ''); ?><?php else : ?>window.Livewire.find('<?php echo e($__livewire->getId()); ?>').entangle('<?php echo e('modalTake'); ?>')<?php endif; ?>,
-        takeCode: <?php if ((object) ('take_access_code') instanceof \Livewire\WireDirective) : ?>window.Livewire.find('<?php echo e($__livewire->getId()); ?>').entangle('<?php echo e('take_access_code'->value()); ?>')<?php echo e('take_access_code'->hasModifier('live') ? '.live' : ''); ?><?php else : ?>window.Livewire.find('<?php echo e($__livewire->getId()); ?>').entangle('<?php echo e('take_access_code'); ?>')<?php endif; ?>.live || ''
+        takeCode: <?php if ((object) ('take_access_code') instanceof \Livewire\WireDirective) : ?>window.Livewire.find('<?php echo e($__livewire->getId()); ?>').entangle('<?php echo e('take_access_code'->value()); ?>')<?php echo e('take_access_code'->hasModifier('live') ? '.live' : ''); ?><?php else : ?>window.Livewire.find('<?php echo e($__livewire->getId()); ?>').entangle('<?php echo e('take_access_code'); ?>')<?php endif; ?>.live || '',
+        countdown: 10,
+        countdownInterval: null,
+        isSuccess: false
     }" 
         x-show="open" 
         x-cloak
         class="fixed inset-0 z-50 flex items-center justify-center p-4"
-        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="opacity-0 scale-95"
-        x-transition:enter-end="opacity-100 scale-100">
+        x-transition:enter-end="opacity-100 scale-100"
+        @auto-close-take.window="
+            isSuccess = true;
+            countdown = 10;
+            if (countdownInterval) clearInterval(countdownInterval);
+            countdownInterval = setInterval(() => {
+                countdown--;
+                if (countdown <= 0) {
+                    clearInterval(countdownInterval);
+                    countdownInterval = null;
+                    open = false;
+                    $wire.resetTake();
+                }
+            }, 1000);
+        ">
         
-        <div class="fixed inset-0 bg-black/60" @click="open = false"></div>
+        <div class="fixed inset-0 bg-black/60" @click="
+            if (countdownInterval) clearInterval(countdownInterval);
+            open = false; 
+            $wire.resetTake()
+        "></div>
         
         <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto relative z-10 border border-zinc-200 dark:border-zinc-700">
             <div class="p-6">
@@ -373,7 +574,11 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                         </div>
                         <h2 class="text-2xl font-bold text-zinc-800 dark:text-white">Take Uniform</h2>
                     </div>
-                    <button @click="open = false; $wire.resetTake()" class="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors">
+                    <button @click="
+                        if (countdownInterval) clearInterval(countdownInterval);
+                        open = false; 
+                        $wire.resetTake()
+                    " class="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
@@ -405,11 +610,6 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </div>
-
-                        <!-- Numpad - 3 Baris -->
-                        <div class="text-center">
-                            <p class="text-xs text-zinc-400 dark:text-zinc-500 mb-2">Or use numpad below</p>
-                        </div>
                         
                         <!-- Row 1: A-Z -->
                         <div class="grid grid-cols-9 gap-1.5 max-w-full">
@@ -419,7 +619,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                             takeCode = (takeCode || '') + '<?php echo e($key); ?>';
                                             $wire.set('take_access_code', takeCode || '');
                                         "
-                                        class="numpad-btn bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 text-gray-800 dark:text-white py-2 rounded-lg font-bold text-sm transition">
+                                        class="numpad-btn bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 text-gray-800 dark:text-white py-2 rounded-lg font-bold text-sm transition active:scale-90">
                                     <?php echo e($key); ?>
 
                                 </button>
@@ -434,7 +634,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                             takeCode = (takeCode || '') + '<?php echo e($key); ?>';
                                             $wire.set('take_access_code', takeCode || '');
                                         "
-                                        class="numpad-btn bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white py-2 rounded-lg font-bold text-sm transition">
+                                        class="numpad-btn bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white py-2 rounded-lg font-bold text-sm transition active:scale-90">
                                     <?php echo e($key); ?>
 
                                 </button>
@@ -448,7 +648,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                         takeCode = '';
                                         $wire.set('take_access_code', '');
                                     "
-                                    class="numpad-btn bg-red-500 hover:bg-red-600 text-white py-2.5 rounded-lg font-bold text-base transition flex items-center justify-center gap-2">
+                                    class="numpad-btn bg-red-500 hover:bg-red-600 text-white py-2.5 rounded-lg font-bold text-base transition active:scale-90 flex items-center justify-center gap-2">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                 </svg>
@@ -459,7 +659,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                         takeCode = takeCode ? takeCode.slice(0, -1) : '';
                                         $wire.set('take_access_code', takeCode || '');
                                     "
-                                    class="numpad-btn bg-yellow-500 hover:bg-yellow-600 text-white py-2.5 rounded-lg font-bold text-base transition flex items-center justify-center gap-2">
+                                    class="numpad-btn bg-yellow-500 hover:bg-yellow-600 text-white py-2.5 rounded-lg font-bold text-base transition active:scale-90 flex items-center justify-center gap-2">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414a2 2 0 001.414.586H19a2 2 0 002-2V7a2 2 0 00-2-2h-8.172a2 2 0 00-1.414.586L3 12z"></path>
                                 </svg>
@@ -469,7 +669,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
 
                         <button wire:click="checkTakeCode" 
                                 wire:loading.attr="disabled"
-                                class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-lg transition duration-200 font-medium shadow-lg shadow-purple-600/20">
+                                class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-lg transition duration-200 font-medium shadow-lg shadow-purple-600/20 hover:scale-[1.02] active:scale-95">
                             <span wire:loading.remove>Check Code</span>
                             <span wire:loading>Checking...</span>
                         </button>
@@ -478,7 +678,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                 <!-- Step 2: Transaction Info -->
                 <?php elseif($take_step == 2): ?>
                     <div class="space-y-6">
-                        <div class="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-xl p-5">
+                        <div class="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-xl p-5 animate-fade-in">
                             <h3 class="font-semibold text-purple-800 dark:text-purple-300 mb-3 flex items-center gap-2">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -524,7 +724,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                         <div class="flex gap-3">
                             <button wire:click="openTakeLocker" 
                                     wire:loading.attr="disabled"
-                                    class="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg transition duration-200 font-medium shadow-lg shadow-green-600/20">
+                                    class="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg transition duration-200 font-medium shadow-lg shadow-green-600/20 hover:scale-[1.02] active:scale-95">
                                 <span wire:loading.remove>Open Locker</span>
                                 <span wire:loading>Processing...</span>
                             </button>
@@ -537,8 +737,8 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
 
                 <!-- Step 3: Success -->
                 <?php else: ?>
-                    <div class="text-center py-4">
-                        <div class="w-24 h-24 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-green-500/20">
+                    <div class="text-center py-4 animate-fade-in">
+                        <div class="w-24 h-24 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-green-500/20 animate-bounce-slow">
                             <svg class="w-12 h-12 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                             </svg>
@@ -551,7 +751,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                         
                         <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4 mb-6">
                             <div class="flex items-center justify-center gap-3 text-sm text-zinc-600 dark:text-zinc-400">
-                                <svg class="w-5 h-5 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 text-yellow-600 dark:text-yellow-400 animate-spin-slow" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
                                 <span>Door will close automatically in <strong class="text-red-600 dark:text-red-400">15 seconds</strong></span>
@@ -559,8 +759,22 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                             <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-2 text-center">Please take your uniform</p>
                         </div>
 
+                        <!-- Progress Bar & Countdown -->
+                        <div x-show="isSuccess" class="mt-4">
+                            <div class="flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400 mb-1">
+                                <span>Menutup otomatis...</span>
+                                <span x-text="countdown + 's'" class="font-bold text-purple-600 dark:text-purple-400"></span>
+                            </div>
+                            <div class="w-full h-2 bg-zinc-200 dark:bg-zinc-700 rounded-full overflow-hidden">
+                                <div class="h-full bg-purple-600 dark:bg-purple-400 rounded-full transition-all duration-1000 ease-linear"
+                                    :style="'width: ' + (countdown / 10 * 100) + '%'">
+                                </div>
+                            </div>
+                        </div>
+
                         <button wire:click="resetTake" 
-                                class="inline-block bg-blue-600 hover:bg-blue-700 text-white px-8 py-2.5 rounded-lg transition duration-200 font-medium shadow-lg shadow-blue-600/20">
+                                @click="if (countdownInterval) clearInterval(countdownInterval)"
+                                class="mt-4 inline-block bg-blue-600 hover:bg-blue-700 text-white px-8 py-2.5 rounded-lg transition duration-200 font-medium shadow-lg shadow-blue-600/20 hover:scale-[1.05] active:scale-95">
                             Close
                         </button>
                     </div>
@@ -573,7 +787,9 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
     <div x-data="{ show: false, message: '', type: 'success' }" 
          x-on:notify.window="show = true; message = $event.detail.message; type = $event.detail.type || 'success'; setTimeout(() => show = false, 3000)"
          x-show="show"
-         x-transition
+         x-transition:enter="transition ease-out duration-300 transform"
+         x-transition:enter-start="opacity-0 translate-y-4"
+         x-transition:enter-end="opacity-100 translate-y-0"
          class="fixed bottom-4 right-4 z-50"
          :class="{
              'bg-green-500': type === 'success',
@@ -608,17 +824,66 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
             pointer-events: none;
         }
         
-        /* Dark mode override */
         .dark .numpad-btn {
             border-color: rgba(255,255,255,0.05);
         }
 
-        /* Responsive untuk layar kecil */
+        /* Animations */
+        @keyframes pulse-slow {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @keyframes pulse-arrow {
+            0%, 100% { opacity: 0.5; transform: translateX(0); }
+            50% { opacity: 1; transform: translateX(4px); }
+        }
+        
+        @keyframes bounce-slow {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-pulse-slow {
+            animation: pulse-slow 2.5s ease-in-out infinite;
+        }
+        
+        .animate-pulse-arrow {
+            animation: pulse-arrow 1.5s ease-in-out infinite;
+        }
+        
+        .animate-bounce-slow {
+            animation: bounce-slow 2s ease-in-out infinite;
+        }
+        
+        .animate-spin-slow {
+            animation: spin-slow 4s linear infinite;
+        }
+        
+        .animate-fade-in {
+            animation: fade-in 0.4s ease-out;
+        }
+
         @media (max-width: 640px) {
             .numpad-btn {
                 font-size: 11px;
                 min-height: 34px;
                 padding: 4px 2px;
+            }
+            
+            .w-12 {
+                width: 2.5rem;
+                height: 2.5rem;
             }
         }
     </style>

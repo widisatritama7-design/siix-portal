@@ -299,6 +299,7 @@
             <nav class="p-3 h-[calc(100%-4rem)] overflow-y-auto sidebar-scroll" style="overflow-y: auto !important; max-height: calc(100vh - 4rem);">
                 
                 <!-- Group: HOME -->
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->guard()->check()): ?>
                 <div class="mb-2">
                     <div class="relative w-full">
                         <button @click="toggleGroup('home')" 
@@ -418,6 +419,7 @@
                         </div>
                     </div>
                 </div>
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                 
                 <!-- Group: MAINTENANCE -->
                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->any(['view maintenance'])): ?>
@@ -440,50 +442,109 @@
                                     class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">Maintenance</span>
                             </div>
                             <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)" 
-                                 class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0 ml-auto"
-                                 :class="{'rotate-180': groups.maintenance.open}"
-                                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0 ml-auto"
+                                :class="{'rotate-180': groups.maintenance.open}"
+                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                             </svg>
                         </button>
                     </div>
                     
                     <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.maintenance.open" 
-                         x-collapse 
-                         class="mt-1 relative">
+                        x-collapse 
+                        class="mt-1 relative">
                         <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
                         <div class="space-y-1 ml-[30px]">
-                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view esd-monitoring')): ?>
-                        <a href="<?php echo e(route('esd.calendar')); ?>" wire:navigate
-                           class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('esd.calendar') ? 'menu-active' : ''); ?>">
-                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
-                                <path d="m20.798 11.012-3.188 3.416L9.462 6.28l4.24-4.542a.75.75 0 0 1 1.272.71L12.982 9.75h7.268a.75.75 0 0 1 .548 1.262ZM3.202 12.988 6.39 9.572l8.148 8.148-4.24 4.542a.75.75 0 0 1-1.272-.71l1.992-7.302H3.75a.75.75 0 0 1-.548-1.262ZM3.53 2.47a.75.75 0 0 0-1.06 1.06l18 18a.75.75 0 1 0 1.06-1.06l-18-18Z" />
-                            </svg>
-                            <span class="truncate">ESD Monitoring</span>
-                        </a>
-                        <?php endif; ?>
-                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view mtc-monitoring')): ?>
-                        <a href="<?php echo e(route('mtc.daily-dashboard')); ?>" wire:navigate
-                           class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('mtc.daily-dashboard') ? 'menu-active' : ''); ?>">
-                           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cog-icon lucide-cog w-4 h-4">
-                                <path d="M11 10.27 7 3.34"/>
-                                <path d="m11 13.73-4 6.93"/>
-                                <path d="M12 22v-2"/>
-                                <path d="M12 2v2"/>
-                                <path d="M14 12h8"/>
-                                <path d="m17 20.66-1-1.73"/>
-                                <path d="m17 3.34-1 1.73"/>
-                                <path d="M2 12h2"/>
-                                <path d="m20.66 17-1.73-1"/>
-                                <path d="m20.66 7-1.73 1"/>
-                                <path d="m3.34 17 1.73-1"/>
-                                <path d="m3.34 7 1.73 1"/>
-                                <circle cx="12" cy="12" r="2"/>
-                                <circle cx="12" cy="12" r="8"/>
-                            </svg>
-                            <span class="truncate">MTC Monitoring</span>
-                        </a>
-                        <?php endif; ?>
+                            
+                            <!-- ESD Monitoring -->
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view esd-monitoring')): ?>
+                            <a href="<?php echo e(route('esd.calendar')); ?>" wire:navigate
+                            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('esd.calendar') ? 'menu-active' : ''); ?>">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                    <path d="m20.798 11.012-3.188 3.416L9.462 6.28l4.24-4.542a.75.75 0 0 1 1.272.71L12.982 9.75h7.268a.75.75 0 0 1 .548 1.262ZM3.202 12.988 6.39 9.572l8.148 8.148-4.24 4.542a.75.75 0 0 1-1.272-.71l1.992-7.302H3.75a.75.75 0 0 1-.548-1.262ZM3.53 2.47a.75.75 0 0 0-1.06 1.06l18 18a.75.75 0 1 0 1.06-1.06l-18-18Z" />
+                                </svg>
+                                <span class="truncate">ESD Monitoring</span>
+                            </a>
+                            <?php endif; ?>
+                            
+                            <!-- MTC Monitoring -->
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view mtc-monitoring')): ?>
+                            <a href="<?php echo e(route('mtc.daily-dashboard')); ?>" wire:navigate
+                            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('mtc.daily-dashboard') ? 'menu-active' : ''); ?>">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cog-icon lucide-cog w-4 h-4">
+                                    <path d="M11 10.27 7 3.34"/>
+                                    <path d="m11 13.73-4 6.93"/>
+                                    <path d="M12 22v-2"/>
+                                    <path d="M12 2v2"/>
+                                    <path d="M14 12h8"/>
+                                    <path d="m17 20.66-1-1.73"/>
+                                    <path d="m17 3.34-1 1.73"/>
+                                    <path d="M2 12h2"/>
+                                    <path d="m20.66 17-1.73-1"/>
+                                    <path d="m20.66 7-1.73 1"/>
+                                    <path d="m3.34 17 1.73-1"/>
+                                    <path d="m3.34 7 1.73 1"/>
+                                    <circle cx="12" cy="12" r="2"/>
+                                    <circle cx="12" cy="12" r="8"/>
+                                </svg>
+                                <span class="truncate">MTC Monitoring</span>
+                            </a>
+                            <?php endif; ?>
+                            
+                            <!-- Locker Monitoring - Hanya untuk yang punya view locker -->
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view locker')): ?>
+                            <div class="relative w-full">
+                                <button @click="toggleGroup('lockerMonitoring')" 
+                                        class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                    <div class="flex items-center gap-2">
+                                        <!-- Icon Locker -->
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                            <path fill-rule="evenodd" d="M12 1.5a5.25 5.25 0 0 0-5.25 5.25v3a3 3 0 0 0-3 3v6.75a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3v-6.75a3 3 0 0 0-3-3v-3c0-2.9-2.35-5.25-5.25-5.25Zm3.75 8.25v-3a3.75 3.75 0 1 0-7.5 0v3h7.5Z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)" 
+                                            class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">Locker Monitoring</span>
+                                    </div>
+                                    <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)" 
+                                        class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0"
+                                        :class="{'rotate-180': groups.lockerMonitoring.open}"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </button>
+                                
+                                <!-- Sub-group items for Locker Monitoring -->
+                                <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.lockerMonitoring.open" 
+                                    x-collapse 
+                                    class="mt-1 relative">
+                                    <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+                                    
+                                    <div class="space-y-1 ml-[24px]">
+                                        <!-- Locker Info -->
+                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view locker')): ?>
+                                        <a href="<?php echo e(route('esd.locker-info')); ?>" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('esd.locker-info') ? 'menu-active' : ''); ?>">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 0 1 .67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 1 1-.671-1.34l.041-.022ZM12 9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
+                                            </svg>
+                                            <span class="truncate">Locker Info</span>
+                                        </a>
+                                        <?php endif; ?>
+
+                                        <!-- Locker Management -->
+                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view locker')): ?>
+                                        <a href="<?php echo e(route('esd.locker-management')); ?>" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('esd.locker-management') ? 'menu-active' : ''); ?>">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                <path fill-rule="evenodd" d="M11.47 2.47a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 1 1-1.06 1.06l-6.22-6.22V21a.75.75 0 0 1-1.5 0V4.81l-6.22 6.22a.75.75 0 1 1-1.06-1.06l7.5-7.5Z" clip-rule="evenodd" />
+                                            </svg>
+                                            <span class="truncate">Locker Management</span>
+                                        </a>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php endif; ?>
+
                         </div>
                     </div>
                 </div>
@@ -1414,6 +1475,8 @@ unset($__split);
                             </svg>
                         </button>
                         
+                        <!-- Tombol Logout - Hanya tampil jika user bukan guest -->
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->guard()->check()): ?>
                         <form method="POST" action="<?php echo e(route('logout')); ?>">
                             <?php echo csrf_field(); ?>
                             <?php ob_start(); ?><button type="submit" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-8 text-sm rounded-md px-3 inline-flex  bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-500 text-white  shadow-[inset_0px_1px_var(--color-red-500),inset_0px_2px_--theme(--color-white/.15)] dark:shadow-none [[data-flux-button-group]_&amp;]:border-e [:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-0 [[data-flux-button-group]_&amp;]:border-red-600 dark:[[data-flux-button-group]_&amp;]:border-red-900/25 *:transition-opacity [&amp;[disabled]&gt;:not([data-flux-loading-indicator])]:opacity-0 [&amp;[disabled]&gt;[data-flux-loading-indicator]]:opacity-100 [&amp;[disabled]]:pointer-events-none" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target">
@@ -1437,6 +1500,7 @@ unset($__split);
     </button>
 <?php echo ltrim(ob_get_clean()); ?>
                         </form>
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </div>
                 <?php echo trim(ob_get_clean()); ?>
 
@@ -1492,6 +1556,7 @@ unset($__split);
                     qaqc: { open: false },
                     uniformMonitoring: { open: false },
                     absenceMonitoring: { open: false },
+                    lockerMonitoring: { open: false },
                 },
                 
                 init() {
@@ -1522,7 +1587,7 @@ unset($__split);
                     }
                     
                     // Load all group states
-                    const groupNames = ['home', 'maintenance', 'production', 'dcc', 'hr', 'hrMaster', 'hrForm', 'hrReport', 'ticketing', 'settings', 'auth', 'wipMonitoring', 'msMonitoring', 'fctMonitoring', 'qaqc', 'uniformMonitoring', 'absenceMonitoring'];
+                    const groupNames = ['home', 'maintenance', 'production', 'dcc', 'hr', 'hrMaster', 'hrForm', 'hrReport', 'ticketing', 'settings', 'auth', 'wipMonitoring', 'msMonitoring', 'fctMonitoring', 'qaqc', 'uniformMonitoring', 'absenceMonitoring', 'lockerMonitoring'];
                     groupNames.forEach(groupName => {
                         const saved = localStorage.getItem(`sidebar_group_${groupName}`);
                         if (saved !== null) {
@@ -1741,6 +1806,7 @@ unset($__split);
                     if (buttonText.includes('setting')) return 'settings';
                     if (buttonText.includes('qaqc') || buttonText.includes('qa/qc')) return 'qaqc';
                     if (buttonText.includes('fct monitoring')) return 'fctMonitoring';
+                    if (buttonText.includes('locker monitoring')) return 'lockerMonitoring';
                     return null;
                 },
                 

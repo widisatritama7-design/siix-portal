@@ -39,3 +39,6 @@ Schedule::command('daily-checklist:check-update')->everyMinute()->when(fn() => !
 
 // Master Sample
 // Schedule::command('email:pending-master-sample')->dailyAt('08:00');
+
+// Locker
+Schedule::command('locker:reset-finished')->everyMinute();

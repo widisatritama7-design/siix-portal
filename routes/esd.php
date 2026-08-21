@@ -157,6 +157,6 @@ Route::post('/locker/update', [LockerStatusController::class, 'update'])->name('
 Route::get('/employee/{nik}', [LockerStatusController::class, 'getEmployee'])->name('employee.get');
 Route::get('/locker-status/data', [LockerStatusController::class, 'getLockerData'])->name('locker.status');
 Route::get('/employees', function () { return Employee::select('nik as nik', 'name as name', 'department as dept')->get(); });
-Route::get('/esd/lockers', LockerManagement::class)->name('esd.lockers');;
+Route::get('/esd/locker-management', LockerManagement::class)->name('esd.locker-management');;
 Route::get('/esd/locker-info', LockerInfo::class)->name('esd.locker-info');
 Route::get('/esd/print/{id}', function($id) {return view('livewire.esd.locker.print-label', ['id' => $id]);})->name('esd.print-label-thermal');

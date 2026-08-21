@@ -6,6 +6,7 @@ use App\Models\ESD\Locker\UniformTransaction;
 use App\Models\HR\Employee;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class Locker extends Model
 {
@@ -17,20 +18,23 @@ class Locker extends Model
         'code',
         'status',
         'employee_id',
-        'locked_until'
+        'locked_until',
+        'is_open',
+        'opened_at'
     ];
 
     protected $casts = [
-        'locked_until' => 'datetime'
+        'locked_until' => 'datetime',
+        'is_open' => 'boolean',
+        'opened_at' => 'datetime'
     ];
 
-    // Relasi ke Employee
+    // Relasi
     public function employee()
     {
         return $this->belongsTo(Employee::class, 'employee_id', 'id');
     }
 
-    // Relasi ke UniformTransaction
     public function transactions()
     {
         return $this->hasMany(UniformTransaction::class, 'locker_id');
@@ -43,13 +47,14 @@ class Locker extends Model
                ($this->locked_until === null || $this->locked_until->isPast());
     }
 
-    // Cek apakah loker terkunci
+    // Cek apakah loker terkunci (sedang dalam proses 15 detik)
     public function isLocked()
     {
         return $this->locked_until !== null && $this->locked_until->isFuture();
     }
 
-    // Scope untuk loker yang available
+    // ============ SCOPE ============
+
     public function scopeAvailable($query)
     {
         return $query->where('status', 'available')
@@ -59,61 +64,147 @@ class Locker extends Model
                      });
     }
 
-    // Scope untuk loker yang open (sedang digunakan)
     public function scopeOpen($query)
     {
         return $query->where('status', 'open');
     }
 
-    // Scope untuk loker yang in_progress (sedang diproses teknisi)
     public function scopeInProgress($query)
     {
         return $query->where('status', 'in_progress');
     }
 
-    // Scope untuk loker yang NG (reject)
     public function scopeNg($query)
     {
         return $query->where('status', 'ng');
     }
 
-    // Scope untuk loker yang finished (selesai)
     public function scopeFinished($query)
     {
         return $query->where('status', 'finished');
     }
 
-    // Update status ke open (saat store)
+    // ============ STATUS METHODS ============
+
     public function markAsOpen()
     {
-        $this->update(['status' => 'open']);
+        $this->update([
+            'status' => 'open',
+            'is_open' => true,
+            'opened_at' => now()
+        ]);
     }
 
-    // Update status ke in_progress (teknisi mengambil)
     public function markAsInProgress()
     {
-        $this->update(['status' => 'in_progress']);
+        $this->update([
+            'status' => 'in_progress',
+            'is_open' => true,
+            'opened_at' => now()
+        ]);
     }
 
-    // Update status ke NG (teknisi menolak/reject)
     public function markAsNg()
     {
-        $this->update(['status' => 'ng']);
+        $this->update([
+            'status' => 'ng',
+            'is_open' => false,
+            'opened_at' => null
+        ]);
     }
 
-    // Update status ke finished (teknisi selesai)
     public function markAsFinished()
     {
-        $this->update(['status' => 'finished']);
+        $this->update([
+            'status' => 'finished',
+            'is_open' => true,
+            'opened_at' => now()
+        ]);
     }
 
-    // Update status ke available (reset)
     public function markAsAvailable()
     {
         $this->update([
             'status' => 'available',
             'employee_id' => null,
-            'locked_until' => null
+            'locked_until' => null,
+            'is_open' => false,
+            'opened_at' => null
         ]);
+    }
+
+    // ============ METODE UNTUK API ESP32 ============
+    
+    /**
+     * Update status loker terbuka (dipanggil oleh ESP32)
+     */
+    public function setOpen()
+    {
+        $this->update([
+            'is_open' => true,
+            'opened_at' => now()
+        ]);
+    }
+
+    /**
+     * Update status loker tertutup (dipanggil oleh ESP32)
+     */
+    public function setClosed()
+    {
+        $this->update([
+            'is_open' => false,
+            'opened_at' => null
+        ]);
+    }
+
+    /**
+     * Cek apakah loker HARUS terbuka (untuk ESP32)
+     * TRUE = buka relay
+     * FALSE = tutup relay
+     */
+    public function shouldBeOpen()
+    {
+        // Jika status available tapi locked_until future (sedang proses buka)
+        if ($this->status === 'available' && $this->locked_until !== null && $this->locked_until->isFuture()) {
+            return true;
+        }
+        
+        $statusesThatNeedOpen = ['open', 'in_progress', 'finished'];
+        
+        if (in_array($this->status, $statusesThatNeedOpen)) {
+            if ($this->locked_until === null) {
+                return false;
+            }
+            
+            if ($this->locked_until->isFuture()) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+
+    /**
+     * Auto close - dipanggil oleh Job setelah 15 detik
+     */
+    public function autoClose()
+    {
+        // Cek apakah loker masih dalam status yang membutuhkan terbuka
+        // Jika sudah expired, tutup
+        if (in_array($this->status, ['open', 'in_progress', 'finished'])) {
+            if ($this->locked_until !== null && $this->locked_until->isPast()) {
+                // Tutup loker secara fisik
+                $this->setClosed();
+                
+                Log::info('Locker auto closed after 15 seconds', [
+                    'code' => $this->code,
+                    'status' => $this->status
+                ]);
+                
+                // Jika status open dan sudah expired, biarkan tetap open
+                // Tapi is_open = false (fisik tertutup)
+                // Teknisi akan mengambil alih nanti
+            }
+        }
     }
 }

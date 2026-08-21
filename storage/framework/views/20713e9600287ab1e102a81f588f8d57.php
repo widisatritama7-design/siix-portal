@@ -24,7 +24,7 @@
         <?php ob_start(); ?><div class="flex items-center text-sm font-medium group/breadcrumb font-semibold text-blue-600 dark:text-blue-400" data-flux-breadcrumbs-item>
             <div class="text-gray-500 dark:text-white/80">
                             <?php ob_start(); ?>
-            ESD
+            Locker
         <?php echo trim(ob_get_clean()); ?>
 
                     </div>
@@ -38,7 +38,7 @@
         <?php ob_start(); ?><div class="flex items-center text-sm font-medium group/breadcrumb font-semibold text-blue-600 dark:text-blue-400" data-flux-breadcrumbs-item>
             <div class="text-gray-500 dark:text-white/80">
                             <?php ob_start(); ?>
-            Lockers
+            Management
         <?php echo trim(ob_get_clean()); ?>
 
                     </div>
@@ -64,10 +64,83 @@
                 Manage ESD lockers and monitor status
             </p>
         </div>
+        
+        <!-- ESP32 Status Badge -->
+        <div class="flex items-center gap-3 bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 px-4 py-2">
+            <div class="flex items-center gap-2">
+                <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">ESP32</span>
+                <div class="flex items-center gap-2">
+                    <span class="relative flex h-3 w-3">
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($espConnected): ?>
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                        <?php else: ?>
+                            <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                    </span>
+                    <span class="text-xs font-semibold <?php echo e($espConnected ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'); ?>">
+                        <?php echo e($espConnected ? 'Connected' : 'Disconnected'); ?>
+
+                    </span>
+                </div>
+            </div>
+            
+            <!-- Last Update Time -->
+            <div class="border-l border-zinc-200 dark:border-zinc-700 pl-3">
+                <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                    Last Update: 
+                    <span class="font-medium text-zinc-700 dark:text-zinc-300">
+                        <?php echo e($lastEspUpdate ? \Carbon\Carbon::parse($lastEspUpdate)->format('H:i:s') : '--:--:--'); ?>
+
+                    </span>
+                </span>
+            </div>
+            
+            <!-- Refresh Button -->
+            <button wire:click="checkEspStatus" 
+                    wire:loading.attr="disabled"
+                    class="text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300 transition-colors">
+                <svg class="w-4 h-4 <?php echo e($espChecking ? 'animate-spin' : ''); ?>" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-7 gap-2 mt-2">
+        <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 p-3 text-center">
+            <p class="text-xs text-zinc-500 dark:text-zinc-400">Total</p>
+            <p class="text-xl font-bold text-zinc-800 dark:text-white"><?php echo e($stats['total']); ?></p>
+        </div>
+        <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 p-3 text-center">
+            <p class="text-xs text-zinc-500 dark:text-zinc-400">Available</p>
+            <p class="text-xl font-bold text-green-600 dark:text-green-400"><?php echo e($stats['available']); ?></p>
+        </div>
+        <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 p-3 text-center">
+            <p class="text-xs text-zinc-500 dark:text-zinc-400">Open</p>
+            <p class="text-xl font-bold text-yellow-600 dark:text-yellow-400"><?php echo e($stats['open']); ?></p>
+        </div>
+        <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 p-3 text-center">
+            <p class="text-xs text-zinc-500 dark:text-zinc-400">In Progress</p>
+            <p class="text-xl font-bold text-blue-600 dark:text-blue-400"><?php echo e($stats['in_progress']); ?></p>
+        </div>
+        <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 p-3 text-center">
+            <p class="text-xs text-zinc-500 dark:text-zinc-400">NG</p>
+            <p class="text-xl font-bold text-red-600 dark:text-red-400"><?php echo e($stats['ng']); ?></p>
+        </div>
+        <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 p-3 text-center">
+            <p class="text-xs text-zinc-500 dark:text-zinc-400">Finished</p>
+            <p class="text-xl font-bold text-gray-600 dark:text-gray-400"><?php echo e($stats['finished']); ?></p>
+        </div>
+        <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 p-3 text-center">
+            <p class="text-xs text-zinc-500 dark:text-zinc-400">Active</p>
+            <p class="text-xl font-bold text-purple-600 dark:text-purple-400"><?php echo e($stats['transactions_active']); ?></p>
+        </div>
     </div>
 
     <!-- Main Content: 2 Columns -->
-    <div class="flex flex-col lg:flex-row gap-4 mt-4">
+    <div class="flex flex-col lg:flex-row gap-4 mt-2">
         <!-- LEFT COLUMN: 70% - Daftar Locker -->
         <div class="w-full lg:w-[70%]">
             <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-lg border border-zinc-200 dark:border-zinc-800 p-4">
@@ -98,7 +171,7 @@
                     </div>
                 </div>
 
-                <!-- Locker Grid - Tanpa scroll -->
+                <!-- Locker Grid -->
                 <div class="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-7 gap-2">
                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $lockers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $locker): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                     <?php
@@ -108,13 +181,6 @@
                             'in_progress' => 'bg-blue-500 hover:bg-blue-600',
                             'ng' => 'bg-red-500 hover:bg-red-600',
                             'finished' => 'bg-gray-500 hover:bg-gray-600'
-                        ];
-                        $statusLabels = [
-                            'available' => 'Available',
-                            'open' => 'Open',
-                            'in_progress' => 'In Progress',
-                            'ng' => 'NG',
-                            'finished' => 'Finished'
                         ];
                     ?>
                     <div wire:click="viewDetail(<?php echo e($locker->id); ?>)"
@@ -299,8 +365,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                         <div class="space-y-6">
                             <!-- Locker Info Card -->
                             <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-5 border border-blue-200 dark:border-blue-800">
-                                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                    <!-- Code -->
+                                <div class="grid grid-cols-2 gap-4">
                                     <div class="flex items-center gap-3">
                                         <div class="w-10 h-10 rounded-full bg-blue-500/10 dark:bg-blue-500/20 flex items-center justify-center flex-shrink-0">
                                             <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -313,7 +378,6 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                         </div>
                                     </div>
 
-                                    <!-- Status -->
                                     <div class="flex items-center gap-3">
                                         <div class="w-10 h-10 rounded-full bg-green-500/10 dark:bg-green-500/20 flex items-center justify-center flex-shrink-0">
                                             <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -338,7 +402,6 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                         </div>
                                     </div>
 
-                                    <!-- Employee -->
                                     <div class="flex items-center gap-3">
                                         <div class="w-10 h-10 rounded-full bg-purple-500/10 dark:bg-purple-500/20 flex items-center justify-center flex-shrink-0">
                                             <svg class="w-5 h-5 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -357,7 +420,6 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                         </div>
                                     </div>
 
-                                    <!-- Locked Until -->
                                     <div class="flex items-center gap-3">
                                         <div class="w-10 h-10 rounded-full bg-orange-500/10 dark:bg-orange-500/20 flex items-center justify-center flex-shrink-0">
                                             <svg class="w-5 h-5 text-orange-600 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -460,7 +522,6 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                         </table>
                                     </div>
                                     
-                                    <!-- Pagination for Transactions -->
                                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($transactions->hasPages()): ?>
                                     <div class="mt-4">
                                         <?php echo e($transactions->links()); ?>
@@ -481,7 +542,6 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
 
                     <!-- Footer -->
                     <div class="mt-6 pt-4 border-t border-zinc-200 dark:border-zinc-700 flex justify-end gap-3">
-                        <!-- Tombol Print Thermal -->
                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($selectedLocker && $selectedLocker->transactions->count() > 0): ?>
                             <?php
                                 $latestTransaction = $selectedLocker->transactions->first();
@@ -492,7 +552,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
                                 </svg>
-                                Print Thermal
+                                Print Access Code
                             </a>
                         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         
@@ -507,7 +567,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
     </div>
 
     <!-- ============================================================ -->
-    <!-- MODAL NG ACTION (Dengan Input Access Code) -->
+    <!-- MODAL NG ACTION -->
     <!-- ============================================================ -->
     <div x-data="{ open: false }" 
         x-show="open" 
@@ -530,19 +590,15 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                             </div>
                             <h2 class="text-2xl font-bold text-zinc-800 dark:text-white">Mark as NG</h2>
                         </div>
-                        <button @click="open = false" class="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors">
+                        <button @click="open = false; $wire.resetNgForm()" class="text-gray-400 hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300 transition-colors">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                             </svg>
                         </button>
                     </div>
 
-                    <!-- Step 1: Input Access Code -->
                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($ngStep == 1): ?>
                         <div class="space-y-6">
-                            <div class="text-center">
-                                <p class="text-gray-600 dark:text-gray-400">Enter the access code to mark locker as NG</p>
-                            </div>
 
                             <div>
                                 <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Access Code</label>
@@ -571,7 +627,6 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                             </button>
                         </div>
 
-                    <!-- Step 2: Konfirmasi NG -->
                     <?php elseif($ngStep == 2): ?>
                         <div class="space-y-6">
                             <div class="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4">
@@ -582,7 +637,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                     <div>
                                         <p class="text-sm font-semibold text-red-800 dark:text-red-300">Warning: This action cannot be undone!</p>
                                         <p class="text-sm text-red-700 dark:text-red-400 mt-1">
-                                            You are about to mark locker <strong><?php echo e($ngLockerData?->code ?? '-'); ?></strong> as NG (Not Good).
+                                            You are about to mark locker <strong><?php echo e($ngLockerData?->code ?? '-'); ?></strong> as NG.
                                         </p>
                                     </div>
                                 </div>
@@ -637,7 +692,6 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                             </div>
                         </div>
 
-                    <!-- Step 3: Sukses -->
                     <?php elseif($ngStep == 3): ?>
                         <div class="text-center">
                             <div class="w-24 h-24 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-red-500/20">
@@ -652,10 +706,11 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                             </p>
                             
                             <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4 mb-6">
-                                <p class="text-sm text-zinc-600 dark:text-zinc-400">✅ Locker status has been updated to <strong class="text-red-600 dark:text-red-400">NG</strong></p>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400">Locker status has been updated to <strong class="text-red-600 dark:text-red-400">NG</strong></p>
                                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($ngReason): ?>
                                     <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-2">Reason: <?php echo e($ngReason); ?></p>
                                 <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-2">WhatsApp notification sent to user</p>
                             </div>
 
                             <button wire:click="resetNgForm" 
@@ -671,7 +726,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
     </div>
 
     <!-- ============================================================ -->
-    <!-- MODAL TEKNISI TAKE (Ambil Seragam untuk Dicek) -->
+    <!-- MODAL TEKNISI TAKE -->
     <!-- ============================================================ -->
     <div x-data="{ open: false }" 
         x-show="open" 
@@ -701,12 +756,8 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                         </button>
                     </div>
 
-                    <!-- Step 1: Input Access Code -->
                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($teknisiTakeStep == 1): ?>
                         <div class="space-y-6">
-                            <div class="text-center">
-                                <p class="text-gray-600 dark:text-gray-400">Scan or enter the access code from the label</p>
-                            </div>
 
                             <div>
                                 <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Access Code</label>
@@ -735,7 +786,6 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                             </button>
                         </div>
 
-                    <!-- Step 2: Print Label -->
                     <?php elseif($teknisiTakeStep == 2): ?>
                         <div class="space-y-6">
                             <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-5">
@@ -784,8 +834,8 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                 <button wire:click="teknisiTakePrintLabel" 
                                         wire:loading.attr="disabled"
                                         class="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg transition duration-200 font-medium shadow-lg shadow-green-600/20">
-                                    <span wire:loading.remove>🖨️ Print Label & Open Locker</span>
-                                    <span wire:loading>⏳ Processing...</span>
+                                    <span wire:loading.remove>Print Label & Open Locker</span>
+                                    <span wire:loading>Processing...</span>
                                 </button>
                                 <button wire:click="resetTeknisiTakeForm" 
                                         class="px-6 bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 py-3 rounded-lg hover:bg-zinc-300 dark:hover:bg-zinc-600 transition duration-200">
@@ -794,12 +844,8 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                             </div>
                         </div>
 
-                    <!-- Step 3: Buka Loker -->
                     <?php elseif($teknisiTakeStep == 3): ?>
                         <div class="text-center space-y-6">
-                            <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-4">
-                                <p class="text-yellow-700 dark:text-yellow-300">📋 Label printed. Click below to open the locker.</p>
-                            </div>
 
                             <div class="bg-zinc-50 dark:bg-zinc-800 rounded-xl p-8 border border-zinc-200 dark:border-zinc-700">
                                 <div class="text-center">
@@ -814,8 +860,8 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                 <button wire:click="teknisiTakeScanAndOpen" 
                                         wire:loading.attr="disabled"
                                         class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg transition duration-200 font-medium shadow-lg shadow-blue-600/20">
-                                    <span wire:loading.remove>🔓 Open Locker</span>
-                                    <span wire:loading>⏳ Processing...</span>
+                                    <span wire:loading.remove>Open Locker</span>
+                                    <span wire:loading>Processing...</span>
                                 </button>
                                 <button wire:click="resetTeknisiTakeForm" 
                                         class="px-6 bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 py-3 rounded-lg hover:bg-zinc-300 dark:hover:bg-zinc-600 transition duration-200">
@@ -824,7 +870,6 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                             </div>
                         </div>
 
-                    <!-- Step 4: Sukses -->
                     <?php elseif($teknisiTakeStep == 4): ?>
                         <div class="text-center">
                             <div class="w-24 h-24 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-green-500/20">
@@ -862,7 +907,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
     </div>
 
     <!-- ============================================================ -->
-    <!-- MODAL TEKNISI RETURN (Kembalikan Seragam) -->
+    <!-- MODAL TEKNISI RETURN -->
     <!-- ============================================================ -->
     <div x-data="{ open: false }" 
         x-show="open" 
@@ -892,12 +937,8 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                         </button>
                     </div>
 
-                    <!-- Step 1: Input Kode Akses -->
                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($returnStep == 1): ?>
                         <div class="space-y-6">
-                            <div class="text-center">
-                                <p class="text-gray-600 dark:text-gray-400">Scan or enter the access code from the printed label</p>
-                            </div>
 
                             <div>
                                 <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-2">Access Code</label>
@@ -926,7 +967,6 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                             </button>
                         </div>
 
-                    <!-- Step 2: Konfirmasi -->
                     <?php elseif($returnStep == 2): ?>
                         <div class="space-y-6">
                             <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-5">
@@ -963,15 +1003,15 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                             </div>
 
                             <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4">
-                                <p class="text-sm text-green-700 dark:text-green-300">✅ Uniform has been checked. Click below to return it.</p>
+                                <p class="text-sm text-green-700 dark:text-green-300">Uniform has been checked. Click below to return it.</p>
                             </div>
 
                             <div class="flex gap-3">
                                 <button wire:click="returnUniform" 
                                         wire:loading.attr="disabled"
                                         class="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg transition duration-200 font-medium shadow-lg shadow-green-600/20">
-                                    <span wire:loading.remove>📥 Return Uniform</span>
-                                    <span wire:loading>⏳ Processing...</span>
+                                    <span wire:loading.remove>Return Uniform</span>
+                                    <span wire:loading>Processing...</span>
                                 </button>
                                 <button wire:click="resetReturnForm" 
                                         class="px-6 bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 py-3 rounded-lg hover:bg-zinc-300 dark:hover:bg-zinc-600 transition duration-200">
@@ -980,7 +1020,6 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                             </div>
                         </div>
 
-                    <!-- Step 3: Sukses -->
                     <?php elseif($returnStep == 3): ?>
                         <div class="text-center">
                             <div class="w-24 h-24 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-green-500/20">
@@ -1002,7 +1041,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                     <span>Door will close automatically in <strong class="text-red-600 dark:text-red-400">15 seconds</strong></span>
                                 </div>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-2 text-center">Please store the checked uniform</p>
-                                <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-2 text-center">📱 Notification sent to user's WhatsApp</p>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-2 text-center">Notification sent to user's WhatsApp</p>
                             </div>
 
                             <button wire:click="resetReturnForm" 
@@ -1074,7 +1113,6 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
     <style>
         [x-cloak] { display: none !important; }
         
-        /* Scrollbar styling */
         .overflow-y-auto::-webkit-scrollbar {
             width: 4px;
         }

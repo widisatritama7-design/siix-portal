@@ -2,12 +2,15 @@
 
 namespace App\Livewire\ESD\Locker;
 
-use Livewire\Component;
-use Livewire\WithPagination;
+use App\Helpers\QRCodeHelper;
 use App\Models\ESD\Locker\Locker;
 use App\Models\ESD\Locker\UniformTransaction;
-use App\Models\HR\Employee;
+use App\Services\WhatsAppService;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Livewire\Component;
+use Livewire\WithPagination;
 
 class LockerManagement extends Component
 {
@@ -24,39 +27,37 @@ class LockerManagement extends Component
     public $showDetail = false;
     public $selectedLocker = null;
     
-    // For transaction pagination in detail modal
     public $transactionPage = 1;
     public $perPage = 5;
 
-    // For take locker with access code
     public $showTakeModal = false;
     public $takeLockerId = null;
     public $takeAccessCode = '';
 
-    // For teknisi take
     public $teknisiNik = '';
     public $teknisiEmployee = null;
     public $teknisiTransaction = null;
     public $teknisiStep = 1;
     public $teknisiIsLoading = false;
 
-    // For teknisi return
     public $returnAccessCode = '';
     public $returnTransaction = null;
     public $returnStep = 1;
     public $returnIsLoading = false;
 
-    // Tambahkan property ini di bagian atas
     public $ngAccessCode = '';
     public $ngLockerData = null;
     public $ngReason = '';
     public $ngStep = 1;
 
-    // Property baru untuk take dengan access code
     public $teknisiTakeAccessCode = '';
     public $teknisiTakeTransaction = null;
     public $teknisiTakeStep = 1;
     public $teknisiTakeIsLoading = false;
+
+    public $espConnected = false;
+    public $lastEspUpdate = null;
+    public $espChecking = false;
 
     protected function rules()
     {
@@ -73,36 +74,33 @@ class LockerManagement extends Component
         'status.in' => 'Status must be available, open, in_progress, ng, or finished.',
     ];
 
-    public function resetForm()
+    public function checkEspStatus()
     {
-        $this->reset(['locker_id', 'code', 'status', 'employee_id']);
-        $this->modalTitle = 'Add New Locker';
-        $this->resetValidation();
-    }
-
-    // Tambahkan di controller LockerManagement
-
-    public function printThermal($transactionId)
-    {
-        $transaction = UniformTransaction::with(['employee', 'locker'])->find($transactionId);
+        $this->espChecking = true;
         
-        if (!$transaction) {
-            abort(404, 'Transaction not found');
+        try {
+            // Cek status ESP32 via API
+            $response = Http::get('http://test.siix-ems.co.id/api/esp-status');
+            
+            if ($response->successful()) {
+                $data = $response->json();
+                $this->espConnected = $data['connected'] ?? false;
+                $this->lastEspUpdate = now();
+            }
+        } catch (\Exception $e) {
+            $this->espConnected = false;
         }
         
-        return redirect()->route('esd.print-label-thermal', ['transactionId' => $transactionId]);
+        $this->espChecking = false;
     }
 
-    public function updatedSearch()
+    public function mount()
     {
-        // No need to reset page since we're not using pagination for lockers
+        $this->checkEspStatus();
     }
 
-    public function updatedStatusFilter()
-    {
-        // No need to reset page since we're not using pagination for lockers
-    }
-
+    // ============ TEKNISI TAKE ============
+    
     public function resetTeknisiTakeForm()
     {
         $this->reset(['teknisiTakeAccessCode', 'teknisiTakeTransaction', 'teknisiTakeStep']);
@@ -118,7 +116,6 @@ class LockerManagement extends Component
             'teknisiTakeAccessCode.required' => 'Access code is required!'
         ]);
 
-        // Cari transaksi dengan status pending
         $this->teknisiTakeTransaction = UniformTransaction::where('access_code', $this->teknisiTakeAccessCode)
             ->where('status', 'pending')
             ->whereHas('locker', function($query) {
@@ -140,29 +137,71 @@ class LockerManagement extends Component
         $this->teknisiTakeIsLoading = true;
 
         DB::transaction(function () {
-            // Update status transaksi menjadi on_progress
             $this->teknisiTakeTransaction->update([
                 'status' => 'on_progress',
                 'taken_at' => now()
             ]);
 
-            // Update locker status menjadi 'in_progress'
-            $this->teknisiTakeTransaction->locker->update([
+            $locker = $this->teknisiTakeTransaction->locker;
+            $locker->update([
                 'status' => 'in_progress',
-                'locked_until' => now()->addSeconds(15)
+                'locked_until' => now()->addSeconds(15),
+                'is_open' => true,
+                'opened_at' => now()
             ]);
 
-            // Kirim notifikasi WhatsApp ke user
-            $this->sendTeknisiTakeWhatsAppNotification(
-                $this->teknisiTakeTransaction->employee,
-                "Hello {$this->teknisiTakeTransaction->employee->name}, your uniform is being checked (On Progress Measure)"
-            );
+            // ============ SCHEDULE AUTO CLOSE ============
+            dispatch(new \App\Jobs\AutoCloseLockerJob($locker->id))->delay(now()->addSeconds(15));
+            // =============================================
+
+            // Kirim WhatsApp
+            $this->sendTeknisiTakeWhatsApp($this->teknisiTakeTransaction);
 
             $this->dispatch('notify', message: 'Label printed successfully! Status changed to In Progress.', type: 'success');
         });
 
         $this->teknisiTakeIsLoading = false;
         $this->teknisiTakeStep = 3;
+    }
+
+    protected function sendTeknisiTakeWhatsApp($transaction)
+    {
+        try {
+            $whatsapp = app(WhatsAppService::class);
+            $employee = $transaction->employee;
+            
+            $phone = $transaction->phone;
+            
+            if (!$phone) {
+                Log::error('No phone number for Teknisi Take', [
+                    'transaction_id' => $transaction->id
+                ]);
+                return;
+            }
+            
+            $message = "*ESD Locker System*\n\n";
+            $message .= "Halo *{$employee->name}*,\n\n";
+            $message .= "🔄 Seragam Anda sedang dalam *proses pengecekan* (On Progress Measure)\n\n";
+            $message .= "📋 *Detail:*\n";
+            $message .= "• NIK: {$employee->nik}\n";
+            $message .= "• Locker: {$transaction->locker->code}\n";
+            $message .= "• Status: Sedang Diperiksa\n";
+            $message .= "• Waktu: " . now()->format('d/m/Y H:i') . "\n\n";
+            $message .= "⏳ Mohon tunggu, Anda akan mendapat notifikasi setelah seragam selesai diperiksa.\n\n";
+            $message .= "Terima kasih telah menggunakan layanan ESD.\n";
+            $message .= "_Pesan ini dikirim otomatis oleh sistem._";
+
+            $whatsapp->send($phone, $message);
+            
+            Log::info('WhatsApp Teknisi Take sent successfully', [
+                'transaction_id' => $transaction->id,
+                'phone' => $phone
+            ]);
+        } catch (\Exception $e) {
+            Log::error('WhatsApp Teknisi Take send failed: ' . $e->getMessage(), [
+                'transaction_id' => $transaction->id
+            ]);
+        }
     }
 
     public function teknisiTakeScanAndOpen()
@@ -172,12 +211,10 @@ class LockerManagement extends Component
         DB::transaction(function () {
             $locker = $this->teknisiTakeTransaction->locker;
 
-            // Update locker - buka loker, status tetap in_progress
             $locker->update([
                 'locked_until' => now()->addSeconds(15)
             ]);
 
-            // Dispatch event buka loker
             $this->dispatch('open-locker', ['code' => $locker->code]);
 
             $this->teknisiTakeStep = 4;
@@ -187,18 +224,138 @@ class LockerManagement extends Component
         $this->teknisiTakeIsLoading = false;
     }
 
-    protected function sendTeknisiTakeWhatsAppNotification($employee, $message)
+    // ============ TEKNISI RETURN ============
+        
+    public function resetReturnForm()
+    {
+        $this->reset(['returnAccessCode', 'returnTransaction', 'returnStep']);
+        $this->resetErrorBag();
+        $this->resetValidation();
+    }
+
+    public function returnCheckCode()
+    {
+        $this->validate([
+            'returnAccessCode' => 'required|string|max:50'
+        ], [
+            'returnAccessCode.required' => 'Access code is required!'
+        ]);
+
+        $this->returnTransaction = UniformTransaction::where('access_code', $this->returnAccessCode)
+            ->whereIn('status', ['on_progress', 'ng'])
+            ->with(['employee', 'locker'])
+            ->first();
+
+        if (!$this->returnTransaction) {
+            $this->dispatch('notify', message: 'Invalid access code or not in checking process!', type: 'error');
+            return;
+        }
+
+        $this->returnStep = 2;
+    }
+
+    public function returnUniform()
+    {
+        $this->returnIsLoading = true;
+
+        DB::transaction(function () {
+            $locker = $this->returnTransaction->locker;
+
+            $locker->update([
+                'locked_until' => now()->addSeconds(15),
+                'is_open' => true,
+                'opened_at' => now()
+            ]);
+
+            $this->returnTransaction->update([
+                'status' => 'waiting_pickup',
+                'stored_at' => now()
+            ]);
+
+            $locker->update([
+                'status' => 'finished'
+            ]);
+
+            // ============ SCHEDULE AUTO CLOSE ============
+            dispatch(new \App\Jobs\AutoCloseLockerJob($locker->id))->delay(now()->addSeconds(15));
+            // =============================================
+
+            // Kirim WhatsApp dengan QR Code
+            $this->sendReturnWhatsAppWithQR($this->returnTransaction);
+
+            $this->dispatch('open-locker', ['code' => $locker->code]);
+
+            $this->returnStep = 3;
+            $this->dispatch('notify', message: 'Locker opened successfully! Uniform has been returned and marked as Finished.', type: 'success');
+        });
+
+        $this->returnIsLoading = false;
+    }
+
+    // ============ KIRIM WHATSAPP DENGAN ACCESS CODE & QR CODE ============
+    protected function sendReturnWhatsAppWithQR($transaction)
     {
         try {
-            \Log::info('WhatsApp notification sent to: ' . $employee->nik, ['message' => $message]);
+            $whatsapp = app(WhatsAppService::class);
+            $employee = $transaction->employee;
+            $locker = $transaction->locker;
+            
+            $phone = $transaction->phone;
+            
+            if (!$phone) {
+                Log::error('No phone number for Return with QR', [
+                    'transaction_id' => $transaction->id
+                ]);
+                return;
+            }
+            
+            // Generate QR Code sebagai image
+            $qrData = $transaction->access_code;
+            $qrImagePath = QRCodeHelper::generateAndSave($transaction->access_code, $qrData);
+            
+            // Buat QR Code URL untuk scan
+            $scanUrl = route('qr-scan', ['accessCode' => $transaction->access_code]);
+            
+            $message = "*ESD Locker System*\n\n";
+            $message .= "Halo *{$employee->name}*,\n\n";
+            $message .= "✅ *Seragam Anda telah selesai diperiksa dan siap diambil!*\n\n";
+            $message .= "📋 *Detail Transaksi:*\n";
+            $message .= "• NIK: {$employee->nik}\n";
+            $message .= "• Locker: {$locker->code}\n";
+            $message .= "• Status: Siap Diambil\n";
+            $message .= "• Waktu: " . now()->format('d/m/Y H:i') . "\n\n";
+            $message .= "🔑 *Kode Akses Anda:* `{$transaction->access_code}`\n";
+            $message .= "⏰ Kode ini berlaku selama *24 jam*.\n\n";
+            $message .= "📱 *Scan QR Code di bawah ini untuk akses cepat:*\n\n";
+            $message .= "⚠️ *Simpan kode dan QR Code ini dengan baik!*\n";
+            $message .= "Gunakan untuk mengambil seragam Anda.\n\n";
+            $message .= "Terima kasih telah menggunakan layanan ESD.\n";
+            $message .= "_Pesan ini dikirim otomatis oleh sistem._";
+
+            // Kirim dengan gambar QR Code
+            if (file_exists($qrImagePath)) {
+                $result = $whatsapp->sendWithQRImage($phone, $message, $qrImagePath);
+            } else {
+                // Jika QR gagal generate, kirim tanpa gambar
+                $whatsapp->send($phone, $message);
+            }
+            
+            Log::info('WhatsApp Return with QR sent successfully', [
+                'transaction_id' => $transaction->id,
+                'phone' => $phone,
+                'access_code' => $transaction->access_code
+            ]);
+            
         } catch (\Exception $e) {
-            \Log::error('WhatsApp notification failed: ' . $e->getMessage());
+            Log::error('WhatsApp Return with QR send failed: ' . $e->getMessage(), [
+                'transaction_id' => $transaction->id
+            ]);
         }
     }
+    // ================================================================
 
     // ============ NG (Reject Locker) ============
 
-    // Tambahkan method ini
     public function resetNgForm()
     {
         $this->reset(['ngAccessCode', 'ngLockerData', 'ngReason', 'ngStep']);
@@ -214,7 +371,6 @@ class LockerManagement extends Component
             'ngAccessCode.required' => 'Access code is required!'
         ]);
 
-        // Cari transaksi dengan status on_progress
         $transaction = UniformTransaction::where('access_code', $this->ngAccessCode)
             ->where('status', 'on_progress')
             ->with(['employee', 'locker'])
@@ -237,12 +393,10 @@ class LockerManagement extends Component
         }
 
         DB::transaction(function () {
-            // Update locker status menjadi NG
             $this->ngLockerData->update([
                 'status' => 'ng'
             ]);
 
-            // Update transaction terakhir yang terkait dengan locker ini
             $transaction = UniformTransaction::where('locker_id', $this->ngLockerData->id)
                 ->where('status', 'on_progress')
                 ->latest()
@@ -253,10 +407,12 @@ class LockerManagement extends Component
                     'status' => 'ng',
                     'notes' => $this->ngReason ?? 'Marked as NG by technician'
                 ]);
+
+                // Kirim WhatsApp NG
+                $this->sendNgWhatsApp($transaction);
             }
 
-            // Log untuk audit
-            \Log::info('Locker marked as NG', [
+            Log::info('Locker marked as NG', [
                 'locker_id' => $this->ngLockerData->id,
                 'locker_code' => $this->ngLockerData->code,
                 'reason' => $this->ngReason,
@@ -267,65 +423,60 @@ class LockerManagement extends Component
             $this->dispatch('notify', message: "Locker {$this->ngLockerData->code} marked as NG successfully!", type: 'warning');
         });
     }
-    
-    public function openNgModal($id)
+
+    protected function sendNgWhatsApp($transaction)
     {
-        $locker = Locker::find($id);
-        if (!$locker) {
-            $this->dispatch('notify', message: 'Locker not found!', type: 'error');
-            return;
-        }
+        try {
+            $whatsapp = app(WhatsAppService::class);
+            $employee = $transaction->employee;
+            
+            $phone = $transaction->phone;
+            
+            if (!$phone) {
+                Log::error('No phone number for NG', [
+                    'transaction_id' => $transaction->id
+                ]);
+                return;
+            }
+            
+            $message = "*ESD Locker System*\n\n";
+            $message .= "Halo *{$employee->name}*,\n\n";
+            $message .= "❌ *Pemberitahuan Penting!*\n\n";
+            $message .= "Seragam Anda dinyatakan *NG (Not Good)* / Tidak Lolos Pengecekan.\n\n";
+            
+            if ($transaction->notes) {
+                $message .= "📝 *Alasan:* {$transaction->notes}\n\n";
+            }
+            
+            $message .= "📋 *Detail:*\n";
+            $message .= "• NIK: {$employee->nik}\n";
+            $message .= "• Locker: {$transaction->locker->code}\n";
+            $message .= "• Status: NG (Rejected)\n";
+            $message .= "• Waktu: " . now()->format('d/m/Y H:i') . "\n\n";
+            $message .= "📞 Silahkan hubungi tim ESD untuk informasi lebih lanjut.\n\n";
+            $message .= "Terima kasih telah menggunakan layanan ESD.\n";
+            $message .= "_Pesan ini dikirim otomatis oleh sistem._";
 
-        if ($locker->status !== 'in_progress') {
-            $this->dispatch('notify', message: 'Only In Progress lockers can be marked as NG!', type: 'error');
-            return;
+            $whatsapp->send($phone, $message);
+            
+            Log::info('WhatsApp NG sent successfully', [
+                'transaction_id' => $transaction->id,
+                'phone' => $phone
+            ]);
+        } catch (\Exception $e) {
+            Log::error('WhatsApp NG send failed: ' . $e->getMessage(), [
+                'transaction_id' => $transaction->id
+            ]);
         }
-
-        $this->ngLocker = $locker;
-        $this->ngReason = '';
-        $this->dispatch('open-modal', 'ng-locker-modal');
     }
 
-    public function confirmNg()
+    // ============ SAVE, EDIT, DELETE ============
+    
+    public function resetForm()
     {
-        if (!$this->ngLocker) {
-            $this->dispatch('notify', message: 'Locker not found!', type: 'error');
-            return;
-        }
-
-        DB::transaction(function () {
-            // Update locker status menjadi NG
-            $this->ngLocker->update([
-                'status' => 'ng'
-            ]);
-
-            // Update transaction terakhir yang terkait dengan locker ini
-            $transaction = UniformTransaction::where('locker_id', $this->ngLocker->id)
-                ->where('status', 'on_progress')
-                ->latest()
-                ->first();
-
-            if ($transaction) {
-                $transaction->update([
-                    'status' => 'ng',
-                    'notes' => $this->ngReason ?? 'Marked as NG by technician'
-                ]);
-            }
-
-            // Log untuk audit
-            \Log::info('Locker marked as NG', [
-                'locker_id' => $this->ngLocker->id,
-                'locker_code' => $this->ngLocker->code,
-                'reason' => $this->ngReason,
-                'by' => auth()->user()->name ?? 'System'
-            ]);
-
-            $this->dispatch('notify', message: "Locker {$this->ngLocker->code} marked as NG successfully!", type: 'warning');
-        });
-
-        $this->ngLocker = null;
-        $this->ngReason = '';
-        $this->dispatch('close-modal', 'ng-locker-modal');
+        $this->reset(['locker_id', 'code', 'status', 'employee_id']);
+        $this->modalTitle = 'Add New Locker';
+        $this->resetValidation();
     }
 
     public function save()
@@ -373,7 +524,6 @@ class LockerManagement extends Component
 
     public function viewDetail($id)
     {
-        // Load locker with employee
         $this->selectedLocker = Locker::with('employee')->find($id);
 
         if (!$this->selectedLocker) {
@@ -381,7 +531,6 @@ class LockerManagement extends Component
             return;
         }
 
-        // Reset transaction page to 1 when opening detail
         $this->transactionPage = 1;
         $this->showDetail = true;
         $this->dispatch('open-modal', 'locker-detail-modal');
@@ -389,7 +538,6 @@ class LockerManagement extends Component
 
     // ============ ACTION FOR TECHNICIAN ============
     
-    // Open modal untuk mengambil locker (open -> in_progress)
     public function openTakeModal($id)
     {
         $locker = Locker::find($id);
@@ -409,7 +557,6 @@ class LockerManagement extends Component
         $this->dispatch('open-modal', 'take-locker-modal');
     }
 
-    // Proses take locker dengan kode akses
     public function takeLockerWithCode()
     {
         $this->validate([
@@ -424,7 +571,6 @@ class LockerManagement extends Component
             return;
         }
 
-        // Cek apakah ada transaksi dengan kode akses yang valid
         $transaction = UniformTransaction::where('access_code', $this->takeAccessCode)
             ->where('locker_id', $locker->id)
             ->whereIn('status', ['pending', 'waiting_pickup'])
@@ -436,10 +582,8 @@ class LockerManagement extends Component
             return;
         }
 
-        // Update status locker menjadi in_progress
         $locker->markAsInProgress();
         
-        // Update transaction status
         $transaction->update([
             'status' => 'on_progress'
         ]);
@@ -451,13 +595,73 @@ class LockerManagement extends Component
         $this->dispatch('notify', message: 'Locker taken successfully! Now in progress.');
     }
 
-    // Hapus method ini atau ubah menjadi:
     public function rejectLocker($id)
     {
         return $this->openNgModal($id);
     }
 
-    // Action: Teknisi selesai (in_progress atau ng -> finished)
+    public function openNgModal($id)
+    {
+        $locker = Locker::find($id);
+        if (!$locker) {
+            $this->dispatch('notify', message: 'Locker not found!', type: 'error');
+            return;
+        }
+
+        if ($locker->status !== 'in_progress') {
+            $this->dispatch('notify', message: 'Only In Progress lockers can be marked as NG!', type: 'error');
+            return;
+        }
+
+        $this->ngLockerData = $locker;
+        $this->ngReason = '';
+        $this->ngStep = 1;
+        $this->dispatch('open-modal', 'ng-locker-modal');
+    }
+
+    public function confirmNg()
+    {
+        if (!$this->ngLockerData) {
+            $this->dispatch('notify', message: 'Locker not found!', type: 'error');
+            return;
+        }
+
+        DB::transaction(function () {
+            $this->ngLockerData->update([
+                'status' => 'ng'
+            ]);
+
+            $transaction = UniformTransaction::where('locker_id', $this->ngLockerData->id)
+                ->where('status', 'on_progress')
+                ->latest()
+                ->first();
+
+            if ($transaction) {
+                $transaction->update([
+                    'status' => 'ng',
+                    'notes' => $this->ngReason ?? 'Marked as NG by technician'
+                ]);
+
+                // Kirim WhatsApp
+                $this->sendNgWhatsApp($transaction);
+            }
+
+            Log::info('Locker marked as NG', [
+                'locker_id' => $this->ngLockerData->id,
+                'locker_code' => $this->ngLockerData->code,
+                'reason' => $this->ngReason,
+                'by' => auth()->user()->name ?? 'System'
+            ]);
+
+            $this->dispatch('notify', message: "Locker {$this->ngLockerData->code} marked as NG successfully!", type: 'warning');
+        });
+
+        $this->ngLockerData = null;
+        $this->ngReason = '';
+        $this->ngStep = 1;
+        $this->dispatch('close-modal', 'ng-locker-modal');
+    }
+
     public function finishLocker($id)
     {
         $locker = Locker::find($id);
@@ -466,7 +670,6 @@ class LockerManagement extends Component
             return;
         }
 
-        // Bisa dari in_progress atau ng ke finished
         if (!in_array($locker->status, ['in_progress', 'ng'])) {
             $this->dispatch('notify', message: 'Locker must be in progress or NG to be finished!', type: 'error');
             return;
@@ -476,7 +679,6 @@ class LockerManagement extends Component
         $this->dispatch('notify', message: 'Locker work completed!');
     }
 
-    // Action: Kembalikan locker ke available (finished -> available)
     public function resetLocker($id)
     {
         $locker = Locker::find($id);
@@ -485,7 +687,6 @@ class LockerManagement extends Component
             return;
         }
 
-        // Hanya finished yang bisa direset ke available
         if ($locker->status !== 'finished') {
             $this->dispatch('notify', message: 'Only Finished lockers can be reset to available!', type: 'error');
             return;
@@ -495,186 +696,15 @@ class LockerManagement extends Component
         $this->dispatch('notify', message: 'Locker reset to available!');
     }
 
-    // ============ TEKNISI TAKE ============
-    
-    public function resetTeknisiForm()
+    public function printThermal($transactionId)
     {
-        $this->reset(['teknisiNik', 'teknisiEmployee', 'teknisiTransaction', 'teknisiStep']);
-        $this->resetErrorBag();
-        $this->resetValidation();
-    }
-
-    public function teknisiSearchEmployee()
-    {
-        $this->validate([
-            'teknisiNik' => 'required|string|max:20|exists:tb_hr_employee,nik'
-        ], [
-            'teknisiNik.required' => 'NIK is required',
-            'teknisiNik.exists' => 'NIK not found in database'
-        ]);
-
-        $this->teknisiEmployee = Employee::where('nik', $this->teknisiNik)->first();
-
-        if (!$this->teknisiEmployee) {
-            $this->dispatch('notify', message: 'Employee data not found!', type: 'error');
-            return;
-        }
-
-        // Cek apakah ada transaksi dengan status pending dan locker status 'open'
-        $this->teknisiTransaction = UniformTransaction::where('employee_id', $this->teknisiEmployee->id)
-            ->where('status', 'pending')
-            ->whereHas('locker', function($query) {
-                $query->where('status', 'open');
-            })
-            ->latest()
-            ->first();
-
-        if (!$this->teknisiTransaction) {
-            $this->dispatch('notify', message: 'No uniform needs to be checked for this employee!', type: 'error');
-            return;
-        }
-
-        $this->teknisiStep = 2;
-    }
-
-    public function teknisiPrintLabel()
-    {
-        $this->teknisiIsLoading = true;
-
-        DB::transaction(function () {
-            // Update status transaksi menjadi on_progress
-            $this->teknisiTransaction->update([
-                'status' => 'on_progress',
-                'taken_at' => now()
-            ]);
-
-            // Update locker status menjadi 'in_progress'
-            $this->teknisiTransaction->locker->update([
-                'status' => 'in_progress',
-                'locked_until' => now()->addSeconds(15)
-            ]);
-
-            // Kirim notifikasi WhatsApp ke user
-            $this->sendTeknisiWhatsAppNotification(
-                $this->teknisiEmployee,
-                "Hello {$this->teknisiEmployee->name}, your uniform is being checked (On Progress Measure)"
-            );
-
-            $this->dispatch('notify', message: 'Label printed successfully! Status changed to In Progress.', type: 'success');
-        });
-
-        $this->teknisiIsLoading = false;
-        $this->teknisiStep = 3;
-    }
-
-    public function teknisiScanAndOpen()
-    {
-        $this->teknisiIsLoading = true;
-
-        DB::transaction(function () {
-            $locker = $this->teknisiTransaction->locker;
-
-            // Update locker - buka loker, status tetap in_progress
-            $locker->update([
-                'locked_until' => now()->addSeconds(15)
-            ]);
-
-            // Dispatch event buka loker
-            $this->dispatch('open-locker', ['code' => $locker->code]);
-
-            $this->teknisiStep = 4;
-            $this->dispatch('notify', message: 'Locker opened successfully! Take the uniform for checking.', type: 'success');
-        });
-
-        $this->teknisiIsLoading = false;
-    }
-
-    protected function sendTeknisiWhatsAppNotification($employee, $message)
-    {
-        try {
-            \Log::info('WhatsApp notification sent to: ' . $employee->nik, ['message' => $message]);
-        } catch (\Exception $e) {
-            \Log::error('WhatsApp notification failed: ' . $e->getMessage());
-        }
-    }
-
-    // ============ TEKNISI RETURN ============
+        $transaction = UniformTransaction::with(['employee', 'locker'])->find($transactionId);
         
-    public function resetReturnForm()
-    {
-        $this->reset(['returnAccessCode', 'returnTransaction', 'returnStep']);
-        $this->resetErrorBag();
-        $this->resetValidation();
-    }
-
-    public function returnCheckCode()
-    {
-        $this->validate([
-            'returnAccessCode' => 'required|string|max:50'
-        ], [
-            'returnAccessCode.required' => 'Access code is required!'
-        ]);
-
-        // Cari transaksi dengan status on_progress ATAU ng
-        $this->returnTransaction = UniformTransaction::where('access_code', $this->returnAccessCode)
-            ->whereIn('status', ['on_progress', 'ng'])
-            ->with(['employee', 'locker'])
-            ->first();
-
-        if (!$this->returnTransaction) {
-            $this->dispatch('notify', message: 'Invalid access code or not in checking process!', type: 'error');
-            return;
+        if (!$transaction) {
+            abort(404, 'Transaction not found');
         }
-
-        $this->returnStep = 2;
-    }
-
-    public function returnUniform()
-    {
-        $this->returnIsLoading = true;
-
-        DB::transaction(function () {
-            $locker = $this->returnTransaction->locker;
-
-            // Buka loker
-            $locker->update([
-                'locked_until' => now()->addSeconds(15)
-            ]);
-
-            // Update transaksi menjadi waiting_pickup (menunggu diambil user)
-            $this->returnTransaction->update([
-                'status' => 'waiting_pickup',
-                'stored_at' => now()
-            ]);
-
-            // Update locker status menjadi 'finished' (selesai dicek)
-            $locker->update([
-                'status' => 'finished'
-            ]);
-
-            // Dispatch event buka loker
-            $this->dispatch('open-locker', ['code' => $locker->code]);
-
-            // Kirim notifikasi WhatsApp ke user
-            $this->sendReturnWhatsAppNotification(
-                $this->returnTransaction->employee,
-                "Hello {$this->returnTransaction->employee->name}, your uniform has been checked and finished. Please take it immediately."
-            );
-
-            $this->returnStep = 3;
-            $this->dispatch('notify', message: 'Locker opened successfully! Uniform has been returned and marked as Finished.', type: 'success');
-        });
-
-        $this->returnIsLoading = false;
-    }
-
-    protected function sendReturnWhatsAppNotification($employee, $message)
-    {
-        try {
-            \Log::info('WhatsApp notification sent to: ' . $employee->nik, ['message' => $message]);
-        } catch (\Exception $e) {
-            \Log::error('WhatsApp notification failed: ' . $e->getMessage());
-        }
+        
+        return redirect()->route('esd.print-label-thermal', ['transactionId' => $transactionId]);
     }
 
     // ============ DELETE ============
@@ -688,7 +718,6 @@ class LockerManagement extends Component
             return;
         }
 
-        // Cek apakah locker sedang diproses
         if (in_array($locker->status, ['open', 'in_progress'])) {
             $this->dispatch('notify', message: 'Cannot delete locker that is currently in use!', type: 'error');
             return;

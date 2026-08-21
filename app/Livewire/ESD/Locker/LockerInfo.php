@@ -7,6 +7,9 @@ use App\Models\ESD\Locker\UniformTransaction;
 use App\Models\HR\Employee;
 use App\Models\ESD\Locker\Locker;
 use Illuminate\Support\Facades\DB;
+use App\Services\WhatsAppService;
+use App\Helpers\PhoneHelper;
+use Illuminate\Support\Facades\Log;
 
 class LockerInfo extends Component
 {
@@ -17,6 +20,7 @@ class LockerInfo extends Component
 
     // Untuk Store
     public $store_nik;
+    public $store_phone;
     public $store_employee = null;
     public $store_step = 1;
     public $locker_code = null;
@@ -69,10 +73,13 @@ class LockerInfo extends Component
     public function checkStoreNik()
     {
         $this->validate([
-            'store_nik' => 'required|string|max:20|exists:tb_hr_employee,nik'
+            'store_nik' => 'required|string|max:20|exists:tb_hr_employee,nik',
+            'store_phone' => 'required|string|max:20|regex:/^[0-9]{10,15}$/'
         ], [
             'store_nik.required' => 'NIK is required',
-            'store_nik.exists' => 'NIK not found in database'
+            'store_nik.exists' => 'NIK not found in database',
+            'store_phone.required' => 'WhatsApp number is required',
+            'store_phone.regex' => 'WhatsApp number must be 10-15 digits'
         ]);
 
         $this->store_employee = Employee::where('nik', $this->store_nik)->first();
@@ -99,53 +106,107 @@ class LockerInfo extends Component
     {
         $this->isLoading = true;
 
-        DB::transaction(function () {
-            // Cari locker dengan status 'available' (tersedia)
-            $locker = Locker::available()->inRandomOrder()->first();
+        try {
+            DB::transaction(function () {
+                $locker = Locker::available()->inRandomOrder()->first();
 
-            if (!$locker) {
-                $this->dispatch('notify', message: 'Sorry, all lockers are full!', type: 'error');
-                $this->isLoading = false;
-                return;
-            }
+                if (!$locker) {
+                    throw new \Exception('Sorry, all lockers are full!');
+                }
 
-            $transaction = UniformTransaction::create([
-                'employee_id' => $this->store_employee->id,
-                'locker_id' => $locker->id,
-                'type' => 'store',
-                'status' => 'pending'
-            ]);
+                $formattedPhone = PhoneHelper::formatToInternational($this->store_phone);
 
-            $transaction->generateAccessCode();
+                $transaction = UniformTransaction::create([
+                    'employee_id' => $this->store_employee->id,
+                    'phone' => $formattedPhone,
+                    'locker_id' => $locker->id,
+                    'type' => 'store',
+                    'status' => 'pending'
+                ]);
 
-            // Update locker status menjadi 'open' (sedang digunakan)
-            $locker->update([
-                'status' => 'open',
-                'employee_id' => $this->store_employee->id,
-                'locked_until' => now()->addSeconds(15)
-            ]);
+                $transaction->generateAccessCode();
 
-            $this->access_code = $transaction->access_code;
-            $this->locker_code = $locker->code;
-            $this->store_step = 3;
+                // Update locker status menjadi 'open' dan buka loker
+                $locker->update([
+                    'status' => 'open',
+                    'employee_id' => $this->store_employee->id,
+                    'locked_until' => now()->addSeconds(15),
+                    'is_open' => true,
+                    'opened_at' => now()
+                ]);
 
-            $this->sendWhatsAppNotification($transaction);
-            $this->dispatch('open-locker', ['code' => $locker->code]);
-            $this->dispatch('notify', message: 'Locker opened successfully! Please store your uniform.', type: 'success');
-        });
+                $this->access_code = $transaction->access_code;
+                $this->locker_code = $locker->code;
+                $this->store_step = 3;
+
+                // Kirim WhatsApp
+                $this->sendStoreWhatsApp($transaction);
+
+                // ============ SCHEDULE AUTO CLOSE ============
+                dispatch(new \App\Jobs\AutoCloseLockerJob($locker->id))->delay(now()->addSeconds(15));
+                // =============================================
+
+                $this->dispatch('open-locker', ['code' => $locker->code]);
+                $this->dispatch('notify', message: 'Locker opened successfully! Please store your uniform.', type: 'success');
+                $this->dispatch('auto-close-store');
+            });
+        } catch (\Exception $e) {
+            $this->dispatch('notify', message: $e->getMessage(), type: 'error');
+            Log::error('Store uniform error: ' . $e->getMessage());
+        }
 
         $this->isLoading = false;
     }
 
+    // ============ KIRIM WHATSAPP STORE (TANPA QR CODE) ============
+    protected function sendStoreWhatsApp($transaction)
+    {
+        try {
+            $whatsapp = app(WhatsAppService::class);
+            $employee = $this->store_employee;
+            
+            $phone = $transaction->phone;
+            
+            if (!$phone) {
+                Log::error('No phone number for WhatsApp Store', [
+                    'transaction_id' => $transaction->id
+                ]);
+                return;
+            }
+            
+            $message = "*ESD Locker System*\n\n";
+            $message .= "Halo *{$employee->name}*,\n\n";
+            $message .= "✅ Anda telah menyimpan seragam di locker *{$transaction->locker->code}*\n\n";
+            $message .= "📋 *Detail Transaksi:*\n";
+            $message .= "• NIK: {$employee->nik}\n";
+            $message .= "• Locker: {$transaction->locker->code}\n";
+            $message .= "• Status: Menunggu Pengecekan\n\n";
+            $message .= "⏳ Seragam Anda akan segera diperiksa oleh tim ESD.\n";
+            $message .= "Anda akan mendapat notifikasi setelah selesai.\n\n";
+            $message .= "Terima kasih telah menggunakan layanan ESD.\n";
+            $message .= "_Pesan ini dikirim otomatis oleh sistem._";
+
+            $whatsapp->send($phone, $message);
+            
+            Log::info('WhatsApp Store sent successfully', [
+                'transaction_id' => $transaction->id,
+                'phone' => $phone
+            ]);
+        } catch (\Exception $e) {
+            Log::error('WhatsApp Store send failed: ' . $e->getMessage(), [
+                'transaction_id' => $transaction->id
+            ]);
+        }
+    }
+
     public function resetStore()
     {
-        $this->reset(['store_nik', 'store_employee', 'store_step', 'locker_code', 'access_code']);
+        $this->reset(['store_nik', 'store_phone', 'store_employee', 'store_step', 'locker_code', 'access_code']);
         $this->resetErrorBag();
         $this->resetValidation();
         $this->modalStore = false;
     }
 
-    // ============ TAKE ============
     public function checkTakeCode()
     {
         $this->validate([
@@ -154,22 +215,27 @@ class LockerInfo extends Component
             'take_access_code.required' => 'Access code is required'
         ]);
 
+        Log::info('checkTakeCode called', ['code' => $this->take_access_code]);
+
+        // Cari transaksi dengan status waiting_pickup
         $this->take_transaction = UniformTransaction::where('access_code', $this->take_access_code)
-            ->whereIn('status', ['pending', 'waiting_pickup'])
-            ->where('expires_at', '>', now())
+            ->where('status', 'waiting_pickup')
             ->with(['employee', 'locker'])
             ->first();
 
         if (!$this->take_transaction) {
-            $this->dispatch('notify', message: 'Invalid access code or expired!', type: 'error');
+            Log::warning('Transaction not found', ['code' => $this->take_access_code]);
+            $this->dispatch('notify', message: 'Invalid access code or uniform not ready!', type: 'error');
             return;
         }
 
-        if ($this->take_transaction->locker->isLocked()) {
-            $this->dispatch('notify', message: 'Locker is locked, please wait a moment!', type: 'error');
-            return;
-        }
+        Log::info('Transaction found', [
+            'id' => $this->take_transaction->id,
+            'locker_code' => $this->take_transaction->locker->code,
+            'locker_status' => $this->take_transaction->locker->status
+        ]);
 
+        // LANGSUNG KE STEP 2
         $this->take_step = 2;
     }
 
@@ -177,30 +243,98 @@ class LockerInfo extends Component
     {
         $this->isLoading = true;
 
-        DB::transaction(function () {
-            $locker = $this->take_transaction->locker;
+        try {
+            DB::transaction(function () {
+                $locker = $this->take_transaction->locker;
 
-            $locker->update([
-                'locked_until' => now()->addSeconds(15)
-            ]);
+                // BUKA LOKER - status TETAP 'finished'
+                $locker->update([
+                    'locked_until' => now()->addSeconds(15),
+                    'is_open' => true,
+                    'opened_at' => now()
+                    // STATUS TETAP 'finished', JANGAN UBAH!
+                ]);
 
-            $this->take_transaction->update([
-                'status' => 'completed',
-                'taken_at' => now()
-            ]);
+                // UPDATE TRANSAKSI
+                $this->take_transaction->update([
+                    'status' => 'completed',
+                    'taken_at' => now()
+                ]);
 
-            // Update locker status menjadi 'available' (tersedia kembali)
-            $locker->update([
-                'status' => 'available',
-                'employee_id' => null
-            ]);
+                // KOSONGKAN EMPLOYEE_ID
+                $locker->update([
+                    'employee_id' => null
+                ]);
 
-            $this->dispatch('open-locker', ['code' => $locker->code]);
-            $this->take_step = 3;
-            $this->dispatch('notify', message: 'Locker opened successfully! Please take your uniform.', type: 'success');
-        });
+                // KIRIM WHATSAPP
+                $this->sendTakeWhatsApp($this->take_transaction);
+
+                // DISPATCH AUTO CLOSE 15 DETIK
+                dispatch(new \App\Jobs\AutoCloseLockerJob($locker->id))->delay(now()->addSeconds(15));
+
+                $this->dispatch('open-locker', ['code' => $locker->code]);
+                $this->take_step = 3;
+                $this->dispatch('notify', message: 'Locker opened successfully! Please take your uniform.', type: 'success');
+                $this->dispatch('auto-close-take');
+            });
+        } catch (\Exception $e) {
+            $this->dispatch('notify', message: 'Failed to open locker: ' . $e->getMessage(), type: 'error');
+            Log::error('Take locker error: ' . $e->getMessage());
+        }
 
         $this->isLoading = false;
+    }
+
+    // ============ METHOD SCHEDULE AUTO CLOSE (TANPA QUEUE) ============
+    protected function scheduleAutoClose($lockerId)
+    {
+        // Simpan ke database atau jalankan dengan cron
+        // Atau kita bisa menggunakan sleep, tapi TIDAK DISARANKAN di web request
+        
+        // ALTERNATIF: Simpan ke tabel schedule terpisah
+        // \App\Models\AutoCloseSchedule::create([
+        //     'locker_id' => $lockerId,
+        //     'scheduled_at' => now()->addSeconds(15)
+        // ]);
+    }
+
+    protected function sendTakeWhatsApp($transaction)
+    {
+        try {
+            $whatsapp = app(WhatsAppService::class);
+            $employee = $transaction->employee;
+            
+            $phone = $transaction->phone;
+            
+            if (!$phone) {
+                Log::error('No phone number for WhatsApp Take', [
+                    'transaction_id' => $transaction->id
+                ]);
+                return;
+            }
+            
+            $message = "*ESD Locker System*\n\n";
+            $message .= "Halo *{$employee->name}*,\n\n";
+            $message .= "✅ Anda telah mengambil seragam dari locker *{$transaction->locker->code}*\n\n";
+            $message .= "📋 *Detail Transaksi:*\n";
+            $message .= "• NIK: {$employee->nik}\n";
+            $message .= "• Locker: {$transaction->locker->code}\n";
+            $message .= "• Waktu: " . now()->format('d/m/Y H:i') . "\n";
+            $message .= "• Status: Selesai Diambil\n\n";
+            $message .= "Terima kasih telah menggunakan layanan ESD.\n";
+            $message .= "_Pesan ini dikirim otomatis oleh sistem._";
+
+            $whatsapp->send($phone, $message);
+            
+            Log::info('WhatsApp Take sent successfully', [
+                'transaction_id' => $transaction->id,
+                'phone' => $phone
+            ]);
+        } catch (\Exception $e) {
+            Log::error('WhatsApp Take send failed: ' . $e->getMessage(), [
+                'transaction_id' => $transaction->id
+            ]);
+        }
     }
 
     public function resetTake()
@@ -209,23 +343,6 @@ class LockerInfo extends Component
         $this->resetErrorBag();
         $this->resetValidation();
         $this->modalTake = false;
-    }
-
-    // ============ WHATSAPP ============
-    protected function sendWhatsAppNotification($transaction)
-    {
-        $employee = $this->store_employee;
-        $message = "Hello {$employee->name},\n\n";
-        $message .= "You have stored your uniform in locker {$transaction->locker->code}\n";
-        $message .= "Your access code: {$transaction->access_code}\n";
-        $message .= "This code is valid for 24 hours.\n\n";
-        $message .= "Thank you for using ESD service.";
-
-        try {
-            \Log::info('WhatsApp notification sent to: ' . $employee->nik, ['message' => $message]);
-        } catch (\Exception $e) {
-            \Log::error('WhatsApp notification failed: ' . $e->getMessage());
-        }
     }
 
     // ============ OPEN MODAL ============

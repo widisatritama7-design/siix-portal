@@ -178,6 +178,7 @@
                             <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 80px;">NIK</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 150px;">Name</th>
                             <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 120px;">Department</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 120px;">Section</th>
                             <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 100px;">Status</th>
                             <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 150px;">Remarks</th>
                             <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 120px;">Date</th>
@@ -222,6 +223,11 @@
                             <td class="px-4 py-3 text-center">
                                 <div class="flex items-center justify-center gap-3">
                                     <span class="text-sm font-semibold text-zinc-800 dark:text-white block">{{ $ncp->employee->department ?? '-' }}</span>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 text-center">
+                                <div class="flex items-center justify-center gap-3">
+                                    <span class="text-sm font-semibold text-zinc-800 dark:text-white block">{{ $ncp->section ?? '-' }}</span>
                                 </div>
                             </td>
                             <td class="px-4 py-3 text-center">

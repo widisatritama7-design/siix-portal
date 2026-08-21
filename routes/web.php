@@ -1,8 +1,10 @@
 <?php
 
+use App\Helpers\QRCodeHelper;
+use App\Http\Controllers\Api\ApiLockerController;
+use App\Http\Controllers\Api\EspController;
 use App\Http\Controllers\DashboardRefreshController;
 use App\Http\Controllers\DoorLockController;
-use App\Http\Controllers\ESD\LockerController;
 use App\Http\Controllers\InboxController;
 use App\Http\Controllers\PROD\Absence\AbsenceControlPrintController;
 use App\Http\Controllers\PROD\Absence\AbsenceReportPrintController;
@@ -65,7 +67,9 @@ use App\Livewire\Ticket\TicketView;
 use App\Livewire\User\Permission\PermissionManagement;
 use App\Livewire\User\Role\RoleManagement;
 use App\Livewire\User\UserManagement;
+use App\Models\ESD\Locker\UniformTransaction;
 use App\Services\MicrosoftGraphService;
+use App\Services\WhatsAppService;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -251,18 +255,99 @@ Route::get('/test-microsoft-sender', function (MicrosoftGraphService $graph) {
     ]);
 });
 
+Route::get('/test-whatsapp', function (
+    WhatsAppService $whatsapp
+) {
+
+    return $whatsapp->send(
+        '6289529070107',
+        'Halo, ini pesan dari Laravel SIIX EMS.'
+    );
+
+});
+
+Route::get('/qr-scan/{accessCode}', function ($accessCode) {
+    $transaction = UniformTransaction::where('access_code', $accessCode)
+        ->whereIn('status', ['pending', 'waiting_pickup'])
+        ->where('expires_at', '>', now())
+        ->first();
+    
+    if (!$transaction) {
+        return redirect('/esd/locker-info')->with('error', 'QR Code tidak valid atau sudah kadaluarsa!');
+    }
+    
+    // Redirect ke halaman locker info dengan access code
+    return redirect('/esd/locker-info?take_code=' . $accessCode);
+})->name('qr-scan');
+
+Route::get('/test-whatsapp-qr', function (WhatsAppService $whatsapp) {
+    // Generate QR Code test
+    $qrData = [
+        'action' => 'test',
+        'access_code' => 'TEST123',
+        'locker_code' => 'TEST001',
+        'employee_name' => 'Test User',
+        'nik' => '123456',
+        'expires_at' => now()->addHours(24)->format('Y-m-d H:i:s')
+    ];
+    
+    $qrPath = QRCodeHelper::generateAndSave('TEST123', $qrData);
+    
+    if (!$qrPath) {
+        return response()->json(['error' => 'QR Code generation failed'], 500);
+    }
+    
+    $message = "🏢 *ESD Locker System*\n\n";
+    $message .= "Halo *Test User*,\n\n";
+    $message .= "✅ Test QR Code\n\n";
+    $message .= "📱 *Scan QR Code di bawah:*\n\n";
+    $message .= "⚠️ Test message";
+    
+    try {
+        $result = $whatsapp->sendWithQRImage('6287883994150', $message, $qrPath);
+        return response()->json([
+            'success' => true,
+            'result' => $result,
+            'qr_path' => $qrPath
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'success' => false,
+            'error' => $e->getMessage(),
+            'qr_path' => $qrPath
+        ], 500);
+    }
+});
+
 // Halaman
 Route::get('/esd-locker', function () {
     return view('esd.locker.index');
 })->name('esd.locker');
 
-// API endpoints untuk ESD Locker
-Route::prefix('api/esd')->group(function () {
-    Route::get('/lockers', [LockerController::class, 'getLockers'])->name('api.esd.lockers');
-    Route::post('/check-nik', [LockerController::class, 'checkNik'])->name('api.esd.check-nik');
-    Route::post('/store-uniform', [LockerController::class, 'storeUniform'])->name('api.esd.store-uniform');
-    Route::post('/check-take', [LockerController::class, 'checkTake'])->name('api.esd.check-take');
-    Route::post('/open-take-locker', [LockerController::class, 'openTakeLocker'])->name('api.esd.open-take-locker');
+// Route untuk ESP32
+Route::prefix('esp')->group(function () {
+    // Heartbeat - diterima dari ESP32
+    Route::post('/heartbeat', [EspController::class, 'heartbeat']);
+    
+    // Ambil data device (untuk dashboard)
+    Route::get('/devices', [EspController::class, 'index']);
+    Route::get('/devices/{deviceId}', [EspController::class, 'show']);
+    Route::get('/devices/{deviceId}/logs', [EspController::class, 'logs']);
+});
+
+// ESP32 Locker API - Tanpa prefix api
+Route::prefix('lockers')->group(function () {
+    // ESP32 membaca status - hanya kirim should_open (true/false)
+    Route::get('/status', [ApiLockerController::class, 'getStatus']);
+    
+    // ESP32 melaporkan status
+    Route::match(['get', 'post'], '/open', [ApiLockerController::class, 'reportOpen']);
+    Route::match(['get', 'post'], '/open/{code}', [ApiLockerController::class, 'reportOpen']);
+    Route::match(['get', 'post'], '/close', [ApiLockerController::class, 'reportClose']);
+    Route::match(['get', 'post'], '/close/{code}', [ApiLockerController::class, 'reportClose']);
+    
+    // Ping untuk cek koneksi
+    Route::get('/ping', [ApiLockerController::class, 'ping']);
 });
 
 require __DIR__.'/settings.php';

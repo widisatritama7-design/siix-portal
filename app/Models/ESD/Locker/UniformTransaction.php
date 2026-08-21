@@ -5,6 +5,8 @@ namespace App\Models\ESD\Locker;
 use App\Models\HR\Employee;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\Log;
 
 class UniformTransaction extends Model
 {
@@ -14,13 +16,15 @@ class UniformTransaction extends Model
 
     protected $fillable = [
         'employee_id',
+        'phone',
         'locker_id',
         'type',
         'status',
         'access_code',
         'expires_at',
         'stored_at',
-        'taken_at'
+        'taken_at',
+        'notes'
     ];
 
     protected $casts = [
@@ -29,15 +33,11 @@ class UniformTransaction extends Model
         'taken_at' => 'datetime'
     ];
 
-    /**
-     * Boot method untuk auto-generate access_code saat creating
-     */
     protected static function boot()
     {
         parent::boot();
 
         static::creating(function ($model) {
-            // Generate access code otomatis jika belum ada
             if (empty($model->access_code)) {
                 do {
                     $code = strtoupper(substr(md5(uniqid() . $model->employee_id . now()), 0, 10));
@@ -46,26 +46,92 @@ class UniformTransaction extends Model
                 $model->access_code = $code;
             }
             
-            // Set expires_at jika belum ada
             if (empty($model->expires_at)) {
                 $model->expires_at = now()->addHours(24);
             }
         });
     }
 
-    // Relasi ke Employee
+    /**
+     * SETTER: Enkripsi phone sebelum disimpan
+     */
+    public function setPhoneAttribute($value)
+    {
+        if (empty($value)) {
+            $this->attributes['phone'] = null;
+            return;
+        }
+
+        // Cek apakah sudah terenkripsi
+        try {
+            Crypt::decryptString($value);
+            // Jika berhasil decrypt, berarti sudah terenkripsi
+            $this->attributes['phone'] = $value;
+        } catch (\Exception $e) {
+            // Jika belum terenkripsi, encrypt
+            $this->attributes['phone'] = Crypt::encryptString($value);
+        }
+    }
+
+    /**
+     * GETTER: Dekripsi phone saat diambil dari database
+     */
+    public function getPhoneAttribute($value)
+    {
+        if (empty($value)) {
+            return null;
+        }
+
+        try {
+            return Crypt::decryptString($value);
+        } catch (\Exception $e) {
+            // Jika gagal decrypt (data lama/tidak terenkripsi), return apa adanya
+            Log::warning('Phone decryption failed, using raw value', [
+                'id' => $this->id ?? 'new',
+                'error' => $e->getMessage()
+            ]);
+            return $value;
+        }
+    }
+
+    /**
+     * Format nomor ke internasional (untuk WhatsApp)
+     */
+    public function getFormattedPhoneAttribute()
+    {
+        $phone = $this->phone; // Sudah otomatis decrypt via getter
+        
+        if (!$phone) {
+            return null;
+        }
+
+        $phone = preg_replace('/[^0-9]/', '', $phone);
+        
+        if (empty($phone)) {
+            return null;
+        }
+        
+        // Format ke internasional
+        if (substr($phone, 0, 1) === '0') {
+            $phone = '62' . substr($phone, 1);
+        } elseif (substr($phone, 0, 1) === '8') {
+            $phone = '62' . $phone;
+        }
+        
+        return $phone;
+    }
+
+    // Relasi
     public function employee()
     {
         return $this->belongsTo(Employee::class, 'employee_id', 'id');
     }
 
-    // Relasi ke Locker
     public function locker()
     {
         return $this->belongsTo(Locker::class, 'locker_id');
     }
 
-    // Generate access code unik (manual)
     public function generateAccessCode()
     {
         do {
@@ -79,44 +145,38 @@ class UniformTransaction extends Model
         return $this->access_code;
     }
 
-    // Cek apakah kode masih berlaku
     public function isValid()
     {
         return $this->expires_at !== null && $this->expires_at->isFuture();
     }
 
-    // Cek apakah transaksi sudah expired
     public function isExpired()
     {
         return $this->expires_at !== null && $this->expires_at->isPast();
     }
 
-    // Scope untuk transaksi aktif
+    // Scopes
     public function scopeActive($query)
     {
         return $query->whereIn('status', ['pending', 'on_progress', 'waiting_pickup'])
                      ->where('expires_at', '>', now());
     }
 
-    // Scope untuk transaksi berdasarkan employee
     public function scopeByEmployee($query, $employeeId)
     {
         return $query->where('employee_id', $employeeId);
     }
 
-    // Scope untuk transaksi berdasarkan status
     public function scopeByStatus($query, $status)
     {
         return $query->where('status', $status);
     }
 
-    // Scope untuk transaksi yang sudah selesai
     public function scopeCompleted($query)
     {
         return $query->where('status', 'completed');
     }
 
-    // Scope untuk transaksi yang menunggu pickup
     public function scopeWaitingPickup($query)
     {
         return $query->where('status', 'waiting_pickup');
