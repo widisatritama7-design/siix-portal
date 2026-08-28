@@ -4,6 +4,7 @@ namespace App\Models\MTC\Master;
 
 use App\Models\HR\Employee;
 use App\Models\MTC\Daily\DailyFuji;
+use App\Models\MTC\Daily\DailyFujiStandardCheck;
 use App\Models\MTC\Daily\DailyPanasonic;
 use App\Models\MTC\Master\MasterMachine;
 use App\Models\PROD\MS\HistoryMasterSample;
@@ -11,6 +12,7 @@ use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
+use App\Models\MTC\Daily\DailyPanasonicStandardCheck;
 
 class MasterLine extends Model
 {
@@ -34,6 +36,8 @@ class MasterLine extends Model
         'daily_check_group'
     ];
 
+    // ============ RELATIONSHIPS ============
+    
     public function location()
     {
         return $this->belongsTo(MasterLocation::class);
@@ -74,6 +78,19 @@ class MasterLine extends Model
         return $this->belongsTo(User::class, 'updated_by');
     }
 
+    // <-- TAMBAHKAN RELASI INI
+    public function dailyFujiStandardCheck()
+    {
+        return $this->hasOne(DailyFujiStandardCheck::class, 'master_line_id');
+    }
+
+    public function dailyPanasonicStandardCheck()
+    {
+        return $this->hasOne(DailyPanasonicStandardCheck::class, 'master_line_id');
+    }
+
+    // ============ BOOT ============
+
     protected static function boot()
     {
         parent::boot();
@@ -86,6 +103,8 @@ class MasterLine extends Model
             $model->updated_by = Auth::id();
         });
     }
+
+    // ============ EXISTING METHODS ============
 
     public function hasDailyCheckToday()
     {
@@ -220,5 +239,50 @@ class MasterLine extends Model
         }
         
         return $todayRecord?->status ?? 'No Check Today';
+    }
+
+    // ============ TAMBAHKAN METHOD INI ============
+    
+    /**
+     * Get required fields for Daily Fuji inspection based on line configuration
+     */
+    public function getRequiredFujiFields()
+    {
+        if ($this->dailyFujiStandardCheck) {
+            $required = [];
+            $standard = $this->dailyFujiStandardCheck;
+            $fillable = (new DailyFujiStandardCheck)->getFillable();
+            
+            foreach ($fillable as $field) {
+                if (str_ends_with($field, '_required') && $standard->{$field}) {
+                    $fieldName = str_replace('_required', '', $field);
+                    $required[] = $fieldName;
+                }
+            }
+            return $required;
+        }
+        
+        // Default: semua field required
+        return DailyFujiStandardCheck::getDefaultRequiredFields();
+    }
+
+    // Method untuk mendapatkan required fields Panasonic
+    public function getRequiredPanasonicFields()
+    {
+        if ($this->dailyPanasonicStandardCheck) {
+            $required = [];
+            $standard = $this->dailyPanasonicStandardCheck;
+            $fillable = (new DailyPanasonicStandardCheck)->getFillable();
+            
+            foreach ($fillable as $field) {
+                if (str_ends_with($field, '_required') && $standard->{$field}) {
+                    $fieldName = str_replace('_required', '', $field);
+                    $required[] = $fieldName;
+                }
+            }
+            return $required;
+        }
+        
+        return DailyPanasonicStandardCheck::getDefaultRequiredFields();
     }
 }

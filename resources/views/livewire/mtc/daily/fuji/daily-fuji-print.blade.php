@@ -6,118 +6,151 @@
     <title>Daily Fuji Checklist - {{ $dailyFuji->created_at->format('Y-m-d') }}</title>
     <style>
         @page {
-            margin: 1cm;
-            size: A4;
+            margin: 0.8cm;
+            size: A4 portrait;
         }
         
         body {
             font-family: 'Arial', sans-serif;
-            line-height: 1.4;
+            line-height: 1.3;
             color: #333;
             margin: 0;
             padding: 0;
-            font-size: 11px;
+            font-size: 9px;
         }
         
         .header {
             text-align: center;
             border-bottom: 3px double #333;
-            padding-bottom: 10px;
-            margin-bottom: 15px;
+            padding-bottom: 8px;
+            margin-bottom: 10px;
         }
         
         .header h1 {
             margin: 0;
-            font-size: 16px;
+            font-size: 14px;
             color: #2c3e50;
+            letter-spacing: 1px;
+        }
+        
+        .header .sub-title {
+            font-size: 10px;
+            color: #7f8c8d;
+            margin-top: 2px;
         }
         
         .info-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-bottom: 15px;
-            font-size: 10px;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+            margin-bottom: 10px;
+            font-size: 8px;
         }
         
         .info-item {
             border: 1px solid #ddd;
-            padding: 6px;
+            padding: 4px 6px;
             border-radius: 3px;
             background: #f9f9f9;
+            text-align: center;
         }
         
         .info-label {
             font-weight: bold;
             color: #7f8c8d;
+            font-size: 7px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .info-value {
+            font-weight: 600;
             font-size: 9px;
+            margin-top: 1px;
         }
         
         .checklist-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
+            font-size: 8px;
         }
         
         .checklist-table th {
             background-color: #34495e;
             color: white;
-            padding: 6px 8px;
+            padding: 4px 6px;
             text-align: left;
-            font-size: 10px;
+            font-size: 7px;
             border: 1px solid #2c3e50;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
         .checklist-table td {
-            padding: 5px 8px;
+            padding: 4px 6px;
             border: 1px solid #ddd;
-            vertical-align: top;
-            font-size: 10px;
+            vertical-align: middle;
+            font-size: 8px;
         }
         
         .wizard-header {
             background-color: #3498db !important;
             font-weight: bold;
-            font-size: 11px !important;
+            font-size: 9px !important;
             color: #ffffff;
+        }
+        .wizard-header td {
+            background-color: #3498db !important;
+            color: #ffffff !important;
+            font-weight: bold;
+            padding: 4px 8px;
         }
         
         .section-header {
             background-color: #ecf0f1 !important;
             font-weight: bold;
         }
+        .section-header td {
+            background-color: #ecf0f1 !important;
+            font-weight: bold;
+            padding: 3px 8px;
+        }
         
         .item-name {
             font-weight: 500;
-            width: 25%;
+            width: 22%;
         }
         
         .item-standard {
-            width: 35%;
-            color: #7f8c8d;
+            width: 30%;
+            color: #555;
             font-style: italic;
+            font-size: 7.5px;
         }
         
         .item-value {
-            width: 20%;
+            width: 18%;
             text-align: center;
             font-weight: bold;
+            font-size: 9px;
         }
         
         .item-status {
-            width: 20%;
+            width: 15%;
             text-align: center;
         }
         
         .status-badge {
             display: inline-block;
-            padding: 2px 6px;
-            border-radius: 10px;
-            font-size: 9px;
+            padding: 1px 8px;
+            border-radius: 8px;
+            font-size: 7px;
             font-weight: bold;
+            text-transform: uppercase;
         }
 
-        .status-checked {
+        .status-ok {
             background-color: #d4edda;
             color: #155724;
         }
@@ -127,25 +160,21 @@
             color: #383d41;
         }
 
+        .status-not-ok {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-not-checked {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
         .badge-success { background-color: #28a745; color: #fff; }
         .badge-danger { background-color: #dc3545; color: #fff; }
         .badge-warning { background-color: #ffc107; color: #212529; }
         .badge-secondary { background-color: #6c757d; color: #fff; }
 
-        .table-header th {
-            font-weight: bold;
-            color: #000;
-            background-color: #ffffff;
-            border-bottom: 1px solid #b3acac;
-            border-right: 2px solid #b3acac;
-            border-left: 1px solid #b3acac;
-            border-top: 1px solid #b3acac;
-            padding: 12px 8px;
-            text-transform: uppercase;
-            font-size: 10px;
-            text-align: center;
-        }
-        
         .value-ok {
             color: #28a745;
         }
@@ -154,24 +183,19 @@
             color: #dc3545;
         }
         
-        .signature-area {
-            margin-top: 20px;
-            border-top: 1px solid #333;
-            padding-top: 10px;
-            font-size: 10px;
+        .footer {
+            text-align: left;
+            font-size: 7px;
+            color: #95a5a6;
+            border-top: 1px solid #ddd;
+            padding-top: 8px;
+            margin-top: 10px;
         }
         
-        .signature-box {
-            display: inline-block;
-            width: 200px;
-            text-align: center;
-            margin: 0 15px;
-        }
-        
-        .signature-line {
-            border-bottom: 1px solid #333;
-            padding-bottom: 3px;
-            margin-bottom: 5px;
+        .footer .qr-code {
+            font-size: 8px;
+            font-weight: bold;
+            color: #2c3e50;
         }
         
         .no-print {
@@ -179,21 +203,30 @@
             padding: 8px;
             background: #f8f9fa;
             border-bottom: 1px solid #ddd;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
         
         @media print {
             .no-print {
                 display: none;
             }
+            .wizard-header td,
+            .section-header td,
             .table-header th,
-            .wizard-header,
-            .section-header,
+            .status-ok,
+            .status-na,
+            .status-not-ok,
+            .status-not-checked,
             .badge-success,
             .badge-danger,
             .badge-warning,
-            .badge-secondary,
-            .status-checked,
-            .status-na {
+            .badge-secondary {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            .info-item {
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
@@ -203,56 +236,51 @@
 <body>
     <div class="no-print">
         <button onclick="window.print()" style="padding: 6px 12px; background: #3498db; color: white; border: none; border-radius: 3px; cursor: pointer; font-size: 11px;">
-            Print Checklist
+            🖨️ Print Checklist
         </button>
         <button onclick="window.close()" style="padding: 6px 12px; background: #e74c3c; color: white; border: none; border-radius: 3px; cursor: pointer; margin-left: 8px; font-size: 11px;">
-            Close
+            ✕ Close
         </button>
     </div>
 
     <div class="header">
         <h1>MACHINE DAILY ROUTINE INSPECTION CHECKLIST - FUJI</h1>
-        <div style="font-size: 12px; color: #7f8c8d;">Print Date: {{ now()->format('Y-m-d H:i') }}</div>
+        <div class="sub-title">Print Date: {{ now()->format('Y-m-d H:i') }}</div>
     </div>
 
     <!-- Information Grid 5 Columns -->
-    <div class="info-grid" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem;">
-        <!-- PRODUCTION SMT LINE -->
+    <div class="info-grid">
         <div class="info-item">
             <div class="info-label">PRODUCTION SMT LINE</div>
-            <div>{{ $dailyFuji->masterLine->line_number ?? 'N/A' }}</div>
+            <div class="info-value">{{ $dailyFuji->masterLine->line_number ?? 'N/A' }}</div>
         </div>
 
-        <!-- GROUP -->
         <div class="info-item">
             <div class="info-label">GROUP</div>
-            <div>{{ $dailyFuji->group }}</div>
+            <div class="info-value">{{ $dailyFuji->group }}</div>
         </div>
 
-        <!-- RUN TIME -->
         <div class="info-item">
             <div class="info-label">RUN TIME</div>
-            <div>
+            <div class="info-value">
                 <span class="status-badge badge-success">
-                    {{ $dailyFuji->run_time ? $dailyFuji->run_time->format('H:i') : 'N/A' }}
+                    {{ $dailyFuji->run_time ? $dailyFuji->run_time->format('H:i') : '-' }}
                 </span>
             </div>
         </div>
 
-        <!-- STOP TIME -->
         <div class="info-item">
             <div class="info-label">STOP TIME</div>
-            <div>
+            <div class="info-value">
                 <span class="status-badge badge-danger">
-                    {{ $dailyFuji->stop_time ? $dailyFuji->stop_time->format('H:i') : 'N/A' }}
+                    {{ $dailyFuji->stop_time ? $dailyFuji->stop_time->format('H:i') : '-' }}
                 </span>
             </div>
         </div>
 
-        <!-- STATUS -->
         <div class="info-item">
             <div class="info-label">STATUS</div>
-            <div>
+            <div class="info-value">
                 @php
                     $statusColor = match($dailyFuji->status) {
                         'Checked' => 'badge-success',
@@ -266,10 +294,9 @@
             </div>
         </div>
 
-        <!-- APPROVAL -->
         <div class="info-item">
             <div class="info-label">APPROVAL</div>
-            <div>
+            <div class="info-value">
                 @php
                     $approvalColor = match($dailyFuji->approval) {
                         'Approved' => 'badge-success',
@@ -284,48 +311,43 @@
             </div>
         </div>
 
-        <!-- APPROVED BY -->
         <div class="info-item">
             <div class="info-label">APPROVED BY</div>
-            <div>{{ $dailyFuji->approvedBy->name ?? 'N/A' }}</div>
+            <div class="info-value">{{ $dailyFuji->approvedBy->name ?? '-' }}</div>
         </div>
 
-        <!-- CHECK BY -->
         <div class="info-item">
             <div class="info-label">CHECK BY</div>
-            <div>{{ $dailyFuji->updater->name ?? 'N/A' }}</div>
+            <div class="info-value">{{ $dailyFuji->updater->name ?? $dailyFuji->creator->name ?? '-' }}</div>
         </div>
 
-        <!-- START INSPECTION DATE -->
         <div class="info-item">
             <div class="info-label">START INSPECTION</div>
-            <div>{{ $dailyFuji->created_at->format('d F Y H:i') }}</div>
+            <div class="info-value">{{ $dailyFuji->created_at->format('d/m/Y H:i') }}</div>
         </div>
 
-        <!-- FINISH INSPECTION DATE -->
         <div class="info-item">
             <div class="info-label">FINISH INSPECTION</div>
-            <div>{{ $dailyFuji->updated_at->format('d F Y H:i') }}</div>
+            <div class="info-value">{{ $dailyFuji->updated_at->format('d/m/Y H:i') }}</div>
         </div>
-
     </div>
 
     <!-- Checklist Table -->
     <table class="checklist-table">
         <thead>
-            <tr class="table-header">
-                <th>INSPECTION ITEM</th>
-                <th>STANDARD</th>
-                <th>ACTUAL VALUE</th>
-                <th>STATUS</th>
+            <tr>
+                <th style="width:22%; text-align: center; white-space: nowrap;">INSPECTION ITEM</th>
+                <th style="width:30%; text-align: center; white-space: nowrap;">STANDARD</th>
+                <th style="width:18%; text-align: center; white-space: nowrap;">ACTUAL VALUE</th>
+                <th style="width:15%; text-align: center; white-space: nowrap;">STATUS</th>
             </tr>
         </thead>
         <tbody>
             @php
                 function displayValue($value) {
-                    if ($value === null || $value === '') return 'N/A';
+                    if ($value === null || $value === '') return '-';
                     if ($value === 'checked') return '✓';
-                    if ($value === 'na') return '-';
+                    if ($value === 'na') return 'N/A';
                     if ($value === 'on') return 'ON';
                     if ($value === 'off') return 'OFF';
                     return $value;
@@ -337,20 +359,17 @@
                     if (is_numeric($value)) {
                         $numValue = floatval($value);
                         
-                        // Standard dengan range (contoh: "0.45 - 0.54 Mpa")
                         if (preg_match('/(\d+\.?\d*)\s*-\s*(\d+\.?\d*)/', $standard, $matches)) {
                             $min = floatval($matches[1]);
                             $max = floatval($matches[2]);
                             return ($numValue >= $min && $numValue <= $max) ? 'value-ok' : 'value-not-ok';
                         }
                         
-                        // Standard dengan lebih besar dari (contoh: "> 1.67")
                         if (preg_match('/>\s*(\d+\.?\d*)/', $standard, $matches)) {
                             $threshold = floatval($matches[1]);
                             return ($numValue > $threshold) ? 'value-ok' : 'value-not-ok';
                         }
                         
-                        // Standard dengan lebih kecil dari (contoh: "<= 40")
                         if (preg_match('/<\s*=\s*(\d+\.?\d*)/', $standard, $matches)) {
                             $threshold = floatval($matches[1]);
                             return ($numValue <= $threshold) ? 'value-ok' : 'value-not-ok';
@@ -358,6 +377,48 @@
                     }
                     
                     return '';
+                }
+
+                function getStatusBadge($value, $fieldName = '') {
+                    if ($value === null || $value === '') {
+                        return '<span class="status-badge status-not-checked">Not Checked</span>';
+                    }
+                    
+                    if ($value === 'checked' || $value === 'on') {
+                        return '<span class="status-badge status-ok">OK</span>';
+                    }
+                    
+                    if ($value === 'off') {
+                        return '<span class="status-badge status-not-ok">NOT OK</span>';
+                    }
+                    
+                    if ($value === 'na' || $value === '-') {
+                        return '<span class="status-badge status-na">N/A</span>';
+                    }
+                    
+                    // Untuk numeric value, cek apakah valid
+                    if (is_numeric($value)) {
+                        return '<span class="status-badge status-ok">OK</span>';
+                    }
+                    
+                    return '<span class="status-badge status-not-checked">Not Checked</span>';
+                }
+
+                function getNumericStatus($value, $min, $max) {
+                    if ($value === null || $value === '' || $value === 'na' || $value === '-') {
+                        return 'status-na';
+                    }
+                    $numValue = floatval($value);
+                    if ($min !== null && $max !== null) {
+                        return ($numValue >= $min && $numValue <= $max) ? 'status-ok' : 'status-not-ok';
+                    }
+                    return 'status-ok';
+                }
+
+                function getNumericStatusBadge($value, $min, $max) {
+                    $class = getNumericStatus($value, $min, $max);
+                    $text = $class === 'status-ok' ? 'OK' : ($class === 'status-na' ? 'N/A' : 'NOT OK');
+                    return '<span class="status-badge ' . $class . '">' . $text . '</span>';
                 }
             @endphp
 
@@ -371,60 +432,28 @@
             <tr>
                 <td class="item-name">Body Cover</td>
                 <td class="item-standard">Standard: No Dust and clean</td>
-                <td class="item-value {{ getValueClass($dailyFuji->body_cover, 'checked') }}">
-                    {{ displayValue($dailyFuji->body_cover) }}
-                </td>
-                <td class="item-status">
-                    @if($dailyFuji->body_cover === 'checked')
-                        <span class="status-badge status-checked">OK</span>
-                    @elseif($dailyFuji->body_cover === 'na')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-value">{{ displayValue($dailyFuji->body_cover) }}</td>
+                <td class="item-status">{!! getStatusBadge($dailyFuji->body_cover) !!}</td>
             </tr>
-            <!-- Lamp Alarm & Change Model (BARU) -->
             <tr>
                 <td class="item-name">Lamp Alarm & Change Model</td>
                 <td class="item-standard">Standard: No Dust and clean</td>
-                <td class="item-value {{ getValueClass($dailyFuji->lamp_alarm_change_model, 'checked') }}">
-                    {{ displayValue($dailyFuji->lamp_alarm_change_model) }}
-                </td>
-                <td class="item-status">
-                    @if($dailyFuji->lamp_alarm_change_model === 'checked')
-                        <span class="status-badge status-checked">OK</span>
-                    @elseif($dailyFuji->lamp_alarm_change_model === 'na')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-value">{{ displayValue($dailyFuji->lamp_alarm_change_model) }}</td>
+                <td class="item-status">{!! getStatusBadge($dailyFuji->lamp_alarm_change_model) !!}</td>
             </tr>
 
             <!-- STEP 2: LOADER -->
             <tr class="wizard-header">
                 <td colspan="4">2. LOADER</td>
             </tr>
-            
             <tr class="section-header">
                 <td colspan="4">PUSHER</td>
             </tr>
             <tr>
                 <td class="item-name">Cylinder (1)</td>
                 <td class="item-standard">Standard: Smooth and center</td>
-                <td class="item-value {{ getValueClass($dailyFuji->cylinder, 'checked') }}">
-                    {{ displayValue($dailyFuji->cylinder) }}
-                </td>
-                <td class="item-status">
-                    @if($dailyFuji->cylinder === 'checked')
-                        <span class="status-badge status-checked">OK</span>
-                    @elseif($dailyFuji->cylinder === 'na')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-value">{{ displayValue($dailyFuji->cylinder) }}</td>
+                <td class="item-status">{!! getStatusBadge($dailyFuji->cylinder) !!}</td>
             </tr>
 
             <tr class="section-header">
@@ -433,59 +462,28 @@
             <tr>
                 <td class="item-name">Rail & Magazine PCB (1.a)</td>
                 <td class="item-standard">Standard: No Dust and clean</td>
-                <td class="item-value {{ getValueClass($dailyFuji->rail_and_magazine_pcb, 'checked') }}">
-                    {{ displayValue($dailyFuji->rail_and_magazine_pcb) }}
-                </td>
-                <td class="item-status">
-                    @if($dailyFuji->rail_and_magazine_pcb === 'checked')
-                        <span class="status-badge status-checked">OK</span>
-                    @elseif($dailyFuji->rail_and_magazine_pcb === 'na')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-value">{{ displayValue($dailyFuji->rail_and_magazine_pcb) }}</td>
+                <td class="item-status">{!! getStatusBadge($dailyFuji->rail_and_magazine_pcb) !!}</td>
             </tr>
             <tr>
                 <td class="item-name">Cover Magazine (1.b)</td>
                 <td class="item-standard">Standard: No Dust and clean</td>
-                <td class="item-value {{ getValueClass($dailyFuji->cover_magazine, 'checked') }}">
-                    {{ displayValue($dailyFuji->cover_magazine) }}
-                </td>
-                <td class="item-status">
-                    @if($dailyFuji->cover_magazine === 'checked')
-                        <span class="status-badge status-checked">OK</span>
-                    @elseif($dailyFuji->cover_magazine === 'na')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-value">{{ displayValue($dailyFuji->cover_magazine) }}</td>
+                <td class="item-status">{!! getStatusBadge($dailyFuji->cover_magazine) !!}</td>
             </tr>
 
             <!-- STEP 3: PCB CLEANER -->
             <tr class="wizard-header">
                 <td colspan="4">3. PCB CLEANER</td>
             </tr>
-            
             <tr class="section-header">
                 <td colspan="4">CLEANING UNIT</td>
             </tr>
             <tr>
                 <td class="item-name">Brush (2)</td>
                 <td class="item-standard">Standard: Rotation</td>
-                <td class="item-value {{ getValueClass($dailyFuji->brush, 'checked') }}">
-                    {{ displayValue($dailyFuji->brush) }}
-                </td>
-                <td class="item-status">
-                    @if($dailyFuji->brush === 'checked')
-                        <span class="status-badge status-checked">OK</span>
-                    @elseif($dailyFuji->brush === 'na')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-value">{{ displayValue($dailyFuji->brush) }}</td>
+                <td class="item-status">{!! getStatusBadge($dailyFuji->brush) !!}</td>
             </tr>
 
             <tr class="section-header">
@@ -497,21 +495,7 @@
                 <td class="item-value {{ getValueClass($dailyFuji->air_presure, '0.45 - 0.54') }}">
                     {{ displayValue($dailyFuji->air_presure) }}
                 </td>
-                <td class="item-status">
-                    @if($dailyFuji->air_presure && $dailyFuji->air_presure !== '-' && $dailyFuji->air_presure !== 'na')
-                        @php
-                            $value = floatval($dailyFuji->air_presure);
-                            $isOk = $value >= 0.45 && $value <= 0.54;
-                        @endphp
-                        <span class="status-badge {{ $isOk ? 'status-checked' : '' }}">
-                            {{ $isOk ? 'OK' : 'NOT OK' }}
-                        </span>
-                    @elseif($dailyFuji->air_presure === 'na' || $dailyFuji->air_presure === '-')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-status">{!! getNumericStatusBadge($dailyFuji->air_presure, 0.45, 0.54) !!}</td>
             </tr>
             <tr>
                 <td class="item-name">Vacume Pressure Unitech (2.b)</td>
@@ -519,21 +503,7 @@
                 <td class="item-value {{ getValueClass($dailyFuji->vacume_presure_unitech, '0.45 - 0.54') }}">
                     {{ displayValue($dailyFuji->vacume_presure_unitech) }}
                 </td>
-                <td class="item-status">
-                    @if($dailyFuji->vacume_presure_unitech && $dailyFuji->vacume_presure_unitech !== '-' && $dailyFuji->vacume_presure_unitech !== 'na')
-                        @php
-                            $value = floatval($dailyFuji->vacume_presure_unitech);
-                            $isOk = $value >= 0.45 && $value <= 0.54;
-                        @endphp
-                        <span class="status-badge {{ $isOk ? 'status-checked' : '' }}">
-                            {{ $isOk ? 'OK' : 'NOT OK' }}
-                        </span>
-                    @elseif($dailyFuji->vacume_presure_unitech === 'na' || $dailyFuji->vacume_presure_unitech === '-')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-status">{!! getNumericStatusBadge($dailyFuji->vacume_presure_unitech, 0.45, 0.54) !!}</td>
             </tr>
             <tr>
                 <td class="item-name">Vacume Pressure Nix (2.c)</td>
@@ -541,21 +511,7 @@
                 <td class="item-value {{ getValueClass($dailyFuji->vacume_presure_nix, '0.60 - 0.70') }}">
                     {{ displayValue($dailyFuji->vacume_presure_nix) }}
                 </td>
-                <td class="item-status">
-                    @if($dailyFuji->vacume_presure_nix && $dailyFuji->vacume_presure_nix !== '-' && $dailyFuji->vacume_presure_nix !== 'na')
-                        @php
-                            $value = floatval($dailyFuji->vacume_presure_nix);
-                            $isOk = $value >= 0.60 && $value <= 0.70;
-                        @endphp
-                        <span class="status-badge {{ $isOk ? 'status-checked' : '' }}">
-                            {{ $isOk ? 'OK' : 'NOT OK' }}
-                        </span>
-                    @elseif($dailyFuji->vacume_presure_nix === 'na' || $dailyFuji->vacume_presure_nix === '-')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-status">{!! getNumericStatusBadge($dailyFuji->vacume_presure_nix, 0.60, 0.70) !!}</td>
             </tr>
 
             <tr class="section-header">
@@ -564,93 +520,42 @@
             <tr>
                 <td class="item-name">Vacume Brush (3)</td>
                 <td class="item-standard">Standard: Rotation</td>
-                <td class="item-value {{ getValueClass($dailyFuji->vacume_brush, 'checked') }}">
-                    {{ displayValue($dailyFuji->vacume_brush) }}
-                </td>
-                <td class="item-status">
-                    @if($dailyFuji->vacume_brush === 'checked')
-                        <span class="status-badge status-checked">OK</span>
-                    @elseif($dailyFuji->vacume_brush === 'na')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-value">{{ displayValue($dailyFuji->vacume_brush) }}</td>
+                <td class="item-status">{!! getStatusBadge($dailyFuji->vacume_brush) !!}</td>
             </tr>
             <tr>
                 <td class="item-name">Cleaning Roller (4)</td>
                 <td class="item-standard">Standard: Smooth rotation & Clean</td>
-                <td class="item-value {{ getValueClass($dailyFuji->cleaning_roller, 'checked') }}">
-                    {{ displayValue($dailyFuji->cleaning_roller) }}
-                </td>
-                <td class="item-status">
-                    @if($dailyFuji->cleaning_roller === 'checked')
-                        <span class="status-badge status-checked">OK</span>
-                    @elseif($dailyFuji->cleaning_roller === 'na')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-value">{{ displayValue($dailyFuji->cleaning_roller) }}</td>
+                <td class="item-status">{!! getStatusBadge($dailyFuji->cleaning_roller) !!}</td>
             </tr>
             <tr>
                 <td class="item-name">Ionizer (5)</td>
                 <td class="item-standard">Standard: 5 Times to push cleaner</td>
-                <td class="item-value {{ getValueClass($dailyFuji->ionizer, 'checked') }}">
-                    {{ displayValue($dailyFuji->ionizer) }}
-                </td>
-                <td class="item-status">
-                    @if($dailyFuji->ionizer === 'checked')
-                        <span class="status-badge status-checked">OK</span>
-                    @elseif($dailyFuji->ionizer === 'na')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-value">{{ displayValue($dailyFuji->ionizer) }}</td>
+                <td class="item-status">{!! getStatusBadge($dailyFuji->ionizer) !!}</td>
             </tr>
             <tr>
                 <td class="item-name">Conveyor Setting (6)</td>
-                <td class="item-standard">Standard: 40</td>
-                <td class="item-value {{ getValueClass($dailyFuji->conveyor_speed, '40') }}">
+                <td class="item-standard">Standard: ≤ 40</td>
+                <td class="item-value {{ getValueClass($dailyFuji->conveyor_speed, '<= 40') }}">
                     {{ displayValue($dailyFuji->conveyor_speed) }}
                 </td>
-                <td class="item-status">
-                    @if($dailyFuji->conveyor_speed && $dailyFuji->conveyor_speed !== '-' && $dailyFuji->conveyor_speed !== 'na')
-                        <span class="status-badge {{ floatval($dailyFuji->conveyor_speed) <= 40 ? 'status-checked' : '' }}">
-                            {{ floatval($dailyFuji->conveyor_speed) <= 40 ? 'OK' : 'NOT OK' }}
-                        </span>
-                    @elseif($dailyFuji->conveyor_speed === 'na' || $dailyFuji->conveyor_speed === '-')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-status">{!! getNumericStatusBadge($dailyFuji->conveyor_speed, null, 40) !!}</td>
             </tr>
 
             <!-- STEP 4: PRINTING -->
             <tr class="wizard-header">
                 <td colspan="4">4. PRINTING</td>
             </tr>
-            
             <tr class="section-header">
                 <td colspan="4">CLEANING UNIT</td>
             </tr>
             <tr>
                 <td class="item-name">IPA Solvent (7)</td>
                 <td class="item-standard">Standard: Tank Minimal half</td>
-                <td class="item-value {{ getValueClass($dailyFuji->ipa_solvent, 'checked') }}">
-                    {{ displayValue($dailyFuji->ipa_solvent) }}
-                </td>
-                <td class="item-status">
-                    @if($dailyFuji->ipa_solvent === 'checked')
-                        <span class="status-badge status-checked">OK</span>
-                    @elseif($dailyFuji->ipa_solvent === 'na')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-value">{{ displayValue($dailyFuji->ipa_solvent) }}</td>
+                <td class="item-status">{!! getStatusBadge($dailyFuji->ipa_solvent) !!}</td>
             </tr>
 
             <tr class="section-header">
@@ -662,21 +567,7 @@
                 <td class="item-value {{ getValueClass($dailyFuji->temperature_control_1, '23-27') }}">
                     {{ displayValue($dailyFuji->temperature_control_1) }}
                 </td>
-                <td class="item-status">
-                    @if($dailyFuji->temperature_control_1 && $dailyFuji->temperature_control_1 !== '-' && $dailyFuji->temperature_control_1 !== 'na')
-                        @php
-                            $value = floatval($dailyFuji->temperature_control_1);
-                            $isOk = $value >= 23 && $value <= 27;
-                        @endphp
-                        <span class="status-badge {{ $isOk ? 'status-checked' : '' }}">
-                            {{ $isOk ? 'OK' : 'NOT OK' }}
-                        </span>
-                    @elseif($dailyFuji->temperature_control_1 === 'na' || $dailyFuji->temperature_control_1 === '-')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-status">{!! getNumericStatusBadge($dailyFuji->temperature_control_1, 23, 27) !!}</td>
             </tr>
             <tr>
                 <td class="item-name">Humidity Control (8.a)</td>
@@ -684,21 +575,7 @@
                 <td class="item-value {{ getValueClass($dailyFuji->humidity_control_1, '35-70') }}">
                     {{ displayValue($dailyFuji->humidity_control_1) }}
                 </td>
-                <td class="item-status">
-                    @if($dailyFuji->humidity_control_1 && $dailyFuji->humidity_control_1 !== '-' && $dailyFuji->humidity_control_1 !== 'na')
-                        @php
-                            $value = floatval($dailyFuji->humidity_control_1);
-                            $isOk = $value >= 35 && $value <= 70;
-                        @endphp
-                        <span class="status-badge {{ $isOk ? 'status-checked' : '' }}">
-                            {{ $isOk ? 'OK' : 'NOT OK' }}
-                        </span>
-                    @elseif($dailyFuji->humidity_control_1 === 'na' || $dailyFuji->humidity_control_1 === '-')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-status">{!! getNumericStatusBadge($dailyFuji->humidity_control_1, 35, 70) !!}</td>
             </tr>
 
             <tr class="section-header">
@@ -710,21 +587,7 @@
                 <td class="item-value {{ getValueClass($dailyFuji->clamp_presure, '0.20-0.40') }}">
                     {{ displayValue($dailyFuji->clamp_presure) }}
                 </td>
-                <td class="item-status">
-                    @if($dailyFuji->clamp_presure && $dailyFuji->clamp_presure !== '-' && $dailyFuji->clamp_presure !== 'na')
-                        @php
-                            $value = floatval($dailyFuji->clamp_presure);
-                            $isOk = $value >= 0.20 && $value <= 0.40;
-                        @endphp
-                        <span class="status-badge {{ $isOk ? 'status-checked' : '' }}">
-                            {{ $isOk ? 'OK' : 'NOT OK' }}
-                        </span>
-                    @elseif($dailyFuji->clamp_presure === 'na' || $dailyFuji->clamp_presure === '-')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-status">{!! getNumericStatusBadge($dailyFuji->clamp_presure, 0.20, 0.40) !!}</td>
             </tr>
             <tr>
                 <td class="item-name">Squeege Upper (10)</td>
@@ -732,21 +595,7 @@
                 <td class="item-value {{ getValueClass($dailyFuji->squeege_upper, '0.11-0.13') }}">
                     {{ displayValue($dailyFuji->squeege_upper) }}
                 </td>
-                <td class="item-status">
-                    @if($dailyFuji->squeege_upper && $dailyFuji->squeege_upper !== '-' && $dailyFuji->squeege_upper !== 'na')
-                        @php
-                            $value = floatval($dailyFuji->squeege_upper);
-                            $isOk = $value >= 0.11 && $value <= 0.13;
-                        @endphp
-                        <span class="status-badge {{ $isOk ? 'status-checked' : '' }}">
-                            {{ $isOk ? 'OK' : 'NOT OK' }}
-                        </span>
-                    @elseif($dailyFuji->squeege_upper === 'na' || $dailyFuji->squeege_upper === '-')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-status">{!! getNumericStatusBadge($dailyFuji->squeege_upper, 0.11, 0.13) !!}</td>
             </tr>
             <tr>
                 <td class="item-name">Cleaning Solvent (11)</td>
@@ -754,21 +603,7 @@
                 <td class="item-value {{ getValueClass($dailyFuji->cleaning_solvent, '0.19-0.21') }}">
                     {{ displayValue($dailyFuji->cleaning_solvent) }}
                 </td>
-                <td class="item-status">
-                    @if($dailyFuji->cleaning_solvent && $dailyFuji->cleaning_solvent !== '-' && $dailyFuji->cleaning_solvent !== 'na')
-                        @php
-                            $value = floatval($dailyFuji->cleaning_solvent);
-                            $isOk = $value >= 0.19 && $value <= 0.21;
-                        @endphp
-                        <span class="status-badge {{ $isOk ? 'status-checked' : '' }}">
-                            {{ $isOk ? 'OK' : 'NOT OK' }}
-                        </span>
-                    @elseif($dailyFuji->cleaning_solvent === 'na' || $dailyFuji->cleaning_solvent === '-')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-status">{!! getNumericStatusBadge($dailyFuji->cleaning_solvent, 0.19, 0.21) !!}</td>
             </tr>
             <tr>
                 <td class="item-name">Air Pressure Meter (12)</td>
@@ -776,28 +611,13 @@
                 <td class="item-value {{ getValueClass($dailyFuji->air_presure_meter, '0.50-0.55') }}">
                     {{ displayValue($dailyFuji->air_presure_meter) }}
                 </td>
-                <td class="item-status">
-                    @if($dailyFuji->air_presure_meter && $dailyFuji->air_presure_meter !== '-' && $dailyFuji->air_presure_meter !== 'na')
-                        @php
-                            $value = floatval($dailyFuji->air_presure_meter);
-                            $isOk = $value >= 0.50 && $value <= 0.55;
-                        @endphp
-                        <span class="status-badge {{ $isOk ? 'status-checked' : '' }}">
-                            {{ $isOk ? 'OK' : 'NOT OK' }}
-                        </span>
-                    @elseif($dailyFuji->air_presure_meter === 'na' || $dailyFuji->air_presure_meter === '-')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-status">{!! getNumericStatusBadge($dailyFuji->air_presure_meter, 0.50, 0.55) !!}</td>
             </tr>
 
             <!-- STEP 5: SPI -->
             <tr class="wizard-header">
                 <td colspan="4">5. SPI</td>
             </tr>
-            
             <tr class="section-header">
                 <td colspan="4">REGULATOR UNIT</td>
             </tr>
@@ -807,21 +627,7 @@
                 <td class="item-value {{ getValueClass($dailyFuji->air_presure_meter_parmi, '0.40-0.50') }}">
                     {{ displayValue($dailyFuji->air_presure_meter_parmi) }}
                 </td>
-                <td class="item-status">
-                    @if($dailyFuji->air_presure_meter_parmi && $dailyFuji->air_presure_meter_parmi !== '-' && $dailyFuji->air_presure_meter_parmi !== 'na')
-                        @php
-                            $value = floatval($dailyFuji->air_presure_meter_parmi);
-                            $isOk = $value >= 0.40 && $value <= 0.50;
-                        @endphp
-                        <span class="status-badge {{ $isOk ? 'status-checked' : '' }}">
-                            {{ $isOk ? 'OK' : 'NOT OK' }}
-                        </span>
-                    @elseif($dailyFuji->air_presure_meter_parmi === 'na' || $dailyFuji->air_presure_meter_parmi === '-')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-status">{!! getNumericStatusBadge($dailyFuji->air_presure_meter_parmi, 0.40, 0.50) !!}</td>
             </tr>
 
             <tr class="section-header">
@@ -829,23 +635,16 @@
             </tr>
             <tr>
                 <td class="item-name">Capability Index (12.b)</td>
-                <td class="item-standard">Standard: CpK for Masspro > 1.67</td>
-                <td class="item-value {{ getValueClass($dailyFuji->capability_index, '>1.67') }}">
+                <td class="item-standard">Standard: CpK for Masspro > 1.33</td>
+                <td class="item-value {{ getValueClass($dailyFuji->capability_index, '>1.33') }}">
                     {{ displayValue($dailyFuji->capability_index) }}
                 </td>
                 <td class="item-status">
-                    @if($dailyFuji->capability_index && $dailyFuji->capability_index !== '-' && $dailyFuji->capability_index !== 'na')
-                        @php
-                            $value = floatval($dailyFuji->capability_index);
-                            $isOk = $value > 1.67;
-                        @endphp
-                        <span class="status-badge {{ $isOk ? 'status-checked' : '' }}">
-                            {{ $isOk ? 'OK' : 'NOT OK' }}
-                        </span>
-                    @elseif($dailyFuji->capability_index === 'na' || $dailyFuji->capability_index === '-')
-                        <span class="status-badge status-na">N/A</span>
+                    @if($dailyFuji->capability_index !== null && $dailyFuji->capability_index !== '' && $dailyFuji->capability_index !== 'na' && $dailyFuji->capability_index !== '-')
+                        @php $isOk = floatval($dailyFuji->capability_index) > 1.33; @endphp
+                        <span class="status-badge {{ $isOk ? 'status-ok' : 'status-not-ok' }}">{{ $isOk ? 'OK' : 'NOT OK' }}</span>
                     @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
+                        <span class="status-badge status-na">N/A</span>
                     @endif
                 </td>
             </tr>
@@ -854,7 +653,6 @@
             <tr class="wizard-header">
                 <td colspan="4">6. CHIP MOUNTER 1</td>
             </tr>
-            
             <tr class="section-header">
                 <td colspan="4">REGULATOR UNIT</td>
             </tr>
@@ -864,23 +662,9 @@
                 <td class="item-value {{ getValueClass($dailyFuji->air_presure_supply, '0.49-0.54') }}">
                     {{ displayValue($dailyFuji->air_presure_supply) }}
                 </td>
-                <td class="item-status">
-                    @if($dailyFuji->air_presure_supply && $dailyFuji->air_presure_supply !== '-' && $dailyFuji->air_presure_supply !== 'na')
-                        @php
-                            $value = floatval($dailyFuji->air_presure_supply);
-                            $isOk = $value >= 0.49 && $value <= 0.54;
-                        @endphp
-                        <span class="status-badge {{ $isOk ? 'status-checked' : '' }}">
-                            {{ $isOk ? 'OK' : 'NOT OK' }}
-                        </span>
-                    @elseif($dailyFuji->air_presure_supply === 'na' || $dailyFuji->air_presure_supply === '-')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-status">{!! getNumericStatusBadge($dailyFuji->air_presure_supply, 0.49, 0.54) !!}</td>
             </tr>
-            
+
             <tr class="section-header">
                 <td colspan="4">NOZZLE UNIT</td>
             </tr>
@@ -890,88 +674,43 @@
                 <td class="item-value {{ getValueClass($dailyFuji->vaccuum_pump_1, '-100--87') }}">
                     {{ displayValue($dailyFuji->vaccuum_pump_1) }}
                 </td>
-                <td class="item-status">
-                    @if($dailyFuji->vaccuum_pump_1 && $dailyFuji->vaccuum_pump_1 !== '-' && $dailyFuji->vaccuum_pump_1 !== 'na')
-                        @php
-                            $value = floatval($dailyFuji->vaccuum_pump_1);
-                            $isOk = $value >= -100 && $value <= -87;
-                        @endphp
-                        <span class="status-badge {{ $isOk ? 'status-checked' : '' }}">
-                            {{ $isOk ? 'OK' : 'NOT OK' }}
-                        </span>
-                    @elseif($dailyFuji->vaccuum_pump_1 === 'na' || $dailyFuji->vaccuum_pump_1 === '-')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-status">{!! getNumericStatusBadge($dailyFuji->vaccuum_pump_1, -100, -87) !!}</td>
             </tr>
-            
+
             <tr class="section-header">
                 <td colspan="4">NG BOX</td>
             </tr>
             <tr>
                 <td class="item-name">Box (13.b)</td>
                 <td class="item-standard">Standard: No components</td>
-                <td class="item-value {{ getValueClass($dailyFuji->box_1, 'checked') }}">
-                    {{ displayValue($dailyFuji->box_1) }}
-                </td>
-                <td class="item-status">
-                    @if($dailyFuji->box_1 === 'checked')
-                        <span class="status-badge status-checked">OK</span>
-                    @elseif($dailyFuji->box_1 === 'na')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-value">{{ displayValue($dailyFuji->box_1) }}</td>
+                <td class="item-status">{!! getStatusBadge($dailyFuji->box_1) !!}</td>
             </tr>
-            
+
             <tr class="section-header">
                 <td colspan="4">HEAD UNIT</td>
             </tr>
             <tr>
                 <td class="item-name">Vaccuum Parameter (13.c)</td>
                 <td class="item-standard">Standard: No Yellow initial (display)</td>
-                <td class="item-value {{ getValueClass($dailyFuji->vaccuum_parameter_1, 'checked') }}">
-                    {{ displayValue($dailyFuji->vaccuum_parameter_1) }}
-                </td>
-                <td class="item-status">
-                    @if($dailyFuji->vaccuum_parameter_1 === 'checked')
-                        <span class="status-badge status-checked">OK</span>
-                    @elseif($dailyFuji->vaccuum_parameter_1 === 'na')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-value">{{ displayValue($dailyFuji->vaccuum_parameter_1) }}</td>
+                <td class="item-status">{!! getStatusBadge($dailyFuji->vaccuum_parameter_1) !!}</td>
             </tr>
-            
+
             <tr class="section-header">
                 <td colspan="4">NOZZLE CLEAN</td>
             </tr>
             <tr>
                 <td class="item-name">Expire Date (14)</td>
                 <td class="item-standard">Standard: No Expired</td>
-                <td class="item-value {{ getValueClass($dailyFuji->expire_date_1, 'checked') }}">
-                    {{ displayValue($dailyFuji->expire_date_1) }}
-                </td>
-                <td class="item-status">
-                    @if($dailyFuji->expire_date_1 === 'checked')
-                        <span class="status-badge status-checked">OK</span>
-                    @elseif($dailyFuji->expire_date_1 === 'na')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-value">{{ displayValue($dailyFuji->expire_date_1) }}</td>
+                <td class="item-status">{!! getStatusBadge($dailyFuji->expire_date_1) !!}</td>
             </tr>
 
             <!-- STEP 7: CHIP MOUNTER 2 -->
             <tr class="wizard-header">
                 <td colspan="4">7. CHIP MOUNTER 2</td>
             </tr>
-            
             <tr class="section-header">
                 <td colspan="4">REGULATOR UNIT</td>
             </tr>
@@ -981,23 +720,9 @@
                 <td class="item-value {{ getValueClass($dailyFuji->air_presure_supply_2, '0.49-0.54') }}">
                     {{ displayValue($dailyFuji->air_presure_supply_2) }}
                 </td>
-                <td class="item-status">
-                    @if($dailyFuji->air_presure_supply_2 && $dailyFuji->air_presure_supply_2 !== '-' && $dailyFuji->air_presure_supply_2 !== 'na')
-                        @php
-                            $value = floatval($dailyFuji->air_presure_supply_2);
-                            $isOk = $value >= 0.49 && $value <= 0.54;
-                        @endphp
-                        <span class="status-badge {{ $isOk ? 'status-checked' : '' }}">
-                            {{ $isOk ? 'OK' : 'NOT OK' }}
-                        </span>
-                    @elseif($dailyFuji->air_presure_supply_2 === 'na' || $dailyFuji->air_presure_supply_2 === '-')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-status">{!! getNumericStatusBadge($dailyFuji->air_presure_supply_2, 0.49, 0.54) !!}</td>
             </tr>
-            
+
             <tr class="section-header">
                 <td colspan="4">NOZZLE UNIT</td>
             </tr>
@@ -1007,106 +732,51 @@
                 <td class="item-value {{ getValueClass($dailyFuji->vaccuum_pump_2, '-100--87') }}">
                     {{ displayValue($dailyFuji->vaccuum_pump_2) }}
                 </td>
-                <td class="item-status">
-                    @if($dailyFuji->vaccuum_pump_2 && $dailyFuji->vaccuum_pump_2 !== '-' && $dailyFuji->vaccuum_pump_2 !== 'na')
-                        @php
-                            $value = floatval($dailyFuji->vaccuum_pump_2);
-                            $isOk = $value >= -100 && $value <= -87;
-                        @endphp
-                        <span class="status-badge {{ $isOk ? 'status-checked' : '' }}">
-                            {{ $isOk ? 'OK' : 'NOT OK' }}
-                        </span>
-                    @elseif($dailyFuji->vaccuum_pump_2 === 'na' || $dailyFuji->vaccuum_pump_2 === '-')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-status">{!! getNumericStatusBadge($dailyFuji->vaccuum_pump_2, -100, -87) !!}</td>
             </tr>
-            
+
             <tr class="section-header">
                 <td colspan="4">NG BOX</td>
             </tr>
             <tr>
                 <td class="item-name">Box (15.b)</td>
                 <td class="item-standard">Standard: No components</td>
-                <td class="item-value {{ getValueClass($dailyFuji->box_2, 'checked') }}">
-                    {{ displayValue($dailyFuji->box_2) }}
-                </td>
-                <td class="item-status">
-                    @if($dailyFuji->box_2 === 'checked')
-                        <span class="status-badge status-checked">OK</span>
-                    @elseif($dailyFuji->box_2 === 'na')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-value">{{ displayValue($dailyFuji->box_2) }}</td>
+                <td class="item-status">{!! getStatusBadge($dailyFuji->box_2) !!}</td>
             </tr>
-            
+
             <tr class="section-header">
                 <td colspan="4">HEAD UNIT</td>
             </tr>
             <tr>
                 <td class="item-name">Vaccuum Parameter (15.c)</td>
                 <td class="item-standard">Standard: No Yellow initial (display)</td>
-                <td class="item-value {{ getValueClass($dailyFuji->vaccuum_parameter_2, 'checked') }}">
-                    {{ displayValue($dailyFuji->vaccuum_parameter_2) }}
-                </td>
-                <td class="item-status">
-                    @if($dailyFuji->vaccuum_parameter_2 === 'checked')
-                        <span class="status-badge status-checked">OK</span>
-                    @elseif($dailyFuji->vaccuum_parameter_2 === 'na')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-value">{{ displayValue($dailyFuji->vaccuum_parameter_2) }}</td>
+                <td class="item-status">{!! getStatusBadge($dailyFuji->vaccuum_parameter_2) !!}</td>
             </tr>
-            
+
             <tr class="section-header">
                 <td colspan="4">NOZZLE CLEAN</td>
             </tr>
             <tr>
                 <td class="item-name">Expire Date (16)</td>
                 <td class="item-standard">Standard: No Expired</td>
-                <td class="item-value {{ getValueClass($dailyFuji->expire_date_2, 'checked') }}">
-                    {{ displayValue($dailyFuji->expire_date_2) }}
-                </td>
-                <td class="item-status">
-                    @if($dailyFuji->expire_date_2 === 'checked')
-                        <span class="status-badge status-checked">OK</span>
-                    @elseif($dailyFuji->expire_date_2 === 'na')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-value">{{ displayValue($dailyFuji->expire_date_2) }}</td>
+                <td class="item-status">{!! getStatusBadge($dailyFuji->expire_date_2) !!}</td>
             </tr>
 
             <!-- STEP 8: REFLOW -->
             <tr class="wizard-header">
                 <td colspan="4">8. REFLOW</td>
             </tr>
-            
             <tr class="section-header">
                 <td colspan="4">VENTILATION DUCT</td>
             </tr>
             <tr>
                 <td class="item-name">Abandonment (17)</td>
                 <td class="item-standard">Standard: No Damage</td>
-                <td class="item-value {{ getValueClass($dailyFuji->abandonment, 'checked') }}">
-                    {{ displayValue($dailyFuji->abandonment) }}
-                </td>
-                <td class="item-status">
-                    @if($dailyFuji->abandonment === 'checked')
-                        <span class="status-badge status-checked">OK</span>
-                    @elseif($dailyFuji->abandonment === 'na')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-value">{{ displayValue($dailyFuji->abandonment) }}</td>
+                <td class="item-status">{!! getStatusBadge($dailyFuji->abandonment) !!}</td>
             </tr>
 
             <tr class="section-header">
@@ -1115,59 +785,34 @@
             <tr>
                 <td class="item-name">Fire Possibility (17.a)</td>
                 <td class="item-standard">Standard: No Paper, No plastic</td>
-                <td class="item-value {{ getValueClass($dailyFuji->fire_posibilty, 'checked') }}">
-                    {{ displayValue($dailyFuji->fire_posibilty) }}
-                </td>
-                <td class="item-status">
-                    @if($dailyFuji->fire_posibilty === 'checked')
-                        <span class="status-badge status-checked">OK</span>
-                    @elseif($dailyFuji->fire_posibilty === 'na')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-value">{{ displayValue($dailyFuji->fire_posibilty) }}</td>
+                <td class="item-status">{!! getStatusBadge($dailyFuji->fire_posibilty) !!}</td>
             </tr>
-            <!-- Flashlight (17.b) - BARU -->
             <tr>
                 <td class="item-name">Flashlight (17.b)</td>
                 <td class="item-standard">Standard: On</td>
-                <td class="item-value {{ getValueClass($dailyFuji->flashlight, 'on') }}">
-                    {{ displayValue($dailyFuji->flashlight) }}
-                </td>
+                <td class="item-value">{{ displayValue($dailyFuji->flashlight) }}</td>
                 <td class="item-status">
-                    @if($dailyFuji->flashlight === 'on')
-                        <span class="status-badge status-checked">OK</span>
-                    @elseif($dailyFuji->flashlight === 'na')
-                        <span class="status-badge status-na">N/A</span>
+                    @if($dailyFuji->flashlight === 'on' || $dailyFuji->flashlight === 'na' || $dailyFuji->flashlight === '-')
+                        <span class="status-badge status-ok">OK</span>
                     @elseif($dailyFuji->flashlight === 'off')
-                        <span style="color: #dc3545;">NOT OK</span>
+                        <span class="status-badge status-not-ok">NOT OK</span>
                     @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
+                        <span class="status-badge status-not-checked">Not Checked</span>
                     @endif
                 </td>
             </tr>
-            
+
             <tr class="section-header">
                 <td colspan="4">RAIL</td>
             </tr>
             <tr>
                 <td class="item-name">Rail & Transfer Unit (18)</td>
                 <td class="item-standard">Standard: No jammed</td>
-                <td class="item-value {{ getValueClass($dailyFuji->rail_and_transfer_unit, 'checked') }}">
-                    {{ displayValue($dailyFuji->rail_and_transfer_unit) }}
-                </td>
-                <td class="item-status">
-                    @if($dailyFuji->rail_and_transfer_unit === 'checked')
-                        <span class="status-badge status-checked">OK</span>
-                    @elseif($dailyFuji->rail_and_transfer_unit === 'na')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-value">{{ displayValue($dailyFuji->rail_and_transfer_unit) }}</td>
+                <td class="item-status">{!! getStatusBadge($dailyFuji->rail_and_transfer_unit) !!}</td>
             </tr>
-            
+
             <tr class="section-header">
                 <td colspan="4">N2 UNIT</td>
             </tr>
@@ -1177,21 +822,7 @@
                 <td class="item-value {{ getValueClass($dailyFuji->n2_presure, '0.4-0.5') }}">
                     {{ displayValue($dailyFuji->n2_presure) }}
                 </td>
-                <td class="item-status">
-                    @if($dailyFuji->n2_presure && $dailyFuji->n2_presure !== '-' && $dailyFuji->n2_presure !== 'na')
-                        @php
-                            $value = floatval($dailyFuji->n2_presure);
-                            $isOk = $value >= 0.4 && $value <= 0.5;
-                        @endphp
-                        <span class="status-badge {{ $isOk ? 'status-checked' : '' }}">
-                            {{ $isOk ? 'OK' : 'NOT OK' }}
-                        </span>
-                    @elseif($dailyFuji->n2_presure === 'na' || $dailyFuji->n2_presure === '-')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-status">{!! getNumericStatusBadge($dailyFuji->n2_presure, 0.4, 0.5) !!}</td>
             </tr>
             <tr>
                 <td class="item-name">Oxygen Density SEK (20)</td>
@@ -1199,21 +830,7 @@
                 <td class="item-value {{ getValueClass($dailyFuji->oxygent_density_sek, '1200-1800') }}">
                     {{ displayValue($dailyFuji->oxygent_density_sek) }}
                 </td>
-                <td class="item-status">
-                    @if($dailyFuji->oxygent_density_sek && $dailyFuji->oxygent_density_sek !== '-' && $dailyFuji->oxygent_density_sek !== 'na')
-                        @php
-                            $value = floatval($dailyFuji->oxygent_density_sek);
-                            $isOk = $value >= 1200 && $value <= 1800;
-                        @endphp
-                        <span class="status-badge {{ $isOk ? 'status-checked' : '' }}">
-                            {{ $isOk ? 'OK' : 'NOT OK' }}
-                        </span>
-                    @elseif($dailyFuji->oxygent_density_sek === 'na' || $dailyFuji->oxygent_density_sek === '-')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-status">{!! getNumericStatusBadge($dailyFuji->oxygent_density_sek, 1200, 1800) !!}</td>
             </tr>
             <tr>
                 <td class="item-name">Oxygen Density Special (20)</td>
@@ -1221,21 +838,7 @@
                 <td class="item-value {{ getValueClass($dailyFuji->oxygent_density_special, '500-1000') }}">
                     {{ displayValue($dailyFuji->oxygent_density_special) }}
                 </td>
-                <td class="item-status">
-                    @if($dailyFuji->oxygent_density_special && $dailyFuji->oxygent_density_special !== '-' && $dailyFuji->oxygent_density_special !== 'na')
-                        @php
-                            $value = floatval($dailyFuji->oxygent_density_special);
-                            $isOk = $value >= 500 && $value <= 1000;
-                        @endphp
-                        <span class="status-badge {{ $isOk ? 'status-checked' : '' }}">
-                            {{ $isOk ? 'OK' : 'NOT OK' }}
-                        </span>
-                    @elseif($dailyFuji->oxygent_density_special === 'na' || $dailyFuji->oxygent_density_special === '-')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-status">{!! getNumericStatusBadge($dailyFuji->oxygent_density_special, 500, 1000) !!}</td>
             </tr>
 
             <tr class="section-header">
@@ -1244,25 +847,14 @@
             <tr>
                 <td class="item-name">Fire Possibility (20.a)</td>
                 <td class="item-standard">Standard: No Paper, No plastic</td>
-                <td class="item-value {{ getValueClass($dailyFuji->fire_posibilty_2, 'checked') }}">
-                    {{ displayValue($dailyFuji->fire_posibilty_2) }}
-                </td>
-                <td class="item-status">
-                    @if($dailyFuji->fire_posibilty_2 === 'checked')
-                        <span class="status-badge status-checked">OK</span>
-                    @elseif($dailyFuji->fire_posibilty_2 === 'na')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-value">{{ displayValue($dailyFuji->fire_posibilty_2) }}</td>
+                <td class="item-status">{!! getStatusBadge($dailyFuji->fire_posibilty_2) !!}</td>
             </tr>
 
             <!-- STEP 9: AOI -->
             <tr class="wizard-header">
                 <td colspan="4">9. AOI</td>
             </tr>
-            
             <tr class="section-header">
                 <td colspan="4">REGULATOR UNIT</td>
             </tr>
@@ -1272,46 +864,21 @@
                 <td class="item-value {{ getValueClass($dailyFuji->air_presure_2, '0.40-0.50') }}">
                     {{ displayValue($dailyFuji->air_presure_2) }}
                 </td>
-                <td class="item-status">
-                    @if($dailyFuji->air_presure_2 && $dailyFuji->air_presure_2 !== '-' && $dailyFuji->air_presure_2 !== 'na')
-                        @php
-                            $value = floatval($dailyFuji->air_presure_2);
-                            $isOk = $value >= 0.40 && $value <= 0.50;
-                        @endphp
-                        <span class="status-badge {{ $isOk ? 'status-checked' : '' }}">
-                            {{ $isOk ? 'OK' : 'NOT OK' }}
-                        </span>
-                    @elseif($dailyFuji->air_presure_2 === 'na' || $dailyFuji->air_presure_2 === '-')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-status">{!! getNumericStatusBadge($dailyFuji->air_presure_2, 0.40, 0.50) !!}</td>
             </tr>
 
             <!-- STEP 10: UNLOADER -->
             <tr class="wizard-header">
                 <td colspan="4">10. UNLOADER</td>
             </tr>
-            
             <tr class="section-header">
                 <td colspan="4">PUSHER</td>
             </tr>
             <tr>
                 <td class="item-name">Cylinder (21)</td>
                 <td class="item-standard">Standard: Smooth and center</td>
-                <td class="item-value {{ getValueClass($dailyFuji->cylinder_2, 'checked') }}">
-                    {{ displayValue($dailyFuji->cylinder_2) }}
-                </td>
-                <td class="item-status">
-                    @if($dailyFuji->cylinder_2 === 'checked')
-                        <span class="status-badge status-checked">OK</span>
-                    @elseif($dailyFuji->cylinder_2 === 'na')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-value">{{ displayValue($dailyFuji->cylinder_2) }}</td>
+                <td class="item-status">{!! getStatusBadge($dailyFuji->cylinder_2) !!}</td>
             </tr>
 
             <tr class="section-header">
@@ -1320,59 +887,28 @@
             <tr>
                 <td class="item-name">Rail & Magazine PCB (21.a)</td>
                 <td class="item-standard">Standard: No Dust and clean</td>
-                <td class="item-value {{ getValueClass($dailyFuji->rail_and_magazine_pcb_2, 'checked') }}">
-                    {{ displayValue($dailyFuji->rail_and_magazine_pcb_2) }}
-                </td>
-                <td class="item-status">
-                    @if($dailyFuji->rail_and_magazine_pcb_2 === 'checked')
-                        <span class="status-badge status-checked">OK</span>
-                    @elseif($dailyFuji->rail_and_magazine_pcb_2 === 'na')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-value">{{ displayValue($dailyFuji->rail_and_magazine_pcb_2) }}</td>
+                <td class="item-status">{!! getStatusBadge($dailyFuji->rail_and_magazine_pcb_2) !!}</td>
             </tr>
             <tr>
                 <td class="item-name">Cover Magazine (21.b)</td>
                 <td class="item-standard">Standard: No Dust and clean</td>
-                <td class="item-value {{ getValueClass($dailyFuji->cover_magazine_2, 'checked') }}">
-                    {{ displayValue($dailyFuji->cover_magazine_2) }}
-                </td>
-                <td class="item-status">
-                    @if($dailyFuji->cover_magazine_2 === 'checked')
-                        <span class="status-badge status-checked">OK</span>
-                    @elseif($dailyFuji->cover_magazine_2 === 'na')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-value">{{ displayValue($dailyFuji->cover_magazine_2) }}</td>
+                <td class="item-status">{!! getStatusBadge($dailyFuji->cover_magazine_2) !!}</td>
             </tr>
 
             <!-- STEP 11: AOI TABLE -->
             <tr class="wizard-header">
                 <td colspan="4">11. AOI TABLE</td>
             </tr>
-            
             <tr class="section-header">
                 <td colspan="4">IONIZER POSITION</td>
             </tr>
             <tr>
                 <td class="item-name">Angle & Filter (22)</td>
                 <td class="item-standard">Standard: No dirt / no dust</td>
-                <td class="item-value {{ getValueClass($dailyFuji->angle_and_filter, 'checked') }}">
-                    {{ displayValue($dailyFuji->angle_and_filter) }}
-                </td>
-                <td class="item-status">
-                    @if($dailyFuji->angle_and_filter === 'checked')
-                        <span class="status-badge status-checked">OK</span>
-                    @elseif($dailyFuji->angle_and_filter === 'na')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-value">{{ displayValue($dailyFuji->angle_and_filter) }}</td>
+                <td class="item-status">{!! getStatusBadge($dailyFuji->angle_and_filter) !!}</td>
             </tr>
 
             <tr class="section-header">
@@ -1381,25 +917,14 @@
             <tr>
                 <td class="item-name">Lamp Indicator (22.a)</td>
                 <td class="item-standard">Standard: Function</td>
-                <td class="item-value {{ getValueClass($dailyFuji->lamp_indicator, 'checked') }}">
-                    {{ displayValue($dailyFuji->lamp_indicator) }}
-                </td>
-                <td class="item-status">
-                    @if($dailyFuji->lamp_indicator === 'checked')
-                        <span class="status-badge status-checked">OK</span>
-                    @elseif($dailyFuji->lamp_indicator === 'na')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-value">{{ displayValue($dailyFuji->lamp_indicator) }}</td>
+                <td class="item-status">{!! getStatusBadge($dailyFuji->lamp_indicator) !!}</td>
             </tr>
 
             <!-- STEP 12: REFLOW 2 -->
             <tr class="wizard-header">
                 <td colspan="4">12. REFLOW 2</td>
             </tr>
-            
             <tr class="section-header">
                 <td colspan="4">CHILLER</td>
             </tr>
@@ -1409,23 +934,9 @@
                 <td class="item-value {{ getValueClass($dailyFuji->temperature_chiller, '17-23') }}">
                     {{ displayValue($dailyFuji->temperature_chiller) }}
                 </td>
-                <td class="item-status">
-                    @if($dailyFuji->temperature_chiller && $dailyFuji->temperature_chiller !== '-' && $dailyFuji->temperature_chiller !== 'na')
-                        @php
-                            $value = floatval($dailyFuji->temperature_chiller);
-                            $isOk = $value >= 17 && $value <= 23;
-                        @endphp
-                        <span class="status-badge {{ $isOk ? 'status-checked' : '' }}">
-                            {{ $isOk ? 'OK' : 'NOT OK' }}
-                        </span>
-                    @elseif($dailyFuji->temperature_chiller === 'na' || $dailyFuji->temperature_chiller === '-')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-status">{!! getNumericStatusBadge($dailyFuji->temperature_chiller, 17, 23) !!}</td>
             </tr>
-            
+
             <tr class="section-header">
                 <td colspan="4">FLUX COLLECTION UNIT</td>
             </tr>
@@ -1435,78 +946,41 @@
                 <td class="item-value {{ getValueClass($dailyFuji->temperature_control_3, '290-310') }}">
                     {{ displayValue($dailyFuji->temperature_control_3) }}
                 </td>
-                <td class="item-status">
-                    @if($dailyFuji->temperature_control_3 && $dailyFuji->temperature_control_3 !== '-' && $dailyFuji->temperature_control_3 !== 'na')
-                        @php
-                            $value = floatval($dailyFuji->temperature_control_3);
-                            $isOk = $value >= 290 && $value <= 310;
-                        @endphp
-                        <span class="status-badge {{ $isOk ? 'status-checked' : '' }}">
-                            {{ $isOk ? 'OK' : 'NOT OK' }}
-                        </span>
-                    @elseif($dailyFuji->temperature_control_3 === 'na' || $dailyFuji->temperature_control_3 === '-')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-status">{!! getNumericStatusBadge($dailyFuji->temperature_control_3, 290, 310) !!}</td>
             </tr>
 
             <!-- STEP 13: CHIP MOUNTER 3 -->
             <tr class="wizard-header">
                 <td colspan="4">13. CHIP MOUNTER 3</td>
             </tr>
-            
             <tr class="section-header">
                 <td colspan="4">FAN UNIT</td>
             </tr>
             <tr>
                 <td class="item-name">Fan Unit 1 (25)</td>
                 <td class="item-standard">Standard: Clean</td>
-                <td class="item-value {{ getValueClass($dailyFuji->fan_unit_1, 'checked') }}">
-                    {{ displayValue($dailyFuji->fan_unit_1) }}
-                </td>
-                <td class="item-status">
-                    @if($dailyFuji->fan_unit_1 === 'checked')
-                        <span class="status-badge status-checked">OK</span>
-                    @elseif($dailyFuji->fan_unit_1 === 'na')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-value">{{ displayValue($dailyFuji->fan_unit_1) }}</td>
+                <td class="item-status">{!! getStatusBadge($dailyFuji->fan_unit_1) !!}</td>
             </tr>
 
             <!-- STEP 14: CHIP MOUNTER 4 -->
             <tr class="wizard-header">
                 <td colspan="4">14. CHIP MOUNTER 4</td>
             </tr>
-            
             <tr class="section-header">
                 <td colspan="4">FAN UNIT</td>
             </tr>
             <tr>
                 <td class="item-name">Fan Unit 2 (26)</td>
                 <td class="item-standard">Standard: Clean</td>
-                <td class="item-value {{ getValueClass($dailyFuji->fan_unit_2, 'checked') }}">
-                    {{ displayValue($dailyFuji->fan_unit_2) }}
-                </td>
-                <td class="item-status">
-                    @if($dailyFuji->fan_unit_2 === 'checked')
-                        <span class="status-badge status-checked">OK</span>
-                    @elseif($dailyFuji->fan_unit_2 === 'na')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-value">{{ displayValue($dailyFuji->fan_unit_2) }}</td>
+                <td class="item-status">{!! getStatusBadge($dailyFuji->fan_unit_2) !!}</td>
             </tr>
 
             <!-- STEP 15: SPI 2 -->
             <tr class="wizard-header">
                 <td colspan="4">15. SPI 2</td>
             </tr>
-            
             <tr class="section-header">
                 <td colspan="4">REGULATOR UNIT</td>
             </tr>
@@ -1516,28 +990,13 @@
                 <td class="item-value {{ getValueClass($dailyFuji->air_presure_3, '0.40-0.50') }}">
                     {{ displayValue($dailyFuji->air_presure_3) }}
                 </td>
-                <td class="item-status">
-                    @if($dailyFuji->air_presure_3 && $dailyFuji->air_presure_3 !== '-' && $dailyFuji->air_presure_3 !== 'na')
-                        @php
-                            $value = floatval($dailyFuji->air_presure_3);
-                            $isOk = $value >= 0.40 && $value <= 0.50;
-                        @endphp
-                        <span class="status-badge {{ $isOk ? 'status-checked' : '' }}">
-                            {{ $isOk ? 'OK' : 'NOT OK' }}
-                        </span>
-                    @elseif($dailyFuji->air_presure_3 === 'na' || $dailyFuji->air_presure_3 === '-')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-status">{!! getNumericStatusBadge($dailyFuji->air_presure_3, 0.40, 0.50) !!}</td>
             </tr>
 
             <!-- STEP 16: PRINTER -->
             <tr class="wizard-header">
                 <td colspan="4">16. PRINTER</td>
             </tr>
-            
             <tr class="section-header">
                 <td colspan="4">TEMPERATURE CONTROL UNIT</td>
             </tr>
@@ -1547,21 +1006,7 @@
                 <td class="item-value {{ getValueClass($dailyFuji->temperature_control_4, '23-27') }}">
                     {{ displayValue($dailyFuji->temperature_control_4) }}
                 </td>
-                <td class="item-status">
-                    @if($dailyFuji->temperature_control_4 && $dailyFuji->temperature_control_4 !== '-' && $dailyFuji->temperature_control_4 !== 'na')
-                        @php
-                            $value = floatval($dailyFuji->temperature_control_4);
-                            $isOk = $value >= 23 && $value <= 27;
-                        @endphp
-                        <span class="status-badge {{ $isOk ? 'status-checked' : '' }}">
-                            {{ $isOk ? 'OK' : 'NOT OK' }}
-                        </span>
-                    @elseif($dailyFuji->temperature_control_4 === 'na' || $dailyFuji->temperature_control_4 === '-')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-status">{!! getNumericStatusBadge($dailyFuji->temperature_control_4, 23, 27) !!}</td>
             </tr>
 
             <tr class="section-header">
@@ -1570,75 +1015,44 @@
             <tr>
                 <td class="item-name">Water Reservoirs (28.a)</td>
                 <td class="item-standard">Standard: Function, No Damage</td>
-                <td class="item-value {{ getValueClass($dailyFuji->water_reservoirs, 'checked') }}">
-                    {{ displayValue($dailyFuji->water_reservoirs) }}
-                </td>
-                <td class="item-status">
-                    @if($dailyFuji->water_reservoirs === 'checked')
-                        <span class="status-badge status-checked">OK</span>
-                    @elseif($dailyFuji->water_reservoirs === 'na')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-value">{{ displayValue($dailyFuji->water_reservoirs) }}</td>
+                <td class="item-status">{!! getStatusBadge($dailyFuji->water_reservoirs) !!}</td>
             </tr>
 
             <!-- STEP 17: PCB CLEANER 2 -->
             <tr class="wizard-header">
                 <td colspan="4">17. PCB CLEANER 2</td>
             </tr>
-            
             <tr class="section-header">
                 <td colspan="4">CLEANING UNIT</td>
             </tr>
             <tr>
                 <td class="item-name">Filter (29)</td>
                 <td class="item-standard">Standard: Clean</td>
-                <td class="item-value {{ getValueClass($dailyFuji->filter, 'checked') }}">
-                    {{ displayValue($dailyFuji->filter) }}
-                </td>
-                <td class="item-status">
-                    @if($dailyFuji->filter === 'checked')
-                        <span class="status-badge status-checked">OK</span>
-                    @elseif($dailyFuji->filter === 'na')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-value">{{ displayValue($dailyFuji->filter) }}</td>
+                <td class="item-status">{!! getStatusBadge($dailyFuji->filter) !!}</td>
             </tr>
 
             <!-- STEP 18: IONIZER -->
             <tr class="wizard-header">
                 <td colspan="4">18. IONIZER</td>
             </tr>
-            
             <tr class="section-header">
                 <td colspan="4">POSITION AND CLEAN</td>
             </tr>
             <tr>
                 <td class="item-name">Angle & Filter (30)</td>
                 <td class="item-standard">Standard: No dirt / no dust</td>
-                <td class="item-value {{ getValueClass($dailyFuji->angle_and_filter_2, 'checked') }}">
-                    {{ displayValue($dailyFuji->angle_and_filter_2) }}
-                </td>
-                <td class="item-status">
-                    @if($dailyFuji->angle_and_filter_2 === 'checked')
-                        <span class="status-badge status-checked">OK</span>
-                    @elseif($dailyFuji->angle_and_filter_2 === 'na')
-                        <span class="status-badge status-na">N/A</span>
-                    @else
-                        <span style="color: #dc3545;">NOT CHECKED</span>
-                    @endif
-                </td>
+                <td class="item-value">{{ displayValue($dailyFuji->angle_and_filter_2) }}</td>
+                <td class="item-status">{!! getStatusBadge($dailyFuji->angle_and_filter_2) !!}</td>
             </tr>
 
         </tbody>
     </table>
 
     <div class="footer">
-        Generated by System on {{ now()->format('Y-m-d H:i') }} ( QR-ENG-13-K023-017 )
+        <span class="qr-code">QR-ENG-13-K023-017</span> | 
+        Generated by System on {{ now()->format('Y-m-d H:i') }}
     </div>
 </body>
 </html>

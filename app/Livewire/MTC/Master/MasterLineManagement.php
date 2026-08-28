@@ -4,6 +4,9 @@ namespace App\Livewire\MTC\Master;
 
 use App\Models\MTC\Master\MasterLine;
 use App\Models\MTC\Master\MasterLocation;
+use App\Models\MTC\Daily\DailyPanasonicStandardCheck;
+use App\Models\MTC\Daily\DailyPanasonicStandardCheckHistory;
+use App\Models\MTC\Daily\DailyFUjiStandardCheckHistory;
 use App\Models\HR\Employee;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -30,6 +33,22 @@ class MasterLineManagement extends Component
     public $selectedMachineType = '';
     public $selectedStatus = '';
     public $lineToDelete;
+
+    // Tambahkan property ini setelah property yang sudah ada
+    public $standardFields = [];
+    public $selectedLineForStandard;
+    public $standardConfig = [];
+
+    // Properties
+    public $panasonicStandardFields = [];
+    public $selectedLineForPanasonicStandard;
+    public $panasonicStandardConfig = [];
+
+    // Di dalam class MasterLineManagement
+    public $showHistoryModal = false;
+    public $historyData = [];
+    public $historyLineNumber = '';
+    public $historyType = 'fuji';
     
     // Modal title
     public $modalTitle = 'Add New Line';
@@ -51,6 +70,410 @@ class MasterLineManagement extends Component
         'machine_type.required' => 'Machine type is required.',
         'nik.exists' => 'Selected employee is invalid.',
     ];
+
+    private function createFujiHistory($standard, $oldData, $newData, $action)
+    {
+        $changes = [];
+        
+        // Detect changes
+        foreach ($newData as $key => $value) {
+            if (str_ends_with($key, '_required')) {
+                $oldValue = $oldData[$key] ?? false;
+                $newValue = $value;
+                
+                if ($oldValue != $newValue) {
+                    $fieldName = str_replace('_required', '', $key);
+                    $changes[$fieldName] = [
+                        'old' => $oldValue ? 'Required' : 'Optional',
+                        'new' => $newValue ? 'Required' : 'Optional',
+                    ];
+                }
+            }
+        }
+
+        // Jika action create, simpan semua field
+        if ($action === 'create' && empty($changes)) {
+            foreach ($newData as $key => $value) {
+                if (str_ends_with($key, '_required')) {
+                    $fieldName = str_replace('_required', '', $key);
+                    $changes[$fieldName] = [
+                        'old' => 'Not Set',
+                        'new' => $value ? 'Required' : 'Optional',
+                    ];
+                }
+            }
+        }
+
+        if (!empty($changes)) {
+            DailyFujiStandardCheckHistory::create([
+                'standard_check_id' => $standard->id,
+                'master_line_id' => $standard->master_line_id,
+                'user_id' => auth()->id(),
+                'action' => $action,
+                'changes' => $changes,
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ]);
+        }
+    }
+
+    private function createPanasonicHistory($standard, $oldData, $newData, $action)
+    {
+        $changes = [];
+        
+        foreach ($newData as $key => $value) {
+            if (str_ends_with($key, '_required')) {
+                $oldValue = $oldData[$key] ?? false;
+                $newValue = $value;
+                
+                if ($oldValue != $newValue) {
+                    $fieldName = str_replace('_required', '', $key);
+                    $changes[$fieldName] = [
+                        'old' => $oldValue ? 'Required' : 'Optional',
+                        'new' => $newValue ? 'Required' : 'Optional',
+                    ];
+                }
+            }
+        }
+
+        if ($action === 'create' && empty($changes)) {
+            foreach ($newData as $key => $value) {
+                if (str_ends_with($key, '_required')) {
+                    $fieldName = str_replace('_required', '', $key);
+                    $changes[$fieldName] = [
+                        'old' => 'Not Set',
+                        'new' => $value ? 'Required' : 'Optional',
+                    ];
+                }
+            }
+        }
+
+        if (!empty($changes)) {
+            DailyPanasonicStandardCheckHistory::create([
+                'standard_check_id' => $standard->id,
+                'master_line_id' => $standard->master_line_id,
+                'user_id' => auth()->id(),
+                'action' => $action,
+                'changes' => $changes,
+                'ip_address' => request()->ip(),
+                'user_agent' => request()->userAgent(),
+            ]);
+        }
+    }
+    /**
+     * Open standard configuration modal for a line
+     */
+    public function configureStandard($id)
+    {
+        // Check permission
+        if (!auth()->user()->can('edit master line')) {
+            $this->dispatch('notify', message: 'You do not have permission to configure standard!', type: 'error');
+            return;
+        }
+
+        try {
+            $line = MasterLine::with('dailyFujiStandardCheck')->findOrFail($id);
+            $this->selectedLineForStandard = $line;
+            
+            // Load existing configuration or create default
+            if ($line->dailyFujiStandardCheck) {
+                $standard = $line->dailyFujiStandardCheck;
+                // Load semua field ke standardConfig
+                $fillable = (new \App\Models\MTC\Daily\DailyFujiStandardCheck)->getFillable();
+                foreach ($fillable as $field) {
+                    if (str_ends_with($field, '_required')) {
+                        $this->standardConfig[$field] = (bool) $standard->{$field};
+                    }
+                }
+            } else {
+                // Default: semua true
+                $fillable = (new \App\Models\MTC\Daily\DailyFujiStandardCheck)->getFillable();
+                foreach ($fillable as $field) {
+                    if (str_ends_with($field, '_required')) {
+                        $this->standardConfig[$field] = true;
+                    }
+                }
+            }
+            
+            $this->dispatch('open-standard-modal');
+            
+        } catch (\Exception $e) {
+            Log::error('Error loading standard config: ' . $e->getMessage());
+            $this->dispatch('notify', message: 'Failed to load standard configuration!', type: 'error');
+        }
+    }
+
+    /**
+     * Save standard configuration
+     */
+    public function saveStandardConfig()
+    {
+        if (!auth()->user()->can('edit master line')) {
+            $this->dispatch('notify', message: 'You do not have permission to configure standard!', type: 'error');
+            return;
+        }
+
+        try {
+            $line = $this->selectedLineForStandard;
+            $standard = $line->dailyFujiStandardCheck;
+            $oldData = [];
+            $action = 'create';
+            
+            if ($standard) {
+                // Simpan data lama sebelum update
+                $oldData = $standard->toArray();
+                $standard->update($this->standardConfig);
+                $newData = $standard->fresh()->toArray();
+                $action = 'update';
+            } else {
+                $newStandard = new DailyFujiStandardCheck();
+                $newStandard->master_line_id = $line->id;
+                foreach ($this->standardConfig as $field => $value) {
+                    $newStandard->{$field} = $value;
+                }
+                $newStandard->save();
+                $standard = $newStandard;
+                $newData = $standard->toArray();
+            }
+
+            // Buat history
+            $this->createFujiHistory($standard, $oldData, $newData, $action);
+
+            $this->dispatch('close-standard-modal');
+            $this->dispatch('notify', message: 'Standard configuration saved successfully!', type: 'success');
+            
+            $this->standardConfig = [];
+            $this->selectedLineForStandard = null;
+            
+        } catch (\Exception $e) {
+            Log::error('Error saving standard config: ' . $e->getMessage());
+            $this->dispatch('notify', message: 'Failed to save standard configuration!', type: 'error');
+        }
+    }
+
+    /**
+     * Reset standard config
+     */
+    public function resetStandardConfig()
+    {
+        $this->standardConfig = [];
+        $this->selectedLineForStandard = null;
+    }
+
+    /**
+     * Set all fields to required or not required
+     */
+    public function setAllRequired($value)
+    {
+        foreach ($this->standardConfig as $field => $oldValue) {
+            $this->standardConfig[$field] = $value;
+        }
+    }
+
+    // Method configurePanasonicStandard
+    public function configurePanasonicStandard($id)
+    {
+        if (!auth()->user()->can('edit master line')) {
+            $this->dispatch('notify', message: 'You do not have permission to configure standard!', type: 'error');
+            return;
+        }
+
+        try {
+            $line = MasterLine::with('dailyPanasonicStandardCheck')->findOrFail($id);
+            $this->selectedLineForPanasonicStandard = $line;
+            
+            if ($line->dailyPanasonicStandardCheck) {
+                $standard = $line->dailyPanasonicStandardCheck;
+                $fillable = (new \App\Models\MTC\Daily\DailyPanasonicStandardCheck)->getFillable();
+                foreach ($fillable as $field) {
+                    if (str_ends_with($field, '_required')) {
+                        $this->panasonicStandardConfig[$field] = (bool) $standard->{$field};
+                    }
+                }
+            } else {
+                $fillable = (new \App\Models\MTC\Daily\DailyPanasonicStandardCheck)->getFillable();
+                foreach ($fillable as $field) {
+                    if (str_ends_with($field, '_required')) {
+                        $this->panasonicStandardConfig[$field] = true;
+                    }
+                }
+            }
+            
+            $this->dispatch('open-panasonic-standard-modal');
+            
+        } catch (\Exception $e) {
+            Log::error('Error loading Panasonic standard config: ' . $e->getMessage());
+            $this->dispatch('notify', message: 'Failed to load Panasonic standard configuration!', type: 'error');
+        }
+    }
+
+    // Method savePanasonicStandardConfig
+    public function savePanasonicStandardConfig()
+    {
+        if (!auth()->user()->can('edit master line')) {
+            $this->dispatch('notify', message: 'You do not have permission to configure standard!', type: 'error');
+            return;
+        }
+
+        try {
+            $line = $this->selectedLineForPanasonicStandard;
+            $standard = $line->dailyPanasonicStandardCheck;
+            $oldData = [];
+            $action = 'create';
+            
+            if ($standard) {
+                $oldData = $standard->toArray();
+                $standard->update($this->panasonicStandardConfig);
+                $newData = $standard->fresh()->toArray();
+                $action = 'update';
+            } else {
+                $newStandard = new DailyPanasonicStandardCheck();
+                $newStandard->master_line_id = $line->id;
+                foreach ($this->panasonicStandardConfig as $field => $value) {
+                    $newStandard->{$field} = $value;
+                }
+                $newStandard->save();
+                $standard = $newStandard;
+                $newData = $standard->toArray();
+            }
+
+            $this->createPanasonicHistory($standard, $oldData, $newData, $action);
+
+            $this->dispatch('close-panasonic-standard-modal');
+            $this->dispatch('notify', message: 'Panasonic standard configuration saved successfully!', type: 'success');
+            
+            $this->panasonicStandardConfig = [];
+            $this->selectedLineForPanasonicStandard = null;
+            
+        } catch (\Exception $e) {
+            Log::error('Error saving Panasonic standard config: ' . $e->getMessage());
+            $this->dispatch('notify', message: 'Failed to save Panasonic standard configuration!', type: 'error');
+        }
+    }
+    
+    public function viewStandardHistory($lineId, $type = 'fuji')
+    {
+        $this->historyType = $type;
+        $line = MasterLine::findOrFail($lineId);
+        $this->historyLineNumber = $line->line_number;
+
+        if ($type === 'fuji' || $type === 'both') {
+            $standard = $line->dailyFujiStandardCheck;
+            if ($standard) {
+                $this->historyData = $standard->histories()->with('user')->get()->map(function ($history) {
+                    // Group changes by step
+                    $changesByStep = [];
+                    $changes = $history->changes;
+                    
+                    if (!empty($changes) && is_array($changes)) {
+                        foreach ($changes as $field => $change) {
+                            $step = DailyFujiStandardCheck::getStepForField($field);
+                            if ($step) {
+                                $stepName = DailyFujiStandardCheck::getStepName($step);
+                                if (!isset($changesByStep[$step])) {
+                                    $changesByStep[$step] = [
+                                        'step_number' => $step,
+                                        'step_name' => $stepName,
+                                        'fields' => []
+                                    ];
+                                }
+                                $changesByStep[$step]['fields'][$field] = $change;
+                            } else {
+                                // If step not found, put in "Other"
+                                if (!isset($changesByStep['other'])) {
+                                    $changesByStep['other'] = [
+                                        'step_number' => 'other',
+                                        'step_name' => 'OTHER',
+                                        'fields' => []
+                                    ];
+                                }
+                                $changesByStep['other']['fields'][$field] = $change;
+                            }
+                        }
+                    }
+                    
+                    return [
+                        'id' => $history->id,
+                        'user_name' => $history->user->name ?? 'System',
+                        'action' => $history->action,
+                        'changes' => $changes,
+                        'changes_by_step' => $changesByStep,
+                        'created_at' => $history->created_at,
+                        'ip_address' => $history->ip_address,
+                    ];
+                })->toArray();
+                
+                if (!empty($this->historyData)) {
+                    $this->historyType = 'fuji';
+                    $this->dispatch('open-history-modal');
+                    return;
+                }
+            }
+        }
+
+        if ($type === 'panasonic' || $type === 'both') {
+            $standard = $line->dailyPanasonicStandardCheck;
+            if ($standard) {
+                $this->historyData = $standard->histories()->with('user')->get()->map(function ($history) {
+                    // Group changes by step
+                    $changesByStep = [];
+                    $changes = $history->changes;
+                    
+                    if (!empty($changes) && is_array($changes)) {
+                        foreach ($changes as $field => $change) {
+                            $step = DailyPanasonicStandardCheck::getStepForField($field);
+                            if ($step) {
+                                $stepName = DailyPanasonicStandardCheck::getStepName($step);
+                                if (!isset($changesByStep[$step])) {
+                                    $changesByStep[$step] = [
+                                        'step_number' => $step,
+                                        'step_name' => $stepName,
+                                        'fields' => []
+                                    ];
+                                }
+                                $changesByStep[$step]['fields'][$field] = $change;
+                            } else {
+                                if (!isset($changesByStep['other'])) {
+                                    $changesByStep['other'] = [
+                                        'step_number' => 'other',
+                                        'step_name' => 'OTHER',
+                                        'fields' => []
+                                    ];
+                                }
+                                $changesByStep['other']['fields'][$field] = $change;
+                            }
+                        }
+                    }
+                    
+                    return [
+                        'id' => $history->id,
+                        'user_name' => $history->user->name ?? 'System',
+                        'action' => $history->action,
+                        'changes' => $changes,
+                        'changes_by_step' => $changesByStep,
+                        'created_at' => $history->created_at,
+                        'ip_address' => $history->ip_address,
+                    ];
+                })->toArray();
+                
+                if (!empty($this->historyData)) {
+                    $this->historyType = 'panasonic';
+                    $this->dispatch('open-history-modal');
+                    return;
+                }
+            }
+        }
+
+        $this->historyData = [];
+        $this->dispatch('open-history-modal');
+    }
+    // Method setAllPanasonicRequired
+    public function setAllPanasonicRequired($value)
+    {
+        foreach ($this->panasonicStandardConfig as $field => $oldValue) {
+            $this->panasonicStandardConfig[$field] = $value;
+        }
+    }
 
     /**
      * Change machine type for a line
@@ -331,7 +754,7 @@ class MasterLineManagement extends Component
 
     public function render()
     {
-        // Check permission untuk view
+        // Check permission
         if (!auth()->user()->can('view master line')) {
             abort(403, 'You do not have permission to view master line.');
         }
@@ -339,10 +762,18 @@ class MasterLineManagement extends Component
         $locations = $this->locations;
         $employees = $this->employees;
 
-        $lines = MasterLine::with(['location', 'location.area', 'employee', 'creator', 'updater', 'machines'])
+        $lines = MasterLine::with([
+                'location', 
+                'location.area', 
+                'employee', 
+                'creator', 
+                'updater', 
+                'machines',
+                'dailyFujiStandardCheck' // TAMBAHKAN INI
+            ])
             ->when($this->search, function ($query) {
                 $query->where('line_number', 'like', '%' . $this->search . '%')
-                      ->orWhere('trouble_desc', 'like', '%' . $this->search . '%');
+                    ->orWhere('trouble_desc', 'like', '%' . $this->search . '%');
             })
             ->when($this->selectedLocation, function ($query) {
                 $query->where('location_id', $this->selectedLocation);

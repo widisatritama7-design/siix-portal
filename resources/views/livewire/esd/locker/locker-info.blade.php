@@ -7,199 +7,191 @@
             <h1 class="text-3xl font-bold text-zinc-800 dark:text-white">
                 ESD Locker System
             </h1>
+            <p class="text-sm text-zinc-500 dark:text-zinc-400">Simpan dengan aman, ambil dengan mudah</p>
         </div>
     </div>
 
-    <!-- Main Content: 2 Columns -->
+    <!-- Main Content: 3 Columns -->
     <div class="flex flex-col lg:flex-row gap-4 mt-4">
-        <!-- LEFT COLUMN: 70% - Flow Steps -->
-        <div class="w-full lg:w-[70%]">
-            
-            <!-- CARD STORE -->
-            <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-4 mb-4 shadow-sm">
-                <div class="flex items-center gap-2 mb-3">
-                    <span class="text-sm font-bold text-green-700 dark:text-green-400">STORE</span>
-                    <span class="text-xs text-green-600 dark:text-green-500">- Menyimpan Seragam</span>
+        <!-- LEFT COLUMN: 40% - Grid Locker 8 baris x 2 kolom -->
+        <div class="w-full lg:w-[40%]">
+            <div class="grid grid-cols-2 gap-2">
+                <!-- Kolom Kiri: 01-08 ke bawah -->
+                <div class="space-y-2">
+                    @foreach(['ESD001','ESD002','ESD003','ESD004','ESD005','ESD006','ESD007','ESD008'] as $code)
+                    @php
+                        $locker = $lockers->where('code', $code)->first();
+                        
+                        // Mapping status ke warna sesuai permintaan
+                        $statusColors = [
+                            'available' => ['bg' => 'bg-green-500', 'shadow' => 'shadow-green-500/30', 'label' => 'Tersedia'],
+                            'open' => ['bg' => 'bg-yellow-500', 'shadow' => 'shadow-yellow-500/30', 'label' => 'Terbuka'],
+                            'in_progress' => ['bg' => 'bg-blue-500', 'shadow' => 'shadow-blue-500/30', 'label' => 'Diproses'],
+                            'ng' => ['bg' => 'bg-red-500', 'shadow' => 'shadow-red-500/30', 'label' => 'Rusak'],
+                            'finished' => ['bg' => 'bg-gray-500', 'shadow' => 'shadow-gray-500/30', 'label' => 'Selesai'],
+                        ];
+                        
+                        $status = $locker ? $locker->status : 'available';
+                        $color = $statusColors[$status] ?? $statusColors['available'];
+                        
+                        // Ambil nomor urut untuk ditampilkan (01-16)
+                        $number = str_replace('ESD', '', $code);
+                    @endphp
+                    <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-3 shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xl font-bold text-zinc-700 dark:text-zinc-300">{{ $number }}</span>
+                            </div>
+                            <!-- Bulat indikator diperbesar menjadi w-5 h-5 -->
+                            <div class="w-5 h-5 rounded-full {{ $color['bg'] }} shadow-lg {{ $color['shadow'] }}"></div>
+                        </div>
+                    </div>
+                    @endforeach
                 </div>
                 
-                <div class="flex items-center justify-between gap-2 px-1">
-                    <!-- Step 1: Pilih Store -->
-                    <div class="flex flex-col items-center flex-1 group">
-                        <div class="w-14 h-14 rounded-full bg-green-500 text-white flex items-center justify-center shadow-lg shadow-green-500/30 transition-all duration-300 hover:scale-110 hover:shadow-xl animate-pulse-slow">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                            </svg>
+                <!-- Kolom Kanan: 09-16 ke bawah -->
+                <div class="space-y-2">
+                    @foreach(['ESD009','ESD010','ESD011','ESD012','ESD013','ESD014','ESD015','ESD016'] as $code)
+                    @php
+                        $locker = $lockers->where('code', $code)->first();
+                        
+                        $statusColors = [
+                            'available' => ['bg' => 'bg-green-500', 'shadow' => 'shadow-green-500/30', 'label' => 'Tersedia'],
+                            'open' => ['bg' => 'bg-yellow-500', 'shadow' => 'shadow-yellow-500/30', 'label' => 'Terbuka'],
+                            'in_progress' => ['bg' => 'bg-blue-500', 'shadow' => 'shadow-blue-500/30', 'label' => 'Diproses'],
+                            'ng' => ['bg' => 'bg-red-500', 'shadow' => 'shadow-red-500/30', 'label' => 'Rusak'],
+                            'finished' => ['bg' => 'bg-gray-500', 'shadow' => 'shadow-gray-500/30', 'label' => 'Selesai'],
+                        ];
+                        
+                        $status = $locker ? $locker->status : 'available';
+                        $color = $statusColors[$status] ?? $statusColors['available'];
+                        
+                        $number = str_replace('ESD', '', $code);
+                    @endphp
+                    <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-3 shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xl font-bold text-zinc-700 dark:text-zinc-300">{{ $number }}</span>
+                            </div>
+                            <!-- Bulat indikator diperbesar menjadi w-5 h-5 -->
+                            <div class="w-5 h-5 rounded-full {{ $color['bg'] }} shadow-lg {{ $color['shadow'] }}"></div>
                         </div>
-                        <span class="text-xs font-medium text-green-700 dark:text-green-300 mt-2 text-center leading-tight">Pilih Store</span>
                     </div>
-
-                    <!-- Arrow 1 -->
-                    <svg class="w-6 h-6 text-green-300 dark:text-green-700 flex-shrink-0 animate-pulse-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                        <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm4.28 10.28a.75.75 0 0 0 0-1.06l-3-3a.75.75 0 1 0-1.06 1.06l1.72 1.72H8.25a.75.75 0 0 0 0 1.5h5.69l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3Z" clip-rule="evenodd" />
-                    </svg>
-
-                    <!-- Step 2: Input NIK & WA -->
-                    <div class="flex flex-col items-center flex-1 group">
-                        <div class="w-14 h-14 rounded-full bg-blue-500 text-white flex items-center justify-center shadow-lg shadow-blue-500/30 transition-all duration-300 hover:scale-110 hover:shadow-xl animate-pulse-slow" style="animation-delay: 0.5s">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                                <path fill-rule="evenodd" d="M18.685 19.097A9.723 9.723 0 0 0 21.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 0 0 3.065 7.097A9.716 9.716 0 0 0 12 21.75a9.716 9.716 0 0 0 6.685-2.653Zm-12.54-1.285A7.486 7.486 0 0 1 12 15a7.486 7.486 0 0 1 5.855 2.812A8.224 8.224 0 0 1 12 20.25a8.224 8.224 0 0 1-5.855-2.438ZM15.75 9a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                        <span class="text-xs font-medium text-blue-700 dark:text-blue-300 mt-2 text-center leading-tight">Input NIK & WA</span>
-                    </div>
-
-                    <!-- Arrow 2 -->
-                    <svg class="w-6 h-6 text-blue-300 dark:text-blue-700 flex-shrink-0 animate-pulse-arrow" style="animation-delay: 0.5s" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                        <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm4.28 10.28a.75.75 0 0 0 0-1.06l-3-3a.75.75 0 1 0-1.06 1.06l1.72 1.72H8.25a.75.75 0 0 0 0 1.5h5.69l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3Z" clip-rule="evenodd" />
-                    </svg>
-
-                    <!-- Step 3: Konfirmasi -->
-                    <div class="flex flex-col items-center flex-1 group">
-                        <div class="w-14 h-14 rounded-full bg-yellow-500 text-white flex items-center justify-center shadow-lg shadow-yellow-500/30 transition-all duration-300 hover:scale-110 hover:shadow-xl animate-pulse-slow" style="animation-delay: 1s">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                                <path fill-rule="evenodd" d="M4.5 3.75a3 3 0 0 0-3 3v10.5a3 3 0 0 0 3 3h15a3 3 0 0 0 3-3V6.75a3 3 0 0 0-3-3h-15Zm4.125 3a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5Zm-3.873 8.703a4.126 4.126 0 0 1 7.746 0 .75.75 0 0 1-.351.92 7.47 7.47 0 0 1-3.522.877 7.47 7.47 0 0 1-3.522-.877.75.75 0 0 1-.351-.92ZM15 8.25a.75.75 0 0 0 0 1.5h3.75a.75.75 0 0 0 0-1.5H15ZM14.25 12a.75.75 0 0 1 .75-.75h3.75a.75.75 0 0 1 0 1.5H15a.75.75 0 0 1-.75-.75Zm.75 2.25a.75.75 0 0 0 0 1.5h3.75a.75.75 0 0 0 0-1.5H15Z" clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                        <span class="text-xs font-medium text-yellow-700 dark:text-yellow-300 mt-2 text-center leading-tight">Konfirmasi Data</span>
-                    </div>
-
-                    <!-- Arrow 3 -->
-                    <svg class="w-6 h-6 text-yellow-300 dark:text-yellow-700 flex-shrink-0 animate-pulse-arrow" style="animation-delay: 1s" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                        <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm4.28 10.28a.75.75 0 0 0 0-1.06l-3-3a.75.75 0 1 0-1.06 1.06l1.72 1.72H8.25a.75.75 0 0 0 0 1.5h5.69l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3Z" clip-rule="evenodd" />
-                    </svg>
-
-                    <!-- Step 4: Loker Dibuka -->
-                    <div class="flex flex-col items-center flex-1 group">
-                        <div class="w-14 h-14 rounded-full bg-indigo-500 text-white flex items-center justify-center shadow-lg shadow-indigo-500/30 transition-all duration-300 hover:scale-110 hover:shadow-xl animate-pulse-slow" style="animation-delay: 1.5s">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                                <path d="M18 1.5c2.9 0 5.25 2.35 5.25 5.25v3.75a.75.75 0 0 1-1.5 0V6.75a3.75 3.75 0 1 0-7.5 0v3a3 3 0 0 1 3 3v6.75a3 3 0 0 1-3 3H3.75a3 3 0 0 1-3-3v-6.75a3 3 0 0 1 3-3h9v-3c0-2.9 2.35-5.25 5.25-5.25Z" />
-                            </svg>
-                        </div>
-                        <span class="text-xs font-medium text-indigo-700 dark:text-indigo-300 mt-2 text-center leading-tight">Loker Dibuka</span>
-                    </div>
-
-                    <!-- Arrow 4 -->
-                    <svg class="w-6 h-6 text-indigo-300 dark:text-indigo-700 flex-shrink-0 animate-pulse-arrow" style="animation-delay: 1.5s" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                        <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm4.28 10.28a.75.75 0 0 0 0-1.06l-3-3a.75.75 0 1 0-1.06 1.06l1.72 1.72H8.25a.75.75 0 0 0 0 1.5h5.69l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3Z" clip-rule="evenodd" />
-                    </svg>
-
-                    <!-- Step 5: Selesai -->
-                    <div class="flex flex-col items-center flex-1 group">
-                        <div class="w-14 h-14 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-500/30 transition-all duration-300 hover:scale-110 hover:shadow-xl animate-pulse-slow" style="animation-delay: 2s">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                                <path d="M12 1.5a.75.75 0 0 1 .75.75V7.5h-1.5V2.25A.75.75 0 0 1 12 1.5ZM11.25 7.5v5.69l-1.72-1.72a.75.75 0 0 0-1.06 1.06l3 3a.75.75 0 0 0 1.06 0l3-3a.75.75 0 1 0-1.06-1.06l-1.72 1.72V7.5h3.75a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-9a3 3 0 0 1 3-3h3.75Z" />
-                            </svg>
-                        </div>
-                        <span class="text-xs font-medium text-emerald-700 dark:text-emerald-300 mt-2 text-center leading-tight">Simpan</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- CARD TAKE -->
-            <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-4 shadow-sm">
-                <div class="flex items-center gap-2 mb-3">
-                    <span class="text-sm font-bold text-purple-700 dark:text-purple-400">TAKE</span>
-                    <span class="text-xs text-purple-600 dark:text-purple-500">- Mengambil Seragam</span>
-                </div>
-                
-                <div class="flex items-center justify-between gap-2 px-1">
-                    <!-- Step 1: Pilih Take -->
-                    <div class="flex flex-col items-center flex-1 group">
-                        <div class="w-14 h-14 rounded-full bg-purple-500 text-white flex items-center justify-center shadow-lg shadow-purple-500/30 transition-all duration-300 hover:scale-110 hover:shadow-xl animate-pulse-slow" style="animation-delay: 0.3s">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
-                            </svg>
-                        </div>
-                        <span class="text-xs font-medium text-purple-700 dark:text-purple-300 mt-2 text-center leading-tight">Pilih Take</span>
-                    </div>
-
-                    <!-- Arrow 1 -->
-                    <svg class="w-6 h-6 text-purple-300 dark:text-purple-700 flex-shrink-0 animate-pulse-arrow" style="animation-delay: 0.8s" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                        <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm4.28 10.28a.75.75 0 0 0 0-1.06l-3-3a.75.75 0 1 0-1.06 1.06l1.72 1.72H8.25a.75.75 0 0 0 0 1.5h5.69l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3Z" clip-rule="evenodd" />
-                    </svg>
-
-                    <!-- Step 2: Input Access Code -->
-                    <div class="flex flex-col items-center flex-1 group">
-                        <div class="w-14 h-14 rounded-full bg-pink-500 text-white flex items-center justify-center shadow-lg shadow-pink-500/30 transition-all duration-300 hover:scale-110 hover:shadow-xl animate-pulse-slow" style="animation-delay: 1s">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                                <path fill-rule="evenodd" d="M15.75 1.5a6.75 6.75 0 0 0-6.651 7.906c.067.39-.032.717-.221.906l-6.5 6.499a3 3 0 0 0-.878 2.121v2.818c0 .414.336.75.75.75H6a.75.75 0 0 0 .75-.75v-1.5h1.5A.75.75 0 0 0 9 19.5V18h1.5a.75.75 0 0 0 .53-.22l2.658-2.658c.19-.189.517-.288.906-.22A6.75 6.75 0 1 0 15.75 1.5Zm0 3a.75.75 0 0 0 0 1.5A2.25 2.25 0 0 1 18 8.25a.75.75 0 0 0 1.5 0 3.75 3.75 0 0 0-3.75-3.75Z" clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                        <span class="text-xs font-medium text-pink-700 dark:text-pink-300 mt-2 text-center leading-tight">Input Access Code</span>
-                    </div>
-
-                    <!-- Arrow 2 -->
-                    <svg class="w-6 h-6 text-pink-300 dark:text-pink-700 flex-shrink-0 animate-pulse-arrow" style="animation-delay: 1.3s" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                        <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm4.28 10.28a.75.75 0 0 0 0-1.06l-3-3a.75.75 0 1 0-1.06 1.06l1.72 1.72H8.25a.75.75 0 0 0 0 1.5h5.69l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3Z" clip-rule="evenodd" />
-                    </svg>
-
-                    <!-- Step 3: Detail Transaksi -->
-                    <div class="flex flex-col items-center flex-1 group">
-                        <div class="w-14 h-14 rounded-full bg-orange-500 text-white flex items-center justify-center shadow-lg shadow-orange-500/30 transition-all duration-300 hover:scale-110 hover:shadow-xl animate-pulse-slow" style="animation-delay: 1.6s">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                                <path fill-rule="evenodd" d="M12 5.25c1.213 0 2.415.046 3.605.135a3.256 3.256 0 0 1 3.01 3.01c.044.583.077 1.17.1 1.759L17.03 8.47a.75.75 0 1 0-1.06 1.06l3 3a.75.75 0 0 0 1.06 0l3-3a.75.75 0 0 0-1.06-1.06l-1.752 1.751c-.023-.65-.06-1.296-.108-1.939a4.756 4.756 0 0 0-4.392-4.392 49.422 49.422 0 0 0-7.436 0A4.756 4.756 0 0 0 3.89 8.282c-.017.224-.033.447-.046.672a.75.75 0 1 0 1.497.092c.013-.217.028-.434.044-.651a3.256 3.256 0 0 1 3.01-3.01c1.19-.09 2.392-.135 3.605-.135Zm-6.97 6.22a.75.75 0 0 0-1.06 0l-3 3a.75.75 0 1 0 1.06 1.06l1.752-1.751c.023.65.06 1.296.108 1.939a4.756 4.756 0 0 0 4.392 4.392 49.413 49.413 0 0 0 7.436 0 4.756 4.756 0 0 0 4.392-4.392c.017-.223.032-.447.046-.672a.75.75 0 0 0-1.497-.092c-.013.217-.028.434-.044.651a3.256 3.256 0 0 1-3.01 3.01 47.953 47.953 0 0 1-7.21 0 3.256 3.256 0 0 1-3.01-3.01 47.759 47.759 0 0 1-.1-1.759L6.97 15.53a.75.75 0 0 0 1.06-1.06l-3-3Z" clip-rule="evenodd" />
-                            </svg>
-                        </div>
-                        <span class="text-xs font-medium text-orange-700 dark:text-orange-300 mt-2 text-center leading-tight">Detail Transaksi</span>
-                    </div>
-
-                    <!-- Arrow 3 -->
-                    <svg class="w-6 h-6 text-orange-300 dark:text-orange-700 flex-shrink-0 animate-pulse-arrow" style="animation-delay: 1.9s" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                        <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm4.28 10.28a.75.75 0 0 0 0-1.06l-3-3a.75.75 0 1 0-1.06 1.06l1.72 1.72H8.25a.75.75 0 0 0 0 1.5h5.69l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3Z" clip-rule="evenodd" />
-                    </svg>
-
-                    <!-- Step 4: Buka Loker -->
-                    <div class="flex flex-col items-center flex-1 group">
-                        <div class="w-14 h-14 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-lg shadow-rose-500/30 transition-all duration-300 hover:scale-110 hover:shadow-xl animate-pulse-slow" style="animation-delay: 2.2s">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                                <path d="M18 1.5c2.9 0 5.25 2.35 5.25 5.25v3.75a.75.75 0 0 1-1.5 0V6.75a3.75 3.75 0 1 0-7.5 0v3a3 3 0 0 1 3 3v6.75a3 3 0 0 1-3 3H3.75a3 3 0 0 1-3-3v-6.75a3 3 0 0 1 3-3h9v-3c0-2.9 2.35-5.25 5.25-5.25Z" />
-                            </svg>
-                        </div>
-                        <span class="text-xs font-medium text-rose-700 dark:text-rose-300 mt-2 text-center leading-tight">Loker Dibuka</span>
-                    </div>
-
-                    <!-- Arrow 4 -->
-                    <svg class="w-6 h-6 text-rose-300 dark:text-rose-700 flex-shrink-0 animate-pulse-arrow" style="animation-delay: 2.5s" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                        <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm4.28 10.28a.75.75 0 0 0 0-1.06l-3-3a.75.75 0 1 0-1.06 1.06l1.72 1.72H8.25a.75.75 0 0 0 0 1.5h5.69l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3Z" clip-rule="evenodd" />
-                    </svg>
-
-                    <!-- Step 5: Ambil -->
-                    <div class="flex flex-col items-center flex-1 group">
-                        <div class="w-14 h-14 rounded-full bg-emerald-500 text-white flex items-center justify-center shadow-lg shadow-emerald-500/30 transition-all duration-300 hover:scale-110 hover:shadow-xl animate-pulse-slow" style="animation-delay: 2.8s">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                                <path d="M11.47 1.72a.75.75 0 0 1 1.06 0l3 3a.75.75 0 0 1-1.06 1.06l-1.72-1.72V7.5h-1.5V4.06L9.53 5.78a.75.75 0 0 1-1.06-1.06l3-3ZM11.25 7.5V15a.75.75 0 0 0 1.5 0V7.5h3.75a3 3 0 0 1 3 3v9a3 3 0 0 1-3 3h-9a3 3 0 0 1-3-3v-9a3 3 0 0 1 3-3h3.75Z" />
-                            </svg>
-                        </div>
-                        <span class="text-xs font-medium text-emerald-700 dark:text-emerald-300 mt-2 text-center leading-tight">Ambil</span>
-                    </div>
+                    @endforeach
                 </div>
             </div>
         </div>
 
-        <!-- RIGHT COLUMN: 30% - Tombol Store & Take -->
-        <div class="w-full lg:w-[30%]">
-            <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-lg border border-zinc-200 dark:border-zinc-800 p-4 sticky top-4">
-                
+        <!-- MIDDLE COLUMN: 20% - Tombol Store & Take -->
+        <div class="w-full lg:w-[20%]">
+            <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-lg border border-zinc-200 dark:border-zinc-800 p-4 sticky top-4 space-y-3">
 
                 <!-- Button Store -->
                 <button wire:click="openModal('store')" 
-                        class="w-full bg-green-500 hover:bg-green-600 text-white rounded-lg p-5 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-xl flex flex-col items-center justify-center mb-3 group">
-                    <svg class="w-10 h-10 mb-1.5 group-hover:rotate-12 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="w-full bg-green-500 hover:bg-green-600 text-white rounded-lg p-4 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-xl flex flex-col items-center justify-center group">
+                    <svg class="w-8 h-8 mb-1 group-hover:rotate-12 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                     </svg>
-                    <span class="text-xl font-bold">Store</span>
-                    <span class="text-xs opacity-75">Menyimpan seragam</span>
+                    <span class="text-lg font-bold">STORE</span>
+                    <span class="text-xs opacity-75">Menyimpan</span>
                 </button>
 
                 <!-- Button Take -->
                 <button wire:click="openModal('take')" 
-                        class="w-full bg-purple-500 hover:bg-purple-600 text-white rounded-lg p-5 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-xl flex flex-col items-center justify-center group">
-                    <svg class="w-10 h-10 mb-1.5 group-hover:translate-y-[-4px] transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        class="w-full bg-purple-500 hover:bg-purple-600 text-white rounded-lg p-4 shadow-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-xl flex flex-col items-center justify-center group">
+                    <svg class="w-8 h-8 mb-1 group-hover:translate-y-[-4px] transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
                     </svg>
-                    <span class="text-xl font-bold">Take</span>
-                    <span class="text-xs opacity-75">Mengambil seragam</span>
+                    <span class="text-lg font-bold">TAKE</span>
+                    <span class="text-xs opacity-75">Mengambil</span>
                 </button>
+
+                <hr class="border-zinc-200 dark:border-zinc-700">
+
+                <!-- ESD LOCKER Title -->
+                <div class="text-center">
+                    <p class="text-[10px] text-zinc-500 dark:text-zinc-400">Safety • Security • Control</p>
+                </div>
+
+                <!-- 4 Features -->
+                <div class="grid grid-cols-2 gap-1.5">
+                    <div class="bg-green-50 dark:bg-green-900/20 rounded-lg p-1.5 text-center">
+                        <div class="w-6 h-6 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto">
+                            <svg class="w-3.5 h-3.5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                            </svg>
+                        </div>
+                        <h4 class="text-[10px] font-bold text-zinc-800 dark:text-white">AMAN</h4>
+                    </div>
+                    <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-1.5 text-center">
+                        <div class="w-6 h-6 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto">
+                            <svg class="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                        </div>
+                        <h4 class="text-[10px] font-bold text-zinc-800 dark:text-white">MUDAH</h4>
+                    </div>
+                    <div class="bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-1.5 text-center">
+                        <div class="w-6 h-6 bg-yellow-100 dark:bg-yellow-900/30 rounded-full flex items-center justify-center mx-auto">
+                            <svg class="w-3.5 h-3.5 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <h4 class="text-[10px] font-bold text-zinc-800 dark:text-white">EFISIEN</h4>
+                    </div>
+                    <div class="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-1.5 text-center">
+                        <div class="w-6 h-6 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center mx-auto">
+                            <svg class="w-3.5 h-3.5 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                            </svg>
+                        </div>
+                        <h4 class="text-[10px] font-bold text-zinc-800 dark:text-white">TERTIB</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN: 40% - Petunjuk Penggunaan & Perhatian -->
+        <div class="w-full lg:w-[40%]">
+            <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-lg border border-zinc-200 dark:border-zinc-800 p-4 sticky top-4 space-y-3">
+
+                <!-- Petunjuk Penggunaan -->
+                <div>
+                    <h4 class="text-sm font-bold text-zinc-800 dark:text-white mb-2 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        </svg>
+                        PETUNJUK PENGGUNAAN
+                    </h4>
+                    <ol class="text-sm text-zinc-600 dark:text-zinc-400 space-y-1.5 list-decimal list-inside">
+                        <li>Pilih aksi <span class="font-bold text-green-600 dark:text-green-400">STORE</span> untuk menyimpan barang atau <span class="font-bold text-purple-600 dark:text-purple-400">TAKE</span> untuk mengambil barang.</li>
+                        <li>Scan Barcode NIK Anda untuk verifikasi.</li>
+                        <li>Masukkan Nomor WhatsApp untuk menerima pemberitahuan.</li>
+                        <li>Ikuti instruksi pada layar.</li>
+                        <li>Locker akan terbuka otomatis jika berhasil.</li>
+                        <li>Setelah selesai, pastikan locker tertutup dengan rapat.</li>
+                    </ol>
+                </div>
+
+                <hr class="border-zinc-200 dark:border-zinc-700">
+
+                <!-- Perhatian -->
+                <div>
+                    <h4 class="text-sm font-bold text-yellow-700 dark:text-yellow-400 mb-2 flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                        PERHATIAN
+                    </h4>
+                    <ul class="text-sm text-yellow-700 dark:text-yellow-400 space-y-1 list-disc list-inside">
+                        <li>Simpan barang sesuai ketentuan.</li>
+                        <li>Jangan menyimpan barang berbahaya.</li>
+                        <li>Sistem ini diawasi CCTV 24 jam.</li>
+                        <li>Hubungi ESD Team jika ada kendala (+62-87883994150)</li>
+                    </ul>
+                </div>
+
+                <hr class="border-zinc-200 dark:border-zinc-700">
             </div>
         </div>
     </div>
@@ -244,7 +236,7 @@
         "></div>
         
         <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-3xl max-h-[85vh] relative z-10 border border-zinc-200 dark:border-zinc-700 flex flex-col">
-            <!-- Header - Fixed -->
+            <!-- Header -->
             <div class="flex-shrink-0 p-4 pb-3 border-b border-zinc-200 dark:border-zinc-700">
                 <div class="flex justify-between items-center">
                     <div class="flex items-center gap-3">
@@ -267,7 +259,7 @@
                 </div>
             </div>
 
-            <!-- Content - Scrollable dengan 2 kolom -->
+            <!-- Content -->
             <div class="flex-1 overflow-y-auto p-4">
                 @if($store_step == 1)
                     <div class="flex flex-col lg:flex-row gap-4 h-full">
@@ -292,7 +284,7 @@
                                 @enderror
                             </div>
 
-                            <!-- WhatsApp Number -->
+                            <!-- WhatsApp -->
                             <div>
                                 <label class="block text-xs font-medium text-zinc-700 dark:text-zinc-300 mb-1">WhatsApp Number</label>
                                 <div class="flex items-center gap-2">
@@ -320,7 +312,7 @@
                                 </p>
                             </div>
 
-                            <!-- Tombol Switch Input -->
+                            <!-- Switch Input -->
                             <div class="flex gap-2 text-xs">
                                 <button type="button"
                                         @click="activeInput = 'nik'; document.querySelector('input[placeholder=\'Scan Or Enter your NIK\']').focus()"
@@ -336,7 +328,6 @@
                                 </button>
                             </div>
 
-                            <!-- Informasi Input Aktif -->
                             <div class="text-center text-[10px] text-zinc-400 dark:text-zinc-500">
                                 <span x-show="activeInput === 'nik'">Sedang mengisi <strong class="text-green-600 dark:text-green-400">NIK</strong></span>
                                 <span x-show="activeInput === 'wa'">Sedang mengisi <strong class="text-green-600 dark:text-green-400">WhatsApp</strong></span>
@@ -345,9 +336,8 @@
                             </div>
                         </div>
 
-                        <!-- KANAN: Numpad + Action -->
+                        <!-- KANAN: Numpad -->
                         <div class="flex-1 space-y-3">
-                            <!-- Numpad -->
                             <div class="grid grid-cols-3 gap-1.5 w-full">
                                 @foreach(['1','2','3','4','5','6','7','8','9','clear','0','backspace'] as $key)
                                     <button type="button"
@@ -393,7 +383,6 @@
                                 @endforeach
                             </div>
 
-                            <!-- Button Check NIK -->
                             <button wire:click="checkStoreNik" 
                                     wire:loading.attr="disabled"
                                     class="w-full bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded-lg transition duration-200 font-medium shadow-lg shadow-green-600/20 hover:scale-[1.02] active:scale-95 text-sm">
@@ -403,7 +392,6 @@
                         </div>
                     </div>
 
-                <!-- Step 2: Confirm Employee Data -->
                 @elseif($store_step == 2)
                     <div class="flex flex-col lg:flex-row gap-4 h-full">
                         <div class="flex-1 space-y-4">
@@ -449,7 +437,6 @@
                         </div>
                     </div>
 
-                <!-- Step 3: Success -->
                 @else
                     <div class="flex flex-col items-center justify-center py-2 animate-fade-in">
                         <div class="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg shadow-green-500/20 animate-bounce-slow">
@@ -473,7 +460,6 @@
                             <p class="text-xs text-zinc-600 dark:text-zinc-400 mt-1 text-center">Notifikasi telah dikirim ke WhatsApp Anda</p>
                         </div>
                 
-                        <!-- Informasi Store -->
                         <div class="bg-blue-50 dark:bg-blue-900/20 rounded-xl p-3 mb-3 border border-blue-200 dark:border-blue-800 w-full max-w-md">
                             <div class="flex items-center justify-center gap-2 text-sm text-zinc-600 dark:text-zinc-400">
                                 <svg class="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -486,7 +472,6 @@
                             </p>
                         </div>
 
-                        <!-- Progress Bar & Countdown -->
                         <div x-show="isSuccess" class="mt-2 w-full max-w-md">
                             <div class="flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400 mb-1">
                                 <span>Menutup otomatis...</span>
@@ -570,7 +555,6 @@
                     </button>
                 </div>
 
-                <!-- Step 1: Input Access Code -->
                 @if($take_step == 1)
                     <div class="space-y-4">
                         <div class="text-center">
@@ -589,7 +573,6 @@
                             @enderror
                         </div>
                         
-                        <!-- Row 1: A-Z -->
                         <div class="grid grid-cols-9 gap-1.5 max-w-full">
                             @foreach(['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'] as $key)
                                 <button type="button"
@@ -603,7 +586,6 @@
                             @endforeach
                         </div>
 
-                        <!-- Row 2: 0-9 -->
                         <div class="grid grid-cols-10 gap-1.5 max-w-full">
                             @foreach(['0','1','2','3','4','5','6','7','8','9'] as $key)
                                 <button type="button"
@@ -617,7 +599,6 @@
                             @endforeach
                         </div>
 
-                        <!-- Row 3: Clear & Backspace -->
                         <div class="grid grid-cols-2 gap-1.5 max-w-full">
                             <button type="button"
                                     @click="
@@ -651,7 +632,6 @@
                         </button>
                     </div>
 
-                <!-- Step 2: Transaction Info -->
                 @elseif($take_step == 2)
                     <div class="space-y-6">
                         <div class="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-xl p-5 animate-fade-in">
@@ -710,7 +690,6 @@
                         </div>
                     </div>
 
-                <!-- Step 3: Success -->
                 @else
                     <div class="text-center py-4 animate-fade-in">
                         <div class="w-24 h-24 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-green-500/20 animate-bounce-slow">
@@ -734,7 +713,6 @@
                             <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-2 text-center">Please take your uniform</p>
                         </div>
 
-                        <!-- Progress Bar & Countdown -->
                         <div x-show="isSuccess" class="mt-4">
                             <div class="flex items-center justify-between text-xs text-zinc-500 dark:text-zinc-400 mb-1">
                                 <span>Menutup otomatis...</span>
@@ -854,11 +832,6 @@
                 font-size: 11px;
                 min-height: 34px;
                 padding: 4px 2px;
-            }
-            
-            .w-12 {
-                width: 2.5rem;
-                height: 2.5rem;
             }
         }
     </style>

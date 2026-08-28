@@ -350,24 +350,24 @@
                         <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
                             <thead class="bg-zinc-50 dark:bg-zinc-800/50">
                                 <tr>
-                                    <th class="px-3 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Status</th>
-                                    <th class="px-3 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Approval</th>
-                                    <th class="px-3 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Group</th>
-                                    <th class="px-3 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Run Time</th>
-                                    <th class="px-3 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Stop Time</th>
-                                    <th class="px-3 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Check By</th>
-                                    <th class="px-3 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Approved By</th>
-                                    <th class="px-3 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Time First</th>
-                                    <th class="px-3 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Last Updated</th>
-                                    <th class="px-3 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Actions</th>
+                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Status</th>
+                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Approval</th>
+                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Group</th>
+                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Run Time</th>
+                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Stop Time</th>
+                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Check By</th>
+                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Approved By</th>
+                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Time First</th>
+                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Last Updated</th>
+                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Actions</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
                                 @foreach($dailyFujis as $dailyFuji)
                                 <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors group">
                                     <!-- Status Column with Icon & Tooltip -->
-                                    <td class="px-3 py-3 whitespace-nowrap">
-                                        <div class="relative inline-flex items-center gap-2 cursor-help group/status"
+                                    <td class="px-3 py-3 whitespace-nowrap text-center">
+                                        <div class="relative inline-flex items-center gap-2 cursor-help group/status justify-center"
                                             title="{{ $dailyFuji->overall_status_text }}">
                                             @if($dailyFuji->overall_status === 'success')
                                                 <flux:icon.check-circle class="w-5 h-5 text-green-600" />
@@ -381,7 +381,7 @@
                                     </td>
                                     
                                     <!-- Approval Badge -->
-                                    <td class="px-3 py-3 whitespace-nowrap">
+                                    <td class="px-3 py-3 whitespace-nowrap text-center">
                                         @php
                                             $approvalConfig = [
                                                 'Approved' => ['class' => 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400', 'icon' => 'check-circle'],
@@ -397,14 +397,14 @@
                                     </td>
                                     
                                     <!-- Group -->
-                                    <td class="px-3 py-3 whitespace-nowrap">
+                                    <td class="px-3 py-3 whitespace-nowrap text-center">
                                         <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 font-semibold text-sm">
                                             {{ $dailyFuji->group ?? '-' }}
                                         </span>
                                     </td>
                                     
                                     <!-- Run Time Badge -->
-                                    <td class="px-3 py-3 whitespace-nowrap">
+                                    <td class="px-3 py-3 whitespace-nowrap text-center">
                                         @if($dailyFuji->run_time)
                                         <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
                                             <flux:icon.play class="w-3 h-3" />
@@ -416,7 +416,7 @@
                                     </td>
                                     
                                     <!-- Stop Time Badge -->
-                                    <td class="px-3 py-3 whitespace-nowrap">
+                                    <td class="px-3 py-3 whitespace-nowrap text-center">
                                         @if($dailyFuji->stop_time)
                                         <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
                                             <flux:icon.stop class="w-3 h-3" />
@@ -428,8 +428,8 @@
                                     </td>
                                     
                                     <!-- Check By -->
-                                    <td class="px-3 py-3 whitespace-nowrap">
-                                        <div class="flex items-center gap-2">
+                                    <td class="px-3 py-3 whitespace-nowrap text-center">
+                                        <div class="flex items-center justify-center gap-2">
                                             <div class="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
                                                 <span class="text-xs font-medium text-blue-600 dark:text-blue-400">
                                                     {{ substr($dailyFuji->updater->name ?? $dailyFuji->creator->name ?? '-', 0, 1) }}
@@ -442,9 +442,9 @@
                                     </td>
                                     
                                     <!-- Approved By -->
-                                    <td class="px-3 py-3 whitespace-nowrap">
+                                    <td class="px-3 py-3 whitespace-nowrap text-center">
                                         @if($dailyFuji->approvedBy)
-                                        <div class="flex items-center gap-2">
+                                        <div class="flex items-center justify-center gap-2">
                                             <div class="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
                                                 <span class="text-xs font-medium text-green-600 dark:text-green-400">
                                                     {{ substr($dailyFuji->approvedBy->name, 0, 1) }}
@@ -460,7 +460,7 @@
                                     </td>
                                     
                                     <!-- Created At -->
-                                    <td class="px-3 py-3 whitespace-nowrap">
+                                    <td class="px-3 py-3 whitespace-nowrap text-center">
                                         <div class="text-sm">
                                             <div class="text-zinc-700 dark:text-zinc-300">{{ $dailyFuji->created_at->format('d/m/Y') }}</div>
                                             <div class="text-xs text-zinc-400">{{ $dailyFuji->created_at->format('H:i:s') }}</div>
@@ -468,23 +468,24 @@
                                     </td>
 
                                     
-                                    <!-- Created At -->
-                                    <td class="px-3 py-3 whitespace-nowrap">
+                                    <!-- Updated At -->
+                                    <td class="px-3 py-3 whitespace-nowrap text-center">
                                         <div class="text-sm">
                                             <div class="text-zinc-700 dark:text-zinc-300">{{ $dailyFuji->updated_at->format('d/m/Y') }}</div>
                                             <div class="text-xs text-zinc-400">{{ $dailyFuji->updated_at->format('H:i:s') }}</div>
                                         </div>
                                     </td>
                                     
-                                    <td class="px-4 py-3 text-right">
-                                        <div class="flex items-center justify-end gap-1 whitespace-nowrap">
+                                    <td class="px-4 py-3 text-center">
+                                        <div class="flex items-center justify-center gap-1 whitespace-nowrap">
                                             <!-- View Activity Button -->
                                             <flux:tooltip content="View activity log" position="top">
                                                 <flux:button 
                                                     wire:click="viewActivity({{ $dailyFuji->id }}, 'fuji')"
                                                     size="sm"
                                                     icon="document-text"
-                                                    color="purple"
+                                                    variant="primary"
+                                                    color="indigo"
                                                     class="!p-2 flex-shrink-0"
                                                 />
                                             </flux:tooltip>
@@ -495,6 +496,7 @@
                                                     wire:click="viewDailyFujiDetails({{ $dailyFuji->id }})"
                                                     size="sm"
                                                     icon="eye"
+                                                    variant="primary"
                                                     color="blue"
                                                     class="!p-2 flex-shrink-0"
                                                 />
@@ -511,7 +513,8 @@
                                                         wire:click="editDailyFuji({{ $dailyFuji->id }})"
                                                         size="sm"
                                                         icon="pencil-square"
-                                                        color="yellow"
+                                                        variant="primary"
+                                                        color="amber"
                                                         class="!p-2 flex-shrink-0"
                                                     />
                                                 </flux:tooltip>
@@ -524,6 +527,7 @@
                                                         wire:click="openApprovalModal({{ $dailyFuji->id }})"
                                                         size="sm"
                                                         icon="check-badge"
+                                                        variant="primary"
                                                         color="green"
                                                         class="!p-2 flex-shrink-0"
                                                     />
@@ -532,15 +536,15 @@
 
                                             <!-- Print Button -->
                                             <flux:tooltip content="Print checklist" position="top">
-                                                <a 
+                                                <flux:button 
                                                     href="{{ route('print.daily-fuji', $dailyFuji->id) }}"
                                                     target="_blank"
-                                                    class="inline-flex items-center justify-center p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors dark:text-gray-400 dark:hover:bg-gray-800"
-                                                >
-                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
-                                                    </svg>
-                                                </a>
+                                                    size="sm"
+                                                    icon="printer"
+                                                    variant="primary"
+                                                    color="gray"
+                                                    class="!p-2 flex-shrink-0"
+                                                />
                                             </flux:tooltip>
                                         </div>
                                     </td>
@@ -615,24 +619,24 @@
                         <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
                             <thead class="bg-zinc-50 dark:bg-zinc-800/50">
                                 <tr>
-                                    <th class="px-3 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Status</th>
-                                    <th class="px-3 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Approval</th>
-                                    <th class="px-3 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Group</th>
-                                    <th class="px-3 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Run Time</th>
-                                    <th class="px-3 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Stop Time</th>
-                                    <th class="px-3 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Check By</th>
-                                    <th class="px-3 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Approved By</th>
-                                    <th class="px-3 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Time First</th>
-                                    <th class="px-3 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Last Updated</th>
-                                    <th class="px-3 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Actions</th>
+                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Status</th>
+                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Approval</th>
+                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Group</th>
+                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Run Time</th>
+                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Stop Time</th>
+                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Check By</th>
+                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Approved By</th>
+                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Time First</th>
+                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Last Updated</th>
+                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Actions</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
                                 @foreach($dailyPanasonics as $dailyPanasonic)
                                 <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors group">
                                     <!-- Status Column -->
-                                    <td class="px-3 py-3 whitespace-nowrap">
-                                        <div class="relative inline-flex items-center gap-2 cursor-help group/status"
+                                    <td class="px-3 py-3 whitespace-nowrap text-center">
+                                        <div class="relative inline-flex items-center gap-2 cursor-help group/status justify-center"
                                             title="{{ $dailyPanasonic->overall_status_text }}">
                                             @if($dailyPanasonic->overall_status === 'success')
                                                 <flux:icon.check-circle class="w-5 h-5 text-green-600" />
@@ -646,7 +650,7 @@
                                     </td>
                                     
                                     <!-- Approval Badge -->
-                                    <td class="px-3 py-3 whitespace-nowrap">
+                                    <td class="px-3 py-3 whitespace-nowrap text-center">
                                         @php
                                             $panasonicApprovalConfig = [
                                                 'Approved' => ['class' => 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400', 'icon' => 'check-circle'],
@@ -662,14 +666,14 @@
                                     </td>
                                     
                                     <!-- Group -->
-                                    <td class="px-3 py-3 whitespace-nowrap">
+                                    <td class="px-3 py-3 whitespace-nowrap text-center">
                                         <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 font-semibold text-sm">
                                             {{ $dailyPanasonic->group ?? '-' }}
                                         </span>
                                     </td>
                                     
                                     <!-- Run Time -->
-                                    <td class="px-3 py-3 whitespace-nowrap">
+                                    <td class="px-3 py-3 whitespace-nowrap text-center">
                                         @if($dailyPanasonic->run_time)
                                         <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
                                             <flux:icon.play class="w-3 h-3" />
@@ -681,7 +685,7 @@
                                     </td>
                                     
                                     <!-- Stop Time -->
-                                    <td class="px-3 py-3 whitespace-nowrap">
+                                    <td class="px-3 py-3 whitespace-nowrap text-center">
                                         @if($dailyPanasonic->stop_time)
                                         <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
                                             <flux:icon.stop class="w-3 h-3" />
@@ -693,8 +697,8 @@
                                     </td>
                                     
                                     <!-- Check By -->
-                                    <td class="px-3 py-3 whitespace-nowrap">
-                                        <div class="flex items-center gap-2">
+                                    <td class="px-3 py-3 whitespace-nowrap text-center">
+                                        <div class="flex items-center justify-center gap-2">
                                             <div class="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
                                                 <span class="text-xs font-medium text-blue-600 dark:text-blue-400">
                                                     {{ substr($dailyPanasonic->updater->name ?? $dailyPanasonic->creator->name ?? '-', 0, 1) }}
@@ -707,9 +711,9 @@
                                     </td>
                                     
                                     <!-- Approved By -->
-                                    <td class="px-3 py-3 whitespace-nowrap">
+                                    <td class="px-3 py-3 whitespace-nowrap text-center">
                                         @if($dailyPanasonic->approvedBy)
-                                        <div class="flex items-center gap-2">
+                                        <div class="flex items-center justify-center gap-2">
                                             <div class="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
                                                 <span class="text-xs font-medium text-green-600 dark:text-green-400">
                                                     {{ substr($dailyPanasonic->approvedBy->name, 0, 1) }}
@@ -725,7 +729,7 @@
                                     </td>
                                     
                                     <!-- Created At -->
-                                    <td class="px-3 py-3 whitespace-nowrap">
+                                    <td class="px-3 py-3 whitespace-nowrap text-center">
                                         <div class="text-sm">
                                             <div class="text-zinc-700 dark:text-zinc-300">{{ $dailyPanasonic->created_at->format('d/m/Y') }}</div>
                                             <div class="text-xs text-zinc-400">{{ $dailyPanasonic->created_at->format('H:i:s') }}</div>
@@ -733,7 +737,7 @@
                                     </td>
                                     
                                     <!-- Updated At -->
-                                    <td class="px-3 py-3 whitespace-nowrap">
+                                    <td class="px-3 py-3 whitespace-nowrap text-center">
                                         <div class="text-sm">
                                             <div class="text-zinc-700 dark:text-zinc-300">{{ $dailyPanasonic->updated_at->format('d/m/Y') }}</div>
                                             <div class="text-xs text-zinc-400">{{ $dailyPanasonic->updated_at->format('H:i:s') }}</div>
@@ -741,8 +745,8 @@
                                     </td>
                                     
                                     <!-- Actions -->
-                                    <td class="px-4 py-3 text-right">
-                                        <div class="flex items-center justify-end gap-1 whitespace-nowrap">
+                                    <td class="px-4 py-3 text-center">
+                                        <div class="flex items-center justify-center gap-1 whitespace-nowrap">
 
                                             <!-- View Activity Button -->
                                             <flux:tooltip content="View activity log" position="top">
@@ -750,7 +754,8 @@
                                                     wire:click="viewActivity({{ $dailyPanasonic->id }}, 'panasonic')"
                                                     size="sm"
                                                     icon="document-text"
-                                                    color="purple"
+                                                    variant="primary"
+                                                    color="indigo"
                                                     class="!p-2 flex-shrink-0"
                                                 />
                                             </flux:tooltip>
@@ -761,6 +766,7 @@
                                                     wire:click="viewDailyPanasonicDetails({{ $dailyPanasonic->id }})"
                                                     size="sm"
                                                     icon="eye"
+                                                    variant="primary"
                                                     color="blue"
                                                     class="!p-2 flex-shrink-0"
                                                 />
@@ -777,7 +783,8 @@
                                                         wire:click="editDailyPanasonic({{ $dailyPanasonic->id }})"
                                                         size="sm"
                                                         icon="pencil-square"
-                                                        color="yellow"
+                                                        variant="primary"
+                                                        color="amber"
                                                         class="!p-2 flex-shrink-0"
                                                     />
                                                 </flux:tooltip>
@@ -790,6 +797,7 @@
                                                         wire:click="openPanasonicApprovalModal({{ $dailyPanasonic->id }})"
                                                         size="sm"
                                                         icon="check-badge"
+                                                        variant="primary"
                                                         color="green"
                                                         class="!p-2 flex-shrink-0"
                                                     />
@@ -798,15 +806,15 @@
 
                                             <!-- Print Button -->
                                             <flux:tooltip content="Print checklist" position="top">
-                                                <a 
+                                                <flux:button 
                                                     href="{{ route('print.daily-panasonic', $dailyPanasonic->id) }}"
                                                     target="_blank"
-                                                    class="inline-flex items-center justify-center p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors dark:text-gray-400 dark:hover:bg-gray-800"
-                                                >
-                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
-                                                    </svg>
-                                                </a>
+                                                    size="sm"
+                                                    icon="printer"
+                                                    variant="primary"
+                                                    color="gray"
+                                                    class="!p-2 flex-shrink-0"
+                                                />
                                             </flux:tooltip>
                                         </div>
                                     </td>
@@ -917,32 +925,54 @@
                 </div>
 
                 @php
-                    // Helper function to check if field is empty (null or empty string, but '-' is considered filled)
-                    function isFieldEmpty($value) {
+                    // Helper function to check if field is empty (null or empty string, '-' is considered valid/filled)
+                    function isFieldEmptyForDetail($value) {
                         return $value === null || $value === '';
                     }
                     
-                    // Helper function to check if step has incomplete fields
-                    function isStepIncomplete($dailyFuji, $stepFields) {
+                    // Helper function untuk cek apakah field required
+                    function isFujiFieldRequired($field, $requiredFields) {
+                        return in_array($field, $requiredFields ?? []);
+                    }
+                    
+                    // Helper function to check if step has incomplete fields (hanya required fields)
+                    function isStepIncompleteForDetail($record, $stepFields, $requiredFields) {
                         foreach ($stepFields as $field) {
-                            $value = $dailyFuji->{$field};
-                            if (isFieldEmpty($value)) {
+                            // Skip if field is not required
+                            if (!isFujiFieldRequired($field, $requiredFields)) {
+                                continue;
+                            }
+                            $value = $record->{$field};
+                            if (isFieldEmptyForDetail($value)) {
                                 return true;
                             }
                         }
                         return false;
                     }
                     
-                    // Helper function to get field color class
-                    function getFieldColorClass($value) {
-                        return isFieldEmpty($value) ? 'text-red-600' : 'text-green-600';
+                    // Helper function to get field color class - '-' dianggap valid (hijau)
+                    function getFieldColorClassForDetail($value) {
+                        if ($value === '-') {
+                            return 'text-green-600';
+                        }
+                        return isFieldEmptyForDetail($value) ? 'text-red-600' : 'text-green-600';
+                    }
+                    
+                    // Helper function to get badge class
+                    function getBadgeClassForDetail($value) {
+                        if ($value === '-') {
+                            return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400';
+                        }
+                        return isFieldEmptyForDetail($value) 
+                            ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' 
+                            : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400';
                     }
                 @endphp
 
                 <!-- STEP 1: GENERAL -->
                 @php
-                    $step1Fields = ['body_cover', 'lamp_alarm_change_model']; // TAMBAHKAN
-                    $step1Incomplete = isStepIncomplete($selectedDailyFuji, $step1Fields);
+                    $step1Fields = ['body_cover', 'lamp_alarm_change_model'];
+                    $step1Incomplete = isStepIncompleteForDetail($selectedDailyFuji, $step1Fields, $requiredFujiFields ?? []);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step1Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
                     <div class="{{ $step1Incomplete ? 'bg-red-100 dark:bg-red-900/50' : 'bg-blue-100 dark:bg-blue-900/30' }} px-4 py-3">
@@ -950,6 +980,15 @@
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-zinc-800 text-sm font-bold {{ $step1Incomplete ? 'text-red-600' : 'text-blue-600' }}">1</span>
                                 <h4 class="font-semibold {{ $step1Incomplete ? 'text-red-800 dark:text-red-300' : 'text-blue-800 dark:text-blue-300' }}">GENERAL</h4>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    @php
+                                        $requiredCount = 0;
+                                        foreach ($step1Fields as $f) {
+                                            if (isFujiFieldRequired($f, $requiredFujiFields ?? [])) $requiredCount++;
+                                        }
+                                    @endphp
+                                    {{ $requiredCount }}/{{ count($step1Fields) }} required
+                                </span>
                             </div>
                             @if($step1Incomplete)
                                 <flux:icon.x-circle class="w-5 h-5 text-red-600" />
@@ -959,29 +998,41 @@
                         </div>
                     </div>
                     <div class="p-4 space-y-4">
-                        <!-- Body Cover -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Body Cover</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Body Cover
+                                    @if(isFujiFieldRequired('body_cover', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Make sure all machine cover clean</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No Dust and clean</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->body_cover) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->body_cover) }}">
                                     Value : {{ ucfirst($selectedDailyFuji->body_cover ?? '-') }}
                                 </span>
                             </div>
                         </div>
                         
-                        <!-- Lamp Alarm & Change Model (BARU) -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Lamp Alarm & Change Model</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Lamp Alarm & Change Model
+                                    @if(isFujiFieldRequired('lamp_alarm_change_model', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Make sure lamp Alarm & Change Model Lamp clean</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No Dust and clean</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->lamp_alarm_change_model) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->lamp_alarm_change_model) }}">
                                     Value : {{ ucfirst($selectedDailyFuji->lamp_alarm_change_model ?? '-') }}
                                 </span>
                             </div>
@@ -992,7 +1043,7 @@
                 <!-- STEP 2: LOADER -->
                 @php
                     $step2Fields = ['cylinder', 'rail_and_magazine_pcb', 'cover_magazine'];
-                    $step2Incomplete = isStepIncomplete($selectedDailyFuji, $step2Fields);
+                    $step2Incomplete = isStepIncompleteForDetail($selectedDailyFuji, $step2Fields, $requiredFujiFields ?? []);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step2Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
                     <div class="{{ $step2Incomplete ? 'bg-red-100 dark:bg-red-900/50' : 'bg-blue-100 dark:bg-blue-900/30' }} px-4 py-3">
@@ -1000,6 +1051,15 @@
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-zinc-800 text-sm font-bold {{ $step2Incomplete ? 'text-red-600' : 'text-blue-600' }}">2</span>
                                 <h4 class="font-semibold {{ $step2Incomplete ? 'text-red-800 dark:text-red-300' : 'text-blue-800 dark:text-blue-300' }}">LOADER</h4>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    @php
+                                        $requiredCount = 0;
+                                        foreach ($step2Fields as $f) {
+                                            if (isFujiFieldRequired($f, $requiredFujiFields ?? [])) $requiredCount++;
+                                        }
+                                    @endphp
+                                    {{ $requiredCount }}/{{ count($step2Fields) }} required
+                                </span>
                             </div>
                             @if($step2Incomplete)
                                 <flux:icon.x-circle class="w-5 h-5 text-red-600" />
@@ -1009,43 +1069,61 @@
                         </div>
                     </div>
                     <div class="p-4 space-y-4">
-                        <!-- Cylinder -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Cylinder (1)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Cylinder (1)
+                                    @if(isFujiFieldRequired('cylinder', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Operation And center</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : Smooth and center</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->cylinder) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->cylinder) }}">
                                     Value : {{ ucfirst($selectedDailyFuji->cylinder ?? '-') }}
                                 </span>
                             </div>
                         </div>
                         
-                        <!-- Rail & Magazine PCB -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Rail & Magazine PCB (1.a)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Rail & Magazine PCB (1.a)
+                                    @if(isFujiFieldRequired('rail_and_magazine_pcb', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Cleaning Dust and dirty</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No Dust and clean</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->rail_and_magazine_pcb) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->rail_and_magazine_pcb) }}">
                                     Value : {{ ucfirst($selectedDailyFuji->rail_and_magazine_pcb ?? '-') }}
                                 </span>
                             </div>
                         </div>
                         
-                        <!-- Cover Magazine -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Cover Magazine (1.b)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Cover Magazine (1.b)
+                                    @if(isFujiFieldRequired('cover_magazine', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Cleaning Dust and dirty</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No Dust and clean</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->cover_magazine) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->cover_magazine) }}">
                                     Value : {{ ucfirst($selectedDailyFuji->cover_magazine ?? '-') }}
                                 </span>
                             </div>
@@ -1056,7 +1134,7 @@
                 <!-- STEP 3: PCB CLEANER -->
                 @php
                     $step3Fields = ['brush', 'air_presure', 'vacume_presure_unitech', 'vacume_presure_nix', 'vacume_brush', 'cleaning_roller', 'ionizer', 'conveyor_speed'];
-                    $step3Incomplete = isStepIncomplete($selectedDailyFuji, $step3Fields);
+                    $step3Incomplete = isStepIncompleteForDetail($selectedDailyFuji, $step3Fields, $requiredFujiFields ?? []);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step3Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
                     <div class="{{ $step3Incomplete ? 'bg-red-100 dark:bg-red-900/50' : 'bg-blue-100 dark:bg-blue-900/30' }} px-4 py-3">
@@ -1064,6 +1142,15 @@
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-zinc-800 text-sm font-bold {{ $step3Incomplete ? 'text-red-600' : 'text-blue-600' }}">3</span>
                                 <h4 class="font-semibold {{ $step3Incomplete ? 'text-red-800 dark:text-red-300' : 'text-blue-800 dark:text-blue-300' }}">PCB CLEANER</h4>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    @php
+                                        $requiredCount = 0;
+                                        foreach ($step3Fields as $f) {
+                                            if (isFujiFieldRequired($f, $requiredFujiFields ?? [])) $requiredCount++;
+                                        }
+                                    @endphp
+                                    {{ $requiredCount }}/{{ count($step3Fields) }} required
+                                </span>
                             </div>
                             @if($step3Incomplete)
                                 <flux:icon.x-circle class="w-5 h-5 text-red-600" />
@@ -1075,12 +1162,19 @@
                     <div class="p-4 space-y-4">
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Brush (2)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Brush (2)
+                                    @if(isFujiFieldRequired('brush', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Cleaning touch PCB</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : Rotation</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->brush) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->brush) }}">
                                     Value : {{ ucfirst($selectedDailyFuji->brush ?? '-') }}
                                 </span>
                             </div>
@@ -1088,12 +1182,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Air Pressure (2.a)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Air Pressure (2.a)
+                                    @if(isFujiFieldRequired('air_presure', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check with Pressure Meter (write value)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 0.45 - 0.54 Mpa</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->air_presure) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->air_presure) }}">
                                     Value : {{ $selectedDailyFuji->air_presure ?? '-' }} Mpa
                                 </span>
                             </div>
@@ -1101,12 +1202,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Vacume Pressure Unitech (2.b)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Vacume Pressure Unitech (2.b)
+                                    @if(isFujiFieldRequired('vacume_presure_unitech', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check with Pressure Meter (write value)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 0.45 - 0.54 Mpa (Unitech only)</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->vacume_presure_unitech) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->vacume_presure_unitech) }}">
                                     Value : {{ $selectedDailyFuji->vacume_presure_unitech ?? '-' }} Mpa
                                 </span>
                             </div>
@@ -1114,12 +1222,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Vacume Pressure Nix (2.c)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Vacume Pressure Nix (2.c)
+                                    @if(isFujiFieldRequired('vacume_presure_nix', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check with Pressure Meter (write value)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 0.60 - 0.70 Mpa (N.I.X only)</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->vacume_presure_nix) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->vacume_presure_nix) }}">
                                     Value : {{ $selectedDailyFuji->vacume_presure_nix ?? '-' }} Mpa
                                 </span>
                             </div>
@@ -1127,12 +1242,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Vacume Brush (3)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Vacume Brush (3)
+                                    @if(isFujiFieldRequired('vacume_brush', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Operation</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : Rotation</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->vacume_brush) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->vacume_brush) }}">
                                     Value : {{ ucfirst($selectedDailyFuji->vacume_brush ?? '-') }}
                                 </span>
                             </div>
@@ -1140,12 +1262,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Cleaning Roller (4)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Cleaning Roller (4)
+                                    @if(isFujiFieldRequired('cleaning_roller', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Rotation and Cleaning</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : Smooth rotation & Clean</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->cleaning_roller) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->cleaning_roller) }}">
                                     Value : {{ ucfirst($selectedDailyFuji->cleaning_roller ?? '-') }}
                                 </span>
                             </div>
@@ -1153,12 +1282,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Ionizer (5)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Ionizer (5)
+                                    @if(isFujiFieldRequired('ionizer', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Cleaning</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 5 Times to push cleaner</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->ionizer) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->ionizer) }}">
                                     Value : {{ ucfirst($selectedDailyFuji->ionizer ?? '-') }}
                                 </span>
                             </div>
@@ -1166,12 +1302,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Conveyor Setting (6)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Conveyor Setting (6)
+                                    @if(isFujiFieldRequired('conveyor_speed', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check with Analog panel (write value)</p>
-                                <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 40</p>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : ≤ 40</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->conveyor_speed) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->conveyor_speed) }}">
                                     Value : {{ $selectedDailyFuji->conveyor_speed ?? '-' }}
                                 </span>
                             </div>
@@ -1182,7 +1325,7 @@
                 <!-- STEP 4: PRINTING -->
                 @php
                     $step4Fields = ['ipa_solvent', 'temperature_control_1', 'humidity_control_1', 'clamp_presure', 'squeege_upper', 'cleaning_solvent', 'air_presure_meter'];
-                    $step4Incomplete = isStepIncomplete($selectedDailyFuji, $step4Fields);
+                    $step4Incomplete = isStepIncompleteForDetail($selectedDailyFuji, $step4Fields, $requiredFujiFields ?? []);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step4Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
                     <div class="{{ $step4Incomplete ? 'bg-red-100 dark:bg-red-900/50' : 'bg-blue-100 dark:bg-blue-900/30' }} px-4 py-3">
@@ -1190,6 +1333,15 @@
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-zinc-800 text-sm font-bold {{ $step4Incomplete ? 'text-red-600' : 'text-blue-600' }}">4</span>
                                 <h4 class="font-semibold {{ $step4Incomplete ? 'text-red-800 dark:text-red-300' : 'text-blue-800 dark:text-blue-300' }}">PRINTING</h4>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    @php
+                                        $requiredCount = 0;
+                                        foreach ($step4Fields as $f) {
+                                            if (isFujiFieldRequired($f, $requiredFujiFields ?? [])) $requiredCount++;
+                                        }
+                                    @endphp
+                                    {{ $requiredCount }}/{{ count($step4Fields) }} required
+                                </span>
                             </div>
                             @if($step4Incomplete)
                                 <flux:icon.x-circle class="w-5 h-5 text-red-600" />
@@ -1201,12 +1353,19 @@
                     <div class="p-4 space-y-4">
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">IPA Solvent (7)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    IPA Solvent (7)
+                                    @if(isFujiFieldRequired('ipa_solvent', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Make sure solvent minimal on mid level (half)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : Tank Minimal half</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->ipa_solvent) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->ipa_solvent) }}">
                                     Value : {{ ucfirst($selectedDailyFuji->ipa_solvent ?? '-') }}
                                 </span>
                             </div>
@@ -1214,12 +1373,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Temperature Control (8)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Temperature Control (8)
+                                    @if(isFujiFieldRequired('temperature_control_1', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Result-01</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 23-27℃</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->temperature_control_1) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->temperature_control_1) }}">
                                     Value : {{ $selectedDailyFuji->temperature_control_1 ?? '-' }} ℃
                                 </span>
                             </div>
@@ -1227,12 +1393,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Humidity Control (8.a)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Humidity Control (8.a)
+                                    @if(isFujiFieldRequired('humidity_control_1', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Result-01</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 35 % - 70 %</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->humidity_control_1) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->humidity_control_1) }}">
                                     Value : {{ $selectedDailyFuji->humidity_control_1 ?? '-' }} %
                                 </span>
                             </div>
@@ -1240,12 +1413,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Clamp Pressure (9)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Clamp Pressure (9)
+                                    @if(isFujiFieldRequired('clamp_presure', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check with Pressure Meter (write value)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 0.20 ~ 0.4 Mpa</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->clamp_presure) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->clamp_presure) }}">
                                     Value : {{ $selectedDailyFuji->clamp_presure ?? '-' }} Mpa
                                 </span>
                             </div>
@@ -1253,12 +1433,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Squeege Upper (10)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Squeege Upper (10)
+                                    @if(isFujiFieldRequired('squeege_upper', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check with Pressure Meter (write value)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 0.12 ~ (+/ 0.01) Mpa</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->squeege_upper) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->squeege_upper) }}">
                                     Value : {{ $selectedDailyFuji->squeege_upper ?? '-' }} Mpa
                                 </span>
                             </div>
@@ -1266,12 +1453,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Cleaning Solvent (11)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Cleaning Solvent (11)
+                                    @if(isFujiFieldRequired('cleaning_solvent', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check with Pressure Meter (write value)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 0.20 ~ (+/ 0.01) Mpa</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->cleaning_solvent) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->cleaning_solvent) }}">
                                     Value : {{ $selectedDailyFuji->cleaning_solvent ?? '-' }} Mpa
                                 </span>
                             </div>
@@ -1279,12 +1473,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Air Pressure Meter (12)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Air Pressure Meter (12)
+                                    @if(isFujiFieldRequired('air_presure_meter', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check with Pressure Meter (write value)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 0.50~ 0.55 Mpa</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->air_presure_meter) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->air_presure_meter) }}">
                                     Value : {{ $selectedDailyFuji->air_presure_meter ?? '-' }} Mpa
                                 </span>
                             </div>
@@ -1295,7 +1496,7 @@
                 <!-- STEP 5: SPI -->
                 @php
                     $step5Fields = ['air_presure_meter_parmi', 'capability_index'];
-                    $step5Incomplete = isStepIncomplete($selectedDailyFuji, $step5Fields);
+                    $step5Incomplete = isStepIncompleteForDetail($selectedDailyFuji, $step5Fields, $requiredFujiFields ?? []);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step5Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
                     <div class="{{ $step5Incomplete ? 'bg-red-100 dark:bg-red-900/50' : 'bg-blue-100 dark:bg-blue-900/30' }} px-4 py-3">
@@ -1303,6 +1504,15 @@
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-zinc-800 text-sm font-bold {{ $step5Incomplete ? 'text-red-600' : 'text-blue-600' }}">5</span>
                                 <h4 class="font-semibold {{ $step5Incomplete ? 'text-red-800 dark:text-red-300' : 'text-blue-800 dark:text-blue-300' }}">SPI</h4>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    @php
+                                        $requiredCount = 0;
+                                        foreach ($step5Fields as $f) {
+                                            if (isFujiFieldRequired($f, $requiredFujiFields ?? [])) $requiredCount++;
+                                        }
+                                    @endphp
+                                    {{ $requiredCount }}/{{ count($step5Fields) }} required
+                                </span>
                             </div>
                             @if($step5Incomplete)
                                 <flux:icon.x-circle class="w-5 h-5 text-red-600" />
@@ -1314,12 +1524,19 @@
                     <div class="p-4 space-y-4">
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Air Pressure Meter Parmi (12.a)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Air Pressure Meter Parmi (12.a)
+                                    @if(isFujiFieldRequired('air_presure_meter_parmi', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check with Pressure Meter (write value)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 0.40 - 0.50 Mpa (PARMI)</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->air_presure_meter_parmi) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->air_presure_meter_parmi) }}">
                                     Value : {{ $selectedDailyFuji->air_presure_meter_parmi ?? '-' }} Mpa
                                 </span>
                             </div>
@@ -1327,12 +1544,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Capability Index (12.b)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Capability Index (12.b)
+                                    @if(isFujiFieldRequired('capability_index', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check SPI Measurement result with Master Jig (Solder Paste height) (write CpK value)</p>
-                                <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : CpK for Masspro > 1.67</p>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : CpK for Masspro > 1.33</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->capability_index) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->capability_index) }}">
                                     Value : {{ $selectedDailyFuji->capability_index ?? '-' }}
                                 </span>
                             </div>
@@ -1343,7 +1567,7 @@
                 <!-- STEP 6: CHIP MOUNTER 1 -->
                 @php
                     $step6Fields = ['air_presure_supply', 'vaccuum_pump_1', 'box_1', 'vaccuum_parameter_1', 'expire_date_1'];
-                    $step6Incomplete = isStepIncomplete($selectedDailyFuji, $step6Fields);
+                    $step6Incomplete = isStepIncompleteForDetail($selectedDailyFuji, $step6Fields, $requiredFujiFields ?? []);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step6Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
                     <div class="{{ $step6Incomplete ? 'bg-red-100 dark:bg-red-900/50' : 'bg-blue-100 dark:bg-blue-900/30' }} px-4 py-3">
@@ -1351,6 +1575,15 @@
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-zinc-800 text-sm font-bold {{ $step6Incomplete ? 'text-red-600' : 'text-blue-600' }}">6</span>
                                 <h4 class="font-semibold {{ $step6Incomplete ? 'text-red-800 dark:text-red-300' : 'text-blue-800 dark:text-blue-300' }}">CHIP MOUNTER 1</h4>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    @php
+                                        $requiredCount = 0;
+                                        foreach ($step6Fields as $f) {
+                                            if (isFujiFieldRequired($f, $requiredFujiFields ?? [])) $requiredCount++;
+                                        }
+                                    @endphp
+                                    {{ $requiredCount }}/{{ count($step6Fields) }} required
+                                </span>
                             </div>
                             @if($step6Incomplete)
                                 <flux:icon.x-circle class="w-5 h-5 text-red-600" />
@@ -1362,12 +1595,19 @@
                     <div class="p-4 space-y-4">
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Air Pressure Supply (13)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Air Pressure Supply (13)
+                                    @if(isFujiFieldRequired('air_presure_supply', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check with Pressure Meter (write value)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 0.49 ~ 0.54 Mpa</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->air_presure_supply) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->air_presure_supply) }}">
                                     Value : {{ $selectedDailyFuji->air_presure_supply ?? '-' }} Mpa
                                 </span>
                             </div>
@@ -1375,12 +1615,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Vaccuum Pump (13.a)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Vaccuum Pump (13.a)
+                                    @if(isFujiFieldRequired('vaccuum_pump_1', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check with Pressure Meter (write value)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : -87 ~ -100 Kpa</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->vaccuum_pump_1) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->vaccuum_pump_1) }}">
                                     Value : {{ $selectedDailyFuji->vaccuum_pump_1 ?? '-' }} Kpa
                                 </span>
                             </div>
@@ -1388,12 +1635,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Box (13.b)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Box (13.b)
+                                    @if(isFujiFieldRequired('box_1', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Chip collection</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No components</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->box_1) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->box_1) }}">
                                     Value : {{ ucfirst($selectedDailyFuji->box_1 ?? '-') }}
                                 </span>
                             </div>
@@ -1401,12 +1655,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Vaccuum Parameter (13.c)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Vaccuum Parameter (13.c)
+                                    @if(isFujiFieldRequired('vaccuum_parameter_1', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check with machine parameter result</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No Yellow initial (display)</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->vaccuum_parameter_1) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->vaccuum_parameter_1) }}">
                                     Value : {{ ucfirst($selectedDailyFuji->vaccuum_parameter_1 ?? '-') }}
                                 </span>
                             </div>
@@ -1414,12 +1675,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Expire Date (14)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Expire Date (14)
+                                    @if(isFujiFieldRequired('expire_date_1', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Make sure due date on the label</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No Expired</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->expire_date_1) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->expire_date_1) }}">
                                     Value : {{ ucfirst($selectedDailyFuji->expire_date_1 ?? '-') }}
                                 </span>
                             </div>
@@ -1430,7 +1698,7 @@
                 <!-- STEP 7: CHIP MOUNTER 2 -->
                 @php
                     $step7Fields = ['air_presure_supply_2', 'vaccuum_pump_2', 'box_2', 'vaccuum_parameter_2', 'expire_date_2'];
-                    $step7Incomplete = isStepIncomplete($selectedDailyFuji, $step7Fields);
+                    $step7Incomplete = isStepIncompleteForDetail($selectedDailyFuji, $step7Fields, $requiredFujiFields ?? []);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step7Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
                     <div class="{{ $step7Incomplete ? 'bg-red-100 dark:bg-red-900/50' : 'bg-blue-100 dark:bg-blue-900/30' }} px-4 py-3">
@@ -1438,6 +1706,15 @@
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-zinc-800 text-sm font-bold {{ $step7Incomplete ? 'text-red-600' : 'text-blue-600' }}">7</span>
                                 <h4 class="font-semibold {{ $step7Incomplete ? 'text-red-800 dark:text-red-300' : 'text-blue-800 dark:text-blue-300' }}">CHIP MOUNTER 2</h4>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    @php
+                                        $requiredCount = 0;
+                                        foreach ($step7Fields as $f) {
+                                            if (isFujiFieldRequired($f, $requiredFujiFields ?? [])) $requiredCount++;
+                                        }
+                                    @endphp
+                                    {{ $requiredCount }}/{{ count($step7Fields) }} required
+                                </span>
                             </div>
                             @if($step7Incomplete)
                                 <flux:icon.x-circle class="w-5 h-5 text-red-600" />
@@ -1449,12 +1726,19 @@
                     <div class="p-4 space-y-4">
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Air Pressure Supply (15)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Air Pressure Supply (15)
+                                    @if(isFujiFieldRequired('air_presure_supply_2', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check with Pressure Meter (write value)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 0.49 ~ 0.54 Mpa</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->air_presure_supply_2) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->air_presure_supply_2) }}">
                                     Value : {{ $selectedDailyFuji->air_presure_supply_2 ?? '-' }} Mpa
                                 </span>
                             </div>
@@ -1462,12 +1746,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Vaccuum Pump (15.a)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Vaccuum Pump (15.a)
+                                    @if(isFujiFieldRequired('vaccuum_pump_2', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check with Pressure Meter (write value)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : -87 ~ -100 Kpa</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->vaccuum_pump_2) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->vaccuum_pump_2) }}">
                                     Value : {{ $selectedDailyFuji->vaccuum_pump_2 ?? '-' }} Kpa
                                 </span>
                             </div>
@@ -1475,12 +1766,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Box (15.b)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Box (15.b)
+                                    @if(isFujiFieldRequired('box_2', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Chip collection</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No components</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->box_2) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->box_2) }}">
                                     Value : {{ ucfirst($selectedDailyFuji->box_2 ?? '-') }}
                                 </span>
                             </div>
@@ -1488,12 +1786,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Vaccuum Parameter (15.c)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Vaccuum Parameter (15.c)
+                                    @if(isFujiFieldRequired('vaccuum_parameter_2', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check with machine parameter result</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No Yellow initial (display)</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->vaccuum_parameter_2) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->vaccuum_parameter_2) }}">
                                     Value : {{ ucfirst($selectedDailyFuji->vaccuum_parameter_2 ?? '-') }}
                                 </span>
                             </div>
@@ -1501,12 +1806,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Expire Date (16)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Expire Date (16)
+                                    @if(isFujiFieldRequired('expire_date_2', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Make sure due date on the label</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No Expired</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->expire_date_2) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->expire_date_2) }}">
                                     Value : {{ ucfirst($selectedDailyFuji->expire_date_2 ?? '-') }}
                                 </span>
                             </div>
@@ -1517,7 +1829,7 @@
                 <!-- STEP 8: REFLOW -->
                 @php
                     $step8Fields = ['abandonment', 'fire_posibilty', 'flashlight', 'rail_and_transfer_unit', 'n2_presure', 'oxygent_density_sek', 'oxygent_density_special', 'fire_posibilty_2'];
-                    $step8Incomplete = isStepIncomplete($selectedDailyFuji, $step8Fields);
+                    $step8Incomplete = isStepIncompleteForDetail($selectedDailyFuji, $step8Fields, $requiredFujiFields ?? []);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step8Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
                     <div class="{{ $step8Incomplete ? 'bg-red-100 dark:bg-red-900/50' : 'bg-blue-100 dark:bg-blue-900/30' }} px-4 py-3">
@@ -1525,6 +1837,15 @@
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-zinc-800 text-sm font-bold {{ $step8Incomplete ? 'text-red-600' : 'text-blue-600' }}">8</span>
                                 <h4 class="font-semibold {{ $step8Incomplete ? 'text-red-800 dark:text-red-300' : 'text-blue-800 dark:text-blue-300' }}">REFLOW</h4>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    @php
+                                        $requiredCount = 0;
+                                        foreach ($step8Fields as $f) {
+                                            if (isFujiFieldRequired($f, $requiredFujiFields ?? [])) $requiredCount++;
+                                        }
+                                    @endphp
+                                    {{ $requiredCount }}/{{ count($step8Fields) }} required
+                                </span>
                             </div>
                             @if($step8Incomplete)
                                 <flux:icon.x-circle class="w-5 h-5 text-red-600" />
@@ -1537,12 +1858,19 @@
                         <!-- Abandonment (17) -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Abandonment (17)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Abandonment (17)
+                                    @if(isFujiFieldRequired('abandonment', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Damage</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No Damage</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->abandonment) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->abandonment) }}">
                                     Value : {{ ucfirst($selectedDailyFuji->abandonment ?? '-') }}
                                 </span>
                             </div>
@@ -1551,12 +1879,19 @@
                         <!-- Fire Possibility (17.a) -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Fire Possibility (17.a)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Fire Possibility (17.a)
+                                    @if(isFujiFieldRequired('fire_posibilty', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : PCB input area No paper,plastic</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No Paper, No plastic</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->fire_posibilty) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->fire_posibilty) }}">
                                     Value : {{ ucfirst($selectedDailyFuji->fire_posibilty ?? '-') }}
                                 </span>
                             </div>
@@ -1565,12 +1900,19 @@
                         <!-- Flashlight (17.b) -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Flashlight (17.b)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Flashlight (17.b)
+                                    @if(isFujiFieldRequired('flashlight', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : On/Off Check</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : On</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->flashlight) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->flashlight) }}">
                                     Value : {{ ucfirst($selectedDailyFuji->flashlight ?? '-') }}
                                 </span>
                             </div>
@@ -1579,12 +1921,19 @@
                         <!-- Rail & Transfer Unit (18) -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Rail & Transfer Unit (18)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Rail & Transfer Unit (18)
+                                    @if(isFujiFieldRequired('rail_and_transfer_unit', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : make sure it is smooth condition</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No jammed</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->rail_and_transfer_unit) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->rail_and_transfer_unit) }}">
                                     Value : {{ ucfirst($selectedDailyFuji->rail_and_transfer_unit ?? '-') }}
                                 </span>
                             </div>
@@ -1593,12 +1942,19 @@
                         <!-- N2 Pressure (19) -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">N2 Pressure (19)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    N2 Pressure (19)
+                                    @if(isFujiFieldRequired('n2_presure', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check N2 Pressure</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 0.4MPa ~ 0.5MPa</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->n2_presure) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->n2_presure) }}">
                                     Value : {{ $selectedDailyFuji->n2_presure ?? '-' }} Mpa
                                 </span>
                             </div>
@@ -1607,12 +1963,19 @@
                         <!-- Oxygen Density SEK (20) -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Oxygen Density SEK (20)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Oxygen Density SEK (20)
+                                    @if(isFujiFieldRequired('oxygent_density_sek', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Oxygen meter (SEK Standard)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 1200~1800 ppm</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->oxygent_density_sek) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->oxygent_density_sek) }}">
                                     Value : {{ $selectedDailyFuji->oxygent_density_sek ?? '-' }} ppm
                                 </span>
                             </div>
@@ -1621,12 +1984,19 @@
                         <!-- Oxygen Density Special (20) -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Oxygen Density Special (20)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Oxygen Density Special (20)
+                                    @if(isFujiFieldRequired('oxygent_density_special', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Oxygen meter (Special Requirement)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 500~1000 ppm</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->oxygent_density_special) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->oxygent_density_special) }}">
                                     Value : {{ $selectedDailyFuji->oxygent_density_special ?? '-' }} ppm
                                 </span>
                             </div>
@@ -1635,12 +2005,19 @@
                         <!-- Fire Possibility (20.a) -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Fire Possibility (20.a)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Fire Possibility (20.a)
+                                    @if(isFujiFieldRequired('fire_posibilty_2', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : PCB Output area No paper,plastic</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No Paper, No plastic</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->fire_posibilty_2) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->fire_posibilty_2) }}">
                                     Value : {{ ucfirst($selectedDailyFuji->fire_posibilty_2 ?? '-') }}
                                 </span>
                             </div>
@@ -1651,7 +2028,7 @@
                 <!-- STEP 9: AOI -->
                 @php
                     $step9Fields = ['air_presure_2'];
-                    $step9Incomplete = isStepIncomplete($selectedDailyFuji, $step9Fields);
+                    $step9Incomplete = isStepIncompleteForDetail($selectedDailyFuji, $step9Fields, $requiredFujiFields ?? []);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step9Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
                     <div class="{{ $step9Incomplete ? 'bg-red-100 dark:bg-red-900/50' : 'bg-blue-100 dark:bg-blue-900/30' }} px-4 py-3">
@@ -1659,6 +2036,14 @@
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-zinc-800 text-sm font-bold {{ $step9Incomplete ? 'text-red-600' : 'text-blue-600' }}">9</span>
                                 <h4 class="font-semibold {{ $step9Incomplete ? 'text-red-800 dark:text-red-300' : 'text-blue-800 dark:text-blue-300' }}">AOI</h4>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    @php
+                                        $requiredCount = 0;
+                                        foreach ($step9Fields as $f) {
+                                            if (isFujiFieldRequired($f, $requiredFujiFields ?? [])) $requiredCount++;
+                                        }
+                                    @endphp                                    {{ $requiredCount }}/{{ count($step9Fields) }} required
+                                </span>
                             </div>
                             @if($step9Incomplete)
                                 <flux:icon.x-circle class="w-5 h-5 text-red-600" />
@@ -1670,12 +2055,19 @@
                     <div class="p-4">
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Air Pressure (20.b)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Air Pressure (20.b)
+                                    @if(isFujiFieldRequired('air_presure_2', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check with Pressure Meter (write value)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 0.40 - 0.50 Mpa</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->air_presure_2) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->air_presure_2) }}">
                                     Value : {{ $selectedDailyFuji->air_presure_2 ?? '-' }} Mpa
                                 </span>
                             </div>
@@ -1686,7 +2078,7 @@
                 <!-- STEP 10: UNLOADER -->
                 @php
                     $step10Fields = ['cylinder_2', 'rail_and_magazine_pcb_2', 'cover_magazine_2'];
-                    $step10Incomplete = isStepIncomplete($selectedDailyFuji, $step10Fields);
+                    $step10Incomplete = isStepIncompleteForDetail($selectedDailyFuji, $step10Fields, $requiredFujiFields ?? []);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step10Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
                     <div class="{{ $step10Incomplete ? 'bg-red-100 dark:bg-red-900/50' : 'bg-blue-100 dark:bg-blue-900/30' }} px-4 py-3">
@@ -1694,6 +2086,15 @@
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-zinc-800 text-sm font-bold {{ $step10Incomplete ? 'text-red-600' : 'text-blue-600' }}">10</span>
                                 <h4 class="font-semibold {{ $step10Incomplete ? 'text-red-800 dark:text-red-300' : 'text-blue-800 dark:text-blue-300' }}">UNLOADER</h4>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    @php
+                                        $requiredCount = 0;
+                                        foreach ($step10Fields as $f) {
+                                            if (isFujiFieldRequired($f, $requiredFujiFields ?? [])) $requiredCount++;
+                                        }
+                                    @endphp
+                                    {{ $requiredCount }}/{{ count($step10Fields) }} required
+                                </span>
                             </div>
                             @if($step10Incomplete)
                                 <flux:icon.x-circle class="w-5 h-5 text-red-600" />
@@ -1705,12 +2106,19 @@
                     <div class="p-4 space-y-4">
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Cylinder (21)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Cylinder (21)
+                                    @if(isFujiFieldRequired('cylinder_2', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Operation And center</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : Smooth and center</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->cylinder_2) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->cylinder_2) }}">
                                     Value : {{ ucfirst($selectedDailyFuji->cylinder_2 ?? '-') }}
                                 </span>
                             </div>
@@ -1718,12 +2126,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Rail & Magazine PCB (21.a)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Rail & Magazine PCB (21.a)
+                                    @if(isFujiFieldRequired('rail_and_magazine_pcb_2', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Cleaning Dust and dirty</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No Dust and clean</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->rail_and_magazine_pcb_2) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->rail_and_magazine_pcb_2) }}">
                                     Value : {{ ucfirst($selectedDailyFuji->rail_and_magazine_pcb_2 ?? '-') }}
                                 </span>
                             </div>
@@ -1731,12 +2146,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Cover Magazine (21.b)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Cover Magazine (21.b)
+                                    @if(isFujiFieldRequired('cover_magazine_2', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Cleaning Dust and dirty</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No Dust and clean</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->cover_magazine_2) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->cover_magazine_2) }}">
                                     Value : {{ ucfirst($selectedDailyFuji->cover_magazine_2 ?? '-') }}
                                 </span>
                             </div>
@@ -1747,7 +2169,7 @@
                 <!-- STEP 11: AOI TABLE -->
                 @php
                     $step11Fields = ['angle_and_filter', 'lamp_indicator'];
-                    $step11Incomplete = isStepIncomplete($selectedDailyFuji, $step11Fields);
+                    $step11Incomplete = isStepIncompleteForDetail($selectedDailyFuji, $step11Fields, $requiredFujiFields ?? []);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step11Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
                     <div class="{{ $step11Incomplete ? 'bg-red-100 dark:bg-red-900/50' : 'bg-blue-100 dark:bg-blue-900/30' }} px-4 py-3">
@@ -1755,6 +2177,15 @@
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-zinc-800 text-sm font-bold {{ $step11Incomplete ? 'text-red-600' : 'text-blue-600' }}">11</span>
                                 <h4 class="font-semibold {{ $step11Incomplete ? 'text-red-800 dark:text-red-300' : 'text-blue-800 dark:text-blue-300' }}">AOI TABLE</h4>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    @php
+                                        $requiredCount = 0;
+                                        foreach ($step11Fields as $f) {
+                                            if (isFujiFieldRequired($f, $requiredFujiFields ?? [])) $requiredCount++;
+                                        }
+                                    @endphp
+                                    {{ $requiredCount }}/{{ count($step11Fields) }} required
+                                </span>
                             </div>
                             @if($step11Incomplete)
                                 <flux:icon.x-circle class="w-5 h-5 text-red-600" />
@@ -1766,12 +2197,19 @@
                     <div class="p-4 space-y-4">
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Angle & Filter (22)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Angle & Filter (22)
+                                    @if(isFujiFieldRequired('angle_and_filter', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Cleaning</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No dirt / no dust</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->angle_and_filter) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->angle_and_filter) }}">
                                     Value : {{ ucfirst($selectedDailyFuji->angle_and_filter ?? '-') }}
                                 </span>
                             </div>
@@ -1779,12 +2217,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Lamp Indicator (22.a)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Lamp Indicator (22.a)
+                                    @if(isFujiFieldRequired('lamp_indicator', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : LED Lamp (Green)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : Function</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->lamp_indicator) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->lamp_indicator) }}">
                                     Value : {{ ucfirst($selectedDailyFuji->lamp_indicator ?? '-') }}
                                 </span>
                             </div>
@@ -1795,7 +2240,7 @@
                 <!-- STEP 12: REFLOW 2 -->
                 @php
                     $step12Fields = ['temperature_chiller', 'temperature_control_3'];
-                    $step12Incomplete = isStepIncomplete($selectedDailyFuji, $step12Fields);
+                    $step12Incomplete = isStepIncompleteForDetail($selectedDailyFuji, $step12Fields, $requiredFujiFields ?? []);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step12Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
                     <div class="{{ $step12Incomplete ? 'bg-red-100 dark:bg-red-900/50' : 'bg-blue-100 dark:bg-blue-900/30' }} px-4 py-3">
@@ -1803,6 +2248,15 @@
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-zinc-800 text-sm font-bold {{ $step12Incomplete ? 'text-red-600' : 'text-blue-600' }}">12</span>
                                 <h4 class="font-semibold {{ $step12Incomplete ? 'text-red-800 dark:text-red-300' : 'text-blue-800 dark:text-blue-300' }}">REFLOW 2</h4>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    @php
+                                        $requiredCount = 0;
+                                        foreach ($step12Fields as $f) {
+                                            if (isFujiFieldRequired($f, $requiredFujiFields ?? [])) $requiredCount++;
+                                        }
+                                    @endphp
+                                    {{ $requiredCount }}/{{ count($step12Fields) }} required
+                                </span>
                             </div>
                             @if($step12Incomplete)
                                 <flux:icon.x-circle class="w-5 h-5 text-red-600" />
@@ -1814,12 +2268,19 @@
                     <div class="p-4 space-y-4">
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Temperature Chiller (23)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Temperature Chiller (23)
+                                    @if(isFujiFieldRequired('temperature_chiller', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Write down the value</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 17-23℃</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->temperature_chiller) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->temperature_chiller) }}">
                                     Value : {{ $selectedDailyFuji->temperature_chiller ?? '-' }} ℃
                                 </span>
                             </div>
@@ -1827,12 +2288,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Temperature Control (24)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Temperature Control (24)
+                                    @if(isFujiFieldRequired('temperature_control_3', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check Value inspect</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 300℃ ±10℃</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->temperature_control_3) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->temperature_control_3) }}">
                                     Value : {{ $selectedDailyFuji->temperature_control_3 ?? '-' }} ℃
                                 </span>
                             </div>
@@ -1843,7 +2311,7 @@
                 <!-- STEP 13: CHIP MOUNTER 3 -->
                 @php
                     $step13Fields = ['fan_unit_1'];
-                    $step13Incomplete = isStepIncomplete($selectedDailyFuji, $step13Fields);
+                    $step13Incomplete = isStepIncompleteForDetail($selectedDailyFuji, $step13Fields, $requiredFujiFields ?? []);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step13Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
                     <div class="{{ $step13Incomplete ? 'bg-red-100 dark:bg-red-900/50' : 'bg-blue-100 dark:bg-blue-900/30' }} px-4 py-3">
@@ -1851,6 +2319,15 @@
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-zinc-800 text-sm font-bold {{ $step13Incomplete ? 'text-red-600' : 'text-blue-600' }}">13</span>
                                 <h4 class="font-semibold {{ $step13Incomplete ? 'text-red-800 dark:text-red-300' : 'text-blue-800 dark:text-blue-300' }}">CHIP MOUNTER 3</h4>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    @php
+                                        $requiredCount = 0;
+                                        foreach ($step13Fields as $f) {
+                                            if (isFujiFieldRequired($f, $requiredFujiFields ?? [])) $requiredCount++;
+                                        }
+                                    @endphp
+                                    {{ $requiredCount }}/{{ count($step13Fields) }} required
+                                </span>
                             </div>
                             @if($step13Incomplete)
                                 <flux:icon.x-circle class="w-5 h-5 text-red-600" />
@@ -1862,12 +2339,19 @@
                     <div class="p-4">
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Fan Unit 1 (25)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Fan Unit 1 (25)
+                                    @if(isFujiFieldRequired('fan_unit_1', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Make sure all Fan clean</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : Clean</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->fan_unit_1) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->fan_unit_1) }}">
                                     Value : {{ ucfirst($selectedDailyFuji->fan_unit_1 ?? '-') }}
                                 </span>
                             </div>
@@ -1878,7 +2362,7 @@
                 <!-- STEP 14: CHIP MOUNTER 4 -->
                 @php
                     $step14Fields = ['fan_unit_2'];
-                    $step14Incomplete = isStepIncomplete($selectedDailyFuji, $step14Fields);
+                    $step14Incomplete = isStepIncompleteForDetail($selectedDailyFuji, $step14Fields, $requiredFujiFields ?? []);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step14Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
                     <div class="{{ $step14Incomplete ? 'bg-red-100 dark:bg-red-900/50' : 'bg-blue-100 dark:bg-blue-900/30' }} px-4 py-3">
@@ -1886,6 +2370,15 @@
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-zinc-800 text-sm font-bold {{ $step14Incomplete ? 'text-red-600' : 'text-blue-600' }}">14</span>
                                 <h4 class="font-semibold {{ $step14Incomplete ? 'text-red-800 dark:text-red-300' : 'text-blue-800 dark:text-blue-300' }}">CHIP MOUNTER 4</h4>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    @php
+                                        $requiredCount = 0;
+                                        foreach ($step14Fields as $f) {
+                                            if (isFujiFieldRequired($f, $requiredFujiFields ?? [])) $requiredCount++;
+                                        }
+                                    @endphp
+                                    {{ $requiredCount }}/{{ count($step14Fields) }} required
+                                </span>
                             </div>
                             @if($step14Incomplete)
                                 <flux:icon.x-circle class="w-5 h-5 text-red-600" />
@@ -1897,12 +2390,19 @@
                     <div class="p-4">
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Fan Unit 2 (26)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Fan Unit 2 (26)
+                                    @if(isFujiFieldRequired('fan_unit_2', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Make sure all Fan clean</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : Clean</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->fan_unit_2) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->fan_unit_2) }}">
                                     Value : {{ ucfirst($selectedDailyFuji->fan_unit_2 ?? '-') }}
                                 </span>
                             </div>
@@ -1913,7 +2413,7 @@
                 <!-- STEP 15: SPI 2 -->
                 @php
                     $step15Fields = ['air_presure_3'];
-                    $step15Incomplete = isStepIncomplete($selectedDailyFuji, $step15Fields);
+                    $step15Incomplete = isStepIncompleteForDetail($selectedDailyFuji, $step15Fields, $requiredFujiFields ?? []);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step15Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
                     <div class="{{ $step15Incomplete ? 'bg-red-100 dark:bg-red-900/50' : 'bg-blue-100 dark:bg-blue-900/30' }} px-4 py-3">
@@ -1921,6 +2421,15 @@
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-zinc-800 text-sm font-bold {{ $step15Incomplete ? 'text-red-600' : 'text-blue-600' }}">15</span>
                                 <h4 class="font-semibold {{ $step15Incomplete ? 'text-red-800 dark:text-red-300' : 'text-blue-800 dark:text-blue-300' }}">SPI 2</h4>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    @php
+                                        $requiredCount = 0;
+                                        foreach ($step15Fields as $f) {
+                                            if (isFujiFieldRequired($f, $requiredFujiFields ?? [])) $requiredCount++;
+                                        }
+                                    @endphp
+                                    {{ $requiredCount }}/{{ count($step15Fields) }} required
+                                </span>
                             </div>
                             @if($step15Incomplete)
                                 <flux:icon.x-circle class="w-5 h-5 text-red-600" />
@@ -1932,12 +2441,19 @@
                     <div class="p-4">
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Air Pressure (27)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Air Pressure (27)
+                                    @if(isFujiFieldRequired('air_presure_3', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check with Pressure Meter (write value)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 0.40 - 0.50 Mpa (Kohyoung)</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->air_presure_3) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->air_presure_3) }}">
                                     Value : {{ $selectedDailyFuji->air_presure_3 ?? '-' }} Mpa
                                 </span>
                             </div>
@@ -1948,7 +2464,7 @@
                 <!-- STEP 16: PRINTER -->
                 @php
                     $step16Fields = ['temperature_control_4', 'water_reservoirs'];
-                    $step16Incomplete = isStepIncomplete($selectedDailyFuji, $step16Fields);
+                    $step16Incomplete = isStepIncompleteForDetail($selectedDailyFuji, $step16Fields, $requiredFujiFields ?? []);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step16Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
                     <div class="{{ $step16Incomplete ? 'bg-red-100 dark:bg-red-900/50' : 'bg-blue-100 dark:bg-blue-900/30' }} px-4 py-3">
@@ -1956,6 +2472,15 @@
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-zinc-800 text-sm font-bold {{ $step16Incomplete ? 'text-red-600' : 'text-blue-600' }}">16</span>
                                 <h4 class="font-semibold {{ $step16Incomplete ? 'text-red-800 dark:text-red-300' : 'text-blue-800 dark:text-blue-300' }}">PRINTER</h4>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    @php
+                                        $requiredCount = 0;
+                                        foreach ($step16Fields as $f) {
+                                            if (isFujiFieldRequired($f, $requiredFujiFields ?? [])) $requiredCount++;
+                                        }
+                                    @endphp
+                                    {{ $requiredCount }}/{{ count($step16Fields) }} required
+                                </span>
                             </div>
                             @if($step16Incomplete)
                                 <flux:icon.x-circle class="w-5 h-5 text-red-600" />
@@ -1967,12 +2492,19 @@
                     <div class="p-4 space-y-4">
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Temperature Control (28)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Temperature Control (28)
+                                    @if(isFujiFieldRequired('temperature_control_4', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Air cond Setting Temperature</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 23-27℃</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->temperature_control_4) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->temperature_control_4) }}">
                                     Value : {{ $selectedDailyFuji->temperature_control_4 ?? '-' }} ℃
                                 </span>
                             </div>
@@ -1980,12 +2512,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Water Reservoirs (28.a)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Water Reservoirs (28.a)
+                                    @if(isFujiFieldRequired('water_reservoirs', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Damage, Function</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : Function, No Damage</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->water_reservoirs) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->water_reservoirs) }}">
                                     Value : {{ ucfirst($selectedDailyFuji->water_reservoirs ?? '-') }}
                                 </span>
                             </div>
@@ -1996,7 +2535,7 @@
                 <!-- STEP 17: PCB CLEANER 2 -->
                 @php
                     $step17Fields = ['filter'];
-                    $step17Incomplete = isStepIncomplete($selectedDailyFuji, $step17Fields);
+                    $step17Incomplete = isStepIncompleteForDetail($selectedDailyFuji, $step17Fields, $requiredFujiFields ?? []);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step17Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
                     <div class="{{ $step17Incomplete ? 'bg-red-100 dark:bg-red-900/50' : 'bg-blue-100 dark:bg-blue-900/30' }} px-4 py-3">
@@ -2004,6 +2543,15 @@
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-zinc-800 text-sm font-bold {{ $step17Incomplete ? 'text-red-600' : 'text-blue-600' }}">17</span>
                                 <h4 class="font-semibold {{ $step17Incomplete ? 'text-red-800 dark:text-red-300' : 'text-blue-800 dark:text-blue-300' }}">PCB CLEANER 2</h4>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    @php
+                                        $requiredCount = 0;
+                                        foreach ($step17Fields as $f) {
+                                            if (isFujiFieldRequired($f, $requiredFujiFields ?? [])) $requiredCount++;
+                                        }
+                                    @endphp
+                                    {{ $requiredCount }}/{{ count($step17Fields) }} required
+                                </span>
                             </div>
                             @if($step17Incomplete)
                                 <flux:icon.x-circle class="w-5 h-5 text-red-600" />
@@ -2015,12 +2563,19 @@
                     <div class="p-4">
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Filter (29)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Filter (29)
+                                    @if(isFujiFieldRequired('filter', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Cleaning</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : Clean</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->filter) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->filter) }}">
                                     Value : {{ ucfirst($selectedDailyFuji->filter ?? '-') }}
                                 </span>
                             </div>
@@ -2031,7 +2586,7 @@
                 <!-- STEP 18: IONIZER -->
                 @php
                     $step18Fields = ['angle_and_filter_2'];
-                    $step18Incomplete = isStepIncomplete($selectedDailyFuji, $step18Fields);
+                    $step18Incomplete = isStepIncompleteForDetail($selectedDailyFuji, $step18Fields, $requiredFujiFields ?? []);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step18Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
                     <div class="{{ $step18Incomplete ? 'bg-red-100 dark:bg-red-900/50' : 'bg-blue-100 dark:bg-blue-900/30' }} px-4 py-3">
@@ -2039,6 +2594,15 @@
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-zinc-800 text-sm font-bold {{ $step18Incomplete ? 'text-red-600' : 'text-blue-600' }}">18</span>
                                 <h4 class="font-semibold {{ $step18Incomplete ? 'text-red-800 dark:text-red-300' : 'text-blue-800 dark:text-blue-300' }}">IONIZER</h4>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    @php
+                                        $requiredCount = 0;
+                                        foreach ($step18Fields as $f) {
+                                            if (isFujiFieldRequired($f, $requiredFujiFields ?? [])) $requiredCount++;
+                                        }
+                                    @endphp
+                                    {{ $requiredCount }}/{{ count($step18Fields) }} required
+                                </span>
                             </div>
                             @if($step18Incomplete)
                                 <flux:icon.x-circle class="w-5 h-5 text-red-600" />
@@ -2050,12 +2614,19 @@
                     <div class="p-4">
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Angle & Filter (30)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Angle & Filter (30)
+                                    @if(isFujiFieldRequired('angle_and_filter_2', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Cleaning</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No dirt / no dust</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->angle_and_filter_2) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->angle_and_filter_2) }}">
                                     Value : {{ ucfirst($selectedDailyFuji->angle_and_filter_2 ?? '-') }}
                                 </span>
                             </div>
@@ -2068,7 +2639,7 @@
                     $stepTimeFields = ['run_time', 'group'];
                     $stepTimeIncomplete = false;
                     foreach ($stepTimeFields as $field) {
-                        if (isFieldEmpty($selectedDailyFuji->{$field})) {
+                        if (isFieldEmptyForDetail($selectedDailyFuji->{$field})) {
                             $stepTimeIncomplete = true;
                             break;
                         }
@@ -2096,7 +2667,7 @@
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : -</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ isFieldEmpty($selectedDailyFuji->stop_time) ? 'text-red-600' : 'text-green-600' }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ isFieldEmptyForDetail($selectedDailyFuji->stop_time) ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' }}">
                                     Value : {{ $selectedDailyFuji->stop_time ? $selectedDailyFuji->stop_time->format('H:i') : '-' }}
                                 </span>
                             </div>
@@ -2109,7 +2680,7 @@
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : -</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->run_time) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->run_time) }}">
                                     Value : {{ $selectedDailyFuji->run_time ? $selectedDailyFuji->run_time->format('H:i') : '-' }}
                                 </span>
                             </div>
@@ -2122,7 +2693,7 @@
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : A, B, or C</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getFieldColorClass($selectedDailyFuji->group) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->group) }}">
                                     Value : {{ $selectedDailyFuji->group ?? '-' }}
                                 </span>
                             </div>
@@ -2150,12 +2721,6 @@
                 <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">
                     Update Approval Status
                 </h3>
-                <flux:button 
-                    wire:click="closeApprovalModal" 
-                    icon="x-mark" 
-                    variant="subtle"
-                    size="sm"
-                />
             </div>
             
             <div class="space-y-4">
@@ -2257,15 +2822,24 @@
                 </div>
 
                 @php
-                    // Helper function to check if field is empty
+                    // Helper function untuk cek apakah field required
+                    function isPanasonicFieldRequired($field, $requiredFields) {
+                        return in_array($field, $requiredFields ?? []);
+                    }
+                    
+                    // Helper function to check if field is empty (null or empty string, '-' is considered valid/filled)
                     function isPanasonicFieldEmpty($value) {
                         return $value === null || $value === '';
                     }
                     
-                    // Helper function to check if step has incomplete fields
-                    function isPanasonicStepIncomplete($dailyPanasonic, $stepFields) {
+                    // Helper function to check if step has incomplete fields (hanya required fields)
+                    function isPanasonicStepIncomplete($record, $stepFields, $requiredFields) {
                         foreach ($stepFields as $field) {
-                            $value = $dailyPanasonic->{$field};
+                            // Skip if field is not required
+                            if (!isPanasonicFieldRequired($field, $requiredFields)) {
+                                continue;
+                            }
+                            $value = $record->{$field};
                             if (isPanasonicFieldEmpty($value)) {
                                 return true;
                             }
@@ -2273,10 +2847,18 @@
                         return false;
                     }
                     
+                    // Helper function to get badge class - '-' dianggap valid
+                    function getPanasonicBadgeClass($value) {
+                        if ($value === '-') {
+                            return 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400';
+                        }
+                        return isPanasonicFieldEmpty($value) 
+                            ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' 
+                            : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400';
+                    }
+                    
                     // Helper function to get field color class
-                    // PERBAIKAN: Nilai '-' dianggap valid (warna hijau)
                     function getPanasonicFieldColorClass($value) {
-                        // Nilai '-' dianggap valid
                         if ($value === '-') {
                             return 'text-green-600';
                         }
@@ -2286,8 +2868,8 @@
 
                 <!-- STEP 1: GENERAL -->
                 @php
-                    $step1Fields = ['body_cover', 'lamp_alarm_change_model']; // TAMBAHKAN lamp_alarm_change_model
-                    $step1Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step1Fields);
+                    $step1Fields = ['body_cover', 'lamp_alarm_change_model'];
+                    $step1Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step1Fields, $requiredPanasonicFields);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step1Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
                     <div class="{{ $step1Incomplete ? 'bg-red-100 dark:bg-red-900/50' : 'bg-blue-100 dark:bg-blue-900/30' }} px-4 py-3">
@@ -2295,6 +2877,15 @@
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-zinc-800 text-sm font-bold {{ $step1Incomplete ? 'text-red-600' : 'text-blue-600' }}">1</span>
                                 <h4 class="font-semibold {{ $step1Incomplete ? 'text-red-800 dark:text-red-300' : 'text-blue-800 dark:text-blue-300' }}">GENERAL</h4>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    @php
+                                        $requiredCount = 0;
+                                        foreach ($step1Fields as $f) {
+                                            if (isPanasonicFieldRequired($f, $requiredPanasonicFields)) $requiredCount++;
+                                        }
+                                    @endphp
+                                    {{ $requiredCount }}/{{ count($step1Fields) }} required
+                                </span>
                             </div>
                             @if($step1Incomplete)
                                 <flux:icon.x-circle class="w-5 h-5 text-red-600" />
@@ -2307,26 +2898,40 @@
                         <!-- Body Cover -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Body Cover</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Body Cover
+                                    @if(isPanasonicFieldRequired('body_cover', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Make sure all machine cover clean</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No Dust and clean</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->body_cover) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->body_cover) }}">
                                     Value : {{ ucfirst($selectedDailyPanasonic->body_cover ?? '-') }}
                                 </span>
                             </div>
                         </div>
                         
-                        <!-- Lamp Alarm & Change Model (BARU) -->
+                        <!-- Lamp Alarm & Change Model -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Lamp Alarm & Change Model</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Lamp Alarm & Change Model
+                                    @if(isPanasonicFieldRequired('lamp_alarm_change_model', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Make sure lamp Alarm & Change Model Lamp clean</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No Dust and clean</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->lamp_alarm_change_model) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->lamp_alarm_change_model) }}">
                                     Value : {{ ucfirst($selectedDailyPanasonic->lamp_alarm_change_model ?? '-') }}
                                 </span>
                             </div>
@@ -2337,7 +2942,7 @@
                 <!-- STEP 2: LOADER -->
                 @php
                     $step2Fields = ['cylinder', 'rail_and_magazine_pcb', 'cover_magazine'];
-                    $step2Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step2Fields);
+                    $step2Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step2Fields, $requiredPanasonicFields);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step2Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
                     <div class="{{ $step2Incomplete ? 'bg-red-100 dark:bg-red-900/50' : 'bg-blue-100 dark:bg-blue-900/30' }} px-4 py-3">
@@ -2345,6 +2950,15 @@
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-zinc-800 text-sm font-bold {{ $step2Incomplete ? 'text-red-600' : 'text-blue-600' }}">2</span>
                                 <h4 class="font-semibold {{ $step2Incomplete ? 'text-red-800 dark:text-red-300' : 'text-blue-800 dark:text-blue-300' }}">LOADER</h4>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    @php
+                                        $requiredCount = 0;
+                                        foreach ($step2Fields as $f) {
+                                            if (isPanasonicFieldRequired($f, $requiredPanasonicFields)) $requiredCount++;
+                                        }
+                                    @endphp
+                                    {{ $requiredCount }}/{{ count($step2Fields) }} required
+                                </span>
                             </div>
                             @if($step2Incomplete)
                                 <flux:icon.x-circle class="w-5 h-5 text-red-600" />
@@ -2356,12 +2970,19 @@
                     <div class="p-4 space-y-4">
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Cylinder (1)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Cylinder (1)
+                                    @if(isPanasonicFieldRequired('cylinder', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Operation And center</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : Smooth and center</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->cylinder) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->cylinder) }}">
                                     Value : {{ ucfirst($selectedDailyPanasonic->cylinder ?? '-') }}
                                 </span>
                             </div>
@@ -2369,12 +2990,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Rail & Magazine PCB (1.a)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Rail & Magazine PCB (1.a)
+                                    @if(isPanasonicFieldRequired('rail_and_magazine_pcb', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Cleaning Dust and dirty</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No Dust and clean</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->rail_and_magazine_pcb) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->rail_and_magazine_pcb) }}">
                                     Value : {{ ucfirst($selectedDailyPanasonic->rail_and_magazine_pcb ?? '-') }}
                                 </span>
                             </div>
@@ -2382,12 +3010,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Cover Magazine (1.b)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Cover Magazine (1.b)
+                                    @if(isPanasonicFieldRequired('cover_magazine', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Cleaning Dust and dirty</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No Dust and clean</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->cover_magazine) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->cover_magazine) }}">
                                     Value : {{ ucfirst($selectedDailyPanasonic->cover_magazine ?? '-') }}
                                 </span>
                             </div>
@@ -2398,7 +3033,7 @@
                 <!-- STEP 3: PCB CLEANER -->
                 @php
                     $step3Fields = ['brush', 'air_presure', 'vacume_presure_unitech', 'vacume_presure_nix', 'vacume_brush', 'cleaning_roller', 'ionizer', 'conveyor_speed'];
-                    $step3Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step3Fields);
+                    $step3Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step3Fields, $requiredPanasonicFields);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step3Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
                     <div class="{{ $step3Incomplete ? 'bg-red-100 dark:bg-red-900/50' : 'bg-blue-100 dark:bg-blue-900/30' }} px-4 py-3">
@@ -2406,6 +3041,15 @@
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-zinc-800 text-sm font-bold {{ $step3Incomplete ? 'text-red-600' : 'text-blue-600' }}">3</span>
                                 <h4 class="font-semibold {{ $step3Incomplete ? 'text-red-800 dark:text-red-300' : 'text-blue-800 dark:text-blue-300' }}">PCB CLEANER</h4>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    @php
+                                        $requiredCount = 0;
+                                        foreach ($step3Fields as $f) {
+                                            if (isPanasonicFieldRequired($f, $requiredPanasonicFields)) $requiredCount++;
+                                        }
+                                    @endphp
+                                    {{ $requiredCount }}/{{ count($step3Fields) }} required
+                                </span>
                             </div>
                             @if($step3Incomplete)
                                 <flux:icon.x-circle class="w-5 h-5 text-red-600" />
@@ -2417,12 +3061,19 @@
                     <div class="p-4 space-y-4">
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Brush (2)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Brush (2)
+                                    @if(isPanasonicFieldRequired('brush', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Cleaning touch PCB</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : Rotation</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->brush) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->brush) }}">
                                     Value : {{ ucfirst($selectedDailyPanasonic->brush ?? '-') }}
                                 </span>
                             </div>
@@ -2430,12 +3081,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Air Pressure (2.a)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Air Pressure (2.a)
+                                    @if(isPanasonicFieldRequired('air_presure', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check with Pressure Meter (write value)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 0.45 - 0.54 Mpa</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->air_presure) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->air_presure) }}">
                                     Value : {{ $selectedDailyPanasonic->air_presure ?? '-' }} Mpa
                                 </span>
                             </div>
@@ -2443,12 +3101,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Vacume Pressure Unitech (2.b)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Vacume Pressure Unitech (2.b)
+                                    @if(isPanasonicFieldRequired('vacume_presure_unitech', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check with Pressure Meter (write value)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 0.45 - 0.54 Mpa (Unitech only)</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->vacume_presure_unitech) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->vacume_presure_unitech) }}">
                                     Value : {{ $selectedDailyPanasonic->vacume_presure_unitech ?? '-' }} Mpa
                                 </span>
                             </div>
@@ -2456,12 +3121,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Vacume Pressure Nix (2.c)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Vacume Pressure Nix (2.c)
+                                    @if(isPanasonicFieldRequired('vacume_presure_nix', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check with Pressure Meter (write value)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 0.60 - 0.70 Mpa (N.I.X only)</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->vacume_presure_nix) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->vacume_presure_nix) }}">
                                     Value : {{ $selectedDailyPanasonic->vacume_presure_nix ?? '-' }} Mpa
                                 </span>
                             </div>
@@ -2469,12 +3141,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Vacume Brush (3)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Vacume Brush (3)
+                                    @if(isPanasonicFieldRequired('vacume_brush', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Operation</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : Rotation</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->vacume_brush) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->vacume_brush) }}">
                                     Value : {{ ucfirst($selectedDailyPanasonic->vacume_brush ?? '-') }}
                                 </span>
                             </div>
@@ -2482,12 +3161,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Cleaning Roller (4)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Cleaning Roller (4)
+                                    @if(isPanasonicFieldRequired('cleaning_roller', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Rotation and Cleaning</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : Smooth rotation & Clean</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->cleaning_roller) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->cleaning_roller) }}">
                                     Value : {{ ucfirst($selectedDailyPanasonic->cleaning_roller ?? '-') }}
                                 </span>
                             </div>
@@ -2495,12 +3181,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Ionizer (5)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Ionizer (5)
+                                    @if(isPanasonicFieldRequired('ionizer', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Cleaning</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 5 Times to push cleaner</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->ionizer) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->ionizer) }}">
                                     Value : {{ ucfirst($selectedDailyPanasonic->ionizer ?? '-') }}
                                 </span>
                             </div>
@@ -2508,12 +3201,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Conveyor Setting (6)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Conveyor Setting (6)
+                                    @if(isPanasonicFieldRequired('conveyor_speed', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check with Analog panel (write value)</p>
-                                <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 40</p>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : ≤ 40</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->conveyor_speed) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->conveyor_speed) }}">
                                     Value : {{ $selectedDailyPanasonic->conveyor_speed ?? '-' }}
                                 </span>
                             </div>
@@ -2524,7 +3224,7 @@
                 <!-- STEP 4: PRINTING -->
                 @php
                     $step4Fields = ['ipa_solvent', 'temperature_control_1', 'humidity_control_1', 'clamp_presure_sp_60', 'clamp_presure_spg_2', 'squeege_sp_60', 'squeege_spg_2', 'cleaning_solvent', 'air_presure_meter'];
-                    $step4Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step4Fields);
+                    $step4Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step4Fields, $requiredPanasonicFields);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step4Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
                     <div class="{{ $step4Incomplete ? 'bg-red-100 dark:bg-red-900/50' : 'bg-blue-100 dark:bg-blue-900/30' }} px-4 py-3">
@@ -2532,6 +3232,15 @@
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-zinc-800 text-sm font-bold {{ $step4Incomplete ? 'text-red-600' : 'text-blue-600' }}">4</span>
                                 <h4 class="font-semibold {{ $step4Incomplete ? 'text-red-800 dark:text-red-300' : 'text-blue-800 dark:text-blue-300' }}">PRINTING</h4>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    @php
+                                        $requiredCount = 0;
+                                        foreach ($step4Fields as $f) {
+                                            if (isPanasonicFieldRequired($f, $requiredPanasonicFields)) $requiredCount++;
+                                        }
+                                    @endphp
+                                    {{ $requiredCount }}/{{ count($step4Fields) }} required
+                                </span>
                             </div>
                             @if($step4Incomplete)
                                 <flux:icon.x-circle class="w-5 h-5 text-red-600" />
@@ -2543,12 +3252,19 @@
                     <div class="p-4 space-y-4">
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">IPA Solvent (7)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    IPA Solvent (7)
+                                    @if(isPanasonicFieldRequired('ipa_solvent', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Make sure solvent minimal on mid level (half)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : Tank Minimal half</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->ipa_solvent) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->ipa_solvent) }}">
                                     Value : {{ ucfirst($selectedDailyPanasonic->ipa_solvent ?? '-') }}
                                 </span>
                             </div>
@@ -2556,12 +3272,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Temperature Control (8)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Temperature Control (8)
+                                    @if(isPanasonicFieldRequired('temperature_control_1', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Result-01</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 23-27℃</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->temperature_control_1) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->temperature_control_1) }}">
                                     Value : {{ $selectedDailyPanasonic->temperature_control_1 ?? '-' }} ℃
                                 </span>
                             </div>
@@ -2569,12 +3292,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Humidity Control (8.a)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Humidity Control (8.a)
+                                    @if(isPanasonicFieldRequired('humidity_control_1', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Result-01</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 35 % - 70 %</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->humidity_control_1) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->humidity_control_1) }}">
                                     Value : {{ $selectedDailyPanasonic->humidity_control_1 ?? '-' }} %
                                 </span>
                             </div>
@@ -2582,12 +3312,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Clamp Pressure SP-60 (9)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Clamp Pressure SP-60 (9)
+                                    @if(isPanasonicFieldRequired('clamp_presure_sp_60', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check with Pressure Meter (write value)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 0.20 ~ 0.4 Mpa</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->clamp_presure_sp_60) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->clamp_presure_sp_60) }}">
                                     Value : {{ $selectedDailyPanasonic->clamp_presure_sp_60 ?? '-' }} Mpa
                                 </span>
                             </div>
@@ -2595,12 +3332,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Clamp Pressure SPG-2 (9)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Clamp Pressure SPG-2 (9)
+                                    @if(isPanasonicFieldRequired('clamp_presure_spg_2', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check with Pressure Meter (write value)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 0.20 ~ 0.4 Mpa</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->clamp_presure_spg_2) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->clamp_presure_spg_2) }}">
                                     Value : {{ $selectedDailyPanasonic->clamp_presure_spg_2 ?? '-' }} Mpa
                                 </span>
                             </div>
@@ -2608,12 +3352,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Squeege SP-60 (10)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Squeege SP-60 (10)
+                                    @if(isPanasonicFieldRequired('squeege_sp_60', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check with Pressure Meter (write value)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 0.19 ~ 0.21 Mpa</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->squeege_sp_60) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->squeege_sp_60) }}">
                                     Value : {{ $selectedDailyPanasonic->squeege_sp_60 ?? '-' }} Mpa
                                 </span>
                             </div>
@@ -2621,12 +3372,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Squeege SPG-2 (10)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Squeege SPG-2 (10)
+                                    @if(isPanasonicFieldRequired('squeege_spg_2', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check with Pressure Meter (write value)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 0.11 ~ 0.13 Mpa</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->squeege_spg_2) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->squeege_spg_2) }}">
                                     Value : {{ $selectedDailyPanasonic->squeege_spg_2 ?? '-' }} Mpa
                                 </span>
                             </div>
@@ -2634,12 +3392,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Cleaning Solvent (11)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Cleaning Solvent (11)
+                                    @if(isPanasonicFieldRequired('cleaning_solvent', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check with Pressure Meter (write value)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 0.19 ~ 0.21 Mpa</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->cleaning_solvent) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->cleaning_solvent) }}">
                                     Value : {{ $selectedDailyPanasonic->cleaning_solvent ?? '-' }} Mpa
                                 </span>
                             </div>
@@ -2647,12 +3412,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Air Pressure Meter (12)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Air Pressure Meter (12)
+                                    @if(isPanasonicFieldRequired('air_presure_meter', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check with Pressure Meter (write value)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 0.50~ 0.55 Mpa</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->air_presure_meter) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->air_presure_meter) }}">
                                     Value : {{ $selectedDailyPanasonic->air_presure_meter ?? '-' }} Mpa
                                 </span>
                             </div>
@@ -2663,7 +3435,7 @@
                 <!-- STEP 5: SPI -->
                 @php
                     $step5Fields = ['air_presure_meter_parmi', 'capability_index'];
-                    $step5Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step5Fields);
+                    $step5Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step5Fields, $requiredPanasonicFields);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step5Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
                     <div class="{{ $step5Incomplete ? 'bg-red-100 dark:bg-red-900/50' : 'bg-blue-100 dark:bg-blue-900/30' }} px-4 py-3">
@@ -2671,6 +3443,15 @@
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-zinc-800 text-sm font-bold {{ $step5Incomplete ? 'text-red-600' : 'text-blue-600' }}">5</span>
                                 <h4 class="font-semibold {{ $step5Incomplete ? 'text-red-800 dark:text-red-300' : 'text-blue-800 dark:text-blue-300' }}">SPI</h4>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    @php
+                                        $requiredCount = 0;
+                                        foreach ($step5Fields as $f) {
+                                            if (isPanasonicFieldRequired($f, $requiredPanasonicFields)) $requiredCount++;
+                                        }
+                                    @endphp
+                                    {{ $requiredCount }}/{{ count($step5Fields) }} required
+                                </span>
                             </div>
                             @if($step5Incomplete)
                                 <flux:icon.x-circle class="w-5 h-5 text-red-600" />
@@ -2682,12 +3463,19 @@
                     <div class="p-4 space-y-4">
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Air Pressure Meter Parmi (12.a)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Air Pressure Meter Parmi (12.a)
+                                    @if(isPanasonicFieldRequired('air_presure_meter_parmi', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check with Pressure Meter (write value)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 0.40 - 0.50 Mpa (PARMI)</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->air_presure_meter_parmi) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->air_presure_meter_parmi) }}">
                                     Value : {{ $selectedDailyPanasonic->air_presure_meter_parmi ?? '-' }} Mpa
                                 </span>
                             </div>
@@ -2695,12 +3483,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Capability Index (12.b)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Capability Index (12.b)
+                                    @if(isPanasonicFieldRequired('capability_index', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check SPI Measurement result with Master Jig (Solder Paste height) (write CpK value)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : CpK for Masspro > 1.33</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->capability_index) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->capability_index) }}">
                                     Value : {{ $selectedDailyPanasonic->capability_index ?? '-' }}
                                 </span>
                             </div>
@@ -2711,7 +3506,7 @@
                 <!-- STEP 6: CHIP MOUNTER 1 -->
                 @php
                     $step6Fields = ['air_presure_supply', 'vaccuum_pump', 'box', 'vaccuum_parameter', 'expire_date'];
-                    $step6Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step6Fields);
+                    $step6Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step6Fields, $requiredPanasonicFields);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step6Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
                     <div class="{{ $step6Incomplete ? 'bg-red-100 dark:bg-red-900/50' : 'bg-blue-100 dark:bg-blue-900/30' }} px-4 py-3">
@@ -2719,6 +3514,15 @@
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-zinc-800 text-sm font-bold {{ $step6Incomplete ? 'text-red-600' : 'text-blue-600' }}">6</span>
                                 <h4 class="font-semibold {{ $step6Incomplete ? 'text-red-800 dark:text-red-300' : 'text-blue-800 dark:text-blue-300' }}">CHIP MOUNTER 1</h4>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    @php
+                                        $requiredCount = 0;
+                                        foreach ($step6Fields as $f) {
+                                            if (isPanasonicFieldRequired($f, $requiredPanasonicFields)) $requiredCount++;
+                                        }
+                                    @endphp
+                                    {{ $requiredCount }}/{{ count($step6Fields) }} required
+                                </span>
                             </div>
                             @if($step6Incomplete)
                                 <flux:icon.x-circle class="w-5 h-5 text-red-600" />
@@ -2730,12 +3534,19 @@
                     <div class="p-4 space-y-4">
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Air Pressure Supply (13)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Air Pressure Supply (13)
+                                    @if(isPanasonicFieldRequired('air_presure_supply', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check with Pressure Meter (write value)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 0.49 ~ 0.54 Mpa</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->air_presure_supply) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->air_presure_supply) }}">
                                     Value : {{ $selectedDailyPanasonic->air_presure_supply ?? '-' }} Mpa
                                 </span>
                             </div>
@@ -2743,12 +3554,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Vaccuum Pump (13.a)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Vaccuum Pump (13.a)
+                                    @if(isPanasonicFieldRequired('vaccuum_pump', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check with Pressure Meter (write value)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : -87 ~ -100 Kpa</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->vaccuum_pump) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->vaccuum_pump) }}">
                                     Value : {{ $selectedDailyPanasonic->vaccuum_pump ?? '-' }} Kpa
                                 </span>
                             </div>
@@ -2756,12 +3574,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Box (13.b)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Box (13.b)
+                                    @if(isPanasonicFieldRequired('box', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Chip collection</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No components</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->box) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->box) }}">
                                     Value : {{ ucfirst($selectedDailyPanasonic->box ?? '-') }}
                                 </span>
                             </div>
@@ -2769,12 +3594,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Vaccuum Parameter (13.c)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Vaccuum Parameter (13.c)
+                                    @if(isPanasonicFieldRequired('vaccuum_parameter', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check with machine parameter result</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No Yellow initial (display)</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->vaccuum_parameter) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->vaccuum_parameter) }}">
                                     Value : {{ ucfirst($selectedDailyPanasonic->vaccuum_parameter ?? '-') }}
                                 </span>
                             </div>
@@ -2782,12 +3614,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Expire Date (14)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Expire Date (14)
+                                    @if(isPanasonicFieldRequired('expire_date', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Make sure due date on the label</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No Expired</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->expire_date) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->expire_date) }}">
                                     Value : {{ ucfirst($selectedDailyPanasonic->expire_date ?? '-') }}
                                 </span>
                             </div>
@@ -2798,7 +3637,7 @@
                 <!-- STEP 7: CHIP MOUNTER 2 -->
                 @php
                     $step7Fields = ['air_presure_supply_2', 'vaccuum_pump_2', 'box_2', 'vaccuum_parameter_2', 'expire_date_2'];
-                    $step7Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step7Fields);
+                    $step7Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step7Fields, $requiredPanasonicFields);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step7Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
                     <div class="{{ $step7Incomplete ? 'bg-red-100 dark:bg-red-900/50' : 'bg-blue-100 dark:bg-blue-900/30' }} px-4 py-3">
@@ -2806,6 +3645,15 @@
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-zinc-800 text-sm font-bold {{ $step7Incomplete ? 'text-red-600' : 'text-blue-600' }}">7</span>
                                 <h4 class="font-semibold {{ $step7Incomplete ? 'text-red-800 dark:text-red-300' : 'text-blue-800 dark:text-blue-300' }}">CHIP MOUNTER 2</h4>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    @php
+                                        $requiredCount = 0;
+                                        foreach ($step7Fields as $f) {
+                                            if (isPanasonicFieldRequired($f, $requiredPanasonicFields)) $requiredCount++;
+                                        }
+                                    @endphp
+                                    {{ $requiredCount }}/{{ count($step7Fields) }} required
+                                </span>
                             </div>
                             @if($step7Incomplete)
                                 <flux:icon.x-circle class="w-5 h-5 text-red-600" />
@@ -2817,12 +3665,19 @@
                     <div class="p-4 space-y-4">
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Air Pressure Supply (15)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Air Pressure Supply (15)
+                                    @if(isPanasonicFieldRequired('air_presure_supply_2', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check with Pressure Meter (write value)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 0.49 ~ 0.54 Mpa</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->air_presure_supply_2) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->air_presure_supply_2) }}">
                                     Value : {{ $selectedDailyPanasonic->air_presure_supply_2 ?? '-' }} Mpa
                                 </span>
                             </div>
@@ -2830,12 +3685,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Vaccuum Pump (15.a)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Vaccuum Pump (15.a)
+                                    @if(isPanasonicFieldRequired('vaccuum_pump_2', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check with Pressure Meter (write value)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : -87 ~ -100 Kpa</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->vaccuum_pump_2) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->vaccuum_pump_2) }}">
                                     Value : {{ $selectedDailyPanasonic->vaccuum_pump_2 ?? '-' }} Kpa
                                 </span>
                             </div>
@@ -2843,12 +3705,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Box (15.b)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Box (15.b)
+                                    @if(isPanasonicFieldRequired('box_2', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Chip collection</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No components</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->box_2) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->box_2) }}">
                                     Value : {{ ucfirst($selectedDailyPanasonic->box_2 ?? '-') }}
                                 </span>
                             </div>
@@ -2856,12 +3725,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Vaccuum Parameter (15.c)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Vaccuum Parameter (15.c)
+                                    @if(isPanasonicFieldRequired('vaccuum_parameter_2', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check with machine parameter result</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No Yellow initial (display)</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->vaccuum_parameter_2) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->vaccuum_parameter_2) }}">
                                     Value : {{ ucfirst($selectedDailyPanasonic->vaccuum_parameter_2 ?? '-') }}
                                 </span>
                             </div>
@@ -2869,12 +3745,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Expire Date (16)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Expire Date (16)
+                                    @if(isPanasonicFieldRequired('expire_date_2', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Make sure due date on the label</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No Expired</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->expire_date_2) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->expire_date_2) }}">
                                     Value : {{ ucfirst($selectedDailyPanasonic->expire_date_2 ?? '-') }}
                                 </span>
                             </div>
@@ -2885,7 +3768,7 @@
                 <!-- STEP 8: REFLOW -->
                 @php
                     $step8Fields = ['abandonment', 'fire_posibilty', 'flashlight', 'rail_and_transfer_unit', 'n2_presure', 'oxygent_density_sek', 'oxygent_density_special', 'fire_posibilty_2'];
-                    $step8Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step8Fields);
+                    $step8Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step8Fields, $requiredPanasonicFields);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step8Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
                     <div class="{{ $step8Incomplete ? 'bg-red-100 dark:bg-red-900/50' : 'bg-blue-100 dark:bg-blue-900/30' }} px-4 py-3">
@@ -2893,6 +3776,15 @@
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-zinc-800 text-sm font-bold {{ $step8Incomplete ? 'text-red-600' : 'text-blue-600' }}">8</span>
                                 <h4 class="font-semibold {{ $step8Incomplete ? 'text-red-800 dark:text-red-300' : 'text-blue-800 dark:text-blue-300' }}">REFLOW</h4>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    @php
+                                        $requiredCount = 0;
+                                        foreach ($step8Fields as $f) {
+                                            if (isPanasonicFieldRequired($f, $requiredPanasonicFields)) $requiredCount++;
+                                        }
+                                    @endphp
+                                    {{ $requiredCount }}/{{ count($step8Fields) }} required
+                                </span>
                             </div>
                             @if($step8Incomplete)
                                 <flux:icon.x-circle class="w-5 h-5 text-red-600" />
@@ -2905,12 +3797,19 @@
                         <!-- Abandonment (17) -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Abandonment (17)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Abandonment (17)
+                                    @if(isPanasonicFieldRequired('abandonment', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Damage</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No Damage</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->abandonment) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->abandonment) }}">
                                     Value : {{ ucfirst($selectedDailyPanasonic->abandonment ?? '-') }}
                                 </span>
                             </div>
@@ -2919,12 +3818,19 @@
                         <!-- Fire Possibility (17.a) -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Fire Possibility (17.a)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Fire Possibility (17.a)
+                                    @if(isPanasonicFieldRequired('fire_posibilty', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : PCB input area No paper,plastic</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No Paper, No plastic</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->fire_posibilty) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->fire_posibilty) }}">
                                     Value : {{ ucfirst($selectedDailyPanasonic->fire_posibilty ?? '-') }}
                                 </span>
                             </div>
@@ -2933,12 +3839,19 @@
                         <!-- Flashlight (17.b) -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Flashlight (17.b)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Flashlight (17.b)
+                                    @if(isPanasonicFieldRequired('flashlight', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : On/Off Check</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : On</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->flashlight) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->flashlight) }}">
                                     Value : {{ ucfirst($selectedDailyPanasonic->flashlight ?? '-') }}
                                 </span>
                             </div>
@@ -2947,12 +3860,19 @@
                         <!-- Rail & Transfer Unit (18) -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Rail & Transfer Unit (18)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Rail & Transfer Unit (18)
+                                    @if(isPanasonicFieldRequired('rail_and_transfer_unit', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : make sure it is smooth condition</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No jammed</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->rail_and_transfer_unit) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->rail_and_transfer_unit) }}">
                                     Value : {{ ucfirst($selectedDailyPanasonic->rail_and_transfer_unit ?? '-') }}
                                 </span>
                             </div>
@@ -2961,12 +3881,19 @@
                         <!-- N2 Pressure (19) -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">N2 Pressure (19)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    N2 Pressure (19)
+                                    @if(isPanasonicFieldRequired('n2_presure', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check N2 Pressure</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 0.4MPa ~ 0.5MPa</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->n2_presure) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->n2_presure) }}">
                                     Value : {{ $selectedDailyPanasonic->n2_presure ?? '-' }} Mpa
                                 </span>
                             </div>
@@ -2975,12 +3902,19 @@
                         <!-- Oxygen Density SEK (20) -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Oxygen Density SEK (20)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Oxygen Density SEK (20)
+                                    @if(isPanasonicFieldRequired('oxygent_density_sek', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Oxygen meter (SEK Standard)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 1200~1800 ppm</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->oxygent_density_sek) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->oxygent_density_sek) }}">
                                     Value : {{ $selectedDailyPanasonic->oxygent_density_sek ?? '-' }} ppm
                                 </span>
                             </div>
@@ -2989,12 +3923,19 @@
                         <!-- Oxygen Density Special (20) -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Oxygen Density Special (20)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Oxygen Density Special (20)
+                                    @if(isPanasonicFieldRequired('oxygent_density_special', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Oxygen meter (Special Requirement)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 500~1000 ppm</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->oxygent_density_special) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->oxygent_density_special) }}">
                                     Value : {{ $selectedDailyPanasonic->oxygent_density_special ?? '-' }} ppm
                                 </span>
                             </div>
@@ -3003,12 +3944,19 @@
                         <!-- Fire Possibility (20.a) -->
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Fire Possibility (20.a)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Fire Possibility (20.a)
+                                    @if(isPanasonicFieldRequired('fire_posibilty_2', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : PCB Output area No paper,plastic</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No Paper, No plastic</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->fire_posibilty_2) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->fire_posibilty_2) }}">
                                     Value : {{ ucfirst($selectedDailyPanasonic->fire_posibilty_2 ?? '-') }}
                                 </span>
                             </div>
@@ -3019,7 +3967,7 @@
                 <!-- STEP 9: AOI -->
                 @php
                     $step9Fields = ['air_presure_2'];
-                    $step9Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step9Fields);
+                    $step9Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step9Fields, $requiredPanasonicFields);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step9Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
                     <div class="{{ $step9Incomplete ? 'bg-red-100 dark:bg-red-900/50' : 'bg-blue-100 dark:bg-blue-900/30' }} px-4 py-3">
@@ -3027,6 +3975,15 @@
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-zinc-800 text-sm font-bold {{ $step9Incomplete ? 'text-red-600' : 'text-blue-600' }}">9</span>
                                 <h4 class="font-semibold {{ $step9Incomplete ? 'text-red-800 dark:text-red-300' : 'text-blue-800 dark:text-blue-300' }}">AOI</h4>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    @php
+                                        $requiredCount = 0;
+                                        foreach ($step9Fields as $f) {
+                                            if (isPanasonicFieldRequired($f, $requiredPanasonicFields)) $requiredCount++;
+                                        }
+                                    @endphp
+                                    {{ $requiredCount }}/{{ count($step9Fields) }} required
+                                </span>
                             </div>
                             @if($step9Incomplete)
                                 <flux:icon.x-circle class="w-5 h-5 text-red-600" />
@@ -3038,12 +3995,19 @@
                     <div class="p-4">
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Air Pressure (20.b)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Air Pressure (20.b)
+                                    @if(isPanasonicFieldRequired('air_presure_2', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check with Pressure Meter (write value)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 0.40 - 0.50 Mpa</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->air_presure_2) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->air_presure_2) }}">
                                     Value : {{ $selectedDailyPanasonic->air_presure_2 ?? '-' }} Mpa
                                 </span>
                             </div>
@@ -3054,7 +4018,7 @@
                 <!-- STEP 10: UNLOADER -->
                 @php
                     $step10Fields = ['cylinder_2', 'rail_and_magazine_pcb_2', 'cover_magazine_2'];
-                    $step10Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step10Fields);
+                    $step10Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step10Fields, $requiredPanasonicFields);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step10Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
                     <div class="{{ $step10Incomplete ? 'bg-red-100 dark:bg-red-900/50' : 'bg-blue-100 dark:bg-blue-900/30' }} px-4 py-3">
@@ -3062,6 +4026,15 @@
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-zinc-800 text-sm font-bold {{ $step10Incomplete ? 'text-red-600' : 'text-blue-600' }}">10</span>
                                 <h4 class="font-semibold {{ $step10Incomplete ? 'text-red-800 dark:text-red-300' : 'text-blue-800 dark:text-blue-300' }}">UNLOADER</h4>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    @php
+                                        $requiredCount = 0;
+                                        foreach ($step10Fields as $f) {
+                                            if (isPanasonicFieldRequired($f, $requiredPanasonicFields)) $requiredCount++;
+                                        }
+                                    @endphp
+                                    {{ $requiredCount }}/{{ count($step10Fields) }} required
+                                </span>
                             </div>
                             @if($step10Incomplete)
                                 <flux:icon.x-circle class="w-5 h-5 text-red-600" />
@@ -3073,12 +4046,19 @@
                     <div class="p-4 space-y-4">
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Cylinder (21)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Cylinder (21)
+                                    @if(isPanasonicFieldRequired('cylinder_2', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Operation And center</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : Smooth and center</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->cylinder_2) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->cylinder_2) }}">
                                     Value : {{ ucfirst($selectedDailyPanasonic->cylinder_2 ?? '-') }}
                                 </span>
                             </div>
@@ -3086,12 +4066,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Rail & Magazine PCB (21.a)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Rail & Magazine PCB (21.a)
+                                    @if(isPanasonicFieldRequired('rail_and_magazine_pcb_2', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Cleaning Dust and dirty</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No Dust and clean</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->rail_and_magazine_pcb_2) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->rail_and_magazine_pcb_2) }}">
                                     Value : {{ ucfirst($selectedDailyPanasonic->rail_and_magazine_pcb_2 ?? '-') }}
                                 </span>
                             </div>
@@ -3099,12 +4086,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Cover Magazine (21.b)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Cover Magazine (21.b)
+                                    @if(isPanasonicFieldRequired('cover_magazine_2', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Cleaning Dust and dirty</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No Dust and clean</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->cover_magazine_2) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->cover_magazine_2) }}">
                                     Value : {{ ucfirst($selectedDailyPanasonic->cover_magazine_2 ?? '-') }}
                                 </span>
                             </div>
@@ -3115,7 +4109,7 @@
                 <!-- STEP 11: AOI TABLE -->
                 @php
                     $step11Fields = ['angle_and_filter', 'lamp_indicator'];
-                    $step11Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step11Fields);
+                    $step11Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step11Fields, $requiredPanasonicFields);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step11Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
                     <div class="{{ $step11Incomplete ? 'bg-red-100 dark:bg-red-900/50' : 'bg-blue-100 dark:bg-blue-900/30' }} px-4 py-3">
@@ -3123,6 +4117,15 @@
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-zinc-800 text-sm font-bold {{ $step11Incomplete ? 'text-red-600' : 'text-blue-600' }}">11</span>
                                 <h4 class="font-semibold {{ $step11Incomplete ? 'text-red-800 dark:text-red-300' : 'text-blue-800 dark:text-blue-300' }}">AOI TABLE</h4>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    @php
+                                        $requiredCount = 0;
+                                        foreach ($step11Fields as $f) {
+                                            if (isPanasonicFieldRequired($f, $requiredPanasonicFields)) $requiredCount++;
+                                        }
+                                    @endphp
+                                    {{ $requiredCount }}/{{ count($step11Fields) }} required
+                                </span>
                             </div>
                             @if($step11Incomplete)
                                 <flux:icon.x-circle class="w-5 h-5 text-red-600" />
@@ -3134,12 +4137,19 @@
                     <div class="p-4 space-y-4">
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Angle & Filter (22)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Angle & Filter (22)
+                                    @if(isPanasonicFieldRequired('angle_and_filter', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Cleaning</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No dirt / no dust</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->angle_and_filter) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->angle_and_filter) }}">
                                     Value : {{ ucfirst($selectedDailyPanasonic->angle_and_filter ?? '-') }}
                                 </span>
                             </div>
@@ -3147,12 +4157,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Lamp Indicator (22.a)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Lamp Indicator (22.a)
+                                    @if(isPanasonicFieldRequired('lamp_indicator', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : LED Lamp (Green)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : Function</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->lamp_indicator) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->lamp_indicator) }}">
                                     Value : {{ ucfirst($selectedDailyPanasonic->lamp_indicator ?? '-') }}
                                 </span>
                             </div>
@@ -3163,7 +4180,7 @@
                 <!-- STEP 12: REFLOW 2 -->
                 @php
                     $step12Fields = ['temperature_chiller', 'temperature_control_3'];
-                    $step12Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step12Fields);
+                    $step12Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step12Fields, $requiredPanasonicFields);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step12Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
                     <div class="{{ $step12Incomplete ? 'bg-red-100 dark:bg-red-900/50' : 'bg-blue-100 dark:bg-blue-900/30' }} px-4 py-3">
@@ -3171,6 +4188,15 @@
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-zinc-800 text-sm font-bold {{ $step12Incomplete ? 'text-red-600' : 'text-blue-600' }}">12</span>
                                 <h4 class="font-semibold {{ $step12Incomplete ? 'text-red-800 dark:text-red-300' : 'text-blue-800 dark:text-blue-300' }}">REFLOW 2</h4>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    @php
+                                        $requiredCount = 0;
+                                        foreach ($step12Fields as $f) {
+                                            if (isPanasonicFieldRequired($f, $requiredPanasonicFields)) $requiredCount++;
+                                        }
+                                    @endphp
+                                    {{ $requiredCount }}/{{ count($step12Fields) }} required
+                                </span>
                             </div>
                             @if($step12Incomplete)
                                 <flux:icon.x-circle class="w-5 h-5 text-red-600" />
@@ -3182,12 +4208,19 @@
                     <div class="p-4 space-y-4">
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Temperature Chiller (23)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Temperature Chiller (23)
+                                    @if(isPanasonicFieldRequired('temperature_chiller', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Write down the value</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 17-23℃</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->temperature_chiller) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->temperature_chiller) }}">
                                     Value : {{ $selectedDailyPanasonic->temperature_chiller ?? '-' }} ℃
                                 </span>
                             </div>
@@ -3195,12 +4228,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Temperature Control (24)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Temperature Control (24)
+                                    @if(isPanasonicFieldRequired('temperature_control_3', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check Value inspect</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 300℃ ±10℃</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->temperature_control_3) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->temperature_control_3) }}">
                                     Value : {{ $selectedDailyPanasonic->temperature_control_3 ?? '-' }} ℃
                                 </span>
                             </div>
@@ -3211,7 +4251,7 @@
                 <!-- STEP 13: CHIP MOUNTER 3 -->
                 @php
                     $step13Fields = ['box_3', 'vaccuum_pump_3'];
-                    $step13Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step13Fields);
+                    $step13Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step13Fields, $requiredPanasonicFields);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step13Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
                     <div class="{{ $step13Incomplete ? 'bg-red-100 dark:bg-red-900/50' : 'bg-blue-100 dark:bg-blue-900/30' }} px-4 py-3">
@@ -3219,6 +4259,15 @@
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-zinc-800 text-sm font-bold {{ $step13Incomplete ? 'text-red-600' : 'text-blue-600' }}">13</span>
                                 <h4 class="font-semibold {{ $step13Incomplete ? 'text-red-800 dark:text-red-300' : 'text-blue-800 dark:text-blue-300' }}">CHIP MOUNTER 3</h4>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    @php
+                                        $requiredCount = 0;
+                                        foreach ($step13Fields as $f) {
+                                            if (isPanasonicFieldRequired($f, $requiredPanasonicFields)) $requiredCount++;
+                                        }
+                                    @endphp
+                                    {{ $requiredCount }}/{{ count($step13Fields) }} required
+                                </span>
                             </div>
                             @if($step13Incomplete)
                                 <flux:icon.x-circle class="w-5 h-5 text-red-600" />
@@ -3230,12 +4279,19 @@
                     <div class="p-4 space-y-4">
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Box (25)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Box (25)
+                                    @if(isPanasonicFieldRequired('box_3', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Chip collection</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No components</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->box_3) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->box_3) }}">
                                     Value : {{ ucfirst($selectedDailyPanasonic->box_3 ?? '-') }}
                                 </span>
                             </div>
@@ -3243,12 +4299,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Vaccuum Pump (25.a)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Vaccuum Pump (25.a)
+                                    @if(isPanasonicFieldRequired('vaccuum_pump_3', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check with Pressure Meter (write value)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : -87 ~ -100 Kpa</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->vaccuum_pump_3) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->vaccuum_pump_3) }}">
                                     Value : {{ $selectedDailyPanasonic->vaccuum_pump_3 ?? '-' }} Kpa
                                 </span>
                             </div>
@@ -3259,7 +4322,7 @@
                 <!-- STEP 14: CHIP MOUNTER 4 -->
                 @php
                     $step14Fields = ['box_4', 'vaccuum_pump_4'];
-                    $step14Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step14Fields);
+                    $step14Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step14Fields, $requiredPanasonicFields);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step14Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
                     <div class="{{ $step14Incomplete ? 'bg-red-100 dark:bg-red-900/50' : 'bg-blue-100 dark:bg-blue-900/30' }} px-4 py-3">
@@ -3267,6 +4330,15 @@
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-zinc-800 text-sm font-bold {{ $step14Incomplete ? 'text-red-600' : 'text-blue-600' }}">14</span>
                                 <h4 class="font-semibold {{ $step14Incomplete ? 'text-red-800 dark:text-red-300' : 'text-blue-800 dark:text-blue-300' }}">CHIP MOUNTER 4</h4>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    @php
+                                        $requiredCount = 0;
+                                        foreach ($step14Fields as $f) {
+                                            if (isPanasonicFieldRequired($f, $requiredPanasonicFields)) $requiredCount++;
+                                        }
+                                    @endphp
+                                    {{ $requiredCount }}/{{ count($step14Fields) }} required
+                                </span>
                             </div>
                             @if($step14Incomplete)
                                 <flux:icon.x-circle class="w-5 h-5 text-red-600" />
@@ -3278,12 +4350,19 @@
                     <div class="p-4 space-y-4">
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Box (26)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Box (26)
+                                    @if(isPanasonicFieldRequired('box_4', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Chip collection</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No components</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->box_4) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->box_4) }}">
                                     Value : {{ ucfirst($selectedDailyPanasonic->box_4 ?? '-') }}
                                 </span>
                             </div>
@@ -3291,12 +4370,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Vaccuum Pump (26.a)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Vaccuum Pump (26.a)
+                                    @if(isPanasonicFieldRequired('vaccuum_pump_4', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check with Pressure Meter (write value)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : -87 ~ -100 Kpa</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->vaccuum_pump_4) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->vaccuum_pump_4) }}">
                                     Value : {{ $selectedDailyPanasonic->vaccuum_pump_4 ?? '-' }} Kpa
                                 </span>
                             </div>
@@ -3307,7 +4393,7 @@
                 <!-- STEP 15: SPI 2 -->
                 @php
                     $step15Fields = ['air_presure_3'];
-                    $step15Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step15Fields);
+                    $step15Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step15Fields, $requiredPanasonicFields);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step15Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
                     <div class="{{ $step15Incomplete ? 'bg-red-100 dark:bg-red-900/50' : 'bg-blue-100 dark:bg-blue-900/30' }} px-4 py-3">
@@ -3315,6 +4401,15 @@
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-zinc-800 text-sm font-bold {{ $step15Incomplete ? 'text-red-600' : 'text-blue-600' }}">15</span>
                                 <h4 class="font-semibold {{ $step15Incomplete ? 'text-red-800 dark:text-red-300' : 'text-blue-800 dark:text-blue-300' }}">SPI 2</h4>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    @php
+                                        $requiredCount = 0;
+                                        foreach ($step15Fields as $f) {
+                                            if (isPanasonicFieldRequired($f, $requiredPanasonicFields)) $requiredCount++;
+                                        }
+                                    @endphp
+                                    {{ $requiredCount }}/{{ count($step15Fields) }} required
+                                </span>
                             </div>
                             @if($step15Incomplete)
                                 <flux:icon.x-circle class="w-5 h-5 text-red-600" />
@@ -3326,12 +4421,19 @@
                     <div class="p-4">
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Air Pressure (27)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Air Pressure (27)
+                                    @if(isPanasonicFieldRequired('air_presure_3', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check with Pressure Meter (write value)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 0.40 - 0.50 Mpa (Kohyoung)</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->air_presure_3) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->air_presure_3) }}">
                                     Value : {{ $selectedDailyPanasonic->air_presure_3 ?? '-' }} Mpa
                                 </span>
                             </div>
@@ -3342,7 +4444,7 @@
                 <!-- STEP 16: PRINTER -->
                 @php
                     $step16Fields = ['temperature_control_4', 'water_reservoirs'];
-                    $step16Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step16Fields);
+                    $step16Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step16Fields, $requiredPanasonicFields);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step16Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
                     <div class="{{ $step16Incomplete ? 'bg-red-100 dark:bg-red-900/50' : 'bg-blue-100 dark:bg-blue-900/30' }} px-4 py-3">
@@ -3350,6 +4452,15 @@
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-zinc-800 text-sm font-bold {{ $step16Incomplete ? 'text-red-600' : 'text-blue-600' }}">16</span>
                                 <h4 class="font-semibold {{ $step16Incomplete ? 'text-red-800 dark:text-red-300' : 'text-blue-800 dark:text-blue-300' }}">PRINTER</h4>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    @php
+                                        $requiredCount = 0;
+                                        foreach ($step16Fields as $f) {
+                                            if (isPanasonicFieldRequired($f, $requiredPanasonicFields)) $requiredCount++;
+                                        }
+                                    @endphp
+                                    {{ $requiredCount }}/{{ count($step16Fields) }} required
+                                </span>
                             </div>
                             @if($step16Incomplete)
                                 <flux:icon.x-circle class="w-5 h-5 text-red-600" />
@@ -3361,12 +4472,19 @@
                     <div class="p-4 space-y-4">
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Temperature Control (28)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Temperature Control (28)
+                                    @if(isPanasonicFieldRequired('temperature_control_4', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Air cond Setting Temperature</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 23-27℃</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->temperature_control_4) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->temperature_control_4) }}">
                                     Value : {{ $selectedDailyPanasonic->temperature_control_4 ?? '-' }} ℃
                                 </span>
                             </div>
@@ -3374,12 +4492,19 @@
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Water Reservoirs (28.a)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Water Reservoirs (28.a)
+                                    @if(isPanasonicFieldRequired('water_reservoirs', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Damage, Function</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : Function, No Damage</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->water_reservoirs) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->water_reservoirs) }}">
                                     Value : {{ ucfirst($selectedDailyPanasonic->water_reservoirs ?? '-') }}
                                 </span>
                             </div>
@@ -3390,7 +4515,7 @@
                 <!-- STEP 17: PCB CLEANER 2 -->
                 @php
                     $step17Fields = ['filter'];
-                    $step17Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step17Fields);
+                    $step17Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step17Fields, $requiredPanasonicFields);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step17Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
                     <div class="{{ $step17Incomplete ? 'bg-red-100 dark:bg-red-900/50' : 'bg-blue-100 dark:bg-blue-900/30' }} px-4 py-3">
@@ -3398,6 +4523,15 @@
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-zinc-800 text-sm font-bold {{ $step17Incomplete ? 'text-red-600' : 'text-blue-600' }}">17</span>
                                 <h4 class="font-semibold {{ $step17Incomplete ? 'text-red-800 dark:text-red-300' : 'text-blue-800 dark:text-blue-300' }}">PCB CLEANER 2</h4>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    @php
+                                        $requiredCount = 0;
+                                        foreach ($step17Fields as $f) {
+                                            if (isPanasonicFieldRequired($f, $requiredPanasonicFields)) $requiredCount++;
+                                        }
+                                    @endphp
+                                    {{ $requiredCount }}/{{ count($step17Fields) }} required
+                                </span>
                             </div>
                             @if($step17Incomplete)
                                 <flux:icon.x-circle class="w-5 h-5 text-red-600" />
@@ -3409,12 +4543,19 @@
                     <div class="p-4">
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Filter (29)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Filter (29)
+                                    @if(isPanasonicFieldRequired('filter', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Cleaning</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : Clean</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->filter) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->filter) }}">
                                     Value : {{ ucfirst($selectedDailyPanasonic->filter ?? '-') }}
                                 </span>
                             </div>
@@ -3425,7 +4566,7 @@
                 <!-- STEP 18: IONIZER -->
                 @php
                     $step18Fields = ['angle_and_filter_2'];
-                    $step18Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step18Fields);
+                    $step18Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step18Fields, $requiredPanasonicFields);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step18Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
                     <div class="{{ $step18Incomplete ? 'bg-red-100 dark:bg-red-900/50' : 'bg-blue-100 dark:bg-blue-900/30' }} px-4 py-3">
@@ -3433,6 +4574,15 @@
                             <div class="flex items-center gap-2">
                                 <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white dark:bg-zinc-800 text-sm font-bold {{ $step18Incomplete ? 'text-red-600' : 'text-blue-600' }}">18</span>
                                 <h4 class="font-semibold {{ $step18Incomplete ? 'text-red-800 dark:text-red-300' : 'text-blue-800 dark:text-blue-300' }}">IONIZER</h4>
+                                <span class="text-xs text-zinc-500 dark:text-zinc-400">
+                                    @php
+                                        $requiredCount = 0;
+                                        foreach ($step18Fields as $f) {
+                                            if (isPanasonicFieldRequired($f, $requiredPanasonicFields)) $requiredCount++;
+                                        }
+                                    @endphp
+                                    {{ $requiredCount }}/{{ count($step18Fields) }} required
+                                </span>
                             </div>
                             @if($step18Incomplete)
                                 <flux:icon.x-circle class="w-5 h-5 text-red-600" />
@@ -3444,12 +4594,19 @@
                     <div class="p-4">
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
-                                <p class="font-medium text-zinc-800 dark:text-white">Angle & Filter (30)</p>
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Angle & Filter (30)
+                                    @if(isPanasonicFieldRequired('angle_and_filter_2', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Cleaning</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : No dirt / no dust</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->angle_and_filter_2) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->angle_and_filter_2) }}">
                                     Value : {{ ucfirst($selectedDailyPanasonic->angle_and_filter_2 ?? '-') }}
                                 </span>
                             </div>
@@ -3490,7 +4647,7 @@
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : -</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ isPanasonicFieldEmpty($selectedDailyPanasonic->stop_time) ? 'text-red-600' : 'text-green-600' }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ isPanasonicFieldEmpty($selectedDailyPanasonic->stop_time) ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' }}">
                                     Value : {{ $selectedDailyPanasonic->stop_time ? $selectedDailyPanasonic->stop_time->format('H:i') : '-' }}
                                 </span>
                             </div>
@@ -3503,7 +4660,7 @@
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : -</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->run_time) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->run_time) }}">
                                     Value : {{ $selectedDailyPanasonic->run_time ? $selectedDailyPanasonic->run_time->format('H:i') : '-' }}
                                 </span>
                             </div>
@@ -3516,7 +4673,7 @@
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : A, B, or C</p>
                             </div>
                             <div class="text-right ml-4">
-                                <span class="text-sm font-semibold {{ getPanasonicFieldColorClass($selectedDailyPanasonic->group) }}">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->group) }}">
                                     Value : {{ $selectedDailyPanasonic->group ?? '-' }}
                                 </span>
                             </div>
@@ -3544,12 +4701,6 @@
                 <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">
                     Update Approval Status (Panasonic)
                 </h3>
-                <flux:button 
-                    wire:click="closePanasonicApprovalModal" 
-                    icon="x-mark" 
-                    variant="subtle"
-                    size="sm"
-                />
             </div>
             
             <div class="space-y-4">

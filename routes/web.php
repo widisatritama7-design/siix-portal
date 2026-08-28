@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\ApiLockerController;
 use App\Http\Controllers\Api\EspController;
 use App\Http\Controllers\DashboardRefreshController;
 use App\Http\Controllers\DoorLockController;
+use App\Http\Controllers\ESD\Locker\LockerInfoController;
 use App\Http\Controllers\InboxController;
 use App\Http\Controllers\PROD\Absence\AbsenceControlPrintController;
 use App\Http\Controllers\PROD\Absence\AbsenceReportPrintController;
@@ -326,28 +327,27 @@ Route::get('/esd-locker', function () {
 
 // Route untuk ESP32
 Route::prefix('esp')->group(function () {
-    // Heartbeat - diterima dari ESP32
     Route::post('/heartbeat', [EspController::class, 'heartbeat']);
-    
-    // Ambil data device (untuk dashboard)
     Route::get('/devices', [EspController::class, 'index']);
     Route::get('/devices/{deviceId}', [EspController::class, 'show']);
     Route::get('/devices/{deviceId}/logs', [EspController::class, 'logs']);
 });
-
-// ESP32 Locker API - Tanpa prefix api
 Route::prefix('lockers')->group(function () {
-    // ESP32 membaca status - hanya kirim should_open (true/false)
     Route::get('/status', [ApiLockerController::class, 'getStatus']);
-    
-    // ESP32 melaporkan status
     Route::match(['get', 'post'], '/open', [ApiLockerController::class, 'reportOpen']);
     Route::match(['get', 'post'], '/open/{code}', [ApiLockerController::class, 'reportOpen']);
     Route::match(['get', 'post'], '/close', [ApiLockerController::class, 'reportClose']);
     Route::match(['get', 'post'], '/close/{code}', [ApiLockerController::class, 'reportClose']);
-    
-    // Ping untuk cek koneksi
     Route::get('/ping', [ApiLockerController::class, 'ping']);
+});
+
+// ESD Locker
+Route::prefix('esd/locker')->group(function () {
+    Route::get('/', [LockerInfoController::class, 'index'])->name('esd.locker.info');
+    Route::post('/store/check', [LockerInfoController::class, 'checkStoreNik'])->name('esd.locker.store.check');
+    Route::post('/store', [LockerInfoController::class, 'storeUniform'])->name('esd.locker.store');
+    Route::post('/take/check', [LockerInfoController::class, 'checkTakeCode'])->name('esd.locker.take.check');
+    Route::post('/take', [LockerInfoController::class, 'takeUniform'])->name('esd.locker.take');
 });
 
 require __DIR__.'/settings.php';

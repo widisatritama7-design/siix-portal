@@ -14,9 +14,13 @@ class DailyFujiCreate extends Component
     public $overallStatus = 'danger';
     public $overallStatusText = 'Some parameters are invalid or not filled';
     
+    // TAMBAHKAN INI
+    public $requiredFields = [];
+    public $disabledFields = [];
+    
     // STEP 1: GENERAL
     public $body_cover;
-    public $lamp_alarm_change_model; // TAMBAHKAN INI
+    public $lamp_alarm_change_model;
     
     // STEP 2: LOADER
     public $cylinder;
@@ -128,7 +132,6 @@ class DailyFujiCreate extends Component
         'box_1', 'vaccuum_parameter_1', 'expire_date_1',
         'box_2', 'vaccuum_parameter_2', 'expire_date_2',
         'abandonment', 'fire_posibilty', 'rail_and_transfer_unit', 'fire_posibilty_2',
-        // FLASHLIGHT DIHAPUS DARI SINI
         'cylinder_2', 'rail_and_magazine_pcb_2', 'cover_magazine_2',
         'angle_and_filter', 'lamp_indicator', 'fan_unit_1', 'fan_unit_2',
         'water_reservoirs', 'filter', 'angle_and_filter_2'
@@ -165,7 +168,7 @@ class DailyFujiCreate extends Component
     public function mount($masterLineId)
     {
         $this->masterLineId = $masterLineId;
-        $this->masterLine = MasterLine::with(['location', 'location.area'])->findOrFail($masterLineId);
+        $this->masterLine = MasterLine::with(['location', 'location.area', 'dailyFujiStandardCheck'])->findOrFail($masterLineId);
         
         if (!auth()->user()->can('create daily fuji')) {
             abort(403, 'Unauthorized access.');
@@ -173,6 +176,44 @@ class DailyFujiCreate extends Component
         
         $this->status = 'On Progress';
         $this->approval = 'Pending';
+        
+        // Load required fields dari master line
+        $this->loadRequiredFields();
+    }
+
+    protected function loadRequiredFields()
+    {
+        $this->requiredFields = $this->masterLine->getRequiredFujiFields();
+        
+        // Tentukan field yang DISABLED (tidak required)
+        $allFields = array_merge(
+            $this->toggleFields,
+            array_keys($this->numericRanges),
+            ['flashlight']
+        );
+        
+        $this->disabledFields = [];
+        foreach ($allFields as $field) {
+            if (!in_array($field, $this->requiredFields)) {
+                $this->disabledFields[] = $field;
+            }
+        }
+    }
+
+    /**
+     * Check if a field is disabled (not required)
+     */
+    public function isFieldDisabled($field)
+    {
+        return in_array($field, $this->disabledFields ?? []);
+    }
+
+    /**
+     * Check if a field is required
+     */
+    public function isFieldRequired($field)
+    {
+        return in_array($field, $this->requiredFields ?? []);
     }
 
     /**
@@ -205,29 +246,46 @@ class DailyFujiCreate extends Component
      */
     protected function checkOverallStatus(): bool
     {
-        // Cek semua toggle fields (checked/na)
+        // Cek semua toggle fields (checked/na) - HANYA YANG REQUIRED
         foreach ($this->toggleFields as $field) {
+            // Skip jika field tidak required (disabled)
+            if ($this->isFieldDisabled($field)) {
+                continue;
+            }
+            
             $value = $this->{$field};
             if ($value === null || $value === '' || !in_array($value, ['checked', 'na'])) {
                 return false;
             }
         }
 
-        // CEK FLASHLIGHT KHUSUS (on/off/na)
-        if ($this->flashlight === null || $this->flashlight === '' || !in_array($this->flashlight, ['on', 'off', 'na'])) {
-            return false;
+        // CEK FLASHLIGHT KHUSUS (on/off/na) - HANYA JIKA REQUIRED
+        if (!$this->isFieldDisabled('flashlight')) {
+            if ($this->flashlight === null || $this->flashlight === '' || !in_array($this->flashlight, ['on', 'off', 'na'])) {
+                return false;
+            }
         }
 
-        // Cek numeric fields
+        // Cek numeric fields - HANYA YANG REQUIRED
         foreach ($this->numericRanges as $field => $range) {
+            // Skip jika field tidak required (disabled)
+            if ($this->isFieldDisabled($field)) {
+                continue;
+            }
+            
             $value = $this->{$field};
             
             if ($value === null || $value === '') {
                 return false;
             }
             
+            // CEK: '-' HANYA DIIZINKAN JIKA STATUS LINE = "No Schedule"
             if ($value === '-') {
-                continue;
+                // Jika status line bukan "No Schedule", maka '-' dianggap INVALID
+                if (!$this->isNAAllowed()) {
+                    return false;
+                }
+                continue; // Jika No Schedule, '-' dianggap valid
             }
             
             $floatValue = floatval($value);
@@ -260,8 +318,16 @@ class DailyFujiCreate extends Component
             return ['valid' => true, 'message' => ''];
         }
         
-        if ($value === null || $value === '' || $value === '-') {
+        if ($value === null || $value === '') {
             return ['valid' => false, 'message' => 'Field ini harus diisi'];
+        }
+        
+        // CEK: '-' HANYA DIIZINKAN JIKA STATUS LINE = "No Schedule"
+        if ($value === '-') {
+            if ($this->isNAAllowed()) {
+                return ['valid' => true, 'message' => ''];
+            }
+            return ['valid' => false, 'message' => 'Nilai "-" tidak diizinkan untuk line dengan status "' . $this->masterLine->status . '"'];
         }
         
         $floatValue = floatval($value);
@@ -284,12 +350,23 @@ class DailyFujiCreate extends Component
      */
     public function getFieldColorClass($field, $value)
     {
+        // Jika field disabled, tampilkan abu-abu (tidak aktif)
+        if ($this->isFieldDisabled($field)) {
+            return 'border-gray-300 bg-gray-100 dark:bg-zinc-800/50 cursor-not-allowed';
+        }
+        
+        // Field required - cek validasi
         if ($value === null || $value === '') {
             return 'border-red-500 bg-red-50 dark:bg-red-950/20';
         }
         
+        // CEK KHUSUS: '-' hanya valid jika NA allowed
         if ($value === '-') {
-            return 'border-green-500 bg-green-50 dark:bg-green-950/20';
+            if ($this->isNAAllowed()) {
+                return 'border-green-500 bg-green-50 dark:bg-green-950/20';
+            }
+            // Jika tidak allowed, tampilkan merah dengan pesan error
+            return 'border-red-500 bg-red-50 dark:bg-red-950/20';
         }
         
         // Khusus untuk flashlight (on/off/na)
@@ -338,7 +415,7 @@ class DailyFujiCreate extends Component
             'capability_index', 'air_presure_supply', 'vaccuum_pump_1', 'box_1',
             'vaccuum_parameter_1', 'expire_date_1', 'air_presure_supply_2', 'vaccuum_pump_2',
             'box_2', 'vaccuum_parameter_2', 'expire_date_2', 'abandonment', 'fire_posibilty',
-            'flashlight', // TAMBAHKAN
+            'flashlight',
             'rail_and_transfer_unit', 'n2_presure', 'oxygent_density_sek', 'oxygent_density_special',
             'fire_posibilty_2', 'air_presure_2', 'cylinder_2', 'rail_and_magazine_pcb_2',
             'cover_magazine_2', 'angle_and_filter', 'lamp_indicator', 'temperature_chiller',
@@ -366,6 +443,15 @@ class DailyFujiCreate extends Component
     public function cancel()
     {
         return redirect()->route('mtc.master-lines.show', $this->masterLineId);
+    }
+
+    /**
+     * Check if NA (Not Applicable) is allowed for this line
+     * NA only allowed when status is 'No Schedule'
+     */
+    public function isNAAllowed()
+    {
+        return $this->masterLine && $this->masterLine->status === 'No Schedule';
     }
 
     public function render()

@@ -1,7 +1,5 @@
 <?php # [BlazeFolded]:{flux::label}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/label.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::input}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/input/index.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::label}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/label.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::input}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/input/index.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
 <?php if (isset($component)) { $__componentOriginal08b8a564843783787e0bee3357e24f38 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal08b8a564843783787e0bee3357e24f38 = $attributes; } ?>
@@ -91,26 +89,10 @@
     
     </ui-label>
 <?php echo ltrim(ob_get_clean()); ?>
-                <?php ob_start(); ?><div class="w-full relative block group/input [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" data-flux-input>
-            
-            <input
-                type="number"
-                
-                class="w-full border rounded-lg block disabled:shadow-none dark:shadow-none appearance-none text-base sm:text-sm py-2 h-10 leading-[1.375rem] ps-3 pe-3 bg-white dark:bg-white/10 dark:disabled:bg-white/[7%] text-zinc-700 disabled:text-zinc-500 placeholder-zinc-400 disabled:placeholder-zinc-400/70 dark:text-zinc-300 dark:disabled:text-zinc-400 dark:placeholder-zinc-400 dark:disabled:placeholder-zinc-500 shadow-xs border-zinc-200 border-b-zinc-300/80 disabled:border-b-zinc-200 dark:border-white/10 dark:disabled:border-white/5 data-invalid:shadow-none data-invalid:border-red-500 dark:data-invalid:border-red-500 disabled:data-invalid:border-red-500 dark:disabled:data-invalid:border-red-500" <?php if (($__blazeAttr = old('nik')) !== false && !is_null($__blazeAttr)): ?>value="<?php echo e($__blazeAttr === true ? 'value' : $__blazeAttr); ?>"<?php endif; unset($__blazeAttr); ?> required="required" autofocus="autofocus" autocomplete="username" placeholder="Enter your NIK"
-                 name="nik"                                                 <?php if (isset($scope)) $__scope = $scope; ?><?php $scope = array (
-  'name' => 'nik',
-  'invalid' => false,
-); ?>
-                <?php if ($scope['invalid'] || ($scope['name'] && $errors->has($scope['name']))): ?>
-                aria-invalid="true" data-invalid
-                <?php endif; ?>
-                <?php if (isset($__scope)) { $scope = $__scope; unset($__scope); } ?>
-                data-flux-control
-                data-flux-group-target
-                                            >
-
-                    </div>
-<?php echo ltrim(ob_get_clean()); ?>
+                <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/input/index.blade.php', $__blaze->compiledPath.'/5ae551d98c08f0bc67bd05455e08306c.php'); ?>
+<?php $__blaze->pushData(['name' => 'nik','type' => 'number','value' => old('nik'),'required' => true,'autofocus' => true,'autocomplete' => 'username','placeholder' => 'Enter your NIK','class' => '[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none']); ?>
+<?php _5ae551d98c08f0bc67bd05455e08306c($__blaze, ['name' => 'nik','type' => 'number','value' => old('nik'),'required' => true,'autofocus' => true,'autocomplete' => 'username','placeholder' => 'Enter your NIK','class' => '[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none'], [], ['value', 'required', 'autofocus'], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php $__blaze->popData(); ?>
                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['nik'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
@@ -144,45 +126,10 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
     
     </ui-label>
 <?php echo ltrim(ob_get_clean()); ?>
-                <?php ob_start(); ?><div class="w-full relative block group/input" data-flux-input>
-            
-            <input
-                type="password"
-                
-                class="w-full border rounded-lg block disabled:shadow-none dark:shadow-none appearance-none text-base sm:text-sm py-2 h-10 leading-[1.375rem] ps-3 pe-10 bg-white dark:bg-white/10 dark:disabled:bg-white/[7%] text-zinc-700 disabled:text-zinc-500 placeholder-zinc-400 disabled:placeholder-zinc-400/70 dark:text-zinc-300 dark:disabled:text-zinc-400 dark:placeholder-zinc-400 dark:disabled:placeholder-zinc-500 shadow-xs border-zinc-200 border-b-zinc-300/80 disabled:border-b-zinc-200 dark:border-white/10 dark:disabled:border-white/5 data-invalid:shadow-none data-invalid:border-red-500 dark:data-invalid:border-red-500 disabled:data-invalid:border-red-500 dark:disabled:data-invalid:border-red-500" required="required" autocomplete="current-password" placeholder="<?php echo e(__('Password')); ?>"                 name="password"                                                 <?php if (isset($scope)) $__scope = $scope; ?><?php $scope = array (
-  'name' => 'password',
-  'invalid' => false,
-); ?>
-                <?php if ($scope['invalid'] || ($scope['name'] && $errors->has($scope['name']))): ?>
-                aria-invalid="true" data-invalid
-                <?php endif; ?>
-                <?php if (isset($__scope)) { $scope = $__scope; unset($__scope); } ?>
-                data-flux-control
-                data-flux-group-target
-                                            >
-
-                            <div class="absolute top-0 bottom-0 flex items-center gap-x-1.5 pe-2 border-e border-transparent end-0 text-xs text-zinc-400">
-                    
-                    
-                    
-                    
-                    
-                    
-                                            <button type="button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-8 text-sm rounded-md w-8 inline-flex -ms-1.5 -me-1.5 bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white      -me-1" data-flux-button="data-flux-button" x-data="fluxInputViewable" x-on:click="toggle()" x-bind:data-viewable-open="open" aria-label="Toggle password visibility">
-        <svg class="shrink-0 [:where(&amp;)]:size-5 hidden [[data-viewable-open]>&]:block" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-  <path fill-rule="evenodd" d="M3.28 2.22a.75.75 0 0 0-1.06 1.06l14.5 14.5a.75.75 0 1 0 1.06-1.06l-1.745-1.745a10.029 10.029 0 0 0 3.3-4.38 1.651 1.651 0 0 0 0-1.185A10.004 10.004 0 0 0 9.999 3a9.956 9.956 0 0 0-4.744 1.194L3.28 2.22ZM7.752 6.69l1.092 1.092a2.5 2.5 0 0 1 3.374 3.373l1.091 1.092a4 4 0 0 0-5.557-5.557Z" clip-rule="evenodd"/>
-  <path d="m10.748 13.93 2.523 2.523a9.987 9.987 0 0 1-3.27.547c-4.258 0-7.894-2.66-9.337-6.41a1.651 1.651 0 0 1 0-1.186A10.007 10.007 0 0 1 2.839 6.02L6.07 9.252a4 4 0 0 0 4.678 4.678Z"/>
-</svg>
-
-            <svg class="shrink-0 [:where(&amp;)]:size-5 block [[data-viewable-open]>&]:hidden" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-  <path d="M10 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/>
-  <path fill-rule="evenodd" d="M.664 10.59a1.651 1.651 0 0 1 0-1.186A10.004 10.004 0 0 1 10 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0 1 10 17c-4.257 0-7.893-2.66-9.336-6.41ZM14 10a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z" clip-rule="evenodd"/>
-</svg>
-    </button>
-                    
-                                    </div>
-                    </div>
-<?php echo ltrim(ob_get_clean()); ?>
+                <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/input/index.blade.php', $__blaze->compiledPath.'/5ae551d98c08f0bc67bd05455e08306c.php'); ?>
+<?php $__blaze->pushData(['name' => 'password','type' => 'password','required' => true,'autocomplete' => 'current-password','placeholder' => e(__('Password')),'viewable' => true]); ?>
+<?php _5ae551d98c08f0bc67bd05455e08306c($__blaze, ['name' => 'password','type' => 'password','required' => true,'autocomplete' => 'current-password','placeholder' => e(__('Password')),'viewable' => true], [], ['required', 'viewable'], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php $__blaze->popData(); ?>
                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['password'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :

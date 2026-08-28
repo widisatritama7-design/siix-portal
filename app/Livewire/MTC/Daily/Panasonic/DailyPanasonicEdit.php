@@ -16,9 +16,13 @@ class DailyPanasonicEdit extends Component
     public $overallStatus = 'danger';
     public $overallStatusText = 'Some parameters are invalid or not filled';
     
+    // TAMBAHKAN INI
+    public $requiredFields = [];
+    public $disabledFields = [];
+    
     // STEP 1: GENERAL
     public $body_cover;
-    public $lamp_alarm_change_model; // TAMBAHKAN INI
+    public $lamp_alarm_change_model;
     
     // STEP 2: LOADER
     public $cylinder;
@@ -67,7 +71,7 @@ class DailyPanasonicEdit extends Component
     // STEP 8: REFLOW
     public $abandonment;
     public $fire_posibilty;
-    public $flashlight; // TAMBAHKAN INI
+    public $flashlight;
     public $rail_and_transfer_unit;
     public $n2_presure;
     public $oxygent_density_sek;
@@ -126,10 +130,9 @@ class DailyPanasonicEdit extends Component
         'group' => 'Group',
     ];
 
-    // Field toggle yang perlu dicek
     protected $toggleFields = [
         'body_cover',
-        'lamp_alarm_change_model', // TAMBAHKAN INI
+        'lamp_alarm_change_model',
         'cylinder', 'rail_and_magazine_pcb', 'cover_magazine', 'brush',
         'vacume_brush', 'cleaning_roller', 'ionizer', 'ipa_solvent',
         'box', 'vaccuum_parameter', 'expire_date',
@@ -141,7 +144,6 @@ class DailyPanasonicEdit extends Component
         'water_reservoirs', 'filter', 'angle_and_filter_2'
     ];
 
-    // Field numeric dengan range validasi
     protected $numericRanges = [
         'air_presure' => [0.45, 0.54],
         'vacume_presure_unitech' => [0.45, 0.54],
@@ -177,7 +179,7 @@ class DailyPanasonicEdit extends Component
     {
         $this->masterLineId = $masterLineId;
         $this->dailyPanasonicId = $dailyPanasonicId;
-        $this->masterLine = MasterLine::with(['location', 'location.area'])->findOrFail($masterLineId);
+        $this->masterLine = MasterLine::with(['location', 'location.area', 'dailyPanasonicStandardCheck'])->findOrFail($masterLineId);
         
         if (!auth()->user()->can('edit daily panasonic')) {
             abort(403, 'Unauthorized access.');
@@ -185,133 +187,93 @@ class DailyPanasonicEdit extends Component
         
         $this->dailyPanasonic = DailyPanasonic::findOrFail($dailyPanasonicId);
         
-        // Cek apakah masih dalam shift yang sama
         if (now()->greaterThan($this->dailyPanasonic->getShiftEnd())) {
             session()->flash('message', 'Cannot edit! The inspection shift has ended.');
             session()->flash('type', 'error');
             return redirect()->route('mtc.master-lines.show', $this->masterLineId);
         }
         
+        // Load required fields
+        $this->loadRequiredFields();
+        
         $this->loadData();
         $this->judgement();
     }
 
-    public function loadData()
+    protected function loadRequiredFields()
     {
-        // STEP 1
-        $this->body_cover = $this->dailyPanasonic->body_cover;
-        $this->lamp_alarm_change_model = $this->dailyPanasonic->lamp_alarm_change_model; // TAMBAHKAN INI
+        $this->requiredFields = $this->masterLine->getRequiredPanasonicFields();
         
-        // STEP 2
-        $this->cylinder = $this->dailyPanasonic->cylinder;
-        $this->rail_and_magazine_pcb = $this->dailyPanasonic->rail_and_magazine_pcb;
-        $this->cover_magazine = $this->dailyPanasonic->cover_magazine;
+        $allFields = array_merge(
+            $this->toggleFields,
+            array_keys($this->numericRanges),
+            ['flashlight']
+        );
         
-        // STEP 3
-        $this->brush = $this->dailyPanasonic->brush;
-        $this->air_presure = $this->dailyPanasonic->air_presure;
-        $this->vacume_presure_unitech = $this->dailyPanasonic->vacume_presure_unitech;
-        $this->vacume_presure_nix = $this->dailyPanasonic->vacume_presure_nix;
-        $this->vacume_brush = $this->dailyPanasonic->vacume_brush;
-        $this->cleaning_roller = $this->dailyPanasonic->cleaning_roller;
-        $this->ionizer = $this->dailyPanasonic->ionizer;
-        $this->conveyor_speed = $this->dailyPanasonic->conveyor_speed;
-        
-        // STEP 4
-        $this->ipa_solvent = $this->dailyPanasonic->ipa_solvent;
-        $this->temperature_control_1 = $this->dailyPanasonic->temperature_control_1;
-        $this->humidity_control_1 = $this->dailyPanasonic->humidity_control_1;
-        $this->clamp_presure_sp_60 = $this->dailyPanasonic->clamp_presure_sp_60;
-        $this->clamp_presure_spg_2 = $this->dailyPanasonic->clamp_presure_spg_2;
-        $this->squeege_sp_60 = $this->dailyPanasonic->squeege_sp_60;
-        $this->squeege_spg_2 = $this->dailyPanasonic->squeege_spg_2;
-        $this->cleaning_solvent = $this->dailyPanasonic->cleaning_solvent;
-        $this->air_presure_meter = $this->dailyPanasonic->air_presure_meter;
-        
-        // STEP 5
-        $this->air_presure_meter_parmi = $this->dailyPanasonic->air_presure_meter_parmi;
-        $this->capability_index = $this->dailyPanasonic->capability_index;
-        
-        // STEP 6
-        $this->air_presure_supply = $this->dailyPanasonic->air_presure_supply;
-        $this->vaccuum_pump = $this->dailyPanasonic->vaccuum_pump;
-        $this->box = $this->dailyPanasonic->box;
-        $this->vaccuum_parameter = $this->dailyPanasonic->vaccuum_parameter;
-        $this->expire_date = $this->dailyPanasonic->expire_date;
-        
-        // STEP 7
-        $this->air_presure_supply_2 = $this->dailyPanasonic->air_presure_supply_2;
-        $this->vaccuum_pump_2 = $this->dailyPanasonic->vaccuum_pump_2;
-        $this->box_2 = $this->dailyPanasonic->box_2;
-        $this->vaccuum_parameter_2 = $this->dailyPanasonic->vaccuum_parameter_2;
-        $this->expire_date_2 = $this->dailyPanasonic->expire_date_2;
-        
-        // STEP 8
-        $this->abandonment = $this->dailyPanasonic->abandonment;
-        $this->fire_posibilty = $this->dailyPanasonic->fire_posibilty;
-        $this->flashlight = $this->dailyPanasonic->flashlight; // TAMBAHKAN INI
-        $this->rail_and_transfer_unit = $this->dailyPanasonic->rail_and_transfer_unit;
-        $this->n2_presure = $this->dailyPanasonic->n2_presure;
-        $this->oxygent_density_sek = $this->dailyPanasonic->oxygent_density_sek;
-        $this->oxygent_density_special = $this->dailyPanasonic->oxygent_density_special;
-        $this->fire_posibilty_2 = $this->dailyPanasonic->fire_posibilty_2;
-        
-        // STEP 9
-        $this->air_presure_2 = $this->dailyPanasonic->air_presure_2;
-        
-        // STEP 10
-        $this->cylinder_2 = $this->dailyPanasonic->cylinder_2;
-        $this->rail_and_magazine_pcb_2 = $this->dailyPanasonic->rail_and_magazine_pcb_2;
-        $this->cover_magazine_2 = $this->dailyPanasonic->cover_magazine_2;
-        
-        // STEP 11
-        $this->angle_and_filter = $this->dailyPanasonic->angle_and_filter;
-        $this->lamp_indicator = $this->dailyPanasonic->lamp_indicator;
-        
-        // STEP 12
-        $this->temperature_chiller = $this->dailyPanasonic->temperature_chiller;
-        $this->temperature_control_3 = $this->dailyPanasonic->temperature_control_3;
-        
-        // STEP 13
-        $this->box_3 = $this->dailyPanasonic->box_3;
-        $this->vaccuum_pump_3 = $this->dailyPanasonic->vaccuum_pump_3;
-        
-        // STEP 14
-        $this->box_4 = $this->dailyPanasonic->box_4;
-        $this->vaccuum_pump_4 = $this->dailyPanasonic->vaccuum_pump_4;
-        
-        // STEP 15
-        $this->air_presure_3 = $this->dailyPanasonic->air_presure_3;
-        
-        // STEP 16
-        $this->temperature_control_4 = $this->dailyPanasonic->temperature_control_4;
-        $this->water_reservoirs = $this->dailyPanasonic->water_reservoirs;
-        
-        // STEP 17
-        $this->filter = $this->dailyPanasonic->filter;
-        
-        // STEP 18
-        $this->angle_and_filter_2 = $this->dailyPanasonic->angle_and_filter_2;
-        
-        // TIME & STATUS
-        $this->stop_time = $this->dailyPanasonic->stop_time ? $this->dailyPanasonic->stop_time->format('H:i') : null;
-        $this->run_time = $this->dailyPanasonic->run_time ? $this->dailyPanasonic->run_time->format('H:i') : null;
-        $this->group = $this->dailyPanasonic->group;
-        $this->status = $this->dailyPanasonic->status;
-        $this->approval = $this->dailyPanasonic->approval;
+        $this->disabledFields = [];
+        foreach ($allFields as $field) {
+            if (!in_array($field, $this->requiredFields)) {
+                $this->disabledFields[] = $field;
+            }
+        }
     }
 
-    /**
-     * Auto-judgement: Update status berdasarkan semua field yang sudah diisi
-     */
+    public function isFieldDisabled($field)
+    {
+        return in_array($field, $this->disabledFields ?? []);
+    }
+
+    public function isFieldRequired($field)
+    {
+        return in_array($field, $this->requiredFields ?? []);
+    }
+
+    public function isNAAllowed()
+    {
+        return $this->masterLine && $this->masterLine->status === 'No Schedule';
+    }
+
+    public function loadData()
+    {
+        $fillableFields = [
+            'body_cover',
+            'lamp_alarm_change_model',
+            'cylinder', 'rail_and_magazine_pcb', 'cover_magazine',
+            'brush', 'air_presure', 'vacume_presure_unitech', 'vacume_presure_nix',
+            'vacume_brush', 'cleaning_roller', 'ionizer', 'conveyor_speed',
+            'ipa_solvent', 'temperature_control_1', 'humidity_control_1', 'clamp_presure_sp_60',
+            'clamp_presure_spg_2', 'squeege_sp_60', 'squeege_spg_2', 'cleaning_solvent',
+            'air_presure_meter', 'air_presure_meter_parmi', 'capability_index',
+            'air_presure_supply', 'vaccuum_pump', 'box', 'vaccuum_parameter', 'expire_date',
+            'air_presure_supply_2', 'vaccuum_pump_2', 'box_2', 'vaccuum_parameter_2', 'expire_date_2',
+            'abandonment', 'fire_posibilty', 'flashlight', 'rail_and_transfer_unit',
+            'n2_presure', 'oxygent_density_sek', 'oxygent_density_special', 'fire_posibilty_2',
+            'air_presure_2',
+            'cylinder_2', 'rail_and_magazine_pcb_2', 'cover_magazine_2', 'angle_and_filter',
+            'lamp_indicator', 'temperature_chiller', 'temperature_control_3', 'box_3', 'vaccuum_pump_3',
+            'box_4', 'vaccuum_pump_4', 'air_presure_3', 'temperature_control_4', 'water_reservoirs',
+            'filter', 'angle_and_filter_2', 'stop_time', 'run_time', 'group', 'status', 'approval'
+        ];
+        
+        foreach ($fillableFields as $field) {
+            if (property_exists($this, $field)) {
+                $this->$field = $this->dailyPanasonic->$field;
+            }
+        }
+        
+        if ($this->stop_time && $this->stop_time instanceof \DateTime) {
+            $this->stop_time = $this->stop_time->format('H:i');
+        }
+        if ($this->run_time && $this->run_time instanceof \DateTime) {
+            $this->run_time = $this->run_time->format('H:i');
+        }
+    }
+
     public function updated($property)
     {
         $this->judgement();
     }
 
-    /**
-     * Lakukan judgement/validasi berdasarkan model DailyPanasonic
-     */
     public function judgement()
     {
         $isComplete = $this->checkOverallStatus();
@@ -326,29 +288,42 @@ class DailyPanasonicEdit extends Component
         }
     }
 
-    /**
-     * Cek semua field sesuai dengan rules di model DailyPanasonic
-     */
     protected function checkOverallStatus(): bool
     {
-        // Cek semua toggle fields (checked/na)
+        // Cek toggle fields - HANYA YANG REQUIRED
         foreach ($this->toggleFields as $field) {
+            if ($this->isFieldDisabled($field)) {
+                continue;
+            }
             $value = $this->{$field};
             if ($value === null || $value === '' || !in_array($value, ['checked', 'na'])) {
                 return false;
             }
         }
 
-        // Cek flashlight khusus (on/off/na)
-        if ($this->flashlight === null || $this->flashlight === '' || !in_array($this->flashlight, ['on', 'off', 'na'])) {
-            return false;
+        // CEK FLASHLIGHT - HANYA JIKA REQUIRED
+        if (!$this->isFieldDisabled('flashlight')) {
+            if ($this->flashlight === null || $this->flashlight === '' || !in_array($this->flashlight, ['on', 'off', 'na'])) {
+                return false;
+            }
         }
 
-        // Cek numeric fields dengan range
+        // Cek numeric fields - HANYA YANG REQUIRED
         foreach ($this->numericRanges as $field => $range) {
+            if ($this->isFieldDisabled($field)) {
+                continue;
+            }
+            
             $value = $this->{$field};
             
-            if ($value === null || $value === '' || $value === '-') {
+            if ($value === null || $value === '') {
+                return false;
+            }
+            
+            if ($value === '-') {
+                if (!$this->isNAAllowed()) {
+                    return false;
+                }
                 continue;
             }
             
@@ -365,7 +340,6 @@ class DailyPanasonicEdit extends Component
             }
         }
 
-        // Cek group
         if ($this->group === null || $this->group === '') {
             return false;
         }
@@ -373,18 +347,21 @@ class DailyPanasonicEdit extends Component
         return true;
     }
 
-    /**
-     * Cek validasi untuk field numeric tertentu
-     */
     public function validateNumericField($field, $value)
     {
         if (!isset($this->numericRanges[$field])) {
             return ['valid' => true, 'message' => ''];
         }
         
-        // PERBAIKAN: Nilai '-' dianggap valid
-        if ($value === null || $value === '' || $value === '-') {
-            return ['valid' => true, 'message' => ''];
+        if ($value === null || $value === '') {
+            return ['valid' => false, 'message' => 'Field ini harus diisi'];
+        }
+        
+        if ($value === '-') {
+            if ($this->isNAAllowed()) {
+                return ['valid' => true, 'message' => ''];
+            }
+            return ['valid' => false, 'message' => 'Nilai "-" tidak diizinkan untuk line dengan status "' . $this->masterLine->status . '"'];
         }
         
         $floatValue = floatval($value);
@@ -402,21 +379,23 @@ class DailyPanasonicEdit extends Component
         return ['valid' => true, 'message' => ''];
     }
 
-    /**
-     * Get color class untuk field berdasarkan validasi
-     */
     public function getFieldColorClass($field, $value)
     {
-        // PERBAIKAN: Nilai '-' dianggap valid (warna hijau)
+        if ($this->isFieldDisabled($field)) {
+            return 'border-gray-300 bg-gray-100 dark:bg-zinc-800/50 cursor-not-allowed';
+        }
+        
         if ($value === null || $value === '') {
             return 'border-red-500 bg-red-50 dark:bg-red-950/20';
         }
         
         if ($value === '-') {
-            return 'border-green-500 bg-green-50 dark:bg-green-950/20';
+            if ($this->isNAAllowed()) {
+                return 'border-green-500 bg-green-50 dark:bg-green-950/20';
+            }
+            return 'border-red-500 bg-red-50 dark:bg-red-950/20';
         }
         
-        // Khusus untuk flashlight (on/off/na)
         if ($field === 'flashlight') {
             if (in_array($value, ['on', 'na'])) {
                 return 'border-green-500 bg-green-50 dark:bg-green-950/20';
@@ -445,15 +424,12 @@ class DailyPanasonicEdit extends Component
     public function save()
     {
         $this->validate();
-        
-        // Pastikan judgement terakhir dijalankan
         $this->judgement();
         
-        // Kumpulkan semua data
         $data = [];
         $fillableFields = [
             'body_cover',
-            'lamp_alarm_change_model', // TAMBAHKAN INI
+            'lamp_alarm_change_model',
             'cylinder', 'rail_and_magazine_pcb', 'cover_magazine',
             'brush', 'air_presure', 'vacume_presure_unitech', 'vacume_presure_nix',
             'vacume_brush', 'cleaning_roller', 'ionizer', 'conveyor_speed',
@@ -462,9 +438,8 @@ class DailyPanasonicEdit extends Component
             'air_presure_meter', 'air_presure_meter_parmi', 'capability_index',
             'air_presure_supply', 'vaccuum_pump', 'box', 'vaccuum_parameter', 'expire_date',
             'air_presure_supply_2', 'vaccuum_pump_2', 'box_2', 'vaccuum_parameter_2', 'expire_date_2',
-            'abandonment', 'fire_posibilty', 'rail_and_transfer_unit', 'n2_presure',
-            'oxygent_density_sek', 'oxygent_density_special', 'fire_posibilty_2',
-            'flashlight', // TAMBAHKAN INI
+            'abandonment', 'fire_posibilty', 'flashlight', 'rail_and_transfer_unit',
+            'n2_presure', 'oxygent_density_sek', 'oxygent_density_special', 'fire_posibilty_2',
             'air_presure_2',
             'cylinder_2', 'rail_and_magazine_pcb_2', 'cover_magazine_2', 'angle_and_filter',
             'lamp_indicator', 'temperature_chiller', 'temperature_control_3', 'box_3', 'vaccuum_pump_3',

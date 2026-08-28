@@ -53,6 +53,10 @@ class MasterLineShow extends Component
     public $perPageActivities = 10;
     public $activityRecordType = null; // 'fuji' or 'panasonic'
 
+    // TAMBAHKAN PROPERTY UNTUK STANDARD CONFIG
+    public $requiredFujiFields = [];
+    public $requiredPanasonicFields = [];
+
     protected $rules = [
         'location_id' => 'required|exists:tb_mtc_master_locations,id',
         'line_number' => 'required|string|max:255',
@@ -110,10 +114,7 @@ class MasterLineShow extends Component
             return collect();
         }
         
-        // Ambil ID dari record yang dipilih
         $recordId = $this->selectedRecordForActivity->id;
-        
-        // Cari activity dengan subject_id yang sama dan subject_type mengandung DailyPanasonic atau DailyFuji
         $modelName = $this->activityRecordType === 'fuji' ? 'DailyFuji' : 'DailyPanasonic';
         
         $activities = Activity::where('subject_id', $recordId)
@@ -241,7 +242,6 @@ class MasterLineShow extends Component
             return;
         }
         
-        // ✅ UBAH INI - gunakan updateQuietly
         $dailyFuji->updateQuietly([
             'approval' => $status,
             'approved_by' => auth()->id(),
@@ -279,7 +279,6 @@ class MasterLineShow extends Component
             return;
         }
         
-        // ✅ UBAH INI - gunakan updateQuietly
         $dailyPanasonic->updateQuietly([
             'approval' => $status,
             'approved_by' => auth()->id(),
@@ -308,27 +307,32 @@ class MasterLineShow extends Component
             'employee', 
             'creator', 
             'updater', 
-            'machines'
+            'machines',
+            'dailyFujiStandardCheck',
+            'dailyPanasonicStandardCheck'
         ])->findOrFail($id);
         
-        // Check permission
         if (!auth()->user()->can('view master line')) {
             abort(403, 'Unauthorized access.');
         }
+        
+        // Load required fields
+        $this->loadRequiredFields();
     }
 
-    /**
-     * Reset filters untuk Daily Fuji table
-     */
+    // TAMBAHKAN METHOD INI
+    protected function loadRequiredFields()
+    {
+        $this->requiredFujiFields = $this->line->getRequiredFujiFields() ?? [];
+        $this->requiredPanasonicFields = $this->line->getRequiredPanasonicFields() ?? [];
+    }
+
     public function resetFilters()
     {
         $this->reset(['search', 'selectedStatus']);
         $this->resetPage();
     }
 
-    /**
-     * Reset form untuk edit line (jika menggunakan modal edit)
-     */
     public function resetForm()
     {
         $this->reset([
@@ -339,9 +343,6 @@ class MasterLineShow extends Component
         $this->modalTitle = 'Edit Line';
     }
 
-    /**
-     * Navigate ke halaman create Daily Fuji
-     */
     public function createDailyFuji()
     {
         if (!auth()->user()->can('create daily fuji')) {
@@ -349,13 +350,9 @@ class MasterLineShow extends Component
             return;
         }
         
-        // Redirect ke halaman create terpisah
         return redirect()->route('mtc.daily-fuji.create', $this->line->id);
     }
     
-    /**
-     * Navigate ke halaman edit Daily Fuji
-     */
     public function editDailyFuji($id)
     {
         if (!auth()->user()->can('edit daily fuji')) {
@@ -365,7 +362,6 @@ class MasterLineShow extends Component
         
         $dailyFuji = DailyFuji::find($id);
         
-        // Cek apakah masih dalam shift yang sama
         if (now()->greaterThan($dailyFuji->getShiftEnd())) {
             $this->dispatch('notify', message: 'Cannot edit! The inspection shift has ended.', type: 'error');
             return;
@@ -377,9 +373,6 @@ class MasterLineShow extends Component
         ]);
     }
 
-    /**
-     * View Daily Fuji details dalam modal (read-only)
-     */
     public function viewDailyFujiDetails($dailyFujiId)
     {
         $this->selectedDailyFuji = DailyFuji::with([
@@ -392,34 +385,22 @@ class MasterLineShow extends Component
         $this->showDailyFujiModal = true;
     }
     
-    /**
-     * Close detail modal
-     */
     public function closeDetailModal()
     {
         $this->showDailyFujiModal = false;
         $this->selectedDailyFuji = null;
     }
 
-    /**
-     * Get locations untuk dropdown (jika menggunakan modal edit line)
-     */
     public function getLocationsProperty()
     {
         return MasterLocation::with('area')->orderBy('location_name')->get();
     }
 
-    /**
-     * Get employees untuk dropdown (jika menggunakan modal edit line)
-     */
     public function getEmployeesProperty()
     {
         return Employee::orderBy('name')->get();
     }
 
-    /**
-     * Render component
-     */
     public function render()
     {
         $locations = $this->locations;
@@ -429,7 +410,6 @@ class MasterLineShow extends Component
         $dailyFujisQuery = DailyFuji::with(['creator', 'updater', 'approvedBy', 'masterLine'])
             ->where('master_line_id', $this->line->id);
         
-        // Apply search filter untuk Fuji
         if ($this->search) {
             $dailyFujisQuery->where(function($query) {
                 $query->where('group', 'like', '%' . $this->search . '%')
@@ -438,7 +418,6 @@ class MasterLineShow extends Component
             });
         }
         
-        // Apply status filter untuk Fuji
         if ($this->selectedStatus) {
             $dailyFujisQuery->where('status', $this->selectedStatus);
         }
@@ -449,7 +428,6 @@ class MasterLineShow extends Component
         $dailyPanasonicsQuery = DailyPanasonic::with(['creator', 'updater', 'approvedBy', 'masterLine'])
             ->where('master_line_id', $this->line->id);
         
-        // Apply search filter untuk Panasonic
         if ($this->panasonicSearch) {
             $dailyPanasonicsQuery->where(function($query) {
                 $query->where('group', 'like', '%' . $this->panasonicSearch . '%')
@@ -458,7 +436,6 @@ class MasterLineShow extends Component
             });
         }
         
-        // Apply status filter untuk Panasonic
         if ($this->selectedPanasonicStatus) {
             $dailyPanasonicsQuery->where('status', $this->selectedPanasonicStatus);
         }
@@ -470,6 +447,8 @@ class MasterLineShow extends Component
             'employees' => $employees,
             'dailyFujis' => $dailyFujis,
             'dailyPanasonics' => $dailyPanasonics,
+            'requiredFujiFields' => $this->requiredFujiFields,
+            'requiredPanasonicFields' => $this->requiredPanasonicFields,
         ]);
     }
 }

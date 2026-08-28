@@ -116,6 +116,9 @@ class DailyPanasonicCreate extends Component
     public $status = 'On Progress';
     public $approval = 'Pending';
 
+    public $requiredFields = [];
+    public $disabledFields = [];
+
     protected $rules = [
         'group' => 'required|in:A,B,C',
     ];
@@ -170,10 +173,11 @@ class DailyPanasonicCreate extends Component
         'temperature_control_4' => [23, 27],
     ];
 
+    // Update mount()
     public function mount($masterLineId)
     {
         $this->masterLineId = $masterLineId;
-        $this->masterLine = MasterLine::with(['location', 'location.area'])->findOrFail($masterLineId);
+        $this->masterLine = MasterLine::with(['location', 'location.area', 'dailyPanasonicStandardCheck'])->findOrFail($masterLineId);
         
         if (!auth()->user()->can('create daily panasonic')) {
             abort(403, 'Unauthorized access.');
@@ -181,6 +185,42 @@ class DailyPanasonicCreate extends Component
         
         $this->status = 'On Progress';
         $this->approval = 'Pending';
+        
+        $this->loadRequiredFields();
+    }
+
+    // Tambahkan method
+    protected function loadRequiredFields()
+    {
+        $this->requiredFields = $this->masterLine->getRequiredPanasonicFields();
+        
+        $allFields = array_merge(
+            $this->toggleFields,
+            array_keys($this->numericRanges),
+            ['flashlight']
+        );
+        
+        $this->disabledFields = [];
+        foreach ($allFields as $field) {
+            if (!in_array($field, $this->requiredFields)) {
+                $this->disabledFields[] = $field;
+            }
+        }
+    }
+
+    public function isFieldDisabled($field)
+    {
+        return in_array($field, $this->disabledFields ?? []);
+    }
+
+    public function isFieldRequired($field)
+    {
+        return in_array($field, $this->requiredFields ?? []);
+    }
+
+    public function isNAAllowed()
+    {
+        return $this->masterLine && $this->masterLine->status === 'No Schedule';
     }
 
     /**
@@ -208,26 +248,43 @@ class DailyPanasonicCreate extends Component
         }
     }
 
+    // Update checkOverallStatus()
     protected function checkOverallStatus(): bool
     {
-        // Cek semua toggle fields (checked/na)
+        // Cek toggle fields - HANYA YANG REQUIRED
         foreach ($this->toggleFields as $field) {
+            if ($this->isFieldDisabled($field)) {
+                continue;
+            }
             $value = $this->{$field};
             if ($value === null || $value === '' || !in_array($value, ['checked', 'na'])) {
                 return false;
             }
         }
 
-        // CEK FLASHLIGHT KHUSUS (on/off/na)
-        if ($this->flashlight === null || $this->flashlight === '' || !in_array($this->flashlight, ['on', 'off', 'na'])) {
-            return false;
+        // CEK FLASHLIGHT - HANYA JIKA REQUIRED
+        if (!$this->isFieldDisabled('flashlight')) {
+            if ($this->flashlight === null || $this->flashlight === '' || !in_array($this->flashlight, ['on', 'off', 'na'])) {
+                return false;
+            }
         }
 
-        // Cek numeric fields dengan range
+        // Cek numeric fields - HANYA YANG REQUIRED
         foreach ($this->numericRanges as $field => $range) {
+            if ($this->isFieldDisabled($field)) {
+                continue;
+            }
+            
             $value = $this->{$field};
             
-            if ($value === null || $value === '' || $value === '-') {
+            if ($value === null || $value === '') {
+                return false;
+            }
+            
+            if ($value === '-') {
+                if (!$this->isNAAllowed()) {
+                    return false;
+                }
                 continue;
             }
             
@@ -244,26 +301,28 @@ class DailyPanasonicCreate extends Component
             }
         }
 
-        // Cek group
         if ($this->group === null || $this->group === '') {
             return false;
         }
 
         return true;
     }
-
-    /**
-     * Cek validasi untuk field numeric tertentu
-     */
+    // Update validateNumericField()
     public function validateNumericField($field, $value)
     {
         if (!isset($this->numericRanges[$field])) {
             return ['valid' => true, 'message' => ''];
         }
         
-        // PERBAIKAN: Nilai '-' dianggap valid
-        if ($value === null || $value === '' || $value === '-') {
-            return ['valid' => true, 'message' => '']; // BALIKAN VALID
+        if ($value === null || $value === '') {
+            return ['valid' => false, 'message' => 'Field ini harus diisi'];
+        }
+        
+        if ($value === '-') {
+            if ($this->isNAAllowed()) {
+                return ['valid' => true, 'message' => ''];
+            }
+            return ['valid' => false, 'message' => 'Nilai "-" tidak diizinkan untuk line dengan status "' . $this->masterLine->status . '"'];
         }
         
         $floatValue = floatval($value);
@@ -281,18 +340,29 @@ class DailyPanasonicCreate extends Component
         return ['valid' => true, 'message' => ''];
     }
 
-    /**
-     * Get color class untuk field berdasarkan validasi
-     */
+    // Update getFieldColorClass()
     public function getFieldColorClass($field, $value)
     {
-        // PERBAIKAN: Nilai '-' dianggap valid (warna hijau)
+        if ($this->isFieldDisabled($field)) {
+            return 'border-gray-300 bg-gray-100 dark:bg-zinc-800/50 cursor-not-allowed';
+        }
+        
         if ($value === null || $value === '') {
             return 'border-red-500 bg-red-50 dark:bg-red-950/20';
         }
         
         if ($value === '-') {
-            return 'border-green-500 bg-green-50 dark:bg-green-950/20'; // WARNA HIJAU UNTUK '-'
+            if ($this->isNAAllowed()) {
+                return 'border-green-500 bg-green-50 dark:bg-green-950/20';
+            }
+            return 'border-red-500 bg-red-50 dark:bg-red-950/20';
+        }
+        
+        if ($field === 'flashlight') {
+            if (in_array($value, ['on', 'na'])) {
+                return 'border-green-500 bg-green-50 dark:bg-green-950/20';
+            }
+            return 'border-red-500 bg-red-50 dark:bg-red-950/20';
         }
         
         if (in_array($field, array_keys($this->numericRanges))) {
