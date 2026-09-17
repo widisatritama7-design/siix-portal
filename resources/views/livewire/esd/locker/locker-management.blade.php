@@ -24,45 +24,6 @@
                 Manage ESD lockers and monitor status
             </p>
         </div>
-        
-        <!-- ESP32 Status Badge -->
-        <div class="flex items-center gap-3 bg-white dark:bg-zinc-900 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-800 px-4 py-2">
-            <div class="flex items-center gap-2">
-                <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">ESP32</span>
-                <div class="flex items-center gap-2">
-                    <span class="relative flex h-3 w-3">
-                        @if($espConnected)
-                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                            <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
-                        @else
-                            <span class="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
-                        @endif
-                    </span>
-                    <span class="text-xs font-semibold {{ $espConnected ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400' }}">
-                        {{ $espConnected ? 'Connected' : 'Disconnected' }}
-                    </span>
-                </div>
-            </div>
-            
-            <!-- Last Update Time -->
-            <div class="border-l border-zinc-200 dark:border-zinc-700 pl-3">
-                <span class="text-xs text-zinc-500 dark:text-zinc-400">
-                    Last Update: 
-                    <span class="font-medium text-zinc-700 dark:text-zinc-300">
-                        {{ $lastEspUpdate ? \Carbon\Carbon::parse($lastEspUpdate)->format('H:i:s') : '--:--:--' }}
-                    </span>
-                </span>
-            </div>
-            
-            <!-- Refresh Button -->
-            <button wire:click="checkEspStatus" 
-                    wire:loading.attr="disabled"
-                    class="text-zinc-400 hover:text-zinc-600 dark:text-zinc-500 dark:hover:text-zinc-300 transition-colors">
-                <svg class="w-4 h-4 {{ $espChecking ? 'animate-spin' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                </svg>
-            </button>
-        </div>
     </div>
 
     <!-- Stats -->
@@ -630,7 +591,7 @@
                                 @if($ngReason)
                                     <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-2">Reason: {{ $ngReason }}</p>
                                 @endif
-                                <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-2">WhatsApp notification sent to user</p>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-2">📧 Email notification sent to user</p>
                             </div>
 
                             <button wire:click="resetNgForm" 
@@ -746,7 +707,7 @@
                                 <button wire:click="teknisiTakePrintLabel" 
                                         wire:loading.attr="disabled"
                                         class="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg transition duration-200 font-medium shadow-lg shadow-green-600/20">
-                                    <span wire:loading.remove>Print Label & Open Locker</span>
+                                    <span wire:loading.remove>Open Locker</span>
                                     <span wire:loading>Processing...</span>
                                 </button>
                                 <button wire:click="resetTeknisiTakeForm" 
@@ -803,7 +764,7 @@
                                     <span>Door will close automatically in <strong class="text-red-600 dark:text-red-400">15 seconds</strong></span>
                                 </div>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-2 text-center">Take the uniform for checking</p>
-                                <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-2 text-center">📱 Notification sent to user's WhatsApp</p>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-2 text-center">📧 Notification sent to user's Email</p>
                             </div>
 
                             <button wire:click="resetTeknisiTakeForm" 
@@ -830,7 +791,7 @@
         <div class="fixed inset-0 bg-black/60 z-40" @click="open = false"></div>
 
         <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto border border-zinc-200 dark:border-zinc-700">
+            <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-zinc-200 dark:border-zinc-700">
                 <div class="p-6">
                     <!-- Header -->
                     <div class="flex justify-between items-center mb-6">
@@ -874,6 +835,7 @@
 
                     @elseif($returnStep == 2)
                         <div class="space-y-6">
+                            <!-- Transaction Details -->
                             <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-5">
                                 <h3 class="font-semibold text-blue-800 dark:text-blue-300 mb-3 flex items-center gap-2">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -907,19 +869,196 @@
                                 </div>
                             </div>
 
-                            <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4">
-                                <p class="text-sm text-green-700 dark:text-green-300">Uniform has been checked. Click below to return it.</p>
+                            <!-- ============ FITUR SEARCH GARMENT ============ -->
+                            <div class="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-xl p-4">
+                                <h3 class="font-semibold text-purple-800 dark:text-purple-300 mb-3 flex items-center gap-2 text-sm">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                                    </svg>
+                                    Cari Data Pengukuran
+                                </h3>
+                                
+                                <!-- Input Search -->
+                                <div class="relative">
+                                    <input type="text" 
+                                        wire:model.live.debounce.300ms="returnGarmentSearch"
+                                        wire:keydown.enter="searchReturnGarment"
+                                        wire:focus="searchReturnGarment"
+                                        class="w-full px-4 py-2.5 border border-purple-300 dark:border-purple-700 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-zinc-800 dark:text-white text-sm"
+                                        placeholder="Cari berdasarkan NIK atau Nama...">
+                                    
+                                    <div wire:loading wire:target="searchReturnGarment" class="absolute right-3 top-2.5">
+                                        <svg class="animate-spin h-5 w-5 text-purple-500" fill="none" viewBox="0 0 24 24">
+                                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                    </div>
+                                </div>
+
+                                <!-- Hasil Pencarian -->
+                                @if($returnShowGarmentList && $returnGarmentResults->count() > 0)
+                                <div class="mt-3 max-h-48 overflow-y-auto space-y-2">
+                                    @foreach($returnGarmentResults as $garment)
+                                    <div wire:click="selectReturnGarment({{ $garment->id }})"
+                                        class="bg-white dark:bg-zinc-800 rounded-lg p-3 border-2 cursor-pointer transition-all hover:shadow-md text-sm
+                                            {{ $returnSelectedGarmentId == $garment->id ? 'border-purple-500 dark:border-purple-400 shadow-md' : 'border-purple-200 dark:border-purple-700 hover:border-purple-300' }}">
+                                        <div class="flex justify-between items-center">
+                                            <div>
+                                                <span class="font-semibold text-zinc-800 dark:text-white">
+                                                    {{ $garment->employee_name ?? $garment->name ?? '-' }}
+                                                </span>
+                                                <span class="text-xs text-zinc-500 dark:text-zinc-400 ml-2">
+                                                    NIK: {{ $garment->employee_nik ?? '-' }}
+                                                </span>
+                                                @if($loop->first)
+                                                <span class="ml-2 bg-green-500 text-white text-[10px] px-2 py-0.5 rounded-full">Terbaru</span>
+                                                @endif
+                                            </div>
+                                            @if($returnSelectedGarmentId == $garment->id)
+                                            <span class="bg-purple-500 text-white text-[10px] px-2 py-1 rounded-full">Dipilih</span>
+                                            @endif
+                                        </div>
+                                        <div class="grid grid-cols-4 gap-2 mt-2 text-xs">
+                                            <div>
+                                                <span class="text-zinc-500 dark:text-zinc-400">D1:</span>
+                                                <span class="font-medium text-zinc-800 dark:text-white">{{ $garment->d1_scientific ?? '-' }}</span>
+                                                <span class="ml-1 px-1.5 py-0.5 rounded text-[10px] font-semibold 
+                                                    {{ ($garment->judgement_d1 ?? '') == 'OK' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' }}">
+                                                    {{ $garment->judgement_d1 ?? '-' }}
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <span class="text-zinc-500 dark:text-zinc-400">D2:</span>
+                                                <span class="font-medium text-zinc-800 dark:text-white">{{ $garment->d2_scientific ?? '-' }}</span>
+                                                <span class="ml-1 px-1.5 py-0.5 rounded text-[10px] font-semibold 
+                                                    {{ ($garment->judgement_d2 ?? '') == 'OK' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' }}">
+                                                    {{ $garment->judgement_d2 ?? '-' }}
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <span class="text-zinc-500 dark:text-zinc-400">D3:</span>
+                                                <span class="font-medium text-zinc-800 dark:text-white">{{ $garment->d3_scientific ?? '-' }}</span>
+                                                <span class="ml-1 px-1.5 py-0.5 rounded text-[10px] font-semibold 
+                                                    {{ ($garment->judgement_d3 ?? '') == 'OK' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' }}">
+                                                    {{ $garment->judgement_d3 ?? '-' }}
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <span class="text-zinc-500 dark:text-zinc-400">D4:</span>
+                                                <span class="font-medium text-zinc-800 dark:text-white">{{ $garment->d4_scientific ?? '-' }}</span>
+                                                <span class="ml-1 px-1.5 py-0.5 rounded text-[10px] font-semibold 
+                                                    {{ ($garment->judgement_d4 ?? '') == 'OK' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' }}">
+                                                    {{ $garment->judgement_d4 ?? '-' }}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        @if($garment->next_date)
+                                        <div class="mt-2 text-[10px] text-zinc-500 dark:text-zinc-400 border-t border-zinc-200 dark:border-zinc-700 pt-1.5">
+                                            <span class="font-medium">Next Date:</span> {{ $garment->next_date }}
+                                        </div>
+                                        @endif
+                                    </div>
+                                    @endforeach
+                                </div>
+                                @elseif($returnShowGarmentList && $returnGarmentResults->count() == 0)
+                                <div class="mt-3 text-center py-3 bg-white dark:bg-zinc-800 rounded-lg border border-zinc-200 dark:border-zinc-700">
+                                    <p class="text-sm text-zinc-500 dark:text-zinc-400">Data pengukuran tidak ditemukan</p>
+                                </div>
+                                @endif
+
+                                <!-- Data Terpilih -->
+                                @if($returnSelectedGarment)
+                                <div class="mt-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-2.5">
+                                    <p class="text-sm text-green-700 dark:text-green-300 flex items-center gap-2">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                        <span class="font-medium">Terpilih:</span>
+                                        <span>{{ $returnSelectedGarment->employee_name ?? $returnSelectedGarment->name ?? '-' }}</span>
+                                        <span class="text-xs text-zinc-500">({{ $returnSelectedGarment->employee_nik ?? '-' }})</span>
+                                        <span class="text-xs text-green-600 dark:text-green-400">✓</span>
+                                    </p>
+                                </div>
+                                @endif
                             </div>
 
+                            <!-- ============ DATA PENGUKURAN TERPILIH ============ -->
+                            @if($returnSelectedGarment)
+                            <div class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4">
+                                <h3 class="font-semibold text-green-800 dark:text-green-300 mb-3 flex items-center gap-2 text-sm">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    Data Pengukuran Terpilih
+                                </h3>
+                                <div class="grid grid-cols-2 gap-2 text-sm">
+                                    <div class="bg-white dark:bg-zinc-800 rounded-lg p-2.5 border border-green-200 dark:border-green-700 text-center">
+                                        <p class="text-[10px] text-green-600 dark:text-green-400 font-medium uppercase">D1</p>
+                                        <p class="text-sm font-semibold text-zinc-800 dark:text-white">{{ $returnSelectedGarment->d1_scientific ?? '-' }}</p>
+                                        <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold 
+                                            {{ ($returnSelectedGarment->judgement_d1 ?? '') == 'OK' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' }}">
+                                            {{ $returnSelectedGarment->judgement_d1 ?? '-' }}
+                                        </span>
+                                    </div>
+                                    <div class="bg-white dark:bg-zinc-800 rounded-lg p-2.5 border border-green-200 dark:border-green-700 text-center">
+                                        <p class="text-[10px] text-green-600 dark:text-green-400 font-medium uppercase">D2</p>
+                                        <p class="text-sm font-semibold text-zinc-800 dark:text-white">{{ $returnSelectedGarment->d2_scientific ?? '-' }}</p>
+                                        <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold 
+                                            {{ ($returnSelectedGarment->judgement_d2 ?? '') == 'OK' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' }}">
+                                            {{ $returnSelectedGarment->judgement_d2 ?? '-' }}
+                                        </span>
+                                    </div>
+                                    <div class="bg-white dark:bg-zinc-800 rounded-lg p-2.5 border border-green-200 dark:border-green-700 text-center">
+                                        <p class="text-[10px] text-green-600 dark:text-green-400 font-medium uppercase">D3</p>
+                                        <p class="text-sm font-semibold text-zinc-800 dark:text-white">{{ $returnSelectedGarment->d3_scientific ?? '-' }}</p>
+                                        <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold 
+                                            {{ ($returnSelectedGarment->judgement_d3 ?? '') == 'OK' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' }}">
+                                            {{ $returnSelectedGarment->judgement_d3 ?? '-' }}
+                                        </span>
+                                    </div>
+                                    <div class="bg-white dark:bg-zinc-800 rounded-lg p-2.5 border border-green-200 dark:border-green-700 text-center">
+                                        <p class="text-[10px] text-green-600 dark:text-green-400 font-medium uppercase">D4</p>
+                                        <p class="text-sm font-semibold text-zinc-800 dark:text-white">{{ $returnSelectedGarment->d4_scientific ?? '-' }}</p>
+                                        <span class="inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold 
+                                            {{ ($returnSelectedGarment->judgement_d4 ?? '') == 'OK' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300' }}">
+                                            {{ $returnSelectedGarment->judgement_d4 ?? '-' }}
+                                        </span>
+                                    </div>
+                                </div>
+                                @if($returnSelectedGarment->next_date)
+                                <div class="mt-2 text-xs text-zinc-600 dark:text-zinc-400 border-t border-green-200 dark:border-green-700 pt-2 text-center">
+                                    <span class="font-medium">Next Date:</span> {{ $returnSelectedGarment->next_date }}
+                                </div>
+                                @endif
+                            </div>
+                            @endif
+
+                            <!-- Status Pilihan -->
+                            <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-xl p-3">
+                                <p class="text-sm text-yellow-700 dark:text-yellow-300 flex items-center gap-2">
+                                    <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    @if($returnSelectedGarment)
+                                        Data pengukuran telah dipilih. Klik tombol di bawah untuk mengembalikan seragam.
+                                    @else
+                                        Silakan cari dan pilih data pengukuran terlebih dahulu.
+                                    @endif
+                                </p>
+                            </div>
+
+                            <!-- Tombol Aksi -->
                             <div class="flex gap-3">
                                 <button wire:click="returnUniform" 
                                         wire:loading.attr="disabled"
-                                        class="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg transition duration-200 font-medium shadow-lg shadow-green-600/20">
+                                        @if(!$returnSelectedGarment) disabled @endif
+                                        class="flex-1 py-3 px-4 rounded-lg transition duration-200 font-medium shadow-lg text-sm
+                                            {{ $returnSelectedGarment ? 'bg-green-600 hover:bg-green-700 text-white shadow-green-600/20' : 'bg-gray-300 dark:bg-gray-700 text-gray-500 dark:text-gray-400 cursor-not-allowed' }}">
                                     <span wire:loading.remove>Return Uniform</span>
                                     <span wire:loading>Processing...</span>
                                 </button>
                                 <button wire:click="resetReturnForm" 
-                                        class="px-6 bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 py-3 rounded-lg hover:bg-zinc-300 dark:hover:bg-zinc-600 transition duration-200">
+                                        class="px-6 bg-zinc-200 dark:bg-zinc-700 text-zinc-700 dark:text-zinc-300 py-3 rounded-lg hover:bg-zinc-300 dark:hover:bg-zinc-600 transition duration-200 text-sm">
                                     Cancel
                                 </button>
                             </div>
@@ -946,7 +1085,7 @@
                                     <span>Door will close automatically in <strong class="text-red-600 dark:text-red-400">15 seconds</strong></span>
                                 </div>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-2 text-center">Please store the checked uniform</p>
-                                <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-2 text-center">Notification sent to user's WhatsApp</p>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-2 text-center">📧 Notification sent to user's Email</p>
                             </div>
 
                             <button wire:click="resetReturnForm" 

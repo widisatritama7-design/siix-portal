@@ -42,6 +42,10 @@ return [
         'sender_email' => env('MICROSOFT_SENDER_EMAIL'),
     ],
 
+    'actionable' => [
+        'provider_id' => env('MICROSOFT_ACTIONABLE_PROVIDER_ID'),
+    ],
+
     'whatsapp' => [
         'url' => env(
             'WHATSAPP_SERVICE_URL',

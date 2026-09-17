@@ -84,10 +84,8 @@
 <?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::modal}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/modal/index.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::modal}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/modal/index.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
@@ -129,15 +127,12 @@
 <?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::modal}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/modal/index.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::modal}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/modal/index.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::modal}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/modal/index.blade.php}:{1776985208} ?>
 <section class="w-full">
 
     <?php ob_start(); ?><div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-sm [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2 sr-only" data-flux-heading><?php ob_start(); ?>
@@ -1322,20 +1317,13 @@
 <?php endif; ?>
 
     <!-- Daily Fuji Detail Modal -->
-    <?php ob_start(); ?><ui-modal wire:model.self="showDailyFujiModal" data-flux-modal>
-    
-    <dialog
-        wire:ignore.self 
-        class="p-6 [:where(&amp;)]:max-w-xl [:where(&amp;)]:min-w-xs shadow-lg rounded-xl bg-white dark:bg-zinc-800 ring ring-black/5 dark:ring-zinc-700 shadow-lg rounded-xl max-w-4xl"
-                                <?php if (isset($scope)) $__scope = $scope; ?><?php $scope = array (
-  'name' => NULL,
-); ?>
-        x-data="fluxModal(<?php echo \Illuminate\Support\Js::from($scope['name'])->toHtml() ?>, <?php echo \Illuminate\Support\Js::from(isset($__livewire) ? $__livewire->getId() : null)->toHtml() ?>)"
-        <?php if (isset($__scope)) { $scope = $__scope; unset($__scope); } ?>
-        x-on:modal-show.document="handleShow($event)"
-        x-on:modal-close.document="handleClose($event)"
-    >
-                    <?php ob_start(); ?>
+    <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/modal/index.blade.php', $__blaze->compiledPath.'/d7daffae0f7d39417a577d7b57e3168f.php'); ?>
+<?php if (isset($__slotsd7daffae0f7d39417a577d7b57e3168f)) { $__slotsStackd7daffae0f7d39417a577d7b57e3168f[] = $__slotsd7daffae0f7d39417a577d7b57e3168f; } ?>
+<?php if (isset($__attrsd7daffae0f7d39417a577d7b57e3168f)) { $__attrsStackd7daffae0f7d39417a577d7b57e3168f[] = $__attrsd7daffae0f7d39417a577d7b57e3168f; } ?>
+<?php $__attrsd7daffae0f7d39417a577d7b57e3168f = ['wire:model' => 'showDailyFujiModal','class' => 'max-w-4xl']; ?>
+<?php $__slotsd7daffae0f7d39417a577d7b57e3168f = []; ?>
+<?php $__blaze->pushData($__attrsd7daffae0f7d39417a577d7b57e3168f); ?>
+<?php ob_start(); ?>
         <div class="space-y-4">
             <div class="flex justify-between items-center border-b border-zinc-200 dark:border-zinc-700 pb-3">
                 <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">
@@ -3395,37 +3383,21 @@
             </div>
             <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         </div>
-    <?php echo trim(ob_get_clean()); ?>
-
-
-                            <div class="absolute top-0 end-0 mt-4 me-4">
-                    <ui-close data-flux-modal-close >
-    <button type="button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-8 text-sm rounded-md w-8 inline-flex  bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-800 dark:text-white      text-zinc-400! hover:text-zinc-800! dark:text-zinc-500! dark:hover:text-white!" data-flux-button="data-flux-button" aria-label="Close modal">
-        <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-  <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"/>
-</svg>
-    </button>
-</ui-close>
-                </div>
-                        </dialog>
-</ui-modal>
-<?php echo ltrim(ob_get_clean()); ?>
+    <?php $__slotsd7daffae0f7d39417a577d7b57e3168f['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slotsd7daffae0f7d39417a577d7b57e3168f); ?>
+<?php _d7daffae0f7d39417a577d7b57e3168f($__blaze, $__attrsd7daffae0f7d39417a577d7b57e3168f, $__slotsd7daffae0f7d39417a577d7b57e3168f, [], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStackd7daffae0f7d39417a577d7b57e3168f)) { $__slotsd7daffae0f7d39417a577d7b57e3168f = array_pop($__slotsStackd7daffae0f7d39417a577d7b57e3168f); } ?>
+<?php if (! empty($__attrsStackd7daffae0f7d39417a577d7b57e3168f)) { $__attrsd7daffae0f7d39417a577d7b57e3168f = array_pop($__attrsStackd7daffae0f7d39417a577d7b57e3168f); } ?>
+<?php $__blaze->popData(); ?>
 
     <!-- Approval Modal -->
-    <?php ob_start(); ?><ui-modal wire:model.self="showApprovalModal" data-flux-modal>
-    
-    <dialog
-        wire:ignore.self 
-        class="p-6 [:where(&amp;)]:max-w-xl [:where(&amp;)]:min-w-xs shadow-lg rounded-xl bg-white dark:bg-zinc-800 ring ring-black/5 dark:ring-zinc-700 shadow-lg rounded-xl max-w-md"
-                                <?php if (isset($scope)) $__scope = $scope; ?><?php $scope = array (
-  'name' => NULL,
-); ?>
-        x-data="fluxModal(<?php echo \Illuminate\Support\Js::from($scope['name'])->toHtml() ?>, <?php echo \Illuminate\Support\Js::from(isset($__livewire) ? $__livewire->getId() : null)->toHtml() ?>)"
-        <?php if (isset($__scope)) { $scope = $__scope; unset($__scope); } ?>
-        x-on:modal-show.document="handleShow($event)"
-        x-on:modal-close.document="handleClose($event)"
-    >
-                    <?php ob_start(); ?>
+    <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/modal/index.blade.php', $__blaze->compiledPath.'/d7daffae0f7d39417a577d7b57e3168f.php'); ?>
+<?php if (isset($__slotsd7daffae0f7d39417a577d7b57e3168f)) { $__slotsStackd7daffae0f7d39417a577d7b57e3168f[] = $__slotsd7daffae0f7d39417a577d7b57e3168f; } ?>
+<?php if (isset($__attrsd7daffae0f7d39417a577d7b57e3168f)) { $__attrsStackd7daffae0f7d39417a577d7b57e3168f[] = $__attrsd7daffae0f7d39417a577d7b57e3168f; } ?>
+<?php $__attrsd7daffae0f7d39417a577d7b57e3168f = ['wire:model' => 'showApprovalModal','class' => 'max-w-md']; ?>
+<?php $__slotsd7daffae0f7d39417a577d7b57e3168f = []; ?>
+<?php $__blaze->pushData($__attrsd7daffae0f7d39417a577d7b57e3168f); ?>
+<?php ob_start(); ?>
         <div class="space-y-4">
             <div class="flex justify-between items-center border-b border-zinc-200 dark:border-zinc-700 pb-3">
                 <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">
@@ -3464,37 +3436,21 @@
                 </div>
             </div>
         </div>
-    <?php echo trim(ob_get_clean()); ?>
-
-
-                            <div class="absolute top-0 end-0 mt-4 me-4">
-                    <ui-close data-flux-modal-close >
-    <button type="button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-8 text-sm rounded-md w-8 inline-flex  bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-800 dark:text-white      text-zinc-400! hover:text-zinc-800! dark:text-zinc-500! dark:hover:text-white!" data-flux-button="data-flux-button" aria-label="Close modal">
-        <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-  <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"/>
-</svg>
-    </button>
-</ui-close>
-                </div>
-                        </dialog>
-</ui-modal>
-<?php echo ltrim(ob_get_clean()); ?>
+    <?php $__slotsd7daffae0f7d39417a577d7b57e3168f['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slotsd7daffae0f7d39417a577d7b57e3168f); ?>
+<?php _d7daffae0f7d39417a577d7b57e3168f($__blaze, $__attrsd7daffae0f7d39417a577d7b57e3168f, $__slotsd7daffae0f7d39417a577d7b57e3168f, [], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStackd7daffae0f7d39417a577d7b57e3168f)) { $__slotsd7daffae0f7d39417a577d7b57e3168f = array_pop($__slotsStackd7daffae0f7d39417a577d7b57e3168f); } ?>
+<?php if (! empty($__attrsStackd7daffae0f7d39417a577d7b57e3168f)) { $__attrsd7daffae0f7d39417a577d7b57e3168f = array_pop($__attrsStackd7daffae0f7d39417a577d7b57e3168f); } ?>
+<?php $__blaze->popData(); ?>
 
     <!-- Daily Panasonic Detail Modal -->
-    <?php ob_start(); ?><ui-modal wire:model.self="showDailyPanasonicModal" data-flux-modal>
-    
-    <dialog
-        wire:ignore.self 
-        class="p-6 [:where(&amp;)]:max-w-xl [:where(&amp;)]:min-w-xs shadow-lg rounded-xl bg-white dark:bg-zinc-800 ring ring-black/5 dark:ring-zinc-700 shadow-lg rounded-xl max-w-4xl"
-                                <?php if (isset($scope)) $__scope = $scope; ?><?php $scope = array (
-  'name' => NULL,
-); ?>
-        x-data="fluxModal(<?php echo \Illuminate\Support\Js::from($scope['name'])->toHtml() ?>, <?php echo \Illuminate\Support\Js::from(isset($__livewire) ? $__livewire->getId() : null)->toHtml() ?>)"
-        <?php if (isset($__scope)) { $scope = $__scope; unset($__scope); } ?>
-        x-on:modal-show.document="handleShow($event)"
-        x-on:modal-close.document="handleClose($event)"
-    >
-                    <?php ob_start(); ?>
+    <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/modal/index.blade.php', $__blaze->compiledPath.'/d7daffae0f7d39417a577d7b57e3168f.php'); ?>
+<?php if (isset($__slotsd7daffae0f7d39417a577d7b57e3168f)) { $__slotsStackd7daffae0f7d39417a577d7b57e3168f[] = $__slotsd7daffae0f7d39417a577d7b57e3168f; } ?>
+<?php if (isset($__attrsd7daffae0f7d39417a577d7b57e3168f)) { $__attrsStackd7daffae0f7d39417a577d7b57e3168f[] = $__attrsd7daffae0f7d39417a577d7b57e3168f; } ?>
+<?php $__attrsd7daffae0f7d39417a577d7b57e3168f = ['wire:model' => 'showDailyPanasonicModal','class' => 'max-w-4xl']; ?>
+<?php $__slotsd7daffae0f7d39417a577d7b57e3168f = []; ?>
+<?php $__blaze->pushData($__attrsd7daffae0f7d39417a577d7b57e3168f); ?>
+<?php ob_start(); ?>
         <div class="space-y-4">
             <div class="flex justify-between items-center border-b border-zinc-200 dark:border-zinc-700 pb-3 sticky top-0 bg-white dark:bg-zinc-900 z-10">
                 <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">
@@ -5650,37 +5606,21 @@
             </div>
             <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         </div>
-    <?php echo trim(ob_get_clean()); ?>
-
-
-                            <div class="absolute top-0 end-0 mt-4 me-4">
-                    <ui-close data-flux-modal-close >
-    <button type="button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-8 text-sm rounded-md w-8 inline-flex  bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-800 dark:text-white      text-zinc-400! hover:text-zinc-800! dark:text-zinc-500! dark:hover:text-white!" data-flux-button="data-flux-button" aria-label="Close modal">
-        <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-  <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"/>
-</svg>
-    </button>
-</ui-close>
-                </div>
-                        </dialog>
-</ui-modal>
-<?php echo ltrim(ob_get_clean()); ?>
+    <?php $__slotsd7daffae0f7d39417a577d7b57e3168f['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slotsd7daffae0f7d39417a577d7b57e3168f); ?>
+<?php _d7daffae0f7d39417a577d7b57e3168f($__blaze, $__attrsd7daffae0f7d39417a577d7b57e3168f, $__slotsd7daffae0f7d39417a577d7b57e3168f, [], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStackd7daffae0f7d39417a577d7b57e3168f)) { $__slotsd7daffae0f7d39417a577d7b57e3168f = array_pop($__slotsStackd7daffae0f7d39417a577d7b57e3168f); } ?>
+<?php if (! empty($__attrsStackd7daffae0f7d39417a577d7b57e3168f)) { $__attrsd7daffae0f7d39417a577d7b57e3168f = array_pop($__attrsStackd7daffae0f7d39417a577d7b57e3168f); } ?>
+<?php $__blaze->popData(); ?>
 
     <!-- Panasonic Approval Modal -->
-    <?php ob_start(); ?><ui-modal wire:model.self="showPanasonicApprovalModal" data-flux-modal>
-    
-    <dialog
-        wire:ignore.self 
-        class="p-6 [:where(&amp;)]:max-w-xl [:where(&amp;)]:min-w-xs shadow-lg rounded-xl bg-white dark:bg-zinc-800 ring ring-black/5 dark:ring-zinc-700 shadow-lg rounded-xl max-w-md"
-                                <?php if (isset($scope)) $__scope = $scope; ?><?php $scope = array (
-  'name' => NULL,
-); ?>
-        x-data="fluxModal(<?php echo \Illuminate\Support\Js::from($scope['name'])->toHtml() ?>, <?php echo \Illuminate\Support\Js::from(isset($__livewire) ? $__livewire->getId() : null)->toHtml() ?>)"
-        <?php if (isset($__scope)) { $scope = $__scope; unset($__scope); } ?>
-        x-on:modal-show.document="handleShow($event)"
-        x-on:modal-close.document="handleClose($event)"
-    >
-                    <?php ob_start(); ?>
+    <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/modal/index.blade.php', $__blaze->compiledPath.'/d7daffae0f7d39417a577d7b57e3168f.php'); ?>
+<?php if (isset($__slotsd7daffae0f7d39417a577d7b57e3168f)) { $__slotsStackd7daffae0f7d39417a577d7b57e3168f[] = $__slotsd7daffae0f7d39417a577d7b57e3168f; } ?>
+<?php if (isset($__attrsd7daffae0f7d39417a577d7b57e3168f)) { $__attrsStackd7daffae0f7d39417a577d7b57e3168f[] = $__attrsd7daffae0f7d39417a577d7b57e3168f; } ?>
+<?php $__attrsd7daffae0f7d39417a577d7b57e3168f = ['wire:model' => 'showPanasonicApprovalModal','class' => 'max-w-md']; ?>
+<?php $__slotsd7daffae0f7d39417a577d7b57e3168f = []; ?>
+<?php $__blaze->pushData($__attrsd7daffae0f7d39417a577d7b57e3168f); ?>
+<?php ob_start(); ?>
         <div class="space-y-4">
             <div class="flex justify-between items-center border-b border-zinc-200 dark:border-zinc-700 pb-3">
                 <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">
@@ -5719,37 +5659,21 @@
                 </div>
             </div>
         </div>
-    <?php echo trim(ob_get_clean()); ?>
-
-
-                            <div class="absolute top-0 end-0 mt-4 me-4">
-                    <ui-close data-flux-modal-close >
-    <button type="button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-8 text-sm rounded-md w-8 inline-flex  bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-800 dark:text-white      text-zinc-400! hover:text-zinc-800! dark:text-zinc-500! dark:hover:text-white!" data-flux-button="data-flux-button" aria-label="Close modal">
-        <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-  <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"/>
-</svg>
-    </button>
-</ui-close>
-                </div>
-                        </dialog>
-</ui-modal>
-<?php echo ltrim(ob_get_clean()); ?>
+    <?php $__slotsd7daffae0f7d39417a577d7b57e3168f['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slotsd7daffae0f7d39417a577d7b57e3168f); ?>
+<?php _d7daffae0f7d39417a577d7b57e3168f($__blaze, $__attrsd7daffae0f7d39417a577d7b57e3168f, $__slotsd7daffae0f7d39417a577d7b57e3168f, [], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStackd7daffae0f7d39417a577d7b57e3168f)) { $__slotsd7daffae0f7d39417a577d7b57e3168f = array_pop($__slotsStackd7daffae0f7d39417a577d7b57e3168f); } ?>
+<?php if (! empty($__attrsStackd7daffae0f7d39417a577d7b57e3168f)) { $__attrsd7daffae0f7d39417a577d7b57e3168f = array_pop($__attrsStackd7daffae0f7d39417a577d7b57e3168f); } ?>
+<?php $__blaze->popData(); ?>
 
     <!-- MODAL ACTIVITY LOG -->
-    <?php ob_start(); ?><ui-modal wire:model.self="showActivityModal" data-flux-modal>
-    
-    <dialog
-        wire:ignore.self 
-        class="p-6 [:where(&amp;)]:max-w-xl [:where(&amp;)]:min-w-xs shadow-lg rounded-xl bg-white dark:bg-zinc-800 ring ring-black/5 dark:ring-zinc-700 shadow-lg rounded-xl w-full max-w-5xl"
-                                <?php if (isset($scope)) $__scope = $scope; ?><?php $scope = array (
-  'name' => NULL,
-); ?>
-        x-data="fluxModal(<?php echo \Illuminate\Support\Js::from($scope['name'])->toHtml() ?>, <?php echo \Illuminate\Support\Js::from(isset($__livewire) ? $__livewire->getId() : null)->toHtml() ?>)"
-        <?php if (isset($__scope)) { $scope = $__scope; unset($__scope); } ?>
-        x-on:modal-show.document="handleShow($event)"
-        x-on:modal-close.document="handleClose($event)"
-    >
-                    <?php ob_start(); ?>
+    <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/modal/index.blade.php', $__blaze->compiledPath.'/d7daffae0f7d39417a577d7b57e3168f.php'); ?>
+<?php if (isset($__slotsd7daffae0f7d39417a577d7b57e3168f)) { $__slotsStackd7daffae0f7d39417a577d7b57e3168f[] = $__slotsd7daffae0f7d39417a577d7b57e3168f; } ?>
+<?php if (isset($__attrsd7daffae0f7d39417a577d7b57e3168f)) { $__attrsStackd7daffae0f7d39417a577d7b57e3168f[] = $__attrsd7daffae0f7d39417a577d7b57e3168f; } ?>
+<?php $__attrsd7daffae0f7d39417a577d7b57e3168f = ['wire:model' => 'showActivityModal','class' => 'w-full max-w-5xl']; ?>
+<?php $__slotsd7daffae0f7d39417a577d7b57e3168f = []; ?>
+<?php $__blaze->pushData($__attrsd7daffae0f7d39417a577d7b57e3168f); ?>
+<?php ob_start(); ?>
         <div class="flex flex-col" style="height: auto; max-height: 85vh; overflow: hidden;">
             <div class="flex justify-between items-center px-6 py-4 border-b border-zinc-200 dark:border-zinc-700 flex-shrink-0">
                 <div>
@@ -5991,20 +5915,11 @@
             </div>
             <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         </div>
-    <?php echo trim(ob_get_clean()); ?>
-
-
-                            <div class="absolute top-0 end-0 mt-4 me-4">
-                    <ui-close data-flux-modal-close >
-    <button type="button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-8 text-sm rounded-md w-8 inline-flex  bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-800 dark:text-white      text-zinc-400! hover:text-zinc-800! dark:text-zinc-500! dark:hover:text-white!" data-flux-button="data-flux-button" aria-label="Close modal">
-        <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-  <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"/>
-</svg>
-    </button>
-</ui-close>
-                </div>
-                        </dialog>
-</ui-modal>
-<?php echo ltrim(ob_get_clean()); ?>
+    <?php $__slotsd7daffae0f7d39417a577d7b57e3168f['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slotsd7daffae0f7d39417a577d7b57e3168f); ?>
+<?php _d7daffae0f7d39417a577d7b57e3168f($__blaze, $__attrsd7daffae0f7d39417a577d7b57e3168f, $__slotsd7daffae0f7d39417a577d7b57e3168f, [], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStackd7daffae0f7d39417a577d7b57e3168f)) { $__slotsd7daffae0f7d39417a577d7b57e3168f = array_pop($__slotsStackd7daffae0f7d39417a577d7b57e3168f); } ?>
+<?php if (! empty($__attrsStackd7daffae0f7d39417a577d7b57e3168f)) { $__attrsd7daffae0f7d39417a577d7b57e3168f = array_pop($__attrsStackd7daffae0f7d39417a577d7b57e3168f); } ?>
+<?php $__blaze->popData(); ?>
     
 </section><?php /**PATH /www/wwwroot/testings.siix-ems.co.id/siix-portal/resources/views/livewire/mtc/master/master-line-show.blade.php ENDPATH**/ ?>

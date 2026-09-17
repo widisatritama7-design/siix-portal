@@ -2,7 +2,6 @@
 
 use App\Helpers\QRCodeHelper;
 use App\Http\Controllers\Api\ApiLockerController;
-use App\Http\Controllers\Api\EspController;
 use App\Http\Controllers\DashboardRefreshController;
 use App\Http\Controllers\DoorLockController;
 use App\Http\Controllers\ESD\Locker\LockerInfoController;
@@ -72,6 +71,8 @@ use App\Models\ESD\Locker\UniformTransaction;
 use App\Services\MicrosoftGraphService;
 use App\Services\WhatsAppService;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -217,6 +218,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     });
 });
 
+// Microsoft Approvall
 Route::get('/test-microsoft', function (MicrosoftGraphService $graph) {
     $token = $graph->getAccessToken();
 
@@ -246,16 +248,7 @@ Route::get('/test-microsoft-email', function (MicrosoftGraphService $graph) {
     ]);
 });
 
-Route::get('/test-microsoft-sender', function (MicrosoftGraphService $graph) {
-
-    $response = $graph->testSender();
-
-    return response()->json([
-        'status' => $response->status(),
-        'body' => $response->json(),
-    ]);
-});
-
+// Test WA
 Route::get('/test-whatsapp', function (
     WhatsAppService $whatsapp
 ) {
@@ -267,6 +260,7 @@ Route::get('/test-whatsapp', function (
 
 });
 
+//Locker ESD
 Route::get('/qr-scan/{accessCode}', function ($accessCode) {
     $transaction = UniformTransaction::where('access_code', $accessCode)
         ->whereIn('status', ['pending', 'waiting_pickup'])
@@ -276,13 +270,10 @@ Route::get('/qr-scan/{accessCode}', function ($accessCode) {
     if (!$transaction) {
         return redirect('/esd/locker-info')->with('error', 'QR Code tidak valid atau sudah kadaluarsa!');
     }
-    
-    // Redirect ke halaman locker info dengan access code
     return redirect('/esd/locker-info?take_code=' . $accessCode);
 })->name('qr-scan');
 
 Route::get('/test-whatsapp-qr', function (WhatsAppService $whatsapp) {
-    // Generate QR Code test
     $qrData = [
         'action' => 'test',
         'access_code' => 'TEST123',
@@ -320,18 +311,10 @@ Route::get('/test-whatsapp-qr', function (WhatsAppService $whatsapp) {
     }
 });
 
-// Halaman
 Route::get('/esd-locker', function () {
     return view('esd.locker.index');
 })->name('esd.locker');
 
-// Route untuk ESP32
-Route::prefix('esp')->group(function () {
-    Route::post('/heartbeat', [EspController::class, 'heartbeat']);
-    Route::get('/devices', [EspController::class, 'index']);
-    Route::get('/devices/{deviceId}', [EspController::class, 'show']);
-    Route::get('/devices/{deviceId}/logs', [EspController::class, 'logs']);
-});
 Route::prefix('lockers')->group(function () {
     Route::get('/status', [ApiLockerController::class, 'getStatus']);
     Route::match(['get', 'post'], '/open', [ApiLockerController::class, 'reportOpen']);

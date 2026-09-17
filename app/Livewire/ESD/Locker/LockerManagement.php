@@ -2,13 +2,13 @@
 
 namespace App\Livewire\ESD\Locker;
 
-use App\Helpers\QRCodeHelper;
 use App\Models\ESD\Locker\Locker;
 use App\Models\ESD\Locker\UniformTransaction;
-use App\Services\WhatsAppService;
+use App\Models\ESD\Garment\GarmentDetail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -17,7 +17,11 @@ class LockerManagement extends Component
     use WithPagination;
 
     public $search = '';
-    public $statusFilter = '';
+    public $filterStatus = '';
+    public $filterDept = '';
+    public $filterDateFrom = '';
+    public $filterDateUntil = '';
+    
     public $locker_id;
     public $code;
     public $status;
@@ -44,6 +48,13 @@ class LockerManagement extends Component
     public $returnTransaction = null;
     public $returnStep = 1;
     public $returnIsLoading = false;
+    
+    // ============ PROPERNTI UNTUK GARMENT MEASUREMENT ============
+    public $returnGarmentSearch = '';
+    public $returnGarmentResults = [];
+    public $returnShowGarmentList = false;
+    public $returnSelectedGarment = null;
+    public $returnSelectedGarmentId = null;
 
     public $ngAccessCode = '';
     public $ngLockerData = null;
@@ -58,6 +69,16 @@ class LockerManagement extends Component
     public $espConnected = false;
     public $lastEspUpdate = null;
     public $espChecking = false;
+
+    // Untuk aktivitas log
+    public $showActivityModal = false;
+    public $selectedLockerForActivity = null;
+    public $activityPage = 1;
+    public $perPageActivities = 10;
+
+    // Status editing
+    public $editingId = null;
+    public $editingStatus = '';
 
     protected function rules()
     {
@@ -79,7 +100,6 @@ class LockerManagement extends Component
         $this->espChecking = true;
         
         try {
-            // Cek status ESP32 via API
             $response = Http::get('http://test.siix-ems.co.id/api/esp-status');
             
             if ($response->successful()) {
@@ -97,6 +117,34 @@ class LockerManagement extends Component
     public function mount()
     {
         $this->checkEspStatus();
+    }
+
+    // ============ RESET FILTERS ============
+    public function resetFilters()
+    {
+        $this->search = '';
+        $this->filterStatus = '';
+        $this->filterDept = '';
+        $this->filterDateFrom = '';
+        $this->filterDateUntil = '';
+    }
+
+    // ============ STATUS EDITING ============
+    public function startEditingStatus($id, $currentStatus)
+    {
+        $this->editingId = $id;
+        $this->editingStatus = $currentStatus;
+    }
+
+    public function updateStatus($id)
+    {
+        $locker = Locker::find($id);
+        if ($locker) {
+            $locker->update(['status' => $this->editingStatus]);
+            $this->dispatch('notify', message: "Status updated to {$this->editingStatus}", type: 'success');
+        }
+        $this->editingId = null;
+        $this->editingStatus = '';
     }
 
     // ============ TEKNISI TAKE ============
@@ -154,8 +202,8 @@ class LockerManagement extends Component
             dispatch(new \App\Jobs\AutoCloseLockerJob($locker->id))->delay(now()->addSeconds(15));
             // =============================================
 
-            // Kirim WhatsApp
-            $this->sendTeknisiTakeWhatsApp($this->teknisiTakeTransaction);
+            // Kirim Email
+            $this->sendTeknisiTakeEmail($this->teknisiTakeTransaction);
 
             $this->dispatch('notify', message: 'Label printed successfully! Status changed to In Progress.', type: 'success');
         });
@@ -164,41 +212,36 @@ class LockerManagement extends Component
         $this->teknisiTakeStep = 3;
     }
 
-    protected function sendTeknisiTakeWhatsApp($transaction)
+    protected function sendTeknisiTakeEmail($transaction)
     {
         try {
-            $whatsapp = app(WhatsAppService::class);
             $employee = $transaction->employee;
+            $email = $transaction->email;
             
-            $phone = $transaction->phone;
-            
-            if (!$phone) {
-                Log::error('No phone number for Teknisi Take', [
+            if (!$email) {
+                Log::error('No email for Teknisi Take', [
                     'transaction_id' => $transaction->id
                 ]);
                 return;
             }
             
-            $message = "*ESD Locker System*\n\n";
-            $message .= "Halo *{$employee->name}*,\n\n";
-            $message .= "🔄 Seragam Anda sedang dalam *proses pengecekan* (On Progress Measure)\n\n";
-            $message .= "📋 *Detail:*\n";
-            $message .= "• NIK: {$employee->nik}\n";
-            $message .= "• Locker: {$transaction->locker->code}\n";
-            $message .= "• Status: Sedang Diperiksa\n";
-            $message .= "• Waktu: " . now()->format('d/m/Y H:i') . "\n\n";
-            $message .= "⏳ Mohon tunggu, Anda akan mendapat notifikasi setelah seragam selesai diperiksa.\n\n";
-            $message .= "Terima kasih telah menggunakan layanan ESD.\n";
-            $message .= "_Pesan ini dikirim otomatis oleh sistem._";
+            $data = [
+                'employee_name' => $employee->name,
+                'nik' => $employee->nik,
+                'locker_code' => $transaction->locker->code,
+                'type' => 'checking',
+                'status' => 'Sedang Diperiksa',
+                'datetime' => now()->format('d/m/Y H:i')
+            ];
 
-            $whatsapp->send($phone, $message);
+            Mail::to($email)->send(new \App\Mail\ESD\LockerNotificationMail($data));
             
-            Log::info('WhatsApp Teknisi Take sent successfully', [
+            Log::info('Email Teknisi Take (Checking) sent successfully', [
                 'transaction_id' => $transaction->id,
-                'phone' => $phone
+                'email' => $email
             ]);
         } catch (\Exception $e) {
-            Log::error('WhatsApp Teknisi Take send failed: ' . $e->getMessage(), [
+            Log::error('Email Teknisi Take send failed: ' . $e->getMessage(), [
                 'transaction_id' => $transaction->id
             ]);
         }
@@ -228,9 +271,57 @@ class LockerManagement extends Component
         
     public function resetReturnForm()
     {
-        $this->reset(['returnAccessCode', 'returnTransaction', 'returnStep']);
+        $this->reset([
+            'returnAccessCode', 
+            'returnTransaction', 
+            'returnStep',
+            'returnGarmentSearch',
+            'returnGarmentResults',
+            'returnShowGarmentList',
+            'returnSelectedGarment',
+            'returnSelectedGarmentId'
+        ]);
         $this->resetErrorBag();
         $this->resetValidation();
+    }
+
+    public function searchReturnGarment()
+    {
+        if (strlen($this->returnGarmentSearch) < 2) {
+            $this->returnGarmentResults = [];
+            $this->returnShowGarmentList = false;
+            return;
+        }
+
+        $this->returnGarmentResults = GarmentDetail::join('tb_hr_employee', 'tb_esd_garment_details.nik', '=', 'tb_hr_employee.id')
+            ->where('tb_hr_employee.nik', 'like', '%' . $this->returnGarmentSearch . '%')
+            ->orWhere('tb_hr_employee.name', 'like', '%' . $this->returnGarmentSearch . '%')
+            ->select('tb_esd_garment_details.*', 'tb_hr_employee.nik as employee_nik', 'tb_hr_employee.name as employee_name')
+            ->orderBy('tb_esd_garment_details.next_date', 'DESC') // Urutkan dari terbaru
+            ->limit(10)
+            ->get();
+
+        $this->returnShowGarmentList = true;
+    }
+
+    public function selectReturnGarment($id)
+    {
+        $garment = GarmentDetail::with('garment') // Relasi ke employee
+            ->find($id);
+        
+        if ($garment) {
+            $this->returnSelectedGarment = $garment;
+            $this->returnSelectedGarmentId = $garment->id;
+            
+            // Ambil nama dari relasi employee
+            $employeeName = $garment->garment->name ?? $garment->name ?? '-';
+            $employeeNik = $garment->garment->nik ?? '-';
+            
+            $this->returnGarmentSearch = $employeeName . ' (' . $employeeNik . ')';
+            $this->returnShowGarmentList = false;
+            
+            $this->dispatch('notify', message: 'Data pengukuran selected!', type: 'success');
+        }
     }
 
     public function returnCheckCode()
@@ -251,11 +342,47 @@ class LockerManagement extends Component
             return;
         }
 
+        if ($this->returnTransaction->employee) {
+            $employeeId = $this->returnTransaction->employee->id;
+            $employeeNik = $this->returnTransaction->employee->nik;
+            $employeeName = $this->returnTransaction->employee->name;
+            
+            // Cari data garment dan urutkan dari yang terbaru
+            $garments = GarmentDetail::where('nik', $employeeId)
+                ->orderBy('next_date', 'DESC') // Urutkan dari yang paling baru
+                ->get();
+            
+            if ($garments->count() > 0) {
+                // Pilih yang paling baru (pertama setelah diurutkan DESC)
+                $this->returnSelectedGarment = $garments->first();
+                $this->returnSelectedGarmentId = $this->returnSelectedGarment->id;
+                $this->returnGarmentSearch = $employeeName . ' (' . $employeeNik . ')';
+                $this->returnShowGarmentList = false;
+                
+                // Simpan semua data untuk ditampilkan di list
+                $this->returnGarmentResults = $garments;
+                $this->returnShowGarmentList = true; // Tampilkan list agar user bisa pilih yang lain
+                
+                $this->dispatch('notify', message: 'Data pengukuran ditemukan! Yang terbaru otomatis dipilih.', type: 'success');
+            } else {
+                $this->returnGarmentSearch = $employeeNik;
+                $this->returnGarmentResults = collect();
+                $this->returnShowGarmentList = true;
+                $this->dispatch('notify', message: 'Data pengukuran tidak ditemukan untuk karyawan ini.', type: 'warning');
+            }
+        }
+
         $this->returnStep = 2;
     }
 
     public function returnUniform()
     {
+        // Validasi harus pilih data pengukuran
+        if (!$this->returnSelectedGarment) {
+            $this->dispatch('notify', message: 'Please select measurement data first!', type: 'error');
+            return;
+        }
+
         $this->returnIsLoading = true;
 
         DB::transaction(function () {
@@ -269,7 +396,8 @@ class LockerManagement extends Component
 
             $this->returnTransaction->update([
                 'status' => 'waiting_pickup',
-                'stored_at' => now()
+                'stored_at' => now(),
+                'garment_detail_id' => $this->returnSelectedGarment->id // Simpan ID garment di transaction
             ]);
 
             $locker->update([
@@ -280,8 +408,8 @@ class LockerManagement extends Component
             dispatch(new \App\Jobs\AutoCloseLockerJob($locker->id))->delay(now()->addSeconds(15));
             // =============================================
 
-            // Kirim WhatsApp dengan QR Code
-            $this->sendReturnWhatsAppWithQR($this->returnTransaction);
+            // Kirim Email dengan QR Code dan Data Pengukuran
+            $this->sendReturnEmailWithQRAndMeasurement($this->returnTransaction, $this->returnSelectedGarment);
 
             $this->dispatch('open-locker', ['code' => $locker->code]);
 
@@ -292,67 +420,63 @@ class LockerManagement extends Component
         $this->returnIsLoading = false;
     }
 
-    // ============ KIRIM WHATSAPP DENGAN ACCESS CODE & QR CODE ============
-    protected function sendReturnWhatsAppWithQR($transaction)
+    // ============ KIRIM EMAIL DENGAN ACCESS CODE & QR CODE & DATA PENGUKURAN ============
+    protected function sendReturnEmailWithQRAndMeasurement($transaction, $garmentData)
     {
         try {
-            $whatsapp = app(WhatsAppService::class);
             $employee = $transaction->employee;
             $locker = $transaction->locker;
+            $email = $transaction->email;
             
-            $phone = $transaction->phone;
-            
-            if (!$phone) {
-                Log::error('No phone number for Return with QR', [
+            if (!$email) {
+                Log::error('No email for Return with QR and Measurement', [
                     'transaction_id' => $transaction->id
                 ]);
                 return;
             }
             
-            // Generate QR Code sebagai image
-            $qrData = $transaction->access_code;
-            $qrImagePath = QRCodeHelper::generateAndSave($transaction->access_code, $qrData);
-            
-            // Buat QR Code URL untuk scan
-            $scanUrl = route('qr-scan', ['accessCode' => $transaction->access_code]);
-            
-            $message = "*ESD Locker System*\n\n";
-            $message .= "Halo *{$employee->name}*,\n\n";
-            $message .= "✅ *Seragam Anda telah selesai diperiksa dan siap diambil!*\n\n";
-            $message .= "📋 *Detail Transaksi:*\n";
-            $message .= "• NIK: {$employee->nik}\n";
-            $message .= "• Locker: {$locker->code}\n";
-            $message .= "• Status: Siap Diambil\n";
-            $message .= "• Waktu: " . now()->format('d/m/Y H:i') . "\n\n";
-            $message .= "🔑 *Kode Akses Anda:* `{$transaction->access_code}`\n";
-            $message .= "⏰ Kode ini berlaku selama *24 jam*.\n\n";
-            $message .= "📱 *Scan QR Code di bawah ini untuk akses cepat:*\n\n";
-            $message .= "⚠️ *Simpan kode dan QR Code ini dengan baik!*\n";
-            $message .= "Gunakan untuk mengambil seragam Anda.\n\n";
-            $message .= "Terima kasih telah menggunakan layanan ESD.\n";
-            $message .= "_Pesan ini dikirim otomatis oleh sistem._";
+            $data = [
+                'employee_name' => $employee->name,
+                'nik' => $employee->nik,
+                'locker_code' => $locker->code,
+                'access_code' => $transaction->access_code,
+                'type' => 'ready_with_measurement',
+                'status' => 'Siap Diambil',
+                'datetime' => now()->format('d/m/Y H:i'),
+                'garment_data' => $garmentData ? [
+                    'd1' => $garmentData->d1,
+                    'd1_scientific' => $garmentData->d1_scientific,
+                    'judgement_d1' => $garmentData->judgement_d1,
+                    'd2' => $garmentData->d2,
+                    'd2_scientific' => $garmentData->d2_scientific,
+                    'judgement_d2' => $garmentData->judgement_d2,
+                    'd3' => $garmentData->d3,
+                    'd3_scientific' => $garmentData->d3_scientific,
+                    'judgement_d3' => $garmentData->judgement_d3,
+                    'd4' => $garmentData->d4,
+                    'd4_scientific' => $garmentData->d4_scientific,
+                    'judgement_d4' => $garmentData->judgement_d4,
+                    'next_date' => $garmentData->next_date,
+                    'remarks' => $garmentData->remarks,
+                ] : null
+            ];
 
-            // Kirim dengan gambar QR Code
-            if (file_exists($qrImagePath)) {
-                $result = $whatsapp->sendWithQRImage($phone, $message, $qrImagePath);
-            } else {
-                // Jika QR gagal generate, kirim tanpa gambar
-                $whatsapp->send($phone, $message);
-            }
+            Mail::to($email)->send(new \App\Mail\ESD\LockerNotificationMail($data));
             
-            Log::info('WhatsApp Return with QR sent successfully', [
+            Log::info('Email Return (Ready with Measurement) sent successfully', [
                 'transaction_id' => $transaction->id,
-                'phone' => $phone,
-                'access_code' => $transaction->access_code
+                'email' => $email,
+                'access_code' => $transaction->access_code,
+                'has_garment_data' => !is_null($garmentData),
+                'garment_detail_id' => $garmentData->id ?? null
             ]);
             
         } catch (\Exception $e) {
-            Log::error('WhatsApp Return with QR send failed: ' . $e->getMessage(), [
+            Log::error('Email Return with Measurement send failed: ' . $e->getMessage(), [
                 'transaction_id' => $transaction->id
             ]);
         }
     }
-    // ================================================================
 
     // ============ NG (Reject Locker) ============
 
@@ -408,8 +532,8 @@ class LockerManagement extends Component
                     'notes' => $this->ngReason ?? 'Marked as NG by technician'
                 ]);
 
-                // Kirim WhatsApp NG
-                $this->sendNgWhatsApp($transaction);
+                // Kirim Email NG
+                $this->sendNgEmail($transaction);
             }
 
             Log::info('Locker marked as NG', [
@@ -424,50 +548,53 @@ class LockerManagement extends Component
         });
     }
 
-    protected function sendNgWhatsApp($transaction)
+    protected function sendNgEmail($transaction)
     {
         try {
-            $whatsapp = app(WhatsAppService::class);
             $employee = $transaction->employee;
+            $email = $transaction->email;
             
-            $phone = $transaction->phone;
-            
-            if (!$phone) {
-                Log::error('No phone number for NG', [
+            if (!$email) {
+                Log::error('No email for NG', [
                     'transaction_id' => $transaction->id
                 ]);
                 return;
             }
             
-            $message = "*ESD Locker System*\n\n";
-            $message .= "Halo *{$employee->name}*,\n\n";
-            $message .= "❌ *Pemberitahuan Penting!*\n\n";
-            $message .= "Seragam Anda dinyatakan *NG (Not Good)* / Tidak Lolos Pengecekan.\n\n";
-            
-            if ($transaction->notes) {
-                $message .= "📝 *Alasan:* {$transaction->notes}\n\n";
-            }
-            
-            $message .= "📋 *Detail:*\n";
-            $message .= "• NIK: {$employee->nik}\n";
-            $message .= "• Locker: {$transaction->locker->code}\n";
-            $message .= "• Status: NG (Rejected)\n";
-            $message .= "• Waktu: " . now()->format('d/m/Y H:i') . "\n\n";
-            $message .= "📞 Silahkan hubungi tim ESD untuk informasi lebih lanjut.\n\n";
-            $message .= "Terima kasih telah menggunakan layanan ESD.\n";
-            $message .= "_Pesan ini dikirim otomatis oleh sistem._";
+            $data = [
+                'employee_name' => $employee->name,
+                'nik' => $employee->nik,
+                'locker_code' => $transaction->locker->code,
+                'type' => 'ng',
+                'status' => 'NG (Tidak Lolos Pengecekan)',
+                'datetime' => now()->format('d/m/Y H:i'),
+                'notes' => $transaction->notes ?? 'Tidak ada keterangan'
+            ];
 
-            $whatsapp->send($phone, $message);
+            Mail::to($email)->send(new \App\Mail\ESD\LockerNotificationMail($data));
             
-            Log::info('WhatsApp NG sent successfully', [
+            Log::info('Email NG sent successfully', [
                 'transaction_id' => $transaction->id,
-                'phone' => $phone
+                'email' => $email
             ]);
         } catch (\Exception $e) {
-            Log::error('WhatsApp NG send failed: ' . $e->getMessage(), [
+            Log::error('Email NG send failed: ' . $e->getMessage(), [
                 'transaction_id' => $transaction->id
             ]);
         }
+    }
+
+    // ============ VIEW ACTIVITY ============
+    public function viewActivity($id)
+    {
+        $this->selectedLockerForActivity = Locker::find($id);
+        $this->activityPage = 1;
+        $this->showActivityModal = true;
+    }
+
+    public function setActivityPage($page)
+    {
+        $this->activityPage = max(1, $page);
     }
 
     // ============ SAVE, EDIT, DELETE ============
@@ -642,8 +769,8 @@ class LockerManagement extends Component
                     'notes' => $this->ngReason ?? 'Marked as NG by technician'
                 ]);
 
-                // Kirim WhatsApp
-                $this->sendNgWhatsApp($transaction);
+                // Kirim Email
+                $this->sendNgEmail($transaction);
             }
 
             Log::info('Locker marked as NG', [
@@ -770,16 +897,7 @@ class LockerManagement extends Component
 
     public function render()
     {
-        $lockers = Locker::with('employee')
-            ->when($this->search, function ($query) {
-                $query->where('code', 'like', '%' . $this->search . '%');
-            })
-            ->when($this->statusFilter, function ($query) {
-                $query->where('status', $this->statusFilter);
-            })
-            ->orderBy('id')
-            ->get();
-
+        // ============ HITUNG STATS ============
         $stats = [
             'total' => Locker::count(),
             'available' => Locker::available()->count(),
@@ -790,10 +908,112 @@ class LockerManagement extends Component
             'transactions_active' => UniformTransaction::whereIn('status', ['pending', 'on_progress', 'waiting_pickup'])->count()
         ];
 
+        // Get left lockers (1-10)
+        $leftLockers = Locker::with('employee')
+            ->when($this->search, function ($query) {
+                $query->where(function($q) {
+                    $q->where('code', 'like', '%' . $this->search . '%')
+                    ->orWhere('nik', 'like', '%' . $this->search . '%')
+                    ->orWhere('name', 'like', '%' . $this->search . '%')
+                    ->orWhere('dept', 'like', '%' . $this->search . '%');
+                });
+            })
+            ->when($this->filterStatus, function ($query) {
+                $query->where('status', $this->filterStatus);
+            })
+            ->when($this->filterDept, function ($query) {
+                $query->where('dept', 'like', '%' . $this->filterDept . '%');
+            })
+            ->when($this->filterDateFrom, function ($query) {
+                $query->whereDate('updated_at', '>=', $this->filterDateFrom);
+            })
+            ->when($this->filterDateUntil, function ($query) {
+                $query->whereDate('updated_at', '<=', $this->filterDateUntil);
+            })
+            ->whereBetween('id', [1, 10])
+            ->orderBy('id', 'asc')
+            ->get();
+
+        // Get right lockers (11-20)
+        $rightLockers = Locker::with('employee')
+            ->when($this->search, function ($query) {
+                $query->where(function($q) {
+                    $q->where('code', 'like', '%' . $this->search . '%')
+                    ->orWhere('nik', 'like', '%' . $this->search . '%')
+                    ->orWhere('name', 'like', '%' . $this->search . '%')
+                    ->orWhere('dept', 'like', '%' . $this->search . '%');
+                });
+            })
+            ->when($this->filterStatus, function ($query) {
+                $query->where('status', $this->filterStatus);
+            })
+            ->when($this->filterDept, function ($query) {
+                $query->where('dept', 'like', '%' . $this->filterDept . '%');
+            })
+            ->when($this->filterDateFrom, function ($query) {
+                $query->whereDate('updated_at', '>=', $this->filterDateFrom);
+            })
+            ->when($this->filterDateUntil, function ($query) {
+                $query->whereDate('updated_at', '<=', $this->filterDateUntil);
+            })
+            ->whereBetween('id', [11, 20])
+            ->orderBy('id', 'asc')
+            ->get();
+
+        // All lockers for count
+        $allLockers = Locker::when($this->search, function ($query) {
+                $query->where(function($q) {
+                    $q->where('code', 'like', '%' . $this->search . '%')
+                    ->orWhere('nik', 'like', '%' . $this->search . '%')
+                    ->orWhere('name', 'like', '%' . $this->search . '%')
+                    ->orWhere('dept', 'like', '%' . $this->search . '%');
+                });
+            })
+            ->when($this->filterStatus, function ($query) {
+                $query->where('status', $this->filterStatus);
+            })
+            ->when($this->filterDept, function ($query) {
+                $query->where('dept', 'like', '%' . $this->filterDept . '%');
+            })
+            ->when($this->filterDateFrom, function ($query) {
+                $query->whereDate('updated_at', '>=', $this->filterDateFrom);
+            })
+            ->when($this->filterDateUntil, function ($query) {
+                $query->whereDate('updated_at', '<=', $this->filterDateUntil);
+            })
+            ->get();
+
+        // Gabungkan semua locker untuk ditampilkan di grid
+        $lockers = Locker::with('employee')
+            ->when($this->search, function ($query) {
+                $query->where(function($q) {
+                    $q->where('code', 'like', '%' . $this->search . '%')
+                    ->orWhere('nik', 'like', '%' . $this->search . '%')
+                    ->orWhere('name', 'like', '%' . $this->search . '%')
+                    ->orWhere('dept', 'like', '%' . $this->search . '%');
+                });
+            })
+            ->when($this->filterStatus, function ($query) {
+                $query->where('status', $this->filterStatus);
+            })
+            ->when($this->filterDept, function ($query) {
+                $query->where('dept', 'like', '%' . $this->filterDept . '%');
+            })
+            ->when($this->filterDateFrom, function ($query) {
+                $query->whereDate('updated_at', '>=', $this->filterDateFrom);
+            })
+            ->when($this->filterDateUntil, function ($query) {
+                $query->whereDate('updated_at', '<=', $this->filterDateUntil);
+            })
+            ->orderBy('id', 'asc')
+            ->get();
+
         return view('livewire.esd.locker.locker-management', [
+            'leftLockers' => $leftLockers,
+            'rightLockers' => $rightLockers,
+            'allLockers' => $allLockers,
             'lockers' => $lockers,
-            'stats' => $stats,
-            'transactions' => $this->getTransactionsProperty()
+            'stats' => $stats
         ]);
     }
 }

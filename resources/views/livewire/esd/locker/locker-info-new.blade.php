@@ -13,11 +13,16 @@
         <!-- HEADER -->
         <div class="bg-gradient-to-r from-blue-600 to-blue-700 rounded-xl shadow-lg p-5 text-white">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                <div>
-                    <h1 class="text-3xl font-bold">
-                        ESD Locker System
-                    </h1>
-                    <p class="text-sm text-blue-100">Simpan dengan aman, ambil dengan mudah</p>
+                <div class="flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-8">
+                        <path fill-rule="evenodd" d="M12 1.5a5.25 5.25 0 0 0-5.25 5.25v3a3 3 0 0 0-3 3v6.75a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3v-6.75a3 3 0 0 0-3-3v-3c0-2.9-2.35-5.25-5.25-5.25Zm3.75 8.25v-3a3.75 3.75 0 1 0-7.5 0v3h7.5Z" clip-rule="evenodd" />
+                    </svg>
+                    <div>
+                        <h1 class="text-3xl font-bold">
+                            ESD Locker System
+                        </h1>
+                        <p class="text-sm text-blue-100">Simpan dengan aman, ambil dengan mudah</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -214,21 +219,39 @@
             <div class="w-full lg:w-[40%]">
                 <div class="bg-white rounded-xl shadow-md border border-gray-200 p-4 sticky top-4 space-y-3">
 
-                    <!-- Petunjuk Penggunaan -->
+                    <!-- PETUNJUK STORE -->
                     <div>
-                        <h4 class="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2 border-b border-gray-200 pb-2">
-                            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                        <h4 class="text-sm font-bold text-green-700 mb-3 flex items-center gap-2 border-b border-gray-200 pb-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
                             </svg>
-                            PETUNJUK PENGGUNAAN
+                            PETUNJUK STORE (Menyimpan)
                         </h4>
-                        <ol class="text-sm text-gray-600 space-y-2 list-decimal list-inside">
-                            <li>Pilih aksi <span class="font-bold text-green-600">STORE</span> untuk menyimpan barang atau <span class="font-bold text-purple-600">TAKE</span> untuk mengambil barang.</li>
-                            <li>Scan Barcode NIK Anda untuk verifikasi.</li>
-                            <li>Masukkan Nomor WhatsApp untuk menerima pemberitahuan.</li>
-                            <li>Ikuti instruksi pada layar.</li>
-                            <li>Locker akan terbuka otomatis jika berhasil.</li>
-                            <li>Setelah selesai, pastikan locker tertutup dengan rapat.</li>
+                        <ol class="text-sm text-gray-600 space-y-1.5 list-decimal list-inside">
+                            <li>Tekan tombol <span class="font-bold text-green-600">STORE</span>.</li>
+                            <li>Masukkan <span class="font-bold">NIK</span> (scan atau ketik).</li>
+                            <li>Masukkan <span class="font-bold">Alamat Email</span> aktif.</li>
+                            <li>Verifikasi data karyawan yang muncul.</li>
+                            <li>Locker akan terbuka otomatis.</li>
+                            <li>Simpan barang dan <span class="font-bold text-red-600">tutup rapat</span> locker.</li>
+                        </ol>
+                    </div>
+
+                    <!-- PETUNJUK TAKE -->
+                    <div>
+                        <h4 class="text-sm font-bold text-purple-700 mb-3 flex items-center gap-2 border-b border-gray-200 pb-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"></path>
+                            </svg>
+                            PETUNJUK TAKE (Mengambil)
+                        </h4>
+                        <ol class="text-sm text-gray-600 space-y-1.5 list-decimal list-inside">
+                            <li>Tekan tombol <span class="font-bold text-purple-600">TAKE</span>.</li>
+                            <li>Masukkan <span class="font-bold">Kode Akses</span> dari email.</li>
+                            <li>Pastikan kode yang dimasukkan benar.</li>
+                            <li>Verifikasi detail transaksi yang muncul.</li>
+                            <li>Locker akan terbuka otomatis.</li>
+                            <li>Ambil barang dan <span class="font-bold text-red-600">tutup rapat</span> locker.</li>
                         </ol>
                     </div>
 
@@ -249,23 +272,17 @@
                             <li>Hubungi ESD Team jika ada kendala.</li>
                         </ul>
                     </div>
-
-                    <hr class="border-gray-200">
-
-                    <!-- Footer -->
-                    <div class="text-center text-[10px] text-gray-400 pt-2">
-                        <p>ESD Locker System © 2025 | All Rights Reserved</p>
-                        <p>Powered by ESD Management System</p>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- ============================================================ -->
     <!-- MODAL STORE -->
+    <!-- ============================================================ -->
     <div id="storeModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 hidden">
         <div class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300" onclick="closeModal('storeModal')"></div>
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] relative z-10 border border-gray-200 flex flex-col transform transition-all duration-300 scale-95 opacity-0" id="storeModalContent">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[95vh] relative z-10 border border-gray-200 flex flex-col transform transition-all duration-300 scale-95 opacity-0" id="storeModalContent">
             <!-- Header -->
             <div class="flex-shrink-0 px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-green-50 to-green-100 rounded-t-2xl">
                 <div class="flex justify-between items-center">
@@ -293,7 +310,7 @@
                         <!-- KIRI: Form -->
                         <div class="flex-1 space-y-4">
                             <div class="text-center">
-                                <p class="text-sm text-gray-600">Masukkan NIK dan Nomor WhatsApp</p>
+                                <p class="text-sm text-gray-600">Masukkan NIK dan Alamat Email</p>
                             </div>
 
                             <div>
@@ -306,19 +323,14 @@
                             </div>
 
                             <div>
-                                <label class="block text-xs font-medium text-gray-700 mb-1">Nomor WhatsApp</label>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-sm font-medium text-gray-500 bg-gray-100 px-3 rounded-lg border-2 border-gray-300 flex items-center justify-center h-[50px] min-w-[50px]">
-                                        +62
-                                    </span>
-                                    <input type="tel" id="storePhone"
-                                        onfocus="activeStoreInput = 'wa'"
-                                        class="flex-1 px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-base transition h-[50px]"
-                                        placeholder="81234567890">
-                                </div>
-                                <div id="storePhoneError" class="text-red-500 text-xs mt-1 hidden"></div>
+                                <label class="block text-xs font-medium text-gray-700 mb-1">Alamat Email</label>
+                                <input type="email" id="storeEmail"
+                                    onfocus="activeStoreInput = 'email'"
+                                    class="w-full px-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-base transition h-[50px]"
+                                    placeholder="Your E-mail@gmail.com">
+                                <div id="storeEmailError" class="text-red-500 text-xs mt-1 hidden"></div>
                                 <p class="text-[10px] text-gray-400 mt-1">
-                                    Masukkan nomor WhatsApp aktif untuk menerima notifikasi
+                                    Masukkan alamat email aktif untuk menerima notifikasi
                                 </p>
                             </div>
 
@@ -331,24 +343,80 @@
                         <!-- KANAN: Numpad -->
                         <div class="flex-1">
                             <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
-                                <div class="grid grid-cols-3 gap-2">
-                                    @foreach(['1','2','3','4','5','6','7','8','9','clear','0','backspace'] as $key)
+
+                                <!-- Toggle Huruf -->
+                                <div id="storeCaseToggle" class="flex items-center justify-between mb-2 gap-2">
+                                    <div class="flex gap-1">
                                         <button type="button"
-                                                onclick="storeKeyPress('{{ $key }}')"
-                                                class="numpad-btn {{ $key === 'clear' ? 'bg-red-500 hover:bg-red-600 text-white' : ($key === 'backspace' ? 'bg-yellow-500 hover:bg-yellow-600 text-white' : 'bg-white hover:bg-gray-100 text-gray-800 border border-gray-300') }} py-3 rounded-lg font-bold text-xl transition active:scale-95 shadow-sm hover:shadow-md flex items-center justify-center h-[52px]">
-                                            @if($key === 'clear')
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"></path>
-                                                </svg>
-                                            @elseif($key === 'backspace')
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414a2 2 0 001.414.586H19a2 2 0 002-2V7a2 2 0 00-2-2h-8.172a2 2 0 00-1.414.586L3 12z"></path>
-                                                </svg>
-                                            @else
-                                                {{ $key }}
-                                            @endif
+                                                id="storeUpperCaseBtn"
+                                                onclick="storeToggleCase('upper')"
+                                                class="px-3 py-1 text-xs font-bold rounded-lg transition-all duration-200 bg-blue-600 text-white shadow-md">
+                                            Aa
                                         </button>
-                                    @endforeach
+                                        <button type="button"
+                                                id="storeLowerCaseBtn"
+                                                onclick="storeToggleCase('lower')"
+                                                class="px-3 py-1 text-xs font-bold rounded-lg transition-all duration-200 bg-gray-200 text-gray-600 hover:bg-gray-300">
+                                            aa
+                                        </button>
+                                    </div>
+                                    <span id="storeCaseIndicator" class="text-xs font-bold text-blue-600">UPPERCASE</span>
+                                </div>
+
+                                <!-- LAYOUT KEYBOARD -->
+                                <div id="storeLettersContainer" class="mb-2">
+                                    
+                                    <!-- BARIS 1: ANGKA 0-9 -->
+                                    <div class="grid grid-cols-10 gap-2 mb-2">
+                                        @foreach(['1','2','3','4','5','6','7','8','9','0'] as $num)
+                                            <button type="button"
+                                                    onclick="storeKeyPress('{{ $num }}')"
+                                                    class="bg-white hover:bg-green-100 text-gray-700 border border-gray-300 py-3 rounded-lg font-bold text-lg transition active:scale-95 shadow-sm hover:shadow-md">
+                                                {{ $num }}
+                                            </button>
+                                        @endforeach
+                                    </div>
+
+                                    <!-- BARIS 2: Q W E R T Y U I O P -->
+                                    <div class="grid grid-cols-10 gap-2 mb-2" id="storeLettersRow1">
+                                        <!-- Akan diisi oleh JavaScript -->
+                                    </div>
+
+                                    <!-- BARIS 3: A S D F G H J K L -->
+                                    <div class="grid grid-cols-9 gap-2 mb-2" id="storeLettersRow2">
+                                        <!-- Akan diisi oleh JavaScript -->
+                                    </div>
+
+                                    <!-- BARIS 4: Z X C V B N M + @ . _ - -->
+                                    <div class="grid grid-cols-12 gap-2 mb-2" id="storeLettersRow3">
+                                        <!-- Akan diisi oleh JavaScript -->
+                                    </div>
+
+                                    <!-- BARIS 5: @gmail.com + Clear + Backspace -->
+                                    <div id="storeGmailBtn" class="grid grid-cols-3 gap-2">
+                                        <button type="button"
+                                                onclick="storeInsertGmail()"
+                                                class="bg-green-100 hover:bg-green-200 text-green-700 border border-green-300 py-3 rounded-lg font-bold text-base transition active:scale-95 shadow-sm hover:shadow-md flex items-center justify-center gap-2">
+                                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M24 5.457v13.909c0 .904-.732 1.636-1.636 1.636h-3.819V11.73L12 16.64l-6.545-4.91v9.273H1.636A1.636 1.636 0 0 1 0 19.366V5.457c0-1.023.59-1.908 1.427-2.355L12 10.182l10.573-7.08c.837.447 1.427 1.332 1.427 2.355z"/>
+                                            </svg>
+                                            @gmail.com
+                                        </button>
+                                        <button onclick="storeKeyPress('clear')" 
+                                                class="bg-red-500 hover:bg-red-600 text-white py-3 rounded-lg font-bold text-base transition active:scale-95 shadow-sm hover:shadow-md flex items-center justify-center gap-2">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                            </svg>
+                                            Clear
+                                        </button>
+                                        <button onclick="storeKeyPress('backspace')" 
+                                                class="bg-yellow-500 hover:bg-yellow-600 text-white py-3 rounded-lg font-bold text-base transition active:scale-95 shadow-sm hover:shadow-md flex items-center justify-center gap-2">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414a2 2 0 001.414.586H19a2 2 0 002-2V7a2 2 0 00-2-2h-8.172a2 2 0 00-1.414.586L3 12z"></path>
+                                            </svg>
+                                            Backspace
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -414,7 +482,7 @@
                                 </svg>
                                 <span>Pintu akan menutup otomatis dalam <strong id="storeCountdown" class="text-red-600">15</strong> detik</span>
                             </div>
-                            <p class="text-xs text-gray-500 mt-1 text-center">Notifikasi telah dikirim ke WhatsApp Anda</p>
+                            <p class="text-xs text-gray-500 mt-1 text-center">Notifikasi telah dikirim ke email Anda</p>
                             
                             <!-- Progress Bar -->
                             <div class="mt-2 w-full bg-gray-200 rounded-full h-2 overflow-hidden">
@@ -463,7 +531,6 @@
             <!-- Content -->
             <div class="flex-1 overflow-y-auto p-6">
                 <div class="space-y-4">
-                    <!-- Informasi -->
                     <div class="text-center">
                         <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
                             <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -476,7 +543,6 @@
                         </p>
                     </div>
 
-                    <!-- Saran -->
                     <div class="bg-gray-50 rounded-xl border border-gray-200 p-4">
                         <p class="text-sm font-medium text-gray-700 mb-2">Yang dapat Anda lakukan:</p>
                         <ul class="space-y-2 text-sm text-gray-600">
@@ -495,7 +561,6 @@
                         </ul>
                     </div>
 
-                    <!-- Kontak ESD Team -->
                     <div class="bg-blue-50 rounded-xl border border-blue-200 p-3 text-center">
                         <p class="text-xs text-gray-600">
                             Hubungi ESD Team: 
@@ -505,27 +570,24 @@
                         </p>
                     </div>
 
-                    <!-- Tombol Aksi -->
-                    <div class="flex gap-3 mt-2">
-                        <button onclick="closeModal('nikErrorModal')" 
-                                class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg transition duration-200 font-medium shadow-md hover:shadow-lg flex items-center justify-center gap-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
-                            </svg>
-                            Perbaiki NIK
-                        </button>
-                    </div>
+                    <button onclick="closeModal('nikErrorModal')" 
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg transition duration-200 font-medium shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                        </svg>
+                        Perbaiki NIK
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- ============================================================ -->
-    <!-- MODAL PERINGATAN WHATSAPP -->
+    <!-- MODAL PERINGATAN EMAIL INVALID -->
     <!-- ============================================================ -->
-    <div id="waWarningModal" class="fixed inset-0 z-[70] flex items-center justify-center p-4 hidden">
-        <div class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300" onclick="closeModal('waWarningModal')"></div>
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] relative z-10 border border-gray-200 flex flex-col transform transition-all duration-300 scale-95 opacity-0" id="waWarningModalContent">
+    <div id="emailErrorModal" class="fixed inset-0 z-[70] flex items-center justify-center p-4 hidden">
+        <div class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300" onclick="closeModal('emailErrorModal')"></div>
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] relative z-10 border border-gray-200 flex flex-col transform transition-all duration-300 scale-95 opacity-0" id="emailErrorModalContent">
             <!-- Header -->
             <div class="flex-shrink-0 px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-red-50 to-red-100 rounded-t-2xl">
                 <div class="flex justify-between items-center">
@@ -535,9 +597,9 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                             </svg>
                         </div>
-                        <h2 class="text-xl font-bold text-gray-800">Format Nomor WhatsApp Salah</h2>
+                        <h2 class="text-xl font-bold text-gray-800">Format Email Salah</h2>
                     </div>
-                    <button onclick="closeModal('waWarningModal')" class="text-gray-400 hover:text-gray-600 transition-colors hover:rotate-90 duration-300">
+                    <button onclick="closeModal('emailErrorModal')" class="text-gray-400 hover:text-gray-600 transition-colors hover:rotate-90 duration-300">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                         </svg>
@@ -548,43 +610,42 @@
             <!-- Content -->
             <div class="flex-1 overflow-y-auto p-6">
                 <div class="space-y-4">
-                    <!-- Informasi -->
                     <div class="text-center">
                         <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
                             <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
                             </svg>
                         </div>
-                        <h3 class="text-lg font-bold text-gray-800">Nomor WhatsApp Tidak Boleh Diawali 0</h3>
+                        <h3 class="text-lg font-bold text-gray-800">Format Email Tidak Valid</h3>
                         <p class="text-sm text-gray-500 mt-2">
-                            Untuk nomor WhatsApp Indonesia, masukkan nomor setelah kode negara <strong class="text-red-600">+62</strong>
+                            Email <strong class="text-red-600" id="emailErrorAddress">email@perusahaan.com</strong> tidak valid.
                         </p>
                     </div>
 
-                    <!-- Contoh -->
                     <div class="bg-gray-50 rounded-xl border border-gray-200 p-4">
-                        <p class="text-sm font-medium text-gray-700 mb-2">Contoh penulisan yang benar:</p>
-                        <div class="space-y-2">
-                            <div class="flex items-center gap-3 text-sm">
-                                <span class="text-green-600 font-bold">✓</span>
-                                <span><span class="font-medium text-gray-700">+62</span> <span class="text-blue-600 font-bold">81234567890</span></span>
-                                <span class="text-xs text-gray-400">(tanpa 0 di depan)</span>
-                            </div>
-                            <div class="flex items-center gap-3 text-sm border-t border-gray-200 pt-2">
-                                <span class="text-red-600 font-bold">✗</span>
-                                <span><span class="font-medium text-gray-700">+62</span> <span class="text-red-600 font-bold">081234567890</span></span>
-                                <span class="text-xs text-red-500">(ada 0 di depan, TIDAK BOLEH)</span>
-                            </div>
-                        </div>
+                        <p class="text-sm font-medium text-gray-700 mb-2">Yang dapat Anda lakukan:</p>
+                        <ul class="space-y-2 text-sm text-gray-600">
+                            <li class="flex items-start gap-3">
+                                <span class="text-blue-600 font-bold mt-0.5">1.</span>
+                                <span>Pastikan email menggunakan format: <strong>nama@domain.com</strong></span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="text-blue-600 font-bold mt-0.5">2.</span>
+                                <span>Periksa kembali alamat email Anda</span>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <span class="text-blue-600 font-bold mt-0.5">3.</span>
+                                <span>Hubungi <strong class="text-blue-600">ESD Team</strong> untuk bantuan lebih lanjut</span>
+                            </li>
+                        </ul>
                     </div>
 
-                    <!-- Tombol Aksi -->
-                    <button onclick="closeModal('waWarningModal')" 
+                    <button onclick="closeModal('emailErrorModal')" 
                             class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg transition duration-200 font-medium shadow-md hover:shadow-lg flex items-center justify-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
                         </svg>
-                        Saya Mengerti
+                        Perbaiki Email
                     </button>
                 </div>
             </div>
@@ -592,7 +653,7 @@
     </div>
 
     <!-- ============================================================ -->
-    <!-- MODAL KONFIRMASI WHATSAPP -->
+    <!-- MODAL KONFIRMASI EMAIL -->
     <!-- ============================================================ -->
     <div id="confirmModal" class="fixed inset-0 z-[60] flex items-center justify-center p-4 hidden">
         <div class="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-300" onclick="closeModal('confirmModal')"></div>
@@ -606,7 +667,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                             </svg>
                         </div>
-                        <h2 class="text-xl font-bold text-gray-800">Konfirmasi WhatsApp</h2>
+                        <h2 class="text-xl font-bold text-gray-800">Konfirmasi Email</h2>
                     </div>
                     <button onclick="closeModal('confirmModal')" class="text-gray-400 hover:text-gray-600 transition-colors hover:rotate-90 duration-300">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -619,22 +680,20 @@
             <!-- Content -->
             <div class="flex-1 overflow-y-auto p-6">
                 <div class="space-y-4">
-                    <!-- Informasi -->
                     <div class="text-center">
                         <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
                             <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
                             </svg>
                         </div>
-                        <h3 class="text-lg font-bold text-gray-800">Periksa Nomor WhatsApp Anda</h3>
-                        <p class="text-sm text-gray-500 mt-1">Pastikan nomor di bawah ini sudah benar, karena semua informasi terkait dengan proses akan di kirim melalui WhatsApp</p>
+                        <h3 class="text-lg font-bold text-gray-800">Periksa Alamat Email Anda</h3>
+                        <p class="text-sm text-gray-500 mt-1">Pastikan email di bawah ini sudah benar, karena semua informasi akan dikirim melalui email</p>
                     </div>
 
-                    <!-- Nomor WhatsApp -->
                     <div class="bg-gray-50 rounded-xl border border-gray-200 p-4">
                         <div class="flex items-center justify-between">
-                            <span class="text-sm font-medium text-gray-600">Nomor WhatsApp</span>
-                            <span id="confirmPhoneNumber" class="text-lg font-bold text-blue-600">+62 81234567890</span>
+                            <span class="text-sm font-medium text-gray-600">Alamat Email</span>
+                            <span id="confirmEmail" class="text-lg font-bold text-blue-600">email@perusahaan.com</span>
                         </div>
                         <div class="flex items-center justify-between mt-2 pt-2 border-t border-gray-200">
                             <span class="text-sm font-medium text-gray-600">NIK</span>
@@ -642,9 +701,8 @@
                         </div>
                     </div>
 
-                    <!-- Tombol Aksi -->
                     <div class="flex gap-3 mt-4">
-                        <button onclick="confirmWhatsApp()" 
+                        <button onclick="confirmEmail()" 
                                 class="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 px-4 rounded-lg transition duration-200 font-medium shadow-md hover:shadow-lg flex items-center justify-center gap-2">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
@@ -697,7 +755,7 @@
                         <!-- KIRI: Form -->
                         <div class="flex-1 space-y-4">
                             <div class="text-center">
-                                <p class="text-sm text-gray-600">Masukkan kode akses yang dikirim via WhatsApp</p>
+                                <p class="text-sm text-gray-600">Masukkan kode akses yang dikirim via Email</p>
                             </div>
 
                             <div>
@@ -868,7 +926,6 @@
             <!-- Content -->
             <div class="flex-1 overflow-y-auto p-6">
                 <div class="space-y-4">
-                    <!-- Informasi -->
                     <div class="text-center">
                         <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3">
                             <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -881,7 +938,6 @@
                         </p>
                     </div>
 
-                    <!-- Saran -->
                     <div class="bg-gray-50 rounded-xl border border-gray-200 p-4">
                         <p class="text-sm font-medium text-gray-700 mb-2">Yang dapat Anda lakukan:</p>
                         <ul class="space-y-2 text-sm text-gray-600">
@@ -891,7 +947,7 @@
                             </li>
                             <li class="flex items-start gap-3">
                                 <span class="text-blue-600 font-bold mt-0.5">2.</span>
-                                <span>Cek WhatsApp Anda untuk kode akses terbaru</span>
+                                <span>Cek Email Anda untuk kode akses terbaru</span>
                             </li>
                             <li class="flex items-start gap-3">
                                 <span class="text-blue-600 font-bold mt-0.5">3.</span>
@@ -900,7 +956,6 @@
                         </ul>
                     </div>
 
-                    <!-- Kontak ESD Team -->
                     <div class="bg-blue-50 rounded-xl border border-blue-200 p-3 text-center">
                         <p class="text-xs text-gray-600">
                             Hubungi ESD Team: 
@@ -910,16 +965,13 @@
                         </p>
                     </div>
 
-                    <!-- Tombol Aksi -->
-                    <div class="flex gap-3 mt-2">
-                        <button onclick="closeModal('takeErrorModal')" 
-                                class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg transition duration-200 font-medium shadow-md hover:shadow-lg flex items-center justify-center gap-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
-                            </svg>
-                            Perbaiki Kode
-                        </button>
-                    </div>
+                    <button onclick="closeModal('takeErrorModal')" 
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg transition duration-200 font-medium shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                        </svg>
+                        Perbaiki Kode
+                    </button>
                 </div>
             </div>
         </div>
@@ -933,26 +985,36 @@
     </div>
 
     <style>
-        #takeErrorModal .modal-show {
-            animation: modalIn 0.3s ease-out forwards;
+        /* Mode NIK - Highlight Angka */
+        .mode-nik .grid:first-child button {
+            border-color: #3b82f6 !important;
+            border-width: 2px !important;
+            background-color: #eff6ff !important;
         }
 
-        #takeErrorModal .modal-hide {
-            animation: modalOut 0.3s ease-in forwards;
-        }
-        #nikErrorModal .modal-show {
-            animation: modalIn 0.3s ease-out forwards;
+        .mode-nik .grid:not(:first-child) button {
+            opacity: 0.2 !important;
+            pointer-events: none !important;
         }
 
-        #nikErrorModal .modal-hide {
-            animation: modalOut 0.3s ease-in forwards;
+        .mode-email .grid button {
+            opacity: 1 !important;
+            pointer-events: auto !important;
         }
-        #waWarningModal .modal-show {
-            animation: modalIn 0.3s ease-out forwards;
+        /* Tambahan CSS untuk toggle */
+        .case-btn-active {
+            background-color: #2563eb !important;
+            color: white !important;
+            box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.3);
         }
 
-        #waWarningModal .modal-hide {
-            animation: modalOut 0.3s ease-in forwards;
+        .case-btn-inactive {
+            background-color: #e5e7eb !important;
+            color: #4b5563 !important;
+        }
+
+        .case-btn-inactive:hover {
+            background-color: #d1d5db !important;
         }
         .numpad-btn {
             user-select: none;
@@ -1083,6 +1145,73 @@
             opacity: 0.7;
             cursor: not-allowed;
         }
+        /* Untuk layout keyboard yang lebih rapi */
+        #storeLettersContainer .grid {
+            justify-content: center;
+        }
+
+        /* Responsive untuk layar kecil */
+        @media (max-width: 640px) {
+            #storeLettersContainer .grid-cols-10 {
+                grid-template-columns: repeat(10, minmax(0, 1fr));
+            }
+            #storeLettersContainer .grid-cols-9 {
+                grid-template-columns: repeat(9, minmax(0, 1fr));
+            }
+            #storeLettersContainer .grid-cols-12 {
+                grid-template-columns: repeat(12, minmax(0, 1fr));
+            }
+            #storeLettersContainer .grid-cols-3 {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+        }
+        /* Perbesar tombol numpad */
+        #storeLettersContainer .grid button {
+            min-height: 48px;
+            font-size: 1.125rem !important;
+        }
+
+        #storeLettersContainer .grid:first-child button {
+            min-height: 48px;
+            font-size: 1.25rem !important;
+        }
+
+        /* Perbesar tombol Clear, Backspace, @gmail.com */
+        #storeGmailBtn button {
+            min-height: 48px;
+            font-size: 1rem !important;
+        }
+
+        /* Perbesar input */
+        #storeNik, #storeEmail {
+            font-size: 1.25rem !important;
+            padding: 0.75rem 1.5rem !important;
+            height: auto !important;
+            min-height: 60px !important;
+        }
+
+        /* Responsive untuk layar kecil */
+        @media (max-width: 640px) {
+            #storeLettersContainer .grid button {
+                min-height: 40px;
+                font-size: 0.875rem !important;
+                padding: 0.5rem 0.25rem !important;
+            }
+            #storeLettersContainer .grid:first-child button {
+                min-height: 40px;
+                font-size: 1rem !important;
+            }
+            #storeGmailBtn button {
+                min-height: 40px;
+                font-size: 0.75rem !important;
+                padding: 0.5rem 0.25rem !important;
+            }
+            #storeNik, #storeEmail {
+                font-size: 1rem !important;
+                min-height: 48px !important;
+                padding: 0.5rem 1rem !important;
+            }
+        }
     </style>
 
     <script>
@@ -1091,6 +1220,7 @@
         let pendingStoreData = null;
         let takeCountdownInterval = null;
         let storeCountdownInterval = null;
+        let storeUpperCase = true; // Default: huruf besar
 
         // ============ MODAL ANIMATION ============
         function openModal(modalId, contentId) {
@@ -1103,10 +1233,8 @@
             content.classList.remove('modal-hide');
             content.classList.add('modal-show');
             
-            // Prevent body scroll
             document.body.style.overflow = 'hidden';
             
-            // Auto focus ke input pertama setelah modal terbuka
             setTimeout(() => {
                 const firstInput = modal.querySelector('input');
                 if (firstInput) {
@@ -1119,7 +1247,6 @@
             const modal = document.getElementById(modalId);
             if (!modal) return;
             
-            // Reset countdown jika modal take atau store yang ditutup
             if (modalId === 'takeModal' && takeCountdownInterval) {
                 clearInterval(takeCountdownInterval);
                 takeCountdownInterval = null;
@@ -1143,6 +1270,232 @@
                 modal.classList.add('hidden');
                 document.body.style.overflow = 'auto';
             }, 300);
+        }
+
+        // ============ TOGGLE HURUF BESAR/KECIL ============
+        function storeToggleCase(mode) {
+            const upperBtn = document.getElementById('storeUpperCaseBtn');
+            const lowerBtn = document.getElementById('storeLowerCaseBtn');
+            const indicator = document.getElementById('storeCaseIndicator');
+            
+            if (mode === 'upper') {
+                storeUpperCase = true;
+                upperBtn.className = 'px-3 py-1 text-xs font-bold rounded-lg transition-all duration-200 case-btn-active';
+                lowerBtn.className = 'px-3 py-1 text-xs font-bold rounded-lg transition-all duration-200 case-btn-inactive';
+                indicator.textContent = 'UPPERCASE';
+                indicator.className = 'text-xs font-bold text-blue-600';
+            } else {
+                storeUpperCase = false;
+                upperBtn.className = 'px-3 py-1 text-xs font-bold rounded-lg transition-all duration-200 case-btn-inactive';
+                lowerBtn.className = 'px-3 py-1 text-xs font-bold rounded-lg transition-all duration-200 case-btn-active';
+                indicator.textContent = 'lowercase';
+                indicator.className = 'text-xs font-bold text-green-600';
+            }
+            
+            renderStoreLetters();
+        }
+
+        function renderStoreLetters() {
+            const row1 = document.getElementById('storeLettersRow1');
+            const row2 = document.getElementById('storeLettersRow2');
+            const row3 = document.getElementById('storeLettersRow3');
+            
+            if (!row1 || !row2 || !row3) return;
+            
+            const letters = storeUpperCase 
+                ? ['Q','W','E','R','T','Y','U','I','O','P']
+                : ['q','w','e','r','t','y','u','i','o','p'];
+            
+            const letters2 = storeUpperCase 
+                ? ['A','S','D','F','G','H','J','K','L']
+                : ['a','s','d','f','g','h','j','k','l'];
+            
+            const letters3 = storeUpperCase 
+                ? ['Z','X','C','V','B','N','M']
+                : ['z','x','c','v','b','n','m'];
+            
+            // Spesial karakter (tidak berubah)
+            const specials = ['@', '.', '_', '-'];
+            
+            // BARIS 1: Q-P
+            row1.innerHTML = '';
+            letters.forEach(letter => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.textContent = letter;
+                btn.className = 'bg-white hover:bg-green-100 text-gray-700 border border-gray-300 py-3 rounded-lg font-bold text-lg transition active:scale-95 shadow-sm hover:shadow-md';
+                btn.onclick = function() { storeKeyPress(letter); };
+                row1.appendChild(btn);
+            });
+            
+            // BARIS 2: A-L
+            row2.innerHTML = '';
+            letters2.forEach(letter => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.textContent = letter;
+                btn.className = 'bg-white hover:bg-green-100 text-gray-700 border border-gray-300 py-3 rounded-lg font-bold text-lg transition active:scale-95 shadow-sm hover:shadow-md';
+                btn.onclick = function() { storeKeyPress(letter); };
+                row2.appendChild(btn);
+            });
+            
+            // BARIS 3: Z-M + @ . _ -
+            row3.innerHTML = '';
+            letters3.forEach(letter => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.textContent = letter;
+                btn.className = 'bg-white hover:bg-green-100 text-gray-700 border border-gray-300 py-3 rounded-lg font-bold text-lg transition active:scale-95 shadow-sm hover:shadow-md';
+                btn.onclick = function() { storeKeyPress(letter); };
+                row3.appendChild(btn);
+            });
+            
+            // Tambahkan special chars
+            specials.forEach(char => {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.textContent = char;
+                btn.className = 'bg-blue-100 hover:bg-blue-200 text-blue-700 border border-blue-300 py-3 rounded-lg font-bold text-lg transition active:scale-95 shadow-sm hover:shadow-md';
+                btn.onclick = function() { storeKeyPress(char); };
+                row3.appendChild(btn);
+            });
+        }
+
+        // ============ UPDATE NUMPAD MODE ============
+        function updateNumpadMode() {
+            const lettersContainer = document.getElementById('storeLettersContainer');
+            const caseToggle = document.getElementById('storeCaseToggle');
+            const gmailBtn = document.getElementById('storeGmailBtn');
+            const nikInput = document.getElementById('storeNik');
+            const emailInput = document.getElementById('storeEmail');
+            
+            // Ambil semua tombol angka (baris pertama)
+            const angkaRow = lettersContainer ? lettersContainer.querySelector('.grid:first-child') : null;
+            const angkaButtons = angkaRow ? angkaRow.querySelectorAll('button') : [];
+            
+            // Ambil semua tombol huruf (baris 2, 3, 4)
+            const hurufButtons = lettersContainer ? lettersContainer.querySelectorAll('#storeLettersRow1 button, #storeLettersRow2 button, #storeLettersRow3 button') : [];
+            
+            // Ambil tombol special (@ . _ -) - yang memiliki class bg-blue-100 di row3
+            const specialButtons = lettersContainer ? lettersContainer.querySelectorAll('#storeLettersRow3 .bg-blue-100') : [];
+            
+            // Ambil tombol Clear dan Backspace (di baris 5)
+            const clearBtn = document.querySelector('#storeGmailBtn .bg-red-500');
+            const backspaceBtn = document.querySelector('#storeGmailBtn .bg-yellow-500');
+            
+            if (activeStoreInput === 'nik') {
+                // ============ MODE NIK ============
+                // Hanya angka yang aktif, Clear dan Backspace tetap aktif
+                
+                // Disable semua tombol huruf
+                hurufButtons.forEach(btn => {
+                    btn.style.opacity = '0.2';
+                    btn.style.pointerEvents = 'none';
+                    btn.style.borderColor = '#d1d5db';
+                    btn.style.backgroundColor = '#f3f4f6';
+                });
+                
+                // Disable special chars
+                specialButtons.forEach(btn => {
+                    btn.style.opacity = '0.2';
+                    btn.style.pointerEvents = 'none';
+                    btn.style.borderColor = '#d1d5db';
+                    btn.style.backgroundColor = '#f3f4f6';
+                });
+                
+                // Disable @gmail.com
+                if (gmailBtn) {
+                    const gmailButton = gmailBtn.querySelector('button');
+                    if (gmailButton) {
+                        gmailButton.style.opacity = '0.2';
+                        gmailButton.style.pointerEvents = 'none';
+                        gmailButton.style.borderColor = '#d1d5db';
+                        gmailButton.style.backgroundColor = '#f3f4f6';
+                    }
+                }
+                
+                // Disable case toggle
+                if (caseToggle) {
+                    caseToggle.style.opacity = '0.2';
+                    caseToggle.style.pointerEvents = 'none';
+                }
+                
+                // TAPI ANGKA TETAP AKTIF
+                angkaButtons.forEach(btn => {
+                    btn.style.opacity = '1';
+                    btn.style.pointerEvents = 'auto';
+                    btn.style.borderColor = '#3b82f6';
+                    btn.style.borderWidth = '2px';
+                    btn.style.backgroundColor = '#eff6ff';
+                });
+                
+                // CLEAR dan BACKSPACE TETAP AKTIF DAN WARNA NORMAL
+                if (clearBtn) {
+                    clearBtn.style.opacity = '1';
+                    clearBtn.style.pointerEvents = 'auto';
+                    clearBtn.style.borderColor = '';
+                    clearBtn.style.backgroundColor = '';
+                }
+                if (backspaceBtn) {
+                    backspaceBtn.style.opacity = '1';
+                    backspaceBtn.style.pointerEvents = 'auto';
+                    backspaceBtn.style.borderColor = '';
+                    backspaceBtn.style.backgroundColor = '';
+                }
+                
+                if (nikInput) {
+                    nikInput.placeholder = 'Input or Scan NIK';
+                }
+                
+            } else {
+                // ============ MODE EMAIL ============
+                // Semua tombol aktif
+                
+                // Aktifkan semua tombol
+                const allButtons = lettersContainer ? lettersContainer.querySelectorAll('button') : [];
+                allButtons.forEach(btn => {
+                    btn.style.opacity = '1';
+                    btn.style.pointerEvents = 'auto';
+                    btn.style.borderColor = '';
+                    btn.style.borderWidth = '';
+                    btn.style.backgroundColor = '';
+                });
+                
+                // Aktifkan @gmail.com
+                if (gmailBtn) {
+                    const gmailButton = gmailBtn.querySelector('button');
+                    if (gmailButton) {
+                        gmailButton.style.opacity = '1';
+                        gmailButton.style.pointerEvents = 'auto';
+                        gmailButton.style.borderColor = '';
+                        gmailButton.style.backgroundColor = '';
+                    }
+                }
+                
+                // Aktifkan case toggle
+                if (caseToggle) {
+                    caseToggle.style.opacity = '1';
+                    caseToggle.style.pointerEvents = 'auto';
+                }
+                
+                // Reset Clear dan Backspace
+                if (clearBtn) {
+                    clearBtn.style.opacity = '1';
+                    clearBtn.style.pointerEvents = 'auto';
+                    clearBtn.style.borderColor = '';
+                    clearBtn.style.backgroundColor = '';
+                }
+                if (backspaceBtn) {
+                    backspaceBtn.style.opacity = '1';
+                    backspaceBtn.style.pointerEvents = 'auto';
+                    backspaceBtn.style.borderColor = '';
+                    backspaceBtn.style.backgroundColor = '';
+                }
+                
+                if (emailInput) {
+                    emailInput.placeholder = 'youremail@gmail.com';
+                }
+            }
         }
 
         // ============ STORE COUNTDOWN ============
@@ -1219,63 +1572,93 @@
             }, 1000);
         }
 
-        // ============ WHATSAPP WARNING ============
-        function showWaWarning() {
-            openModal('waWarningModal', 'waWarningModalContent');
-        }
-
-        // ============ STORE FUNCTIONS ============
         function openStoreModal() {
             openModal('storeModal', 'storeModalContent');
             document.getElementById('storeStep1').classList.remove('hidden');
             document.getElementById('storeStep2').classList.add('hidden');
             document.getElementById('storeStep3').classList.add('hidden');
             document.getElementById('storeNik').value = '';
-            document.getElementById('storePhone').value = '';
+            document.getElementById('storeEmail').value = '';
             document.getElementById('storeNikError').classList.add('hidden');
-            document.getElementById('storePhoneError').classList.add('hidden');
+            document.getElementById('storeEmailError').classList.add('hidden');
             activeStoreInput = 'nik';
             pendingStoreData = null;
             
-            // Reset countdown
+            // Reset case ke UPPERCASE
+            storeUpperCase = true;
+            renderStoreLetters();
+            
+            const upperBtn = document.getElementById('storeUpperCaseBtn');
+            const lowerBtn = document.getElementById('storeLowerCaseBtn');
+            const indicator = document.getElementById('storeCaseIndicator');
+            
+            if (upperBtn) {
+                upperBtn.className = 'px-3 py-1 text-xs font-bold rounded-lg transition-all duration-200 case-btn-active';
+            }
+            if (lowerBtn) {
+                lowerBtn.className = 'px-3 py-1 text-xs font-bold rounded-lg transition-all duration-200 case-btn-inactive';
+            }
+            if (indicator) {
+                indicator.textContent = 'UPPERCASE';
+                indicator.className = 'text-xs font-bold text-blue-600';
+            }
+            
+            // Update numpad mode
+            updateNumpadMode();
+            
             if (storeCountdownInterval) {
                 clearInterval(storeCountdownInterval);
                 storeCountdownInterval = null;
             }
         }
 
+        // ============ FUNGSI UTAMA STORE KEY PRESS ============
         function storeKeyPress(key) {
             const nikInput = document.getElementById('storeNik');
-            const phoneInput = document.getElementById('storePhone');
+            const emailInput = document.getElementById('storeEmail');
             
             let targetInput = null;
             
+            // Tentukan input target berdasarkan fokus
             if (document.activeElement === nikInput) {
                 targetInput = nikInput;
                 activeStoreInput = 'nik';
-            } else if (document.activeElement === phoneInput) {
-                targetInput = phoneInput;
-                activeStoreInput = 'wa';
+                updateNumpadMode();
+            } else if (document.activeElement === emailInput) {
+                targetInput = emailInput;
+                activeStoreInput = 'email';
+                updateNumpadMode();
             } else {
                 if (activeStoreInput === 'nik') {
                     targetInput = nikInput;
                     nikInput.focus();
                 } else {
-                    targetInput = phoneInput;
-                    phoneInput.focus();
+                    targetInput = emailInput;
+                    emailInput.focus();
                 }
             }
 
+            // ============ VALIDASI UNTUK NIK (HANYA ANGKA) ============
+            if (targetInput === nikInput) {
+                const isNumber = /^[0-9]$/.test(key);
+                if (!isNumber && key !== 'clear' && key !== 'backspace') {
+                    // Efek visual untuk peringatan
+                    targetInput.style.borderColor = '#ef4444';
+                    targetInput.style.boxShadow = '0 0 0 3px rgba(239, 68, 68, 0.2)';
+                    setTimeout(() => {
+                        targetInput.style.borderColor = '';
+                        targetInput.style.boxShadow = '';
+                    }, 500);
+                    return;
+                }
+            }
+
+            // ============ EKSEKUSI ============
             if (key === 'clear') {
                 targetInput.value = '';
             } else if (key === 'backspace') {
                 targetInput.value = targetInput.value.slice(0, -1);
             } else {
-                // VALIDASI: Jika input adalah WhatsApp dan key adalah '0' dan value kosong, tolak
-                if (targetInput === phoneInput && key === '0' && phoneInput.value === '') {
-                    showWaWarning();
-                    return;
-                }
                 targetInput.value = targetInput.value + key;
             }
             
@@ -1283,12 +1666,38 @@
             targetInput.focus();
         }
 
+        // ============ FUNGSI INSERT @gmail.com ============
+        function storeInsertGmail() {
+            const emailInput = document.getElementById('storeEmail');
+            
+            emailInput.focus();
+            activeStoreInput = 'email';
+            updateNumpadMode();
+            
+            if (emailInput.value.includes('@')) {
+                const parts = emailInput.value.split('@');
+                if (parts.length === 2 && parts[1].length === 0) {
+                    emailInput.value = emailInput.value + 'gmail.com';
+                } else if (parts.length === 2 && parts[1].length > 0) {
+                    emailInput.value = parts[0] + '@gmail.com';
+                } else {
+                    emailInput.value = emailInput.value + '@gmail.com';
+                }
+            } else {
+                emailInput.value = emailInput.value + '@gmail.com';
+            }
+            
+            emailInput.dispatchEvent(new Event('input'));
+            emailInput.focus();
+        }
+
+        // ============ CHECK STORE NIK ============
         function checkStoreNik() {
             const nik = document.getElementById('storeNik').value.trim();
-            const phone = document.getElementById('storePhone').value.trim();
+            const email = document.getElementById('storeEmail').value.trim();
             
             document.getElementById('storeNikError').classList.add('hidden');
-            document.getElementById('storePhoneError').classList.add('hidden');
+            document.getElementById('storeEmailError').classList.add('hidden');
 
             if (!nik) {
                 document.getElementById('storeNikError').textContent = 'NIK harus diisi';
@@ -1297,19 +1706,19 @@
                 return;
             }
 
-            // VALIDASI: Cek apakah nomor WhatsApp dimulai dengan 0
-            if (phone.startsWith('0')) {
-                document.getElementById('storePhoneError').textContent = 'Nomor WhatsApp tidak boleh diawali 0. Contoh: 81234567890';
-                document.getElementById('storePhoneError').classList.remove('hidden');
-                document.getElementById('storePhone').focus();
-                showWaWarning();
+            if (!email) {
+                document.getElementById('storeEmailError').textContent = 'Alamat email harus diisi';
+                document.getElementById('storeEmailError').classList.remove('hidden');
+                document.getElementById('storeEmail').focus();
                 return;
             }
 
-            if (!phone || phone.length < 10) {
-                document.getElementById('storePhoneError').textContent = 'Nomor WhatsApp minimal 10 digit';
-                document.getElementById('storePhoneError').classList.remove('hidden');
-                document.getElementById('storePhone').focus();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                document.getElementById('storeEmailError').textContent = 'Format email tidak valid. Contoh: nama@domain.com';
+                document.getElementById('storeEmailError').classList.remove('hidden');
+                document.getElementById('storeEmail').focus();
+                showEmailError(email);
                 return;
             }
 
@@ -1328,7 +1737,7 @@
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                     'Accept': 'application/json'
                 },
-                body: JSON.stringify({ nik: nik, phone: phone })
+                body: JSON.stringify({ nik: nik, email: email })
             })
             .then(response => {
                 if (!response.ok) {
@@ -1344,19 +1753,16 @@
                 btn.classList.remove('btn-loading');
                 
                 if (data.success) {
-                    // NIK BENAR - Simpan data dan tampilkan modal konfirmasi WhatsApp
                     pendingStoreData = {
                         nik: nik,
-                        phone: phone,
+                        email: email,
                         employee: data.employee
                     };
                     
-                    document.getElementById('confirmPhoneNumber').textContent = '+62 ' + phone;
+                    document.getElementById('confirmEmail').textContent = email;
                     document.getElementById('confirmNikNumber').textContent = nik;
                     openModal('confirmModal', 'confirmModalContent');
-                    
                 } else {
-                    // NIK SALAH / TIDAK TERDAFTAR - Tampilkan modal NIK error
                     document.getElementById('nikErrorNumber').textContent = nik;
                     openModal('nikErrorModal', 'nikErrorModalContent');
                 }
@@ -1366,9 +1772,7 @@
                 btn.disabled = false;
                 btn.classList.remove('btn-loading');
                 
-                // Jika error dari server (422, dll) karena NIK tidak ditemukan
                 if (error.status === 422) {
-                    const errorMessage = error.data?.errors?.nik?.[0] || error.data?.message || 'NIK tidak ditemukan';
                     document.getElementById('nikErrorNumber').textContent = nik;
                     openModal('nikErrorModal', 'nikErrorModalContent');
                 } else {
@@ -1378,7 +1782,7 @@
             });
         }
 
-        function confirmWhatsApp() {
+        function confirmEmail() {
             closeModal('confirmModal');
             
             if (!pendingStoreData) {
@@ -1397,17 +1801,22 @@
                     <span>${pendingStoreData.employee.name}</span>
                 </div>
                 <div class="flex justify-between py-2 border-b border-gray-200">
-                    <span class="font-medium">Departemen</span>
+                    <span class="font-medium">Department</span>
                     <span>${pendingStoreData.employee.department}</span>
                 </div>
                 <div class="flex justify-between py-2">
-                    <span class="font-medium">WhatsApp</span>
-                    <span class="text-blue-600 font-bold">+${pendingStoreData.phone}</span>
+                    <span class="font-medium">Email</span>
+                    <span class="text-blue-600 font-bold">${pendingStoreData.email}</span>
                 </div>
             `;
             
             document.getElementById('storeStep1').classList.add('hidden');
             document.getElementById('storeStep2').classList.remove('hidden');
+        }
+
+        function showEmailError(email) {
+            document.getElementById('emailErrorAddress').textContent = email;
+            openModal('emailErrorModal', 'emailErrorModalContent');
         }
 
         function submitStore() {
@@ -1417,7 +1826,7 @@
             }
 
             const nik = pendingStoreData.nik;
-            const phone = pendingStoreData.phone;
+            const email = pendingStoreData.email;
 
             const btn = document.querySelector('#storeStep2 .bg-blue-600');
             const originalText = btn.innerHTML;
@@ -1431,7 +1840,7 @@
                     'Content-Type': 'application/json',
                     'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
                 },
-                body: JSON.stringify({ nik: nik, phone: phone })
+                body: JSON.stringify({ nik: nik, email: email })
             })
             .then(response => response.json())
             .then(data => {
@@ -1446,7 +1855,6 @@
                     showNotification(data.message, 'success');
                     pendingStoreData = null;
                     
-                    // Start countdown 15 detik untuk store
                     startStoreCountdown();
                 } else {
                     showNotification(data.message, 'error');
@@ -1549,7 +1957,7 @@
                             <span>${data.transaction.name}</span>
                         </div>
                         <div class="flex justify-between py-2 border-b border-gray-200">
-                            <span class="font-medium">Departemen</span>
+                            <span class="font-medium">Department</span>
                             <span>${data.transaction.department}</span>
                         </div>
                         <div class="flex justify-between py-2 border-b border-gray-200">
@@ -1567,7 +1975,6 @@
                     document.getElementById('takeStep1').classList.add('hidden');
                     document.getElementById('takeStep2').classList.remove('hidden');
                 } else {
-                    // KODE AKSES SALAH - Tampilkan modal error
                     document.getElementById('takeErrorCode').textContent = accessCode;
                     openModal('takeErrorModal', 'takeErrorModalContent');
                 }
@@ -1577,9 +1984,7 @@
                 btn.disabled = false;
                 btn.classList.remove('btn-loading');
                 
-                // Jika error dari server (422, dll)
                 if (error.status === 422) {
-                    const errorMessage = error.data?.errors?.access_code?.[0] || error.data?.message || 'Kode akses tidak valid';
                     document.getElementById('takeErrorCode').textContent = accessCode;
                     openModal('takeErrorModal', 'takeErrorModalContent');
                 } else {
@@ -1618,7 +2023,6 @@
                     document.getElementById('takeStep3').classList.remove('hidden');
                     showNotification(data.message, 'success');
                     
-                    // Start countdown 15 detik untuk take
                     startTakeCountdown();
                 } else {
                     showNotification(data.message, 'error');
@@ -1681,29 +2085,27 @@
                 const storeModal = document.getElementById('storeModal');
                 const takeModal = document.getElementById('takeModal');
                 const confirmModal = document.getElementById('confirmModal');
-                const waWarningModal = document.getElementById('waWarningModal');
+                const emailErrorModal = document.getElementById('emailErrorModal');
                 const nikErrorModal = document.getElementById('nikErrorModal');
                 const takeErrorModal = document.getElementById('takeErrorModal');
                 
-                // Jika modal Take error terbuka, tutup
                 if (takeErrorModal && !takeErrorModal.classList.contains('hidden')) {
                     closeModal('takeErrorModal');
                     return;
                 }
                 
-                // Jika modal NIK error terbuka, tutup
                 if (nikErrorModal && !nikErrorModal.classList.contains('hidden')) {
                     closeModal('nikErrorModal');
                     return;
                 }
                 
-                if (waWarningModal && !waWarningModal.classList.contains('hidden')) {
-                    closeModal('waWarningModal');
+                if (emailErrorModal && !emailErrorModal.classList.contains('hidden')) {
+                    closeModal('emailErrorModal');
                     return;
                 }
                 
                 if (confirmModal && !confirmModal.classList.contains('hidden')) {
-                    confirmWhatsApp();
+                    confirmEmail();
                     return;
                 }
                 
@@ -1723,22 +2125,38 @@
             }
         });
 
-        // ============ EVENT LISTENER UNTUK FOCUS INPUT ============
         document.addEventListener('DOMContentLoaded', function() {
             const nikInput = document.getElementById('storeNik');
-            const phoneInput = document.getElementById('storePhone');
+            const emailInput = document.getElementById('storeEmail');
             
             if (nikInput) {
                 nikInput.addEventListener('focus', function() {
                     activeStoreInput = 'nik';
+                    this.style.borderColor = '';
+                    this.style.boxShadow = '';
+                    updateNumpadMode();
+                });
+                
+                // Auto filter: hanya angka
+                nikInput.addEventListener('input', function() {
+                    this.value = this.value.replace(/[^0-9]/g, '');
                 });
             }
             
-            if (phoneInput) {
-                phoneInput.addEventListener('focus', function() {
-                    activeStoreInput = 'wa';
+            if (emailInput) {
+                emailInput.addEventListener('focus', function() {
+                    activeStoreInput = 'email';
+                    this.style.borderColor = '';
+                    this.style.boxShadow = '';
+                    updateNumpadMode();
                 });
             }
+            
+            // Render huruf pertama kali
+            renderStoreLetters();
+            
+            // Update numpad mode pertama kali
+            updateNumpadMode();
         });
     </script>
 </body>
