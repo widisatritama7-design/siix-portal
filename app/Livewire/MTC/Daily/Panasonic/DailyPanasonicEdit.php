@@ -313,34 +313,39 @@ class DailyPanasonicEdit extends Component
             if ($this->isFieldDisabled($field)) {
                 continue;
             }
-            
+
             $value = $this->{$field};
-            
+
             if ($value === null || $value === '') {
                 return false;
             }
-            
+
             if ($value === '-') {
                 if (!$this->isNAAllowed()) {
                     return false;
                 }
                 continue;
             }
-            
+
             $floatValue = floatval($value);
             $min = $range[0];
             $max = $range[1];
-            
+
             if ($min !== null && $floatValue < $min) {
                 return false;
             }
-            
+
             if ($max !== null && $floatValue > $max) {
                 return false;
             }
         }
 
         if ($this->group === null || $this->group === '') {
+            return false;
+        }
+
+        // ✅ TAMBAHKAN: Invalid hanya jika KEDUANYA kosong
+        if (empty($this->run_time) && empty($this->stop_time)) {
             return false;
         }
 

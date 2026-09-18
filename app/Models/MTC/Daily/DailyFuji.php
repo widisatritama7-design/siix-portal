@@ -196,34 +196,44 @@ class DailyFuji extends Model
 
     public function getOverallStatusAttribute(): string
     {
-        // Toggle fields untuk checked/na
+        // ✅ Ambil required fields dari master line
+        $requiredFields = $this->masterLine?->getRequiredFujiFields() ?? [];
+
+        // ============ TOGGLE FIELDS ============
         $toggleFields = [
-            'body_cover', 
-            'lamp_alarm_change_model', // TAMBAHKAN
+            'body_cover',
+            'lamp_alarm_change_model',
             'cylinder', 'rail_and_magazine_pcb', 'cover_magazine', 'brush',
-            'vacume_brush', 'cleaning_roller', 'ionizer', 'ipa_solvent', 
+            'vacume_brush', 'cleaning_roller', 'ionizer', 'ipa_solvent',
             'box_1', 'vaccuum_parameter_1', 'expire_date_1',
             'box_2', 'vaccuum_parameter_2', 'expire_date_2',
-            'abandonment', 'fire_posibilty', 'rail_and_transfer_unit', 'fire_posibilty_2', 
-            'cylinder_2', 'rail_and_magazine_pcb_2', 'cover_magazine_2', 
-            'angle_and_filter', 'lamp_indicator', 'fan_unit_1', 'fan_unit_2', 
+            'abandonment', 'fire_posibilty', 'rail_and_transfer_unit', 'fire_posibilty_2',
+            'cylinder_2', 'rail_and_magazine_pcb_2', 'cover_magazine_2',
+            'angle_and_filter', 'lamp_indicator', 'fan_unit_1', 'fan_unit_2',
             'water_reservoirs', 'filter', 'angle_and_filter_2'
         ];
 
         foreach ($toggleFields as $field) {
+            // ✅ SKIP field yang tidak required
+            if (!in_array($field, $requiredFields)) {
+                continue;
+            }
+
             $value = $this->{$field};
-            
             if ($value === null || $value === '' || !in_array($value, ['checked', 'na'])) {
                 return 'danger';
             }
         }
 
-        // CEK FLASHLIGHT KHUSUS (on/off/na)
-        $flashlightValue = $this->flashlight;
-        if ($flashlightValue === null || $flashlightValue === '' || !in_array($flashlightValue, ['on', 'off', 'na'])) {
-            return 'danger';
+        // ============ FLASHLIGHT ============
+        if (in_array('flashlight', $requiredFields)) {
+            $flashlightValue = $this->flashlight;
+            if ($flashlightValue === null || $flashlightValue === '' || !in_array($flashlightValue, ['on', 'off', 'na'])) {
+                return 'danger';
+            }
         }
 
+        // ============ NUMERIC FIELDS ============
         $numericRanges = [
             'air_presure' => [0.45, 0.54],
             'vacume_presure_unitech' => [0.45, 0.54],
@@ -252,36 +262,51 @@ class DailyFuji extends Model
         ];
 
         foreach ($numericRanges as $field => $range) {
+            // ✅ SKIP field yang tidak required
+            if (!in_array($field, $requiredFields)) {
+                continue;
+            }
+
             $value = $this->{$field};
-            
+
             if ($value === null || $value === '') {
                 return 'danger';
             }
-            
+
+            // ✅ NA hanya boleh jika line status 'No Schedule'
             if ($value === '-') {
+                if ($this->masterLine?->status !== 'No Schedule') {
+                    return 'danger';
+                }
                 continue;
             }
-            
+
             $floatValue = floatval($value);
             $min = $range[0];
             $max = $range[1];
-            
+
             if ($min !== null && $floatValue < $min) {
                 return 'danger';
             }
-            
+
             if ($max !== null && $floatValue > $max) {
                 return 'danger';
             }
         }
 
+        // ============ GROUP ============
         if ($this->group === null || $this->group === '') {
+            return 'danger';
+        }
+
+        // ✅ TAMBAHKAN: Invalid hanya jika KEDUANYA kosong
+        if (empty($this->run_time) && empty($this->stop_time)) {
             return 'danger';
         }
 
         return 'success';
     }
-
+    
     public function getOverallStatusIconAttribute(): string
     {
         return $this->overall_status === 'success' ? 'check-circle' : 'x-circle';

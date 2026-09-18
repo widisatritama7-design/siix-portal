@@ -290,20 +290,18 @@ class DailyFujiEdit extends Component
 
     protected function checkOverallStatus(): bool
     {
-        // Cek semua toggle fields (checked/na) - HANYA YANG REQUIRED
+        // Cek toggle fields - HANYA YANG REQUIRED
         foreach ($this->toggleFields as $field) {
-            // Skip jika field tidak required (disabled)
             if ($this->isFieldDisabled($field)) {
                 continue;
             }
-            
             $value = $this->{$field};
             if ($value === null || $value === '' || !in_array($value, ['checked', 'na'])) {
                 return false;
             }
         }
 
-        // CEK FLASHLIGHT KHUSUS (on/off/na) - HANYA JIKA REQUIRED
+        // CEK FLASHLIGHT - HANYA JIKA REQUIRED
         if (!$this->isFieldDisabled('flashlight')) {
             if ($this->flashlight === null || $this->flashlight === '' || !in_array($this->flashlight, ['on', 'off', 'na'])) {
                 return false;
@@ -312,39 +310,42 @@ class DailyFujiEdit extends Component
 
         // Cek numeric fields - HANYA YANG REQUIRED
         foreach ($this->numericRanges as $field => $range) {
-            // Skip jika field tidak required (disabled)
             if ($this->isFieldDisabled($field)) {
                 continue;
             }
-            
+
             $value = $this->{$field};
-            
+
             if ($value === null || $value === '') {
                 return false;
             }
-            
-            // CEK: '-' HANYA DIIZINKAN JIKA STATUS LINE = "No Schedule"
+
             if ($value === '-') {
                 if (!$this->isNAAllowed()) {
                     return false;
                 }
                 continue;
             }
-            
+
             $floatValue = floatval($value);
             $min = $range[0];
             $max = $range[1];
-            
+
             if ($min !== null && $floatValue < $min) {
                 return false;
             }
-            
+
             if ($max !== null && $floatValue > $max) {
                 return false;
             }
         }
 
         if ($this->group === null || $this->group === '') {
+            return false;
+        }
+
+        // ✅ TAMBAHKAN: Invalid hanya jika KEDUANYA kosong
+        if (empty($this->run_time) && empty($this->stop_time)) {
             return false;
         }
 

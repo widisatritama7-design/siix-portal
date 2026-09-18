@@ -71,8 +71,6 @@ use App\Models\ESD\Locker\UniformTransaction;
 use App\Services\MicrosoftGraphService;
 use App\Services\WhatsAppService;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 Route::get('/', function () {
     return redirect('/login');
