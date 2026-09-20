@@ -398,6 +398,14 @@
                             <span class="truncate">Ticket Dashboard</span>
                         </a>
                         @endcan
+                        <a href="#" wire:navigate
+                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gauge-icon lucide-gauge w-4 h-4">
+                                <path d="m12 14 4-4"/>
+                                <path d="M3.34 19a10 10 0 1 1 17.32 0"/>
+                            </svg>
+                            <span class="truncate">Blind Test Dashboard</span>
+                        </a>
                         @can('view inbox')
                         <a href="{{ route('inbox') }}" wire:navigate
                         class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('inbox') ? 'menu-active' : '' }}">
@@ -1202,24 +1210,177 @@
                     <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.qaqc.open" 
                         x-collapse 
                         class="mt-1 relative">
+                        <!-- Garis vertikal utama QA/QC -->
                         <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
+                        
                         <div class="space-y-1 ml-[30px]">
-                            @can('view ncp')
-                            <a href="{{ route('qaqc.ncp') }}" wire:navigate
-                            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('qaqc.ncp') ? 'menu-active' : '' }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
-                                    <path fill-rule="evenodd" d="M1.5 6.375c0-1.036.84-1.875 1.875-1.875h17.25c1.035 0 1.875.84 1.875 1.875v3.026a.75.75 0 0 1-.375.65 2.249 2.249 0 0 0 0 3.898.75.75 0 0 1 .375.65v3.026c0 1.035-.84 1.875-1.875 1.875H3.375A1.875 1.875 0 0 1 1.5 17.625v-3.026a.75.75 0 0 1 .374-.65 2.249 2.249 0 0 0 0-3.898.75.75 0 0 1-.374-.65V6.375Zm15-1.125a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-1.5 0V6a.75.75 0 0 1 .75-.75Zm.75 4.5a.75.75 0 0 0-1.5 0v.75a.75.75 0 0 0 1.5 0v-.75Zm-.75 3a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-1.5 0v-.75a.75.75 0 0 1 .75-.75Zm.75 4.5a.75.75 0 0 0-1.5 0V18a.75.75 0 0 0 1.5 0v-.75ZM6 12a.75.75 0 0 1 .75-.75H12a.75.75 0 0 1 0 1.5H6.75A.75.75 0 0 1 6 12Zm.75 2.25a.75.75 0 0 0 0 1.5h3a.75.75 0 0 0 0-1.5h-3Z" clip-rule="evenodd" />
-                                </svg>
-                                <span class="truncate">NCP Management</span>
-                            </a>
-                            @endcan
-                            @can('view ncp all')
-                            <a href="{{ route('qaqc.ncp.report') }}" wire:navigate
-                            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('qaqc.ncp.report') ? 'menu-active' : '' }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sheet-icon lucide-sheet"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="3" x2="21" y1="9" y2="9"/><line x1="3" x2="21" y1="15" y2="15"/><line x1="9" x2="9" y1="9" y2="21"/><line x1="15" x2="15" y1="9" y2="21"/></svg>
-                                <span class="truncate">NCP Report</span>
-                            </a>
-                            @endcan
+                            
+                            <!-- ========== SUB GROUP: MASTER ========== -->
+                            @canany(['view qaqc master'])
+                            <div class="relative w-full">
+                                <button @click="toggleGroup('qaqcMaster')" 
+                                        class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                    <div class="flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                            <path d="M3.375 3C2.339 3 1.5 3.84 1.5 4.875v.75c0 1.036.84 1.875 1.875 1.875h17.25c1.035 0 1.875-.84 1.875-1.875v-.75C22.5 3.839 21.66 3 20.625 3H3.375Z" />
+                                            <path fill-rule="evenodd" d="m3.087 9 .54 9.176A3 3 0 0 0 6.62 21h10.757a3 3 0 0 0 2.995-2.824L20.913 9H3.087Zm6.163 3.75A.75.75 0 0 1 10 12h4a.75.75 0 0 1 0 1.5h-4a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)" 
+                                            class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">Master</span>
+                                    </div>
+                                    <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)" 
+                                        class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0"
+                                        :class="{'rotate-180': groups.qaqcMaster.open}"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </button>
+                                
+                                <!-- Sub-group items for Master -->
+                                <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.qaqcMaster.open" 
+                                    x-collapse 
+                                    class="mt-1 relative">
+                                    <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+                                    
+                                    <div class="space-y-1 ml-[24px]">
+                                        <!-- Customer -->
+                                        <a href="{{ route('qaqc.master.customer') }}" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('qaqc.master.customer') ? 'menu-active' : '' }}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                <path d="M4.5 6.375a4.125 4.125 0 1 1 8.25 0 4.125 4.125 0 0 1-8.25 0ZM14.25 8.625a3.375 3.375 0 1 1 6.75 0 3.375 3.375 0 0 1-6.75 0ZM1.5 19.125a7.125 7.125 0 0 1 14.25 0v.003l-.001.119a.75.75 0 0 1-.363.63 13.067 13.067 0 0 1-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 0 1-.364-.63l-.001-.122ZM17.25 19.128l-.001.144a2.25 2.25 0 0 1-.233.96 10.088 10.088 0 0 0 5.06-1.01.75.75 0 0 0 .42-.643 4.875 4.875 0 0 0-6.957-4.611 8.586 8.586 0 0 1 1.71 5.157v.003Z" />
+                                            </svg>
+                                            <span class="truncate">Customer</span>
+                                        </a>
+                                        
+                                        <!-- Model -->
+                                        <a href="{{ route('qaqc.master.model') }}" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('qaqc.master.model') ? 'menu-active' : '' }}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                <path d="M3.375 3C2.339 3 1.5 3.84 1.5 4.875v.75c0 1.036.84 1.875 1.875 1.875h17.25c1.035 0 1.875-.84 1.875-1.875v-.75C22.5 3.839 21.66 3 20.625 3H3.375Z" />
+                                                <path fill-rule="evenodd" d="m3.087 9 .54 9.176A3 3 0 0 0 6.62 21h10.757a3 3 0 0 0 2.995-2.824L20.913 9H3.087Zm6.163 3.75A.75.75 0 0 1 10 12h4a.75.75 0 0 1 0 1.5h-4a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
+                                            </svg>
+                                            <span class="truncate">Model</span>
+                                        </a>
+                                        
+                                        <!-- Deffect Item -->
+                                        <a href="{{ route('qaqc.master.deffect') }}" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('qaqc.master.deffect') ? 'menu-active' : '' }}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                <path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
+                                            </svg>
+                                            <span class="truncate">Defect Item</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            @endcanany
+                            
+                            <!-- ========== SUB GROUP: FORM ========== -->
+                            @canany(['view ncp'])
+                            <div class="relative w-full">
+                                <button @click="toggleGroup('qaqcForm')" 
+                                        class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                    <div class="flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                            <path fill-rule="evenodd" d="M7.502 6h7.128A3.375 3.375 0 0 1 18 9.375v9.375a3 3 0 0 0 3-3V6.108c0-1.505-1.125-2.811-2.664-2.94a48.972 48.972 0 0 0-.673-.05A3 3 0 0 0 15 1.5h-1.5a3 3 0 0 0-2.663 1.618c-.225.015-.45.032-.673.05C8.662 3.295 7.554 4.542 7.502 6ZM13.5 3A1.5 1.5 0 0 0 12 4.5h4.5A1.5 1.5 0 0 0 15 3h-1.5Z" clip-rule="evenodd" />
+                                            <path fill-rule="evenodd" d="M3 9.375C3 8.339 3.84 7.5 4.875 7.5h9.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 0 1 3 20.625V9.375ZM6 12a.75.75 0 0 1 .75-.75h.008a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75H6.75a.75.75 0 0 1-.75-.75V12Zm2.25 0a.75.75 0 0 1 .75-.75h3.75a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75ZM6 15a.75.75 0 0 1 .75-.75h.008a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75H6.75a.75.75 0 0 1-.75-.75V15Zm2.25 0a.75.75 0 0 1 .75-.75h3.75a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75ZM6 18a.75.75 0 0 1 .75-.75h.008a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75H6.75a.75.75 0 0 1-.75-.75V18Zm2.25 0a.75.75 0 0 1 .75-.75h3.75a.75.75 0 0 1 0 1.5H9a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)" 
+                                            class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">Form</span>
+                                    </div>
+                                    <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)" 
+                                        class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0"
+                                        :class="{'rotate-180': groups.qaqcForm.open}"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </button>
+                                
+                                <!-- Sub-group items for Form -->
+                                <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.qaqcForm.open" 
+                                    x-collapse 
+                                    class="mt-1 relative">
+                                    <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+                                    
+                                    <div class="space-y-1 ml-[24px]">
+                                        @can('view ncp')
+                                        <!-- NCP Management -->
+                                        <a href="{{ route('qaqc.ncp') }}" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('qaqc.ncp') ? 'menu-active' : '' }}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                <path fill-rule="evenodd" d="M1.5 6.375c0-1.036.84-1.875 1.875-1.875h17.25c1.035 0 1.875.84 1.875 1.875v3.026a.75.75 0 0 1-.375.65 2.249 2.249 0 0 0 0 3.898.75.75 0 0 1 .375.65v3.026c0 1.035-.84 1.875-1.875 1.875H3.375A1.875 1.875 0 0 1 1.5 17.625v-3.026a.75.75 0 0 1 .374-.65 2.249 2.249 0 0 0 0-3.898.75.75 0 0 1-.374-.65V6.375Zm15-1.125a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-1.5 0V6a.75.75 0 0 1 .75-.75Zm.75 4.5a.75.75 0 0 0-1.5 0v.75a.75.75 0 0 0 1.5 0v-.75Zm-.75 3a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-1.5 0v-.75a.75.75 0 0 1 .75-.75Zm.75 4.5a.75.75 0 0 0-1.5 0V18a.75.75 0 0 0 1.5 0v-.75ZM6 12a.75.75 0 0 1 .75-.75H12a.75.75 0 0 1 0 1.5H6.75A.75.75 0 0 1 6 12Zm.75 2.25a.75.75 0 0 0 0 1.5h3a.75.75 0 0 0 0-1.5h-3Z" clip-rule="evenodd" />
+                                            </svg>
+                                            <span class="truncate">NCP</span>
+                                        </a>
+                                        @endcan
+
+                                        <!-- Blind Test Management -->
+                                        <a href="{{ route('qaqc.blind-test') }}" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('qaqc.blind-test') ? 'menu-active' : '' }}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 9a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25V15a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V9Z" clip-rule="evenodd" />
+                                            </svg>
+                                            <span class="truncate">Blind Test</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            @endcanany
+                            
+                            <!-- ========== SUB GROUP: REPORT ========== -->
+                            @canany(['view ncp all'])
+                            <div class="relative w-full">
+                                <button @click="toggleGroup('qaqcReport')" 
+                                        class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                    <div class="flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                            <path fill-rule="evenodd" d="M7.875 1.5C6.839 1.5 6 2.34 6 3.375v2.99c-.426.053-.851.11-1.274.174-1.454.218-2.476 1.483-2.476 2.917v6.294a3 3 0 0 0 3 3h.27l-.155 1.705A1.875 1.875 0 0 0 7.232 22.5h9.536a1.875 1.875 0 0 0 1.867-2.045l-.155-1.705h.27a3 3 0 0 0 3-3V9.456c0-1.434-1.022-2.7-2.476-2.917A48.716 48.716 0 0 0 18 6.366V3.375c0-1.036-.84-1.875-1.875-1.875h-8.25ZM16.5 6.205v-2.83A.375.375 0 0 0 16.125 3h-8.25a.375.375 0 0 0-.375.375v2.83a49.353 49.353 0 0 1 9 0Zm-.217 8.265c.178.018.317.16.333.337l.526 5.784a.375.375 0 0 1-.374.409H7.232a.375.375 0 0 1-.374-.409l.526-5.784a.373.373 0 0 1 .333-.337 41.741 41.741 0 0 1 8.566 0Z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)" 
+                                            class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">Report</span>
+                                    </div>
+                                    <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)" 
+                                        class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0"
+                                        :class="{'rotate-180': groups.qaqcReport.open}"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </button>
+                                
+                                <!-- Sub-group items for Report -->
+                                <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.qaqcReport.open" 
+                                    x-collapse 
+                                    class="mt-1 relative">
+                                    <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+                                    
+                                    <div class="space-y-1 ml-[24px]">
+                                        @can('view ncp all')
+                                        <!-- NCP Report -->
+                                        <a href="{{ route('qaqc.ncp.report') }}" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('qaqc.ncp.report') ? 'menu-active' : '' }}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sheet-icon lucide-sheet"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="3" x2="21" y1="9" y2="9"/><line x1="3" x2="21" y1="15" y2="15"/><line x1="9" x2="9" y1="9" y2="21"/><line x1="15" x2="15" y1="9" y2="21"/></svg>
+                                            <span class="truncate">NCP Report</span>
+                                        </a>
+                                        @endcan
+                                        
+                                        <!-- Blind Test Report -->
+                                        <a href="{{ route('qaqc.blind-test.report') }}" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sheet-icon lucide-sheet"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="3" x2="21" y1="9" y2="9"/><line x1="3" x2="21" y1="15" y2="15"/><line x1="9" x2="9" y1="9" y2="21"/><line x1="15" x2="15" y1="9" y2="21"/></svg>
+                                            <span class="truncate">Blind Test Report</span>
+                                        </a>
+                                        <!-- Blind Test Report by Deffect -->
+                                        <a href="{{ route('qaqc.blind-test.deffect-report') }}" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                <path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
+                                            </svg>
+                                            <span class="truncate">Blind Test by Defect</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            @endcanany
                         </div>
                     </div>
                 </div>
@@ -1485,16 +1646,19 @@
                     production: { open: false },
                     dcc: { open: false },
                     hr: { open: false },
-                    hrMaster: { open: false },      // NEW: untuk grup Master
-                    hrForm: { open: false },        // NEW: untuk grup Form
+                    hrMaster: { open: false },
+                    hrForm: { open: false },
                     hrReport: { open: false },
                     ticketing: { open: false },
                     settings: { open: false },
                     auth: { open: false },
                     wipMonitoring: { open: false },
                     msMonitoring: { open: false },
-                    fctMonitoring: { open: false },  // NEW: untuk grup FCT Monitoring
+                    fctMonitoring: { open: false },
                     qaqc: { open: false },
+                    qaqcMaster: { open: false },    // NEW
+                    qaqcForm: { open: false },
+                    qaqcReport: { open: false },
                     uniformMonitoring: { open: false },
                     absenceMonitoring: { open: false },
                     lockerMonitoring: { open: false },
@@ -1528,7 +1692,7 @@
                     }
                     
                     // Load all group states
-                    const groupNames = ['home', 'maintenance', 'production', 'dcc', 'hr', 'hrMaster', 'hrForm', 'hrReport', 'ticketing', 'settings', 'auth', 'wipMonitoring', 'msMonitoring', 'fctMonitoring', 'qaqc', 'uniformMonitoring', 'absenceMonitoring', 'lockerMonitoring'];
+                    const groupNames = ['home', 'maintenance', 'production', 'dcc', 'hr', 'hrMaster', 'hrForm', 'hrReport', 'ticketing', 'settings', 'auth', 'wipMonitoring', 'msMonitoring', 'fctMonitoring', 'qaqc', 'qaqcMaster', 'qaqcForm', 'qaqcReport', 'uniformMonitoring', 'absenceMonitoring', 'lockerMonitoring'];
                     groupNames.forEach(groupName => {
                         const saved = localStorage.getItem(`sidebar_group_${groupName}`);
                         if (saved !== null) {

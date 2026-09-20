@@ -1,6 +1,7 @@
 <?php
 
 use App\Helpers\QRCodeHelper;
+use App\Livewire\QAQC\BlindTest\BlindTestReport;
 use App\Http\Controllers\Api\ApiLockerController;
 use App\Http\Controllers\DashboardRefreshController;
 use App\Http\Controllers\DoorLockController;
@@ -61,6 +62,12 @@ use App\Livewire\PROD\WIP\MasterWipManagement;
 use App\Livewire\PROD\WIP\MasterWipScan;
 use App\Livewire\QAQC\NCPManagement;
 use App\Livewire\QAQC\NCPReport;
+use App\Livewire\QAQC\BlindTest\CustomerManagement;
+use App\Livewire\QAQC\BlindTest\ModelManagement;
+use App\Livewire\QAQC\BlindTest\DeffectManagement;
+use App\Livewire\QAQC\BlindTest\BlindTestManagement;
+use App\Livewire\QAQC\BlindTest\BlindTestExecution;
+use App\Livewire\QAQC\BlindTest\BlindTestDeffectReport;
 use App\Livewire\Ticket\CategoryTicketManager;
 use App\Livewire\Ticket\TicketManager;
 use App\Livewire\Ticket\TicketView;
@@ -169,6 +176,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/qaqc/ncp', NCPManagement::class)->name('qaqc.ncp');
     Route::get('/qaqc/ncp/report', NCPReport::class)->name('qaqc.ncp.report');
     Route::get('/ncp/print/{id}', [NCPPrintController::class, 'print'])->name('ncp.print');
+    Route::get('/qaqc/master/customer', CustomerManagement::class)->name('qaqc.master.customer');
+    Route::get('/qaqc/master/model', ModelManagement::class)->name('qaqc.master.model');
+    Route::get('/qaqc/master/deffect', DeffectManagement::class)->name('qaqc.master.deffect');
+    Route::get('/qaqc/blind-test', BlindTestManagement::class)->name('qaqc.blind-test');
+    Route::get('/qaqc/blind-test/{id}/execute', BlindTestExecution::class)->name('qaqc.blind-test.execute');
+    Route::get('/qaqc/blind-test/report', BlindTestReport::class)->name('qaqc.blind-test.report');
+    Route::get('/qaqc/blind-test/deffect-report', BlindTestDeffectReport::class)->name('qaqc.blind-test.deffect-report');
 
     // Doorlock
     Route::get('/doorlock/test-pin/{deviceId}', [DoorLockController::class, 'generatePin']);
