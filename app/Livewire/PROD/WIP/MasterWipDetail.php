@@ -1,5 +1,4 @@
 <?php
-// app/Livewire/PROD/WIP/MasterWipDetail.php
 
 namespace App\Livewire\PROD\WIP;
 
