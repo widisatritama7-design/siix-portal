@@ -398,14 +398,6 @@
                             <span class="truncate">Ticket Dashboard</span>
                         </a>
                         @endcan
-                        <a href="#" wire:navigate
-                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gauge-icon lucide-gauge w-4 h-4">
-                                <path d="m12 14 4-4"/>
-                                <path d="M3.34 19a10 10 0 1 1 17.32 0"/>
-                            </svg>
-                            <span class="truncate">Blind Test Dashboard</span>
-                        </a>
                         @can('view inbox')
                         <a href="{{ route('inbox') }}" wire:navigate
                         class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('inbox') ? 'menu-active' : '' }}">
@@ -523,25 +515,26 @@
                                     <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
                                     
                                     <div class="space-y-1 ml-[24px]">
-                                        <!-- Locker Info -->
-                                        @can('view locker')
-                                        <a href="{{ route('esd.locker-info') }}" wire:navigate
-                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('esd.locker-info') ? 'menu-active' : '' }}">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
-                                                <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 0 1 .67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 1 1-.671-1.34l.041-.022ZM12 9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
-                                            </svg>
-                                            <span class="truncate">Locker Info</span>
-                                        </a>
-                                        @endcan
 
                                         <!-- Locker Management -->
                                         @can('view locker')
                                         <a href="{{ route('esd.locker-management') }}" wire:navigate
                                         class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('esd.locker-management') ? 'menu-active' : '' }}">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
-                                                <path fill-rule="evenodd" d="M11.47 2.47a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 1 1-1.06 1.06l-6.22-6.22V21a.75.75 0 0 1-1.5 0V4.81l-6.22 6.22a.75.75 0 1 1-1.06-1.06l7.5-7.5Z" clip-rule="evenodd" />
+                                                <path fill-rule="evenodd" d="M12 1.5a5.25 5.25 0 0 0-5.25 5.25v3a3 3 0 0 0-3 3v6.75a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3v-6.75a3 3 0 0 0-3-3v-3c0-2.9-2.35-5.25-5.25-5.25Zm3.75 8.25v-3a3.75 3.75 0 1 0-7.5 0v3h7.5Z" clip-rule="evenodd" />
                                             </svg>
                                             <span class="truncate">Locker Management</span>
+                                        </a>
+                                        @endcan
+
+                                        <!-- Uniform Management -->
+                                        @can('view esd uniform')
+                                        <a href="{{ route('esd.uniform-recipients') }}" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('esd.uniform-recipients') ? 'menu-active' : '' }}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z" clip-rule="evenodd" />
+                                            </svg>
+                                            <span class="truncate">Uniform Send Email</span>
                                         </a>
                                         @endcan
                                     </div>
@@ -1270,13 +1263,21 @@
                                             </svg>
                                             <span class="truncate">Defect Item</span>
                                         </a>
+                                        <!-- Deffect Item -->
+                                        <a href="{{ route('qaqc.master.question') }}" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('qaqc.master.question') ? 'menu-active' : '' }}">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm11.378-3.917c-.89-.777-2.366-.777-3.255 0a.75.75 0 0 1-.988-1.129c1.454-1.272 3.776-1.272 5.23 0 1.513 1.324 1.513 3.518 0 4.842a3.75 3.75 0 0 1-.837.552c-.676.328-1.028.774-1.028 1.152v.75a.75.75 0 0 1-1.5 0v-.75c0-1.279 1.06-2.107 1.875-2.502.182-.088.351-.199.503-.331.83-.727.83-1.857 0-2.584ZM12 18a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
+                                            </svg>
+                                            <span class="truncate">Question</span>
+                                        </a>
                                     </div>
                                 </div>
                             </div>
                             @endcanany
                             
                             <!-- ========== SUB GROUP: FORM ========== -->
-                            @canany(['view ncp'])
+                            @canany(['view ncp', 'view blind test'])
                             <div class="relative w-full">
                                 <button @click="toggleGroup('qaqcForm')" 
                                         class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
@@ -1314,6 +1315,7 @@
                                         </a>
                                         @endcan
 
+                                        @can('view blind test')
                                         <!-- Blind Test Management -->
                                         <a href="{{ route('qaqc.blind-test') }}" wire:navigate
                                         class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('qaqc.blind-test') ? 'menu-active' : '' }}">
@@ -1322,13 +1324,14 @@
                                             </svg>
                                             <span class="truncate">Blind Test</span>
                                         </a>
+                                        @endcan
                                     </div>
                                 </div>
                             </div>
                             @endcanany
                             
                             <!-- ========== SUB GROUP: REPORT ========== -->
-                            @canany(['view ncp all'])
+                            @canany(['view ncp all', 'view blind test'])
                             <div class="relative w-full">
                                 <button @click="toggleGroup('qaqcReport')" 
                                         class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
@@ -1363,20 +1366,24 @@
                                         </a>
                                         @endcan
                                         
-                                        <!-- Blind Test Report -->
+                                        @can('view blind test')
                                         <a href="{{ route('qaqc.blind-test.report') }}" wire:navigate
-                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors">
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('qaqc.blind-test.report') ? 'menu-active' : '' }}">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-sheet-icon lucide-sheet"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><line x1="3" x2="21" y1="9" y2="9"/><line x1="3" x2="21" y1="15" y2="15"/><line x1="9" x2="9" y1="9" y2="21"/><line x1="15" x2="15" y1="9" y2="21"/></svg>
                                             <span class="truncate">Blind Test Report</span>
                                         </a>
+                                        @endcan
+
+                                        @can('view blind test')
                                         <!-- Blind Test Report by Deffect -->
                                         <a href="{{ route('qaqc.blind-test.deffect-report') }}" wire:navigate
-                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors">
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('qaqc.blind-test.deffect-report') ? 'menu-active' : '' }}">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
                                                 <path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
                                             </svg>
                                             <span class="truncate">Blind Test by Defect</span>
                                         </a>
+                                        @endcan
                                     </div>
                                 </div>
                             </div>

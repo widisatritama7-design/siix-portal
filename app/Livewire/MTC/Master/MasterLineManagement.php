@@ -2,15 +2,16 @@
 
 namespace App\Livewire\MTC\Master;
 
-use App\Models\MTC\Master\MasterLine;
-use App\Models\MTC\Master\MasterLocation;
+use App\Models\HR\Employee;
+use App\Models\MTC\Daily\DailyFujiStandardCheck;
+use App\Models\MTC\Daily\DailyFujiStandardCheckHistory;
 use App\Models\MTC\Daily\DailyPanasonicStandardCheck;
 use App\Models\MTC\Daily\DailyPanasonicStandardCheckHistory;
-use App\Models\MTC\Daily\DailyFUjiStandardCheckHistory;
-use App\Models\HR\Employee;
+use App\Models\MTC\Master\MasterLine;
+use App\Models\MTC\Master\MasterLocation;
+use Illuminate\Support\Facades\Log;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Illuminate\Support\Facades\Log;
 
 class MasterLineManagement extends Component
 {
@@ -226,7 +227,7 @@ class MasterLineManagement extends Component
                 $newData = $standard->fresh()->toArray();
                 $action = 'update';
             } else {
-                $newStandard = new DailyFujiStandardCheck();
+                $newStandard = new \App\Models\MTC\Daily\DailyFujiStandardCheck();
                 $newStandard->master_line_id = $line->id;
                 foreach ($this->standardConfig as $field => $value) {
                     $newStandard->{$field} = $value;

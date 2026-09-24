@@ -1,7 +1,6 @@
 <?php
 
 use App\Helpers\QRCodeHelper;
-use App\Livewire\QAQC\BlindTest\BlindTestReport;
 use App\Http\Controllers\Api\ApiLockerController;
 use App\Http\Controllers\DashboardRefreshController;
 use App\Http\Controllers\DoorLockController;
@@ -12,6 +11,7 @@ use App\Http\Controllers\PROD\Absence\AbsenceReportPrintController;
 use App\Http\Controllers\PROD\FCT\LeaderController;
 use App\Http\Controllers\PROD\FCT\ScanPcbController;
 use App\Http\Controllers\PROD\Uniform\UniformRequestPrintController;
+use App\Http\Controllers\QAQC\BlindTestPrintController;
 use App\Http\Controllers\QAQC\NCPPrintController;
 use App\Http\Controllers\SearchController;
 use App\Livewire\DCC\DepartmentManagement;
@@ -60,14 +60,17 @@ use App\Livewire\PROD\WIP\MasterRackLosePack;
 use App\Livewire\PROD\WIP\MasterWipDetail;
 use App\Livewire\PROD\WIP\MasterWipManagement;
 use App\Livewire\PROD\WIP\MasterWipScan;
+use App\Livewire\QAQC\BlindTest\BlindTestDeffectReport;
+use App\Livewire\QAQC\BlindTest\BlindTestExecution;
+use App\Livewire\QAQC\BlindTest\BlindTestManagement;
+use App\Livewire\QAQC\BlindTest\BlindTestReport;
+use App\Livewire\QAQC\BlindTest\BlindTestReview;
+use App\Livewire\QAQC\BlindTest\CustomerManagement;
+use App\Livewire\QAQC\BlindTest\DeffectManagement;
+use App\Livewire\QAQC\BlindTest\ModelManagement;
+use App\Livewire\QAQC\BlindTest\QuestionManagement;
 use App\Livewire\QAQC\NCPManagement;
 use App\Livewire\QAQC\NCPReport;
-use App\Livewire\QAQC\BlindTest\CustomerManagement;
-use App\Livewire\QAQC\BlindTest\ModelManagement;
-use App\Livewire\QAQC\BlindTest\DeffectManagement;
-use App\Livewire\QAQC\BlindTest\BlindTestManagement;
-use App\Livewire\QAQC\BlindTest\BlindTestExecution;
-use App\Livewire\QAQC\BlindTest\BlindTestDeffectReport;
 use App\Livewire\Ticket\CategoryTicketManager;
 use App\Livewire\Ticket\TicketManager;
 use App\Livewire\Ticket\TicketView;
@@ -179,10 +182,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/qaqc/master/customer', CustomerManagement::class)->name('qaqc.master.customer');
     Route::get('/qaqc/master/model', ModelManagement::class)->name('qaqc.master.model');
     Route::get('/qaqc/master/deffect', DeffectManagement::class)->name('qaqc.master.deffect');
+    Route::get('/qaqc/master/question', QuestionManagement::class)->name('qaqc.master.question');
     Route::get('/qaqc/blind-test', BlindTestManagement::class)->name('qaqc.blind-test');
     Route::get('/qaqc/blind-test/{id}/execute', BlindTestExecution::class)->name('qaqc.blind-test.execute');
     Route::get('/qaqc/blind-test/report', BlindTestReport::class)->name('qaqc.blind-test.report');
     Route::get('/qaqc/blind-test/deffect-report', BlindTestDeffectReport::class)->name('qaqc.blind-test.deffect-report');
+    Route::get('/qaqc/blind-test/{id}/review', BlindTestReview::class)->name('qaqc.blind-test.review');
+    Route::get('/qaqc/blind-test/print', [BlindTestPrintController::class, 'print'])->name('qaqc.blind-test.print');
 
     // Doorlock
     Route::get('/doorlock/test-pin/{deviceId}', [DoorLockController::class, 'generatePin']);

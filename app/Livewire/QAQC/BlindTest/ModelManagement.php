@@ -4,6 +4,7 @@ namespace App\Livewire\QAQC\BlindTest;
 
 use App\Models\QAQC\BlindTest\Customer;
 use App\Models\QAQC\BlindTest\Model;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -56,11 +57,77 @@ class ModelManagement extends Component
         $this->resetValidation();
     }
 
+    // ==================== HELPER: CEK MODEL DIPAKAI ====================
+
+    /**
+     * Ambil semua model_id yang sudah dipakai (single query).
+     * Sumber:
+     *  1. tb_qaqc_blind_test.question_snapshot (JSON: model_id per soal)
+     *  2. tb_qaqc_blind_test.model_id (backward compat)
+     *  3. tb_qaqc_question.model_id (master soal)
+     */
+    protected function getUsedModelIds(): array
+    {
+        $used = [];
+
+        // ===== 1 & 2: Dari blind test =====
+        $rows = DB::table('tb_qaqc_blind_test')
+            ->select('question_snapshot', 'model_id')
+            ->get();
+
+        foreach ($rows as $row) {
+            // Dari question_snapshot
+            if ($row->question_snapshot) {
+                $snapshots = json_decode($row->question_snapshot, true) ?? [];
+                foreach ($snapshots as $snap) {
+                    if (!empty($snap['model_id'])) {
+                        $used[] = (int) $snap['model_id'];
+                    }
+                }
+            }
+
+            // Fallback: kolom model_id
+            if (!empty($row->model_id)) {
+                $used[] = (int) $row->model_id;
+            }
+        }
+
+        // ===== 3: Dari master question =====
+        $questionUsed = DB::table('tb_qaqc_question')
+            ->whereNotNull('model_id')
+            ->pluck('model_id')
+            ->map(fn ($id) => (int) $id)
+            ->toArray();
+
+        $used = array_merge($used, $questionUsed);
+
+        return array_values(array_unique($used));
+    }
+
+    /**
+     * Cek single model dipakai atau tidak.
+     */
+    public function isUsedInBlindTest(?array $usedIds = null): bool
+    {
+        if ($usedIds === null) {
+            $usedIds = $this->getUsedModelIds();
+        }
+        return in_array((int) $modelId, $usedIds, true);
+    }
+
+    // ==================== SAVE ====================
+
     public function save()
     {
         if ($this->model_id) {
             if (!auth()->user()->can('edit model')) {
                 $this->dispatch('notify', message: 'You do not have permission!', type: 'error');
+                return;
+            }
+
+            // Cek kalau model sudah dipakai → tidak bisa edit
+            if ($this->isUsedInBlindTest($this->model_id)) {
+                $this->dispatch('notify', message: 'Model sudah dipakai di Blind Test / Master Question, tidak bisa diedit!', type: 'error');
                 return;
             }
         } else {
@@ -102,6 +169,8 @@ class ModelManagement extends Component
         $this->dispatch('close-modal-model');
     }
 
+    // ==================== EDIT ====================
+
     public function edit($id)
     {
         if (!auth()->user()->can('edit model')) {
@@ -115,12 +184,24 @@ class ModelManagement extends Component
             return;
         }
 
+        // Cek kalau model sudah dipakai → tidak bisa edit
+        if ($this->isUsedInBlindTest($model->id)) {
+            $this->dispatch(
+                'notify',
+                message: "Model '{$model->model_name}' sudah dipakai di Blind Test / Master Question, tidak bisa diedit!",
+                type: 'error'
+            );
+            return;
+        }
+
         $this->model_id = $model->id;
         $this->customer_id = $model->customer_id;
         $this->model_name = $model->model_name;
         $this->modalTitle = 'Edit Model';
         $this->dispatch('open-modal-model');
     }
+
+    // ==================== VIEW ====================
 
     public function view($id)
     {
@@ -134,6 +215,8 @@ class ModelManagement extends Component
         $this->dispatch('open-modal-view');
     }
 
+    // ==================== DELETE ====================
+
     public function confirmDelete($id)
     {
         if (!auth()->user()->can('delete model')) {
@@ -144,6 +227,16 @@ class ModelManagement extends Component
         $model = Model::find($id);
         if (!$model) {
             $this->dispatch('notify', message: 'Model not found!', type: 'error');
+            return;
+        }
+
+        // Cek kalau model sudah dipakai → tidak bisa delete
+        if ($this->isUsedInBlindTest($model->id)) {
+            $this->dispatch(
+                'notify',
+                message: "Model '{$model->model_name}' sudah dipakai di Blind Test / Master Question, tidak bisa dihapus!",
+                type: 'error'
+            );
             return;
         }
 
@@ -162,6 +255,19 @@ class ModelManagement extends Component
         if (!$model) {
             $this->dispatch('notify', message: 'Model not found!', type: 'error');
             $this->modelToDelete = null;
+            $this->dispatch('close-modal-delete');
+            return;
+        }
+
+        // Double protection
+        if ($this->isUsedInBlindTest($model->id)) {
+            $this->dispatch(
+                'notify',
+                message: "Model '{$model->model_name}' sudah dipakai di Blind Test / Master Question, tidak bisa dihapus!",
+                type: 'error'
+            );
+            $this->modelToDelete = null;
+            $this->dispatch('close-modal-delete');
             return;
         }
 
@@ -178,6 +284,8 @@ class ModelManagement extends Component
         $this->modelToDelete = null;
         $this->dispatch('close-modal-delete');
     }
+
+    // ==================== RENDER ====================
 
     public function render()
     {
@@ -198,9 +306,13 @@ class ModelManagement extends Component
 
         $models = $query->orderByDesc('id')->paginate(10);
 
+        // Ambil semua model_id yang sudah dipakai (single query)
+        $usedIds = $this->getUsedModelIds();
+
         return view('livewire.qaqc.blind-test.model-management', [
-            'models' => $models,
+            'models'    => $models,
             'customers' => Customer::orderBy('customer_name')->get(),
+            'usedIds'   => $usedIds,
         ]);
     }
 }

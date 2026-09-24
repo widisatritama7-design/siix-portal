@@ -122,6 +122,8 @@ class DailyPanasonicEdit extends Component
     public $status;
     public $approval;
 
+    public $customer;
+
     protected $rules = [
         'group' => 'required|in:A,B,C',
     ];
@@ -203,6 +205,8 @@ class DailyPanasonicEdit extends Component
     protected function loadRequiredFields()
     {
         $this->requiredFields = $this->masterLine->getRequiredPanasonicFields();
+
+        $this->requiredFields = $this->dailyPanasonic->applyCustomerOxygenOverride($this->requiredFields); // <-- override
         
         $allFields = array_merge(
             $this->toggleFields,

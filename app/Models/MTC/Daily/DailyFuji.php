@@ -2,6 +2,7 @@
 
 namespace App\Models\MTC\Daily;
 
+use App\Models\MTC\Daily\Concerns\HasCustomer;
 use App\Models\MTC\Master\MasterLine;
 use App\Models\User;
 use Carbon\Carbon;
@@ -15,6 +16,7 @@ class DailyFuji extends Model
 {
     use HasFactory;
     use LogsActivity;
+     use HasCustomer;
     
     protected $table = 'tb_mtc_daily_fujis';
 
@@ -82,7 +84,8 @@ class DailyFuji extends Model
         'status',
         'created_by',
         'updated_by',
-        'approved_by'
+        'approved_by',
+        'customer',
     ];
 
     protected $casts = [
@@ -157,7 +160,8 @@ class DailyFuji extends Model
             'status',
             'created_by',
             'updated_by',
-            'approved_by'
+            'approved_by',
+            'customer',
         ]);
     }
 
@@ -198,6 +202,9 @@ class DailyFuji extends Model
     {
         // ✅ Ambil required fields dari master line
         $requiredFields = $this->masterLine?->getRequiredFujiFields() ?? [];
+
+        // ✅ Override berdasarkan customer
+        $requiredFields = $this->applyCustomerOxygenOverride($requiredFields);
 
         // ============ TOGGLE FIELDS ============
         $toggleFields = [

@@ -852,6 +852,84 @@
         </div>
     </x-mtc.layout>
 
+    {{-- MODAL PILIH CUSTOMER --}}
+    <flux:modal wire:model="showCustomerModal" class="max-w-md">
+        <div class="space-y-4">
+            <div class="flex justify-between items-center border-b border-zinc-200 dark:border-zinc-700 pb-3">
+                <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">
+                    Pilih Customer
+                </h3>
+            </div>
+
+            @if($line->status === 'No Schedule')
+                {{-- Info untuk No Schedule --}}
+                <div class="bg-blue-50 dark:bg-blue-950/30 rounded-lg p-3 border border-blue-200 dark:border-blue-800">
+                    <div class="flex items-center gap-2">
+                        <flux:icon name="information-circle" class="w-5 h-5 text-blue-600" />
+                        <div>
+                            <span class="font-semibold text-blue-700 dark:text-blue-400">Line No Schedule</span>
+                            <p class="text-sm text-blue-600 dark:text-blue-400">
+                                Customer tidak wajib diisi. Anda dapat memilih <strong>-</strong> atau <strong>n/a</strong>.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            @else
+                <p class="text-sm text-zinc-600 dark:text-zinc-400">
+                    Customer menentukan field Oxygen Density yang wajib diisi:
+                </p>
+                <ul class="text-xs text-zinc-500 dark:text-zinc-400 list-disc list-inside space-y-1">
+                    <li><strong>MITSUBA</strong> & <strong>TOKAI RIKA</strong> → wajib isi <em>Oxygen Density Special</em></li>
+                    <li>Customer lain → wajib isi <em>Oxygen Density SEK</em></li>
+                </ul>
+            @endif
+
+            @if($currentCustomer)
+            <div class="text-xs text-zinc-500">
+                Customer saat ini: <span class="font-semibold">{{ $currentCustomer }}</span>
+            </div>
+            @endif
+
+            <div>
+                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
+                    Customer 
+                    @if($line->status !== 'No Schedule')
+                        <span class="text-red-500">*</span>
+                    @else
+                        <span class="text-gray-400 text-xs">(Optional)</span>
+                    @endif
+                </label>
+                <select 
+                    wire:model="selectedCustomer"
+                    class="w-full rounded-lg border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
+                >
+                    <option value="">-- Pilih Customer --</option>
+                    
+                    @if($line->status === 'No Schedule')
+                        <option value="-">- (Dash)</option>
+                        <option value="n/a">n/a (Not Available)</option>
+                    @endif
+                    
+                    @foreach(\App\Models\MTC\Daily\DailyFuji::CUSTOMERS as $customer)
+                        <option value="{{ $customer }}">{{ $customer }}</option>
+                    @endforeach
+                </select>
+                @error('selectedCustomer')
+                    <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <div class="flex gap-2 justify-end pt-2">
+                <flux:button wire:click="closeCustomerModal" variant="subtle">
+                    Cancel
+                </flux:button>
+                <flux:button wire:click="confirmCustomerAndEdit" variant="primary" color="blue" icon="pencil-square">
+                    Confirm & Edit
+                </flux:button>
+            </div>
+        </div>
+    </flux:modal>
+
     <!-- Daily Fuji Detail Modal -->
     <flux:modal wire:model="showDailyFujiModal" class="max-w-4xl">
         <div class="space-y-4">

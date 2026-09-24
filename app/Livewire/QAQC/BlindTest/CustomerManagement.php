@@ -3,6 +3,7 @@
 namespace App\Livewire\QAQC\BlindTest;
 
 use App\Models\QAQC\BlindTest\Customer;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -52,11 +53,70 @@ class CustomerManagement extends Component
         $this->resetValidation();
     }
 
+    // ==================== HELPER: CEK CUSTOMER DIPAKAI ====================
+
+    /**
+     * Ambil semua customer_id yang sudah dipakai (single query).
+     * Sumber:
+     *  1. tb_qaqc_model.customer_id
+     *  2. tb_qaqc_question.customer_id
+     *  3. tb_qaqc_blind_test.customer_id
+     */
+    protected function getUsedCustomerIds(): array
+    {
+        $used = [];
+
+        // 1. Dari Model
+        $modelUsed = DB::table('tb_qaqc_model')
+            ->whereNotNull('customer_id')
+            ->pluck('customer_id')
+            ->map(fn ($id) => (int) $id)
+            ->toArray();
+        $used = array_merge($used, $modelUsed);
+
+        // 2. Dari Question
+        $questionUsed = DB::table('tb_qaqc_question')
+            ->whereNotNull('customer_id')
+            ->pluck('customer_id')
+            ->map(fn ($id) => (int) $id)
+            ->toArray();
+        $used = array_merge($used, $questionUsed);
+
+        // 3. Dari Blind Test
+        $blindTestUsed = DB::table('tb_qaqc_blind_test')
+            ->whereNotNull('customer_id')
+            ->pluck('customer_id')
+            ->map(fn ($id) => (int) $id)
+            ->toArray();
+        $used = array_merge($used, $blindTestUsed);
+
+        return array_values(array_unique($used));
+    }
+
+    /**
+     * Cek single customer dipakai atau tidak.
+     */
+    public function isUsedInBlindTest(?array $usedIds = null): bool
+    {
+        if ($usedIds === null) {
+            $usedIds = $this->getUsedCustomerIds();
+        }
+        return in_array((int) $customerId, $usedIds, true);
+    }
+
+    // ==================== SAVE ====================
+
     public function save()
     {
         if ($this->customer_id) {
             if (!auth()->user()->can('edit customer')) {
                 $this->dispatch('notify', message: 'You do not have permission!', type: 'error');
+                return;
+            }
+
+            // Cek kalau customer sudah dipakai → tidak bisa edit
+            if ($this->isUsedInBlindTest($this->customer_id)) {
+                $this->dispatch('notify', message: 'Customer sudah dipakai di Model / Question / Blind Test, tidak bisa diedit!', type: 'error');
                 return;
             }
         } else {
@@ -96,6 +156,8 @@ class CustomerManagement extends Component
         $this->dispatch('close-modal-customer');
     }
 
+    // ==================== EDIT ====================
+
     public function edit($id)
     {
         if (!auth()->user()->can('edit customer')) {
@@ -109,11 +171,23 @@ class CustomerManagement extends Component
             return;
         }
 
+        // Cek kalau customer sudah dipakai → tidak bisa edit
+        if ($this->isUsedInBlindTest($customer->id)) {
+            $this->dispatch(
+                'notify',
+                message: "Customer '{$customer->customer_name}' sudah dipakai, tidak bisa diedit!",
+                type: 'error'
+            );
+            return;
+        }
+
         $this->customer_id = $customer->id;
         $this->customer_name = $customer->customer_name;
         $this->modalTitle = 'Edit Customer';
         $this->dispatch('open-modal-customer');
     }
+
+    // ==================== VIEW ====================
 
     public function view($id)
     {
@@ -127,6 +201,8 @@ class CustomerManagement extends Component
         $this->dispatch('open-modal-view');
     }
 
+    // ==================== DELETE ====================
+
     public function confirmDelete($id)
     {
         if (!auth()->user()->can('delete customer')) {
@@ -137,6 +213,16 @@ class CustomerManagement extends Component
         $customer = Customer::find($id);
         if (!$customer) {
             $this->dispatch('notify', message: 'Customer not found!', type: 'error');
+            return;
+        }
+
+        // Cek kalau customer sudah dipakai → tidak bisa delete
+        if ($this->isUsedInBlindTest($customer->id)) {
+            $this->dispatch(
+                'notify',
+                message: "Customer '{$customer->customer_name}' sudah dipakai, tidak bisa dihapus!",
+                type: 'error'
+            );
             return;
         }
 
@@ -155,6 +241,19 @@ class CustomerManagement extends Component
         if (!$customer) {
             $this->dispatch('notify', message: 'Customer not found!', type: 'error');
             $this->customerToDelete = null;
+            $this->dispatch('close-modal-delete');
+            return;
+        }
+
+        // Double protection
+        if ($this->isUsedInBlindTest($customer->id)) {
+            $this->dispatch(
+                'notify',
+                message: "Customer '{$customer->customer_name}' sudah dipakai, tidak bisa dihapus!",
+                type: 'error'
+            );
+            $this->customerToDelete = null;
+            $this->dispatch('close-modal-delete');
             return;
         }
 
@@ -172,6 +271,8 @@ class CustomerManagement extends Component
         $this->dispatch('close-modal-delete');
     }
 
+    // ==================== RENDER ====================
+
     public function render()
     {
         if (!auth()->user()->can('view customer')) {
@@ -186,8 +287,12 @@ class CustomerManagement extends Component
 
         $customers = $query->orderByDesc('id')->paginate(10);
 
+        // Ambil semua customer_id yang sudah dipakai (single query)
+        $usedIds = $this->getUsedCustomerIds();
+
         return view('livewire.qaqc.blind-test.customer-management', [
             'customers' => $customers,
+            'usedIds'   => $usedIds,
         ]);
     }
 }

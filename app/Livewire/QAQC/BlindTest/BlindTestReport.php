@@ -24,15 +24,23 @@ class BlindTestReport extends Component
     public $yearFilter = '';
     public $monthFilter = '';
     public $departmentFilter = '';
+    public $sectionFilter = '';
 
     // ==================== STATE ====================
     public $hasFiltered = false;
     public $totalRecords = 0;
 
-    // Aggregates untuk preview & export
+    // Aggregates
     public $totalFail = 0;
     public $totalPass = 0;
     public $totalSoal = 0;
+
+    // Percentage metrics
+    public $averagePercentage = 0;
+    public $overallPercentage = 0;
+
+    // Distribution
+    public $percentageDistribution = [];
 
     protected $rules = [
         'dateFrom'         => 'nullable|date',
@@ -40,14 +48,15 @@ class BlindTestReport extends Component
         'yearFilter'       => 'nullable|string',
         'monthFilter'      => 'nullable|string',
         'departmentFilter' => 'nullable|string',
+        'sectionFilter'    => 'nullable|string',
     ];
 
-    // Reset page saat filter diubah
     public function updatedDateFrom()         { $this->resetPage(); }
     public function updatedDateUntil()        { $this->resetPage(); }
     public function updatedYearFilter()       { $this->resetPage(); }
     public function updatedMonthFilter()      { $this->resetPage(); }
     public function updatedDepartmentFilter() { $this->resetPage(); }
+    public function updatedSectionFilter()    { $this->resetPage(); }
 
     // ==================== DROPDOWN DATA ====================
     public function getYearsProperty()
@@ -89,10 +98,26 @@ class BlindTestReport extends Component
             ->pluck('department');
     }
 
-    // ==================== BASE QUERY ====================
     /**
-     * Base query: BlindTest yang sudah completed, dengan relasi employee.
+     * Section diambil dari tabel blind_tests
+     * Nilai umum: QC, SMT, BE, MI
      */
+    public function getSectionsProperty()
+    {
+        return BlindTest::query()
+            ->where('status', 'completed')
+            ->whereNotNull('section')
+            ->where('section', '!=', '')
+            ->distinct()
+            ->orderBy('section')
+            ->pluck('section')
+            ->map(fn ($s) => trim($s))
+            ->filter()
+            ->unique()
+            ->values();
+    }
+
+    // ==================== BASE QUERY ====================
     protected function getFilteredQuery()
     {
         return BlindTest::query()
@@ -102,19 +127,14 @@ class BlindTestReport extends Component
             ->when($this->dateUntil, fn ($q) => $q->whereDate('created_at', '<=', $this->dateUntil))
             ->when($this->yearFilter, fn ($q) => $q->whereYear('created_at', $this->yearFilter))
             ->when($this->monthFilter, fn ($q) => $q->whereMonth('created_at', $this->monthFilter))
+            ->when($this->sectionFilter, fn ($q) => $q->where('section', $this->sectionFilter))
             ->when($this->departmentFilter, function ($q) {
                 $q->whereHas('employee', fn ($eq) => $eq->where('department', $this->departmentFilter));
             });
     }
 
     /**
-     * Aggregate per-employee:
-     * - nik
-     * - name
-     * - department
-     * - fail_count  (jumlah test dengan overall_result = FAIL)
-     * - pass_count  (jumlah test dengan overall_result = PASS)
-     * - total_soal  (jumlah baris kunci jawaban dari semua test)
+     * Aggregate per-employee.
      */
     protected function getAggregatedData()
     {
@@ -123,23 +143,101 @@ class BlindTestReport extends Component
             ->get();
 
         $grouped = $records->groupBy('employee_id')->map(function ($items) {
+            // Group by test (section + customer + model)
+            // Supaya kalau ada 2 test berbeda (QC + SMT), tetap dihitung semua
+            $byTest = $items->groupBy(function ($r) {
+                return ($r->section ?? '-') . '|' . ($r->customer_id ?? '-') . '|' . ($r->model_id ?? '-');
+            });
+
+            $passCount = 0;
+            $failCount = 0;
+
+            foreach ($byTest as $sameTest) {
+                // Ambil attempt TERAKHIR per test
+                $latest = $sameTest->sortByDesc('attempt')->first();
+                if (!$latest) continue;
+
+                $answers = $latest->user_answers ?? [];
+                if (!is_array($answers)) continue;
+
+                // Hitung langsung per baris (tanpa unique/keyBy)
+                foreach ($answers as $answer) {
+                    if (!empty($answer['is_correct'])) {
+                        $passCount++;
+                    } else {
+                        $failCount++;
+                    }
+                }
+            }
+
+            $totalSoal  = $passCount + $failCount;
+            $percentage = $totalSoal > 0 ? (int) round(($passCount / $totalSoal) * 100) : 0;
+            $rounded    = max(0, min(100, (int) (round($percentage / 20) * 20)));
+
+            $sections = $items->pluck('section')
+                ->filter()
+                ->map(fn ($s) => trim($s))
+                ->unique()
+                ->values();
+
+            $latestAttempt = $byTest->map(fn ($group) => $group->max('attempt'))->max() ?? 1;
             $first = $items->first();
-            $failCount = $items->where('overall_result', 'FAIL')->count();
-            $passCount = $items->where('overall_result', 'PASS')->count();
-            $totalSoal = $items->sum(fn ($r) => count($r->blind_test_items ?? []));
 
             return [
-                'employee_id' => $first->employee_id,
-                'nik'         => $first->employee->nik ?? '-',
-                'name'        => $first->employee->name ?? '-',
-                'department'  => $first->employee->department ?? '-',
-                'fail_count'  => $failCount,
-                'pass_count'  => $passCount,
-                'total_soal'  => $totalSoal,
+                'employee_id'        => $first->employee_id,
+                'nik'                => $first->employee->nik ?? '-',
+                'name'               => $first->employee->name ?? '-',
+                'department'         => $first->employee->department ?? '-',
+                'section'            => $sections->implode(', ') ?: '-',
+                'attempt'            => $latestAttempt,
+                'max_attempt'        => $first->max_attempt ?? 2,
+                'fail_count'         => $failCount,
+                'pass_count'         => $passCount,
+                'total_soal'         => $totalSoal,
+                'percentage'         => $percentage,
+                'rounded_percentage' => $rounded,
             ];
         })->sortBy('name')->values();
 
         return $grouped;
+    }
+
+    /**
+     * Distribusi per bucket.
+     */
+    protected function getPercentageDistribution($data)
+    {
+        $buckets = [0, 20, 40, 60, 80, 100];
+        $distribution = array_fill_keys($buckets, 0);
+
+        foreach ($data as $item) {
+            $rounded = $item['rounded_percentage'];
+            if (isset($distribution[$rounded])) {
+                $distribution[$rounded]++;
+            }
+        }
+
+        return $distribution;
+    }
+
+    /**
+     * Hitung semua aggregate sekaligus.
+     */
+    protected function recalculate($data)
+    {
+        $this->totalRecords           = $data->count();
+        $this->totalFail              = $data->sum('fail_count');
+        $this->totalPass              = $data->sum('pass_count');
+        $this->totalSoal              = $data->sum('total_soal');
+        $this->percentageDistribution = $this->getPercentageDistribution($data);
+
+        $this->averagePercentage = $data->count() > 0
+            ? round($data->avg('percentage'), 1)
+            : 0;
+
+        $this->overallPercentage = $this->totalSoal > 0
+            ? round(($this->totalPass / $this->totalSoal) * 100, 1)
+            : 0;
     }
 
     // ==================== ACTIONS ====================
@@ -150,10 +248,7 @@ class BlindTestReport extends Component
         $this->resetPage();
 
         $data = $this->getAggregatedData();
-        $this->totalRecords = $data->count();
-        $this->totalFail = $data->sum('fail_count');
-        $this->totalPass = $data->sum('pass_count');
-        $this->totalSoal = $data->sum('total_soal');
+        $this->recalculate($data);
 
         $this->dispatch('notify',
             message: 'Data found: ' . $this->totalRecords . ' employees',
@@ -164,13 +259,17 @@ class BlindTestReport extends Component
     public function resetFilters()
     {
         $this->reset([
-            'dateFrom', 'dateUntil', 'yearFilter', 'monthFilter', 'departmentFilter',
+            'dateFrom', 'dateUntil', 'yearFilter', 'monthFilter',
+            'departmentFilter', 'sectionFilter',
         ]);
         $this->hasFiltered = false;
         $this->totalRecords = 0;
         $this->totalFail = 0;
         $this->totalPass = 0;
         $this->totalSoal = 0;
+        $this->averagePercentage = 0;
+        $this->overallPercentage = 0;
+        $this->percentageDistribution = [];
         $this->resetPage();
 
         $this->dispatch('notify', message: 'Filters reset', type: 'info');
@@ -196,15 +295,18 @@ class BlindTestReport extends Component
         $spreadsheet = new Spreadsheet();
         $sheet = $spreadsheet->getActiveSheet();
 
-        // Header
+        // Header — kolom Section ditambahkan
         $headers = [
             'A' => 'No',
             'B' => 'NIK',
             'C' => 'Name',
             'D' => 'Department',
-            'E' => 'Fail Count',
-            'F' => 'Pass Count',
-            'G' => 'Total Soal',
+            'E' => 'Section',
+            'F' => 'Percobaan',
+            'G' => 'Fail Count',
+            'H' => 'Pass Count',
+            'I' => 'Total Soal',
+            'J' => 'Percentage',
         ];
 
         $row = 1;
@@ -226,49 +328,82 @@ class BlindTestReport extends Component
             $sheet->setCellValue('B' . $row, $item['nik']);
             $sheet->setCellValue('C' . $row, $item['name']);
             $sheet->setCellValue('D' . $row, $item['department']);
-            $sheet->setCellValue('E' . $row, $item['fail_count']);
-            $sheet->setCellValue('F' . $row, $item['pass_count']);
-            $sheet->setCellValue('G' . $row, $item['total_soal']);
+            $sheet->setCellValue('E' . $row, $item['section']);
+            $sheet->setCellValue('F' . $row, ($item['attempt'] ?? 1) . ' / ' . ($item['max_attempt'] ?? 2)); // ← TAMBAH
+            $sheet->setCellValue('G' . $row, $item['fail_count']);
+            $sheet->setCellValue('H' . $row, $item['pass_count']);
+            $sheet->setCellValue('I' . $row, $item['total_soal']);
+            $sheet->setCellValue('J' . $row, $item['percentage'] . '%');
             $row++;
         }
 
-        // ==================== TOTALS ====================
+        // Totals
         $totalFail = $data->sum('fail_count');
         $totalPass = $data->sum('pass_count');
         $totalSoal = $data->sum('total_soal');
+        $overall   = $totalSoal > 0 ? round(($totalPass / $totalSoal) * 100, 1) : 0;
 
-        $sheet->setCellValue('A' . $row, '');        // kolom No kosong
-        $sheet->setCellValue('B' . $row, '');        // NIK
-        $sheet->setCellValue('C' . $row, '');        // Name
-        $sheet->setCellValue('D' . $row, 'TOTAL');   // Department → label TOTAL
-        $sheet->setCellValue('E' . $row, $totalFail);
-        $sheet->setCellValue('F' . $row, $totalPass);
-        $sheet->setCellValue('G' . $row, $totalSoal);
+        $sheet->setCellValue('E' . $row, 'TOTAL');
+        $sheet->setCellValue('G' . $row, $totalFail);
+        $sheet->setCellValue('H' . $row, $totalPass);
+        $sheet->setCellValue('I' . $row, $totalSoal);
+        $sheet->setCellValue('J' . $row, $overall . '%');
 
-        // Style baris TOTAL
-        $sheet->getStyle('A' . $row . ':G' . $row)->getFont()->setBold(true);
-        $sheet->getStyle('A' . $row . ':G' . $row)->getFill()
+        $sheet->getStyle('A' . $row . ':J' . $row)->getFont()->setBold(true);
+        $sheet->getStyle('A' . $row . ':J' . $row)->getFill()
             ->setFillType(Fill::FILL_SOLID)
-            ->getStartColor()->setARGB('FFFFF2CC'); // kuning muda
-        $sheet->getStyle('D' . $row . ':G' . $row)->getAlignment()
+            ->getStartColor()->setARGB('FFFFF2CC');
+        $sheet->getStyle('E' . $row . ':J' . $row)->getAlignment()
             ->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 
-        // Border seluruh tabel
-        $lastRow = $row;
-        $sheet->getStyle('A1:G' . $lastRow)->getBorders()->getAllBorders()
+        // Summary
+        $row += 2;
+        $distribution = $this->getPercentageDistribution($data);
+        $grandTotal = $data->count();
+
+        $sheet->setCellValue('A' . $row, 'PERCENTAGE DISTRIBUTION');
+        $sheet->getStyle('A' . $row)->getFont()->setBold(true);
+        $sheet->mergeCells('A' . $row . ':I' . $row);
+        $row++;
+
+        $sheet->setCellValue('A' . $row, 'Percentage');
+        $sheet->setCellValue('B' . $row, 'Count (Employees)');
+        $sheet->setCellValue('C' . $row, 'Percentage of Total');
+        $sheet->getStyle('A' . $row . ':C' . $row)->getFont()->setBold(true);
+        $sheet->getStyle('A' . $row . ':C' . $row)->getFill()
+            ->setFillType(Fill::FILL_SOLID)
+            ->getStartColor()->setARGB('FFED7D31');
+        $sheet->getStyle('A' . $row . ':C' . $row)->getFont()->getColor()->setARGB('FFFFFFFF');
+        $row++;
+
+        foreach ($distribution as $pct => $count) {
+            $pctOfTotal = $grandTotal > 0 ? round(($count / $grandTotal) * 100, 1) : 0;
+            $sheet->setCellValue('A' . $row, $pct . '%');
+            $sheet->setCellValue('B' . $row, $count);
+            $sheet->setCellValue('C' . $row, $pctOfTotal . '%');
+            $row++;
+        }
+
+        $sheet->setCellValue('A' . $row, 'TOTAL');
+        $sheet->setCellValue('B' . $row, $grandTotal);
+        $sheet->setCellValue('C' . $row, '100%');
+        $sheet->getStyle('A' . $row . ':C' . $row)->getFont()->setBold(true);
+        $sheet->getStyle('A' . $row . ':C' . $row)->getFill()
+            ->setFillType(Fill::FILL_SOLID)
+            ->getStartColor()->setARGB('FFFFF2CC');
+
+        // Border
+        $lastDataRow = $row - count($distribution) - 4;
+        $sheet->getStyle('A1:J' . $lastDataRow)->getBorders()->getAllBorders()
             ->setBorderStyle(Border::BORDER_THIN);
 
-        // Auto size
         foreach (array_keys($headers) as $col) {
             $sheet->getColumnDimension($col)->setAutoSize(true);
         }
 
-        // Freeze header
         $sheet->freezePane('A2');
 
-        // Output
         $fileName = 'laporan_blind_test_' . date('Y-m-d_H-i-s') . '.xlsx';
-
         $writer = new Xlsx($spreadsheet);
 
         return Response::stream(
@@ -287,20 +422,13 @@ class BlindTestReport extends Component
     // ==================== RENDER ====================
     public function render()
     {
-        // Ambil data aggregated, paginate manual
         $allData = collect();
         $paginated = collect();
 
         if ($this->hasFiltered) {
             $allData = $this->getAggregatedData();
-            $this->totalRecords = $allData->count();
+            $this->recalculate($allData);
 
-            // Refresh totals setiap render (kalau-kalau ada perubahan)
-            $this->totalFail = $allData->sum('fail_count');
-            $this->totalPass = $allData->sum('pass_count');
-            $this->totalSoal = $allData->sum('total_soal');
-
-            // Paginate manual
             $perPage = 10;
             $page = $this->getPage();
             $paginated = new \Illuminate\Pagination\LengthAwarePaginator(
@@ -313,10 +441,11 @@ class BlindTestReport extends Component
         }
 
         return view('livewire.qaqc.blind-test.blind-test-report', [
-            'previewData'   => $paginated,
-            'years'         => $this->years,
-            'months'        => $this->months,
-            'departments'   => $this->departments,
+            'previewData' => $paginated,
+            'years'       => $this->years,
+            'months'      => $this->months,
+            'departments' => $this->departments,
+            'sections'    => $this->sections,
         ])->layout('layouts.app');
     }
 }

@@ -3,6 +3,8 @@
 namespace App\Livewire\QAQC\BlindTest;
 
 use App\Models\QAQC\BlindTest\Deffect;
+use App\Models\QAQC\BlindTest\BlindTest;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -52,11 +54,76 @@ class DeffectManagement extends Component
         $this->resetValidation();
     }
 
+    // ==================== HELPER: CEK DEFECT DIPAKAI ====================
+
+    /**
+     * Ambil semua deffect_item_id yang sudah dipakai di blind test (single query).
+     * Hasil: array of IDs.
+     */
+    protected function getUsedDeffectIds(): array
+    {
+        $used = [];
+
+        // Scan blind_test_items (JSON array of objects)
+        $rows = DB::table('tb_qaqc_blind_test')
+            ->select('blind_test_items', 'question_snapshot')
+            ->where(function ($q) {
+                $q->whereNotNull('blind_test_items')
+                  ->orWhereNotNull('question_snapshot');
+            })
+            ->get();
+
+        foreach ($rows as $row) {
+            // blind_test_items: [{"deffect_item_id": 1, ...}, ...]
+            if ($row->blind_test_items) {
+                $items = json_decode($row->blind_test_items, true) ?? [];
+                foreach ($items as $item) {
+                    if (!empty($item['deffect_item_id'])) {
+                        $used[] = (int) $item['deffect_item_id'];
+                    }
+                }
+            }
+
+            // question_snapshot: [{"id": 1, "items": [{"deffect_id": 1, ...}]}, ...]
+            if ($row->question_snapshot) {
+                $snapshots = json_decode($row->question_snapshot, true) ?? [];
+                foreach ($snapshots as $snap) {
+                    foreach ($snap['items'] ?? [] as $it) {
+                        if (!empty($it['deffect_id'])) {
+                            $used[] = (int) $it['deffect_id'];
+                        }
+                    }
+                }
+            }
+        }
+
+        return array_values(array_unique($used));
+    }
+
+    /**
+     * Cek single defect dipakai atau tidak.
+     */
+    public function isUsedInBlindTest(?array $usedIds = null): bool
+    {
+        if ($usedIds === null) {
+            $usedIds = $this->getUsedDeffectIds();
+        }
+        return in_array((int) $deffectId, $usedIds);
+    }
+
+    // ==================== SAVE ====================
+
     public function save()
     {
         if ($this->deffect_id) {
             if (!auth()->user()->can('edit deffect')) {
                 $this->dispatch('notify', message: 'You do not have permission!', type: 'error');
+                return;
+            }
+
+            // Cek kalau defect sudah dipakai → tidak bisa edit
+            if ($this->isUsedInBlindTest($this->deffect_id)) {
+                $this->dispatch('notify', message: 'Defect sudah dipakai di Blind Test, tidak bisa diedit!', type: 'error');
                 return;
             }
         } else {
@@ -96,6 +163,8 @@ class DeffectManagement extends Component
         $this->dispatch('close-modal-deffect');
     }
 
+    // ==================== EDIT ====================
+
     public function edit($id)
     {
         if (!auth()->user()->can('edit deffect')) {
@@ -109,11 +178,23 @@ class DeffectManagement extends Component
             return;
         }
 
+        // Cek kalau defect sudah dipakai → tidak bisa edit
+        if ($this->isUsedInBlindTest($deffect->id)) {
+            $this->dispatch(
+                'notify',
+                message: "Defect '{$deffect->deffect_item_name}' sudah dipakai di Blind Test, tidak bisa diedit!",
+                type: 'error'
+            );
+            return;
+        }
+
         $this->deffect_id = $deffect->id;
         $this->deffect_item_name = $deffect->deffect_item_name;
         $this->modalTitle = 'Edit Deffect Item';
         $this->dispatch('open-modal-deffect');
     }
+
+    // ==================== VIEW ====================
 
     public function view($id)
     {
@@ -127,6 +208,8 @@ class DeffectManagement extends Component
         $this->dispatch('open-modal-view');
     }
 
+    // ==================== DELETE ====================
+
     public function confirmDelete($id)
     {
         if (!auth()->user()->can('delete deffect')) {
@@ -137,6 +220,16 @@ class DeffectManagement extends Component
         $deffect = Deffect::find($id);
         if (!$deffect) {
             $this->dispatch('notify', message: 'Deffect item not found!', type: 'error');
+            return;
+        }
+
+        // Cek kalau defect sudah dipakai → tidak bisa delete
+        if ($this->isUsedInBlindTest($deffect->id)) {
+            $this->dispatch(
+                'notify',
+                message: "Defect '{$deffect->deffect_item_name}' sudah dipakai di Blind Test, tidak bisa dihapus!",
+                type: 'error'
+            );
             return;
         }
 
@@ -155,6 +248,19 @@ class DeffectManagement extends Component
         if (!$deffect) {
             $this->dispatch('notify', message: 'Deffect item not found!', type: 'error');
             $this->deffectToDelete = null;
+            $this->dispatch('close-modal-delete');
+            return;
+        }
+
+        // Double protection
+        if ($this->isUsedInBlindTest($deffect->id)) {
+            $this->dispatch(
+                'notify',
+                message: "Defect '{$deffect->deffect_item_name}' sudah dipakai di Blind Test, tidak bisa dihapus!",
+                type: 'error'
+            );
+            $this->deffectToDelete = null;
+            $this->dispatch('close-modal-delete');
             return;
         }
 
@@ -172,6 +278,8 @@ class DeffectManagement extends Component
         $this->dispatch('close-modal-delete');
     }
 
+    // ==================== RENDER ====================
+
     public function render()
     {
         if (!auth()->user()->can('view deffect')) {
@@ -186,8 +294,12 @@ class DeffectManagement extends Component
 
         $deffects = $query->orderByDesc('id')->paginate(10);
 
+        // Ambil semua deffect_id yang sudah dipakai (single query)
+        $usedIds = $this->getUsedDeffectIds();
+
         return view('livewire.qaqc.blind-test.deffect-management', [
             'deffects' => $deffects,
+            'usedIds'  => $usedIds,
         ]);
     }
 }

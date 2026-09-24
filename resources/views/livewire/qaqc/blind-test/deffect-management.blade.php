@@ -64,14 +64,22 @@
                 </thead>
                 <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
                     @forelse($deffects as $index => $deffect)
+                    @php $isUsed = in_array((int) $deffect->id, $usedIds, true); @endphp
                     <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors" wire:key="deffect-{{ $deffect->id }}">
                         <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400 text-center">
                             {{ $deffects->firstItem() + $index }}
                         </td>
                         <td class="px-4 py-3 text-left">
-                            <span class="text-sm font-semibold text-zinc-800 dark:text-white">
-                                {{ $deffect->deffect_item_name }}
-                            </span>
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-semibold {{ $isUsed ? 'text-zinc-500 dark:text-zinc-400' : 'text-zinc-800 dark:text-white' }}">
+                                    {{ $deffect->deffect_item_name }}
+                                </span>
+                                @if($isUsed)
+                                    <flux:badge size="sm" color="amber" title="Sudah dipakai di Blind Test">
+                                        Used
+                                    </flux:badge>
+                                @endif
+                            </div>
                         </td>
                         <td class="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400 text-center">
                             {{ $deffect->creator->name ?? '-' }}
@@ -98,36 +106,40 @@
                                 @endcan
 
                                 @can('edit deffect')
-                                <flux:tooltip content="Edit" position="top">
-                                    <flux:button 
-                                        wire:click="edit({{ $deffect->id }})" 
-                                        size="sm"
-                                        icon="pencil-square"
-                                        variant="primary"
-                                        color="yellow"
-                                        class="!p-2 flex-shrink-0"
-                                    />
-                                </flux:tooltip>
+                                    @if(!$isUsed)
+                                    <flux:tooltip content="Edit" position="top">
+                                        <flux:button 
+                                            wire:click="edit({{ $deffect->id }})" 
+                                            size="sm"
+                                            icon="pencil-square"
+                                            variant="primary"
+                                            color="yellow"
+                                            class="!p-2 flex-shrink-0"
+                                        />
+                                    </flux:tooltip>
+                                    @endif
                                 @endcan
 
                                 @can('delete deffect')
-                                <flux:tooltip content="Delete" position="top">
-                                    <flux:button 
-                                        wire:click="confirmDelete({{ $deffect->id }})" 
-                                        size="sm"
-                                        icon="trash"
-                                        variant="primary"
-                                        color="red"
-                                        class="!p-2 flex-shrink-0"
-                                    />
-                                </flux:tooltip>
+                                    @if(!$isUsed)
+                                    <flux:tooltip content="Delete" position="top">
+                                        <flux:button 
+                                            wire:click="confirmDelete({{ $deffect->id }})" 
+                                            size="sm"
+                                            icon="trash"
+                                            variant="primary"
+                                            color="red"
+                                            class="!p-2 flex-shrink-0"
+                                        />
+                                    </flux:tooltip>
+                                    @endif
                                 @endcan
                             </div>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="px-4 py-8 text-center">
+                        <td colspan="6" class="px-4 py-8 text-center">
                             <div class="flex flex-col items-center justify-center gap-2 py-6">
                                 <div class="w-16 h-16 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
                                     <flux:icon name="exclamation-triangle" class="w-8 h-8 text-zinc-400 dark:text-zinc-500" />
@@ -160,7 +172,7 @@
         @endif
     </flux:card>
 
-    <!-- MODAL FORM -->
+    <!-- ==================== MODAL FORM ==================== -->
     <div x-data="{ open: false }" 
         x-on:open-modal-deffect.window="open = true"
         x-on:close-modal-deffect.window="open = false"
@@ -210,7 +222,7 @@
         </div>
     </div>
 
-    <!-- MODAL VIEW -->
+    <!-- ==================== MODAL VIEW ==================== -->
     <div x-data="{ open: false }" 
         x-on:open-modal-view.window="open = true"
         x-on:close-modal-view.window="open = false"
@@ -262,7 +274,7 @@
         </div>
     </div>
 
-    <!-- MODAL DELETE -->
+    <!-- ==================== MODAL DELETE ==================== -->
     <div x-data="{ open: false }" 
         x-show="open" 
         x-on:open-modal-delete.window="open = true"

@@ -117,6 +117,8 @@ class DailyFujiEdit extends Component
     public $status;
     public $approval;
 
+    public $customer;
+
     protected $rules = [
         'group' => 'required|in:A,B,C',
     ];
@@ -191,14 +193,16 @@ class DailyFujiEdit extends Component
     protected function loadRequiredFields()
     {
         $this->requiredFields = $this->masterLine->getRequiredFujiFields();
-        
-        // Tentukan field yang DISABLED (tidak required)
+
+        // ✅ Override oxygen density berdasarkan customer record daily
+        $this->requiredFields = $this->dailyFuji->applyCustomerOxygenOverride($this->requiredFields);
+
         $allFields = array_merge(
             $this->toggleFields,
             array_keys($this->numericRanges),
             ['flashlight']
         );
-        
+
         $this->disabledFields = [];
         foreach ($allFields as $field) {
             if (!in_array($field, $this->requiredFields)) {
@@ -235,6 +239,7 @@ class DailyFujiEdit extends Component
     protected function loadData()
     {
         $fillableFields = [
+            'customer',
             'body_cover',
             'lamp_alarm_change_model',
             'cylinder', 'rail_and_magazine_pcb', 'cover_magazine',
@@ -438,6 +443,7 @@ class DailyFujiEdit extends Component
         
         $data = [];
         $fillableFields = [
+            'customer',
             'body_cover',
             'lamp_alarm_change_model',
             'cylinder', 'rail_and_magazine_pcb', 'cover_magazine',

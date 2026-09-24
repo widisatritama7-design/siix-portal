@@ -10,9 +10,11 @@ use App\Livewire\ESD\EG\EquipmentGroundShow;
 use App\Livewire\ESD\Flooring\FlooringDetailManagement;
 use App\Livewire\ESD\Flooring\FlooringManagement;
 use App\Livewire\ESD\Flooring\FlooringShow;
+use App\Livewire\ESD\Garment\EmployeeUniformNotification;
 use App\Livewire\ESD\Garment\GarmentDetailManagement;
 use App\Livewire\ESD\Garment\GarmentManagement;
 use App\Livewire\ESD\Garment\GarmentShow;
+use App\Livewire\ESD\Garment\UniformRecipientManagement;
 use App\Livewire\ESD\GB\GroundMonitorBoxDetailManagement;
 use App\Livewire\ESD\GB\GroundMonitorBoxManagement;
 use App\Livewire\ESD\GB\GroundMonitorBoxShow;
@@ -70,6 +72,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::livewire('esd/garments', GarmentManagement::class)->name('esd.garments');
     Route::livewire('/esd/garments/{id}', GarmentShow::class)->name('esd.garments.show');
     Route::livewire('esd/garment-details', GarmentDetailManagement::class)->name('esd.garment-details');
+    Route::livewire('/esd/employee-uniform-notification', EmployeeUniformNotification::class)->name('esd.employee-uniform-notification');
+    Route::livewire('/esd/uniform-recipients', UniformRecipientManagement::class)->name('esd.uniform-recipients');
 
     // Ground Monitor Box
     Route::livewire('esd/ground-monitor-boxs', GroundMonitorBoxManagement::class)->name('esd.ground-monitor-boxs');

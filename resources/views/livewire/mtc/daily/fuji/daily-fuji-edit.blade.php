@@ -70,6 +70,14 @@
                             @if($masterLine->status === 'No Schedule')
                                 <span class="ml-2 text-xs text-blue-600 dark:text-blue-400">(N/A allowed)</span>
                             @endif
+                            @if($customer)
+                                <span class="inline-flex items-center ml-2 px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400">
+                                    <svg class="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                                    </svg>
+                                    Customer: {{ $customer }}
+                                </span>
+                            @endif
                         </p>
                     </div>
                     <div class="w-full sm:w-auto flex-shrink-0">
@@ -1209,7 +1217,7 @@
                                                 @if($this->isFieldRequired('oxygent_density_sek'))
                                                     <span class="text-red-500">*</span>
                                                 @else
-                                                    <span class="text-gray-400 text-xs font-normal">(Disabled)</span>
+                                                    <span class="text-gray-400 text-xs font-normal">(Disabled - Customer: {{ $customer ?? '-' }})</span>
                                                 @endif
                                             </label>
                                             <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Oxygen meter (SEK Standard) | Standard : 1200~1800 ppm</p>
@@ -1230,7 +1238,7 @@
                                                 @if($this->isFieldRequired('oxygent_density_special'))
                                                     <span class="text-red-500">*</span>
                                                 @else
-                                                    <span class="text-gray-400 text-xs font-normal">(Disabled)</span>
+                                                    <span class="text-gray-400 text-xs font-normal">(Disabled - Customer: {{ $customer ?? '-' }})</span>
                                                 @endif
                                             </label>
                                             <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Oxygen meter (Special Requirement) | Standard : 500~1000 ppm</p>

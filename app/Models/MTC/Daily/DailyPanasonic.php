@@ -2,6 +2,7 @@
 
 namespace App\Models\MTC\Daily;
 
+use App\Models\MTC\Daily\Concerns\HasCustomer;
 use App\Models\MTC\Master\MasterLine;
 use App\Models\User;
 use Carbon\Carbon;
@@ -15,6 +16,7 @@ class DailyPanasonic extends Model
 {
     use HasFactory;
     use LogsActivity;
+    use HasCustomer;
     
     protected $table = 'tb_mtc_daily_panasonics';
 
@@ -85,6 +87,7 @@ class DailyPanasonic extends Model
         'approved_by',
         'lamp_alarm_change_model',
         'flashlight',
+        'customer',
     ];
 
     protected $casts = [
@@ -162,6 +165,7 @@ class DailyPanasonic extends Model
             'approved_by',
             'lamp_alarm_change_model',
             'flashlight',
+            'customer',
         ]);
     }
 
@@ -202,6 +206,7 @@ class DailyPanasonic extends Model
     {
         // ✅ Ambil required fields dari master line
         $requiredFields = $this->masterLine?->getRequiredPanasonicFields() ?? [];
+        $requiredFields = $this->applyCustomerOxygenOverride($requiredFields); // <-- tambah
 
         // ============ TOGGLE FIELDS ============
         $toggleFields = [

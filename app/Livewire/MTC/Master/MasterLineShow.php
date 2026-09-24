@@ -57,6 +57,15 @@ class MasterLineShow extends Component
     public $requiredFujiFields = [];
     public $requiredPanasonicFields = [];
 
+    // ============ CUSTOMER MODAL ============
+    public $showCustomerModal = false;
+    public $customerEditType = null;   // 'fuji' | 'panasonic'
+    public $customerEditId = null;
+    public $selectedCustomer = '';
+    public $currentCustomer = '';
+
+    public $noScheduleCustomer = '-';
+
     protected $rules = [
         'location_id' => 'required|exists:tb_mtc_master_locations,id',
         'line_number' => 'required|string|max:255',
@@ -80,6 +89,129 @@ class MasterLineShow extends Component
         'refreshDailyFujiTable' => '$refresh',
         'refreshDailyPanasonicTable' => '$refresh',
     ];
+
+    public function setNoScheduleCustomer($value)
+    {
+        $this->selectedCustomer = $value;
+    }
+
+    /**
+     * Buka modal customer sebelum edit
+     */
+    public function openCustomerEditModal($id, $type)
+    {
+        // Cek permission
+        $permission = $type === 'fuji' ? 'edit daily fuji' : 'edit daily panasonic';
+        if (!auth()->user()->can($permission)) {
+            $this->dispatch('notify', message: 'You do not have permission to edit!', type: 'error');
+            return;
+        }
+
+        // Cek shift
+        $record = $type === 'fuji' 
+            ? DailyFuji::find($id) 
+            : DailyPanasonic::find($id);
+
+        if (!$record) {
+            $this->dispatch('notify', message: 'Record not found!', type: 'error');
+            return;
+        }
+
+        if (now()->greaterThan($record->getShiftEnd())) {
+            $this->dispatch('notify', message: 'Cannot edit! The inspection shift has ended.', type: 'error');
+            return;
+        }
+
+        // ============ JIKA LINE NO SCHEDULE, LANGSUNG REDIRECT KE EDIT ============
+        if ($this->isLineNoSchedule()) {
+            if ($type === 'fuji') {
+                return redirect()->route('mtc.daily-fuji.edit', [
+                    'masterLineId' => $this->line->id,
+                    'dailyFujiId' => $id,
+                ]);
+            } else {
+                return redirect()->route('mtc.daily-panasonic.edit', [
+                    'masterLineId' => $this->line->id,
+                    'dailyPanasonicId' => $id,
+                ]);
+            }
+        }
+
+        // Jika bukan No Schedule, tampilkan modal pilih customer
+        $this->customerEditType = $type;
+        $this->customerEditId = $id;
+        $this->currentCustomer = $record->customer ?? '';
+        $this->selectedCustomer = $record->customer ?? '';
+        $this->showCustomerModal = true;
+    }
+
+    /**
+     * Simpan customer ke record daily, lalu redirect ke edit
+     */
+    public function confirmCustomerAndEdit()
+    {
+        // Jika line No Schedule, customer tidak wajib diisi
+        if ($this->isLineNoSchedule()) {
+            $this->validate([
+                'selectedCustomer' => 'nullable|string|max:255',
+            ]);
+        } else {
+            $this->validate([
+                'selectedCustomer' => 'required|in:' . implode(',', DailyFuji::CUSTOMERS),
+            ], [
+                'selectedCustomer.required' => 'Customer wajib dipilih.',
+                'selectedCustomer.in' => 'Customer tidak valid.',
+            ]);
+        }
+
+        if ($this->customerEditType === 'fuji') {
+            $record = DailyFuji::find($this->customerEditId);
+            $redirectRoute = 'mtc.daily-fuji.edit';
+            $redirectParam = 'dailyFujiId';
+        } else {
+            $record = DailyPanasonic::find($this->customerEditId);
+            $redirectRoute = 'mtc.daily-panasonic.edit';
+            $redirectParam = 'dailyPanasonicId';
+        }
+
+        if (!$record) {
+            $this->dispatch('notify', message: 'Record not found!', type: 'error');
+            $this->closeCustomerModal();
+            return;
+        }
+
+        // Simpan customer ke record daily (bisa null / '-' / 'n/a' jika No Schedule)
+        $customerValue = $this->isLineNoSchedule() 
+            ? ($this->selectedCustomer ?: null) 
+            : $this->selectedCustomer;
+        
+        $record->updateQuietly(['customer' => $customerValue]);
+
+        $recordId = $this->customerEditId;
+        $this->closeCustomerModal();
+
+        return redirect()->route($redirectRoute, [
+            'masterLineId' => $this->line->id,
+            $redirectParam => $recordId,
+        ]);
+    }
+
+    public function closeCustomerModal()
+    {
+        $this->showCustomerModal = false;
+        $this->customerEditType = null;
+        $this->customerEditId = null;
+        $this->selectedCustomer = '';
+        $this->currentCustomer = '';
+    }
+
+    /**
+     * Cek apakah line sedang No Schedule
+     */
+    protected function isLineNoSchedule(): bool
+    {
+        return $this->line->status === 'No Schedule';
+    }
 
     // Tambahkan method untuk view activity
     public function viewActivity($id, $type)
@@ -156,22 +288,7 @@ class MasterLineShow extends Component
 
     public function editDailyPanasonic($id)
     {
-        if (!auth()->user()->can('edit daily panasonic')) {
-            $this->dispatch('notify', message: 'You do not have permission to edit daily panasonic!', type: 'error');
-            return;
-        }
-        
-        $dailyPanasonic = DailyPanasonic::find($id);
-        
-        if (now()->greaterThan($dailyPanasonic->getShiftEnd())) {
-            $this->dispatch('notify', message: 'Cannot edit! The inspection shift has ended.', type: 'error');
-            return;
-        }
-        
-        return redirect()->route('mtc.daily-panasonic.edit', [
-            'masterLineId' => $this->line->id,
-            'dailyPanasonicId' => $id
-        ]);
+        $this->openCustomerEditModal($id, 'panasonic');
     }
 
     public function openPanasonicApprovalModal($dailyPanasonicId)
@@ -355,22 +472,7 @@ class MasterLineShow extends Component
     
     public function editDailyFuji($id)
     {
-        if (!auth()->user()->can('edit daily fuji')) {
-            $this->dispatch('notify', message: 'You do not have permission to edit daily fuji!', type: 'error');
-            return;
-        }
-        
-        $dailyFuji = DailyFuji::find($id);
-        
-        if (now()->greaterThan($dailyFuji->getShiftEnd())) {
-            $this->dispatch('notify', message: 'Cannot edit! The inspection shift has ended.', type: 'error');
-            return;
-        }
-        
-        return redirect()->route('mtc.daily-fuji.edit', [
-            'masterLineId' => $this->line->id,
-            'dailyFujiId' => $id
-        ]);
+        $this->openCustomerEditModal($id, 'fuji');
     }
 
     public function viewDailyFujiDetails($dailyFujiId)
