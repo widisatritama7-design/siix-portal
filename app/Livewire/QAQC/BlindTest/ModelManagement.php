@@ -29,14 +29,22 @@ class ModelManagement extends Component
     {
         return [
             'customer_id' => 'required|exists:tb_qaqc_customer,id',
-            'model_name' => 'required|string|max:255',
+            'model_name'  => [
+                'required',
+                'string',
+                'max:255',
+                \Illuminate\Validation\Rule::unique('tb_qaqc_model', 'model_name')
+                    ->where(fn ($q) => $q->where('customer_id', $this->customer_id))
+                    ->ignore($this->model_id),
+            ],
         ];
     }
 
     protected $messages = [
         'customer_id.required' => 'Customer is required.',
-        'customer_id.exists' => 'Selected customer is invalid.',
-        'model_name.required' => 'Model name is required.',
+        'customer_id.exists'   => 'Selected customer is invalid.',
+        'model_name.required'  => 'Model name is required.',
+        'model_name.unique'    => 'Model name sudah dipakai untuk customer ini.',
     ];
 
     public function updatedSearch()
@@ -107,12 +115,9 @@ class ModelManagement extends Component
     /**
      * Cek single model dipakai atau tidak.
      */
-    public function isUsedInBlindTest(?array $usedIds = null): bool
+    public function isUsedInBlindTest(int $modelId): bool
     {
-        if ($usedIds === null) {
-            $usedIds = $this->getUsedModelIds();
-        }
-        return in_array((int) $modelId, $usedIds, true);
+        return in_array($modelId, $this->getUsedModelIds(), true);
     }
 
     // ==================== SAVE ====================
@@ -126,7 +131,7 @@ class ModelManagement extends Component
             }
 
             // Cek kalau model sudah dipakai → tidak bisa edit
-            if ($this->isUsedInBlindTest($this->model_id)) {
+            if ($this->isUsedInBlindTest((int) $this->model_id)) {
                 $this->dispatch('notify', message: 'Model sudah dipakai di Blind Test / Master Question, tidak bisa diedit!', type: 'error');
                 return;
             }
@@ -185,7 +190,7 @@ class ModelManagement extends Component
         }
 
         // Cek kalau model sudah dipakai → tidak bisa edit
-        if ($this->isUsedInBlindTest($model->id)) {
+        if ($this->isUsedInBlindTest((int) $model->id)) {
             $this->dispatch(
                 'notify',
                 message: "Model '{$model->model_name}' sudah dipakai di Blind Test / Master Question, tidak bisa diedit!",
@@ -231,7 +236,7 @@ class ModelManagement extends Component
         }
 
         // Cek kalau model sudah dipakai → tidak bisa delete
-        if ($this->isUsedInBlindTest($model->id)) {
+        if ($this->isUsedInBlindTest((int) $model->id)) {
             $this->dispatch(
                 'notify',
                 message: "Model '{$model->model_name}' sudah dipakai di Blind Test / Master Question, tidak bisa dihapus!",
@@ -251,6 +256,11 @@ class ModelManagement extends Component
             return;
         }
 
+        if (!$this->modelToDelete) {
+            $this->dispatch('close-modal-delete');
+            return;
+        }
+
         $model = Model::find($this->modelToDelete->id);
         if (!$model) {
             $this->dispatch('notify', message: 'Model not found!', type: 'error');
@@ -260,7 +270,7 @@ class ModelManagement extends Component
         }
 
         // Double protection
-        if ($this->isUsedInBlindTest($model->id)) {
+        if ($this->isUsedInBlindTest((int) $model->id)) {
             $this->dispatch(
                 'notify',
                 message: "Model '{$model->model_name}' sudah dipakai di Blind Test / Master Question, tidak bisa dihapus!",

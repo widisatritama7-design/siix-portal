@@ -96,12 +96,9 @@ class CustomerManagement extends Component
     /**
      * Cek single customer dipakai atau tidak.
      */
-    public function isUsedInBlindTest(?array $usedIds = null): bool
+    public function isUsedInBlindTest(int $customerId): bool
     {
-        if ($usedIds === null) {
-            $usedIds = $this->getUsedCustomerIds();
-        }
-        return in_array((int) $customerId, $usedIds, true);
+        return in_array($customerId, $this->getUsedCustomerIds(), true);
     }
 
     // ==================== SAVE ====================
@@ -115,7 +112,7 @@ class CustomerManagement extends Component
             }
 
             // Cek kalau customer sudah dipakai → tidak bisa edit
-            if ($this->isUsedInBlindTest($this->customer_id)) {
+            if ($this->isUsedInBlindTest((int) $this->customer_id)) {
                 $this->dispatch('notify', message: 'Customer sudah dipakai di Model / Question / Blind Test, tidak bisa diedit!', type: 'error');
                 return;
             }
@@ -172,7 +169,7 @@ class CustomerManagement extends Component
         }
 
         // Cek kalau customer sudah dipakai → tidak bisa edit
-        if ($this->isUsedInBlindTest($customer->id)) {
+        if ($this->isUsedInBlindTest((int) $customer->id)) {
             $this->dispatch(
                 'notify',
                 message: "Customer '{$customer->customer_name}' sudah dipakai, tidak bisa diedit!",
@@ -217,7 +214,7 @@ class CustomerManagement extends Component
         }
 
         // Cek kalau customer sudah dipakai → tidak bisa delete
-        if ($this->isUsedInBlindTest($customer->id)) {
+        if ($this->isUsedInBlindTest((int) $customer->id)) {
             $this->dispatch(
                 'notify',
                 message: "Customer '{$customer->customer_name}' sudah dipakai, tidak bisa dihapus!",
@@ -237,6 +234,11 @@ class CustomerManagement extends Component
             return;
         }
 
+        if (!$this->customerToDelete) {
+            $this->dispatch('close-modal-delete');
+            return;
+        }
+
         $customer = Customer::find($this->customerToDelete->id);
         if (!$customer) {
             $this->dispatch('notify', message: 'Customer not found!', type: 'error');
@@ -246,7 +248,7 @@ class CustomerManagement extends Component
         }
 
         // Double protection
-        if ($this->isUsedInBlindTest($customer->id)) {
+        if ($this->isUsedInBlindTest((int) $customer->id)) {
             $this->dispatch(
                 'notify',
                 message: "Customer '{$customer->customer_name}' sudah dipakai, tidak bisa dihapus!",

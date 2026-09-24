@@ -103,12 +103,9 @@ class DeffectManagement extends Component
     /**
      * Cek single defect dipakai atau tidak.
      */
-    public function isUsedInBlindTest(?array $usedIds = null): bool
+    public function isUsedInBlindTest(int $deffectId): bool
     {
-        if ($usedIds === null) {
-            $usedIds = $this->getUsedDeffectIds();
-        }
-        return in_array((int) $deffectId, $usedIds);
+        return in_array($deffectId, $this->getUsedDeffectIds(), true);
     }
 
     // ==================== SAVE ====================
@@ -122,7 +119,7 @@ class DeffectManagement extends Component
             }
 
             // Cek kalau defect sudah dipakai → tidak bisa edit
-            if ($this->isUsedInBlindTest($this->deffect_id)) {
+            if ($this->isUsedInBlindTest((int) $this->deffect_id)) {
                 $this->dispatch('notify', message: 'Defect sudah dipakai di Blind Test, tidak bisa diedit!', type: 'error');
                 return;
             }
@@ -179,7 +176,7 @@ class DeffectManagement extends Component
         }
 
         // Cek kalau defect sudah dipakai → tidak bisa edit
-        if ($this->isUsedInBlindTest($deffect->id)) {
+        if ($this->isUsedInBlindTest((int) $deffect->id)) {
             $this->dispatch(
                 'notify',
                 message: "Defect '{$deffect->deffect_item_name}' sudah dipakai di Blind Test, tidak bisa diedit!",
@@ -224,7 +221,7 @@ class DeffectManagement extends Component
         }
 
         // Cek kalau defect sudah dipakai → tidak bisa delete
-        if ($this->isUsedInBlindTest($deffect->id)) {
+        if ($this->isUsedInBlindTest((int) $deffect->id)) {
             $this->dispatch(
                 'notify',
                 message: "Defect '{$deffect->deffect_item_name}' sudah dipakai di Blind Test, tidak bisa dihapus!",
@@ -244,6 +241,11 @@ class DeffectManagement extends Component
             return;
         }
 
+        if (!$this->deffectToDelete) {
+            $this->dispatch('close-modal-delete');
+            return;
+        }
+
         $deffect = Deffect::find($this->deffectToDelete->id);
         if (!$deffect) {
             $this->dispatch('notify', message: 'Deffect item not found!', type: 'error');
@@ -253,7 +255,7 @@ class DeffectManagement extends Component
         }
 
         // Double protection
-        if ($this->isUsedInBlindTest($deffect->id)) {
+        if ($this->isUsedInBlindTest((int) $deffect->id)) {
             $this->dispatch(
                 'notify',
                 message: "Defect '{$deffect->deffect_item_name}' sudah dipakai di Blind Test, tidak bisa dihapus!",
