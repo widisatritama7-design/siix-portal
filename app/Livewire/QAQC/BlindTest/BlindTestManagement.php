@@ -139,6 +139,12 @@ class BlindTestManagement extends Component
         $this->model_id = '';
         $this->questionPage = 1;
         $this->searchQuestion = '';
+
+        // Reset employee karena filter department berubah
+        $this->selectedEmployees = [];
+        $this->employeeSearch = '';
+        $this->tempShift = '';
+        $this->tempGroup = '';
     }
 
     public function updatedCustomerId()
@@ -229,6 +235,24 @@ class BlindTestManagement extends Component
         $e = Employee::where('id', $id)->whereIn('status', [1, 2, 3])->first();
         if (!$e) {
             $this->dispatch('notify', message: 'Invalid employee!', type: 'error');
+            return;
+        }
+
+        // Validasi department sesuai section
+        $allowedDepartments = match ($this->section) {
+            'QC'  => ['IQC', 'QA/QC'],
+            'SMT' => ['PROD.1'],
+            'MI'  => ['PROD.1'],
+            'BE'  => ['PROD.2'],
+            default => [],
+        };
+
+        if (!in_array($e->department, $allowedDepartments, true)) {
+            $this->dispatch(
+                'notify',
+                message: "Employee department ({$e->department}) tidak sesuai untuk section {$this->section}!",
+                type: 'error'
+            );
             return;
         }
 
@@ -628,11 +652,30 @@ class BlindTestManagement extends Component
     {
         if (strlen($search) < 2) return [];
 
+        // Kalau section belum dipilih, jangan tampilkan employee
+        if (empty($this->section)) {
+            return [];
+        }
+
+        // Map section → department yang diizinkan
+        $allowedDepartments = match ($this->section) {
+            'QC'  => ['IQC', 'QA/QC'],
+            'SMT' => ['PROD.1'],
+            'MI'  => ['PROD.1'],
+            'BE'  => ['PROD.2'],
+            default => [],
+        };
+
+        if (empty($allowedDepartments)) {
+            return [];
+        }
+
         return Employee::where(function ($q) use ($search) {
                 $q->where('nik', 'like', "%{$search}%")
                     ->orWhere('name', 'like', "%{$search}%");
             })
             ->whereIn('status', [1, 2, 3])
+            ->whereIn('department', $allowedDepartments)
             ->limit(20)
             ->get()
             ->map(fn ($e) => [
@@ -684,7 +727,12 @@ class BlindTestManagement extends Component
         if ($this->filterGroup)      $query->where('group', $this->filterGroup);
         if ($this->filterSection)    $query->where('section', $this->filterSection);
         if ($this->filterCustomer)   $query->where('customer_id', $this->filterCustomer);
-        if ($this->filterModel)      $query->where('model_id', $this->filterModel);
+        if ($this->filterModel) {
+            $query->where(function ($q) {
+                $q->where('model_id', $this->filterModel)
+                ->orWhere('question_snapshot', 'like', '%"model_id":' . (int) $this->filterModel . '%');
+            });
+        };
         if ($this->filterResult)     $query->where('overall_result', $this->filterResult);
 
         $blindTests = $query->orderByDesc('id')->paginate(10);

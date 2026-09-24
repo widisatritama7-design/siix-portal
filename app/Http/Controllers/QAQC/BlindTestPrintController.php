@@ -32,35 +32,51 @@ class BlindTestPrintController extends Controller
             ->orderByDesc('created_at')
             ->get();
 
-        // ========== AGGREGATE PER-EMPLOYEE (sama dengan Livewire) ==========
+        // ========== AGGREGATE PER-EMPLOYEE (sama dengan Livewire Report) ==========
         $grouped = $records->groupBy('employee_id')->map(function ($items) {
-            // Group by test (section + customer + model) supaya kalau ada 2 test beda tetap dihitung
+            // Group per test unik (section + customer + model)
             $byTest = $items->groupBy(function ($r) {
                 return ($r->section ?? '-') . '|' . ($r->customer_id ?? '-') . '|' . ($r->model_id ?? '-');
             });
 
-            $passCount = 0;
-            $failCount = 0;
+            $passCount  = 0;
+            $failCount  = 0;
+            $totalKunci = 0;
 
             foreach ($byTest as $sameTest) {
                 // Ambil attempt TERAKHIR per test
                 $latest = $sameTest->sortByDesc('attempt')->first();
                 if (!$latest) continue;
 
+                // Total soal = jumlah kunci di test ini
+                $kunciCount  = count($latest->blind_test_items ?? []);
+                $totalKunci += $kunciCount;
+
                 $answers = $latest->user_answers ?? [];
                 if (!is_array($answers)) continue;
 
-                // Hitung langsung per baris
-                foreach ($answers as $answer) {
-                    if (!empty($answer['is_correct'])) {
-                        $passCount++;
-                    } else {
-                        $failCount++;
-                    }
-                }
+                // Pass = baris is_correct = true, skip MISSING & pending
+                $passInTest = collect($answers)
+                    ->filter(function ($a) {
+                        $userAnswer = $a['user_answer'] ?? '';
+                        $locStatus  = $a['location_status'] ?? null;
+
+                        if ($userAnswer === 'MISSING') return false;
+                        if ($locStatus === 'pending')  return false;
+
+                        return !empty($a['is_correct']);
+                    })
+                    ->count();
+
+                $passCount += $passInTest;
+
+                // Fail = total kunci - pass
+                $failInTest = max(0, $kunciCount - $passInTest);
+                $failCount += $failInTest;
             }
 
-            $totalSoal = $passCount + $failCount;
+            // Total soal = total kunci
+            $totalSoal  = $totalKunci;
             $percentage = $totalSoal > 0 ? (int) round(($passCount / $totalSoal) * 100) : 0;
             $roundedPercentage = max(0, min(100, (int) (round($percentage / 20) * 20)));
 

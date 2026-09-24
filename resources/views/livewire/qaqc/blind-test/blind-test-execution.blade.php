@@ -37,7 +37,6 @@
                 @if($isStarted && !$isFinished)
                 <div class="bg-white/15 backdrop-blur-sm border border-white/30 text-white px-5 py-3 rounded-2xl shadow-lg">
                     @if($remainingSeconds !== null)
-                        {{-- Hitung mundur: MENIT:DETIK --}}
                         @php $sec = (int) floor(abs($remainingSeconds)); @endphp
                         <div class="flex items-center gap-2"
                             x-data="{ left: {{ $sec }} }"
@@ -54,7 +53,6 @@
                             </span>
                         </div>
                     @else
-                        {{-- Hitung maju: MENIT:DETIK --}}
                         <div class="flex items-center gap-2"
                             x-data="{ sec: 0, start: {{ $startedAt }} }"
                             x-init="setInterval(() => { sec = Math.floor(Date.now()/1000) - start; }, 1000)">
@@ -313,7 +311,6 @@
 
                 @if($isFinished)
                     @if($isPendingReview)
-                        {{-- MENUNGGU REVIEW QC --}}
                         <div class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border-2 border-white/40 mb-2">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-7 h-7 text-white">
                                 <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 6a.75.75 0 0 0-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 0 0 0-1.5h-3.75V6Z" clip-rule="evenodd" />
@@ -323,7 +320,6 @@
                         <div class="text-lg font-bold text-white leading-tight">Menunggu Review</div>
                         <div class="text-xs text-white/90 mt-1">QC</div>
                     @elseif($overallResult)
-                        {{-- FINAL RESULT (setelah review) --}}
                         <div class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border-2 border-white/40 mb-2">
                             @if($overallResult === 'PASS')
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-7 h-7 text-white">
@@ -363,7 +359,6 @@
     @if(!$isStarted && !$isFinished)
     <flux:card class="p-12 text-center shadow-lg">
         @if($isExpired)
-            {{-- Expired state --}}
             <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center shadow-xl shadow-red-500/30">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-12 h-12 text-white">
                     <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 6a.75.75 0 0 0-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 0 0 0-1.5h-3.75V6Z" clip-rule="evenodd" />
@@ -381,7 +376,6 @@
                 </flux:button>
             </a>
         @else
-            {{-- Normal state --}}
             <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-xl shadow-blue-500/30">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-12 h-12 text-white">
                     <path fill-rule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clip-rule="evenodd" />
@@ -412,7 +406,6 @@
     @if($isStarted && !$isFinished)
     <flux:card class="p-6 shadow-lg">
 
-        {{-- Warning kalau sisa waktu < 5 menit --}}
         @if($remainingSeconds !== null && $remainingSeconds <= 300 && $remainingSeconds > 0)
         <div class="mb-4 rounded-xl bg-yellow-50 dark:bg-yellow-950/20 border-2 border-yellow-300 dark:border-yellow-700 p-4 flex items-center gap-3">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-yellow-600 dark:text-yellow-400 flex-shrink-0">
@@ -486,94 +479,238 @@
     @endif
 
     <!-- ==================== HASIL ==================== -->
-    {{-- ==================== HASIL ==================== --}}
     @if($isFinished)
         @php
-            $showFullResult = $blindTest->shouldShowFullResult();
-            $isFirstAttempt = $blindTest->attempt === 1;
-            $isFailed       = $blindTest->overall_result === 'FAIL';
-            $canRetry       = $blindTest->canRetry();
+            $showFullResult  = $blindTest->shouldShowFullResult();
             $isSecondAttempt = $blindTest->attempt > 1;
+            $hasPending      = $blindTest->hasPendingReview();
+
+            // Filter baris untuk mode "belum full" (tanpa kunci)
+            $currentVisible = $blindTest->filterVisibleAnswers($evaluationResult ?? []);
+            $firstVisible   = $blindTest->filterVisibleAnswers($firstAttemptAnswers ?? []);
         @endphp
 
-        {{-- ============ CASE A: Attempt 1 FAIL & masih bisa retry → sembunyikan kunci ============ --}}
         @if(!$showFullResult)
+        {{-- ============================================================ --}}
+        {{-- CASE A: BELUM FULL — attempt 1 atau ada pending review        --}}
+        {{-- Tanpa kunci jawaban, tanpa baris MISSING                      --}}
+        {{-- ============================================================ --}}
         <flux:card class="p-6 shadow-lg">
 
-            {{-- Layout 80% (banner FAIL) + 20% (percobaan) --}}
-            <div class="grid grid-cols-1 lg:grid-cols-5 gap-3 mb-5">
-
-                {{-- KIRI 80%: Banner FAIL --}}
-                <div class="lg:col-span-4">
-                    <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-red-500 via-rose-600 to-pink-600 shadow-xl h-full">
-                        <div class="p-6 sm:p-7 flex items-center gap-5 h-full">
-                            <div class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border-2 border-white/40 flex-shrink-0">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-9 h-9 text-white">
-                                    <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <div class="text-2xl font-bold text-white">FAIL — Percobaan ke-1</div>
-                                <div class="text-sm text-red-50 mt-1">
-                                    Anda masih memiliki <strong>1 kesempatan lagi</strong> untuk mengerjakan test ini.
-                                    Kunci jawaban & jawaban detail <strong>tidak ditampilkan</strong> pada percobaan pertama.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- KANAN 20%: Stat Percobaan --}}
-                <div class="lg:col-span-1">
-                    <div class="rounded-2xl bg-gradient-to-br from-zinc-500 to-zinc-600 shadow-lg p-4 flex flex-col justify-center items-center text-center h-full">
-                        <div class="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border-2 border-white/40 mb-1.5">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-white">
+            {{-- Banner --}}
+            @if($hasPending)
+                {{-- Banner kuning: menunggu verifikasi QC --}}
+                <div class="mb-5 relative overflow-hidden rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 shadow-lg">
+                    <div class="p-5 flex items-center gap-4">
+                        <div class="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border-2 border-white/40 flex-shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-7 h-7 text-white">
                                 <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 6a.75.75 0 0 0-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 0 0 0-1.5h-3.75V6Z" clip-rule="evenodd" />
                             </svg>
                         </div>
-                        <div class="text-[10px] text-white/80 uppercase tracking-wider font-semibold">Percobaan</div>
-                        <div class="text-3xl font-bold text-white mt-0.5">
-                            {{ $blindTest->attempt }} / {{ $blindTest->max_attempt }}
+                        <div>
+                            <div class="text-lg font-bold text-white">Menunggu Verifikasi QC</div>
+                            <div class="text-sm text-amber-50">
+                                Jawaban Anda sudah tersimpan. Tim QC akan melakukan <strong>verifikasi lokasi</strong>
+                                secara manual. Hasil akhir (PASS/FAIL) akan ditampilkan setelah proses review selesai.
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            {{-- Info Keterangan (full width di bawah) --}}
-            <div class="rounded-xl bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 p-5 mb-5">
-                <div class="flex items-start gap-3">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5">
-                        <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 0 1 .67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 1 1-.671-1.34l.041-.022ZM12 9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
-                    </svg>
-                    <div>
-                        <div class="text-sm font-bold text-blue-800 dark:text-blue-300">Informasi</div>
-                        <div class="text-xs text-blue-700 dark:text-blue-400 mt-1 leading-relaxed">
-                            Kunci jawaban dan detail kesalahan <strong>tidak dapat dilihat</strong> pada percobaan pertama.
-                            Silakan coba lagi dengan lebih teliti. Hasil lengkap akan ditampilkan setelah percobaan terakhir.
+            @elseif($blindTest->overall_result === 'FAIL' && $blindTest->canRetry())
+                {{-- Banner merah: FAIL, masih bisa retry --}}
+                <div class="mb-5 relative overflow-hidden rounded-2xl bg-gradient-to-r from-red-500 via-rose-600 to-pink-600 shadow-xl">
+                    <div class="p-6 flex items-center gap-5">
+                        <div class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border-2 border-white/40 flex-shrink-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-9 h-9 text-white">
+                                <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z" clip-rule="evenodd" />
+                            </svg>
                         </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="text-2xl font-bold text-white">FAIL — Percobaan ke-{{ $blindTest->attempt }}</div>
+                            <div class="text-sm text-red-50 mt-1">
+                                Anda masih memiliki <strong>{{ $blindTest->max_attempt - $blindTest->attempt }} kesempatan lagi</strong>.
+                                Kunci jawaban <strong>tidak ditampilkan</strong> sampai percobaan terakhir.
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+            {{-- Tabel Attempt(s) — tanpa kunci, tanpa MISSING --}}
+            <div class="space-y-4">
+
+                {{-- Kalau attempt 2 → tampilkan attempt 1 dulu --}}
+                @if($isSecondAttempt)
+                <div class="rounded-xl border-2 border-red-200 dark:border-red-800 overflow-hidden shadow-sm">
+                    <div class="px-4 py-3 bg-gradient-to-r from-red-500 to-rose-500 text-white flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                            <path fill-rule="evenodd" d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625Z" clip-rule="evenodd" />
+                            <path d="M12.971 1.816A5.23 5.23 0 0 1 14.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 0 1 3.434 1.279 9.768 9.768 0 0 0-6.963-6.963Z" />
+                        </svg>
+                        <div>
+                            <div class="text-xs font-semibold">Attempt 1</div>
+                            <div class="text-[10px] text-white/80">
+                                Result: {{ $blindTest->first_attempt_result ?? '-' }} —
+                                {{ count($firstVisible) }} jawaban salah
+                            </div>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto bg-white dark:bg-zinc-900">
+                        <table class="w-full" style="min-width: 500px;">
+                            <thead class="bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-200 dark:border-zinc-700">
+                                <tr>
+                                    <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase w-12">#</th>
+                                    <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase">Defect Item</th>
+                                    <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase">Location</th>
+                                    <th class="px-3 py-2.5 text-center text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase">Hasil</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
+                                @forelse($firstVisible as $i => $row)
+                                    @php
+                                        $deffect   = $row['deffect_item_id'] ? \App\Models\QAQC\BlindTest\Deffect::find($row['deffect_item_id']) : null;
+                                        $locStatus = $row['location_status'] ?? null;
+                                    @endphp
+                                    <tr class="@if($locStatus === 'pending') bg-amber-50/40 dark:bg-amber-950/10 @else bg-red-50/40 dark:bg-red-950/10 @endif">
+                                        <td class="px-3 py-2 text-[11px]">
+                                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full font-semibold text-[10px]
+                                                @if($locStatus === 'pending') bg-amber-100 text-amber-700 @else bg-red-100 text-red-700 @endif">
+                                                {{ $i + 1 }}
+                                            </span>
+                                        </td>
+                                        <td class="px-3 py-2 text-[11px] font-semibold text-zinc-800 dark:text-white">
+                                            {{ $deffect->deffect_item_name ?? '-' }}
+                                        </td>
+                                        <td class="px-3 py-2 text-[11px]">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-mono font-semibold">
+                                                {{ $row['component_location'] ?? '-' }}
+                                            </span>
+                                        </td>
+                                        <td class="px-3 py-2 text-center">
+                                            @if($locStatus === 'pending')
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 text-[10px] font-semibold border border-amber-300 dark:border-amber-700">
+                                                    <flux:icon name="clock" variant="mini" class="w-3 h-3" />
+                                                    Menunggu Review
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 text-[10px] font-semibold border border-red-300 dark:border-red-700">
+                                                    <flux:icon name="x-circle" variant="mini" class="w-3 h-3" />
+                                                    Tidak Cocok
+                                                </span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="px-3 py-8 text-center text-[11px] text-zinc-400 italic">
+                                            Tidak ada jawaban salah pada attempt ini.
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                @endif
+
+                {{-- Current attempt --}}
+                <div class="rounded-xl border-2 border-red-200 dark:border-red-800 overflow-hidden shadow-sm">
+                    <div class="px-4 py-3 bg-gradient-to-r from-red-500 to-rose-500 text-white flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                            <path fill-rule="evenodd" d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625Z" clip-rule="evenodd" />
+                            <path d="M12.971 1.816A5.23 5.23 0 0 1 14.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 0 1 3.434 1.279 9.768 9.768 0 0 0-6.963-6.963Z" />
+                        </svg>
+                        <div>
+                            <div class="text-xs font-semibold">Attempt {{ $blindTest->attempt }}</div>
+                            <div class="text-[10px] text-white/80">
+                                Result: {{ $blindTest->overall_result ?? '-' }} —
+                                {{ count($currentVisible) }} jawaban salah
+                            </div>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto bg-white dark:bg-zinc-900">
+                        <table class="w-full" style="min-width: 500px;">
+                            <thead class="bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-200 dark:border-zinc-700">
+                                <tr>
+                                    <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase w-12">#</th>
+                                    <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase">Defect Item</th>
+                                    <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase">Location</th>
+                                    <th class="px-3 py-2.5 text-center text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase">Hasil</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
+                                @forelse($currentVisible as $i => $row)
+                                    @php
+                                        $deffect   = $row['deffect_item_id'] ? \App\Models\QAQC\BlindTest\Deffect::find($row['deffect_item_id']) : null;
+                                        $locStatus = $row['location_status'] ?? null;
+                                    @endphp
+                                    <tr class="@if($locStatus === 'pending') bg-amber-50/40 dark:bg-amber-950/10 @else bg-red-50/40 dark:bg-red-950/10 @endif">
+                                        <td class="px-3 py-2 text-[11px]">
+                                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full font-semibold text-[10px]
+                                                @if($locStatus === 'pending') bg-amber-100 text-amber-700 @else bg-red-100 text-red-700 @endif">
+                                                {{ $i + 1 }}
+                                            </span>
+                                        </td>
+                                        <td class="px-3 py-2 text-[11px] font-semibold text-zinc-800 dark:text-white">
+                                            {{ $deffect->deffect_item_name ?? '-' }}
+                                        </td>
+                                        <td class="px-3 py-2 text-[11px]">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-mono font-semibold">
+                                                {{ $row['component_location'] ?? '-' }}
+                                            </span>
+                                        </td>
+                                        <td class="px-3 py-2 text-center">
+                                            @if($locStatus === 'pending')
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 text-[10px] font-semibold border border-amber-300 dark:border-amber-700">
+                                                    <flux:icon name="clock" variant="mini" class="w-3 h-3" />
+                                                    Menunggu Review
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 text-[10px] font-semibold border border-red-300 dark:border-red-700">
+                                                    <flux:icon name="x-circle" variant="mini" class="w-3 h-3" />
+                                                    Tidak Cocok
+                                                </span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="4" class="px-3 py-8 text-center text-[11px] text-zinc-400 italic">
+                                            Tidak ada jawaban salah pada attempt ini.
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
 
             {{-- Tombol --}}
-            <div class="flex justify-center gap-3 pt-2">
+            <div class="flex justify-center gap-3 pt-5">
                 <a href="{{ route('qaqc.blind-test') }}" wire:navigate>
                     <button type="button"
                         class="px-5 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-sm font-medium">
                         Back to Management
                     </button>
                 </a>
-                <button type="button" wire:click="retryTest"
-                    class="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-semibold shadow-lg shadow-blue-500/30">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
-                        <path fill-rule="evenodd" d="M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z" clip-rule="evenodd" />
-                    </svg>
-                    Kerjakan Ulang Test
-                </button>
+                @if($blindTest->overall_result === 'FAIL' && $blindTest->canRetry())
+                    <button type="button" wire:click="retryTest"
+                        class="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-semibold shadow-lg shadow-blue-500/30">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                            <path fill-rule="evenodd" d="M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z" clip-rule="evenodd" />
+                        </svg>
+                        Kerjakan Ulang Test
+                    </button>
+                @endif
             </div>
         </flux:card>
+
         @else
-        {{-- ============ CASE B: Attempt 2 / tidak bisa retry → tampilkan semua ============ --}}
+        {{-- ============================================================ --}}
+        {{-- CASE B: FULL RESULT — attempt terakhir & tidak ada pending    --}}
+        {{-- Tampilkan kunci + Attempt 1 + Attempt 2 (lengkap + MISSING)   --}}
+        {{-- ============================================================ --}}
         <flux:card class="p-6 shadow-lg">
 
             {{-- Banner attempt ke-2 --}}
@@ -595,260 +732,222 @@
             </div>
             @endif
 
-            {{-- Banner: Menunggu Review QC --}}
-            @if($isPendingReview)
-            <div class="mb-5 relative overflow-hidden rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 shadow-lg">
-                <div class="p-5 flex items-center gap-4">
-                    <div class="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border-2 border-white/40 flex-shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-7 h-7 text-white">
-                            <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 6a.75.75 0 0 0-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 0 0 0-1.5h-3.75V6Z" clip-rule="evenodd" />
-                        </svg>
+            {{-- Card: Info history --}}
+            @if(!empty($firstAttemptAnswers))
+            <div class="mb-4 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-600 shadow-lg p-4">
+                <div class="flex items-center gap-3 flex-wrap">
+                    <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center border-2 border-white/40 flex-shrink-0">
+                        <flux:icon name="arrows-right-left" class="w-5 h-5 text-white" />
                     </div>
-                    <div>
-                        <div class="text-lg font-bold text-white">Menunggu Verifikasi QC</div>
-                        <div class="text-sm text-amber-50">
-                            Jawaban Anda sudah tersimpan. Tim QC akan melakukan <strong>verifikasi lokasi</strong>
-                            secara manual. Hasil akhir (PASS/FAIL) akan ditampilkan setelah proses review selesai.
+                    <div class="flex-1 min-w-0">
+                        <div class="text-sm font-bold text-white">Perbandingan Hasil Percobaan</div>
+                        <div class="text-xs text-purple-100 mt-0.5">
+                            Attempt 1 ({{ $firstAttemptAt?->format('d M Y H:i') ?? '-' }})
+                            vs
+                            Attempt {{ $blindTest->attempt }} ({{ $blindTest->finished_at?->format('d M Y H:i') ?? '-' }})
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 flex-wrap">
+                        <div class="px-3 py-1.5 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 text-white text-xs font-bold whitespace-nowrap">
+                            Attempt 1: {{ $firstAttemptResult ?? '-' }}
+                        </div>
+                        <div class="px-3 py-1.5 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 text-white text-xs font-bold whitespace-nowrap">
+                            Attempt {{ $blindTest->attempt }}: {{ $blindTest->overall_result ?? '-' }}
                         </div>
                     </div>
                 </div>
             </div>
             @endif
 
-            <!-- ============ PERBANDINGAN ATTEMPT ============ -->
-            <div class="space-y-4">
+            {{-- Horizontal scroll wrapper --}}
+            <div class="overflow-x-auto -mx-1 px-1 pb-2">
+                <div class="grid grid-cols-3 gap-4" style="min-width: 1280px;">
 
-                {{-- Card: Info history --}}
-                @if(!empty($firstAttemptAnswers))
-                <div class="rounded-xl bg-gradient-to-r from-purple-500 to-indigo-600 shadow-lg p-4">
-                    <div class="flex items-center gap-3 flex-wrap">
-                        <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center border-2 border-white/40 flex-shrink-0">
-                            <flux:icon name="arrows-right-left" class="w-5 h-5 text-white" />
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <div class="text-sm font-bold text-white">
-                                Perbandingan Hasil Percobaan
-                            </div>
-                            <div class="text-xs text-purple-100 mt-0.5">
-                                Attempt 1 ({{ $firstAttemptAt?->format('d M Y H:i') ?? '-' }})
-                                vs
-                                Attempt {{ $blindTest->attempt }} ({{ $blindTest->finished_at?->format('d M Y H:i') ?? '-' }})
+                    {{-- ============ KOLOM 1: KUNCI JAWABAN ============ --}}
+                    <div class="rounded-xl border-2 border-blue-200 dark:border-blue-800 overflow-hidden shadow-sm flex flex-col">
+                        <div class="px-4 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white flex items-center gap-2 flex-shrink-0 whitespace-nowrap">
+                            <flux:icon name="lock-closed" class="w-4 h-4" />
+                            <div>
+                                <div class="text-xs font-semibold">Kunci Jawaban</div>
+                                <div class="text-[10px] text-blue-100">{{ count($blindTest->blind_test_items ?? []) }} soal</div>
                             </div>
                         </div>
-                        <div class="flex items-center gap-2 flex-wrap">
-                            <div class="px-3 py-1.5 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 text-white text-xs font-bold whitespace-nowrap">
-                                Attempt 1: {{ $firstAttemptResult ?? '-' }}
-                            </div>
-                            <div class="px-3 py-1.5 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 text-white text-xs font-bold whitespace-nowrap">
-                                Attempt {{ $blindTest->attempt }}: {{ $blindTest->overall_result ?? '-' }}
-                            </div>
+                        <div class="overflow-x-auto bg-white dark:bg-zinc-900 flex-1">
+                            <table class="w-full" style="min-width: 380px;">
+                                <thead class="bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800">
+                                    <tr>
+                                        <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-blue-700 dark:text-blue-300 uppercase w-12">#</th>
+                                        <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-blue-700 dark:text-blue-300 uppercase" style="min-width: 180px;">Defect Item</th>
+                                        <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-blue-700 dark:text-blue-300 uppercase" style="min-width: 120px;">Location</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
+                                    @foreach($blindTest->blind_test_items ?? [] as $i => $item)
+                                    @php
+                                        $deffect = \App\Models\QAQC\BlindTest\Deffect::find($item['deffect_item_id'] ?? null);
+                                    @endphp
+                                    <tr class="hover:bg-blue-50/50 dark:hover:bg-blue-950/10 whitespace-nowrap">
+                                        <td class="px-3 py-2 text-[11px]">
+                                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold text-[10px]">
+                                                {{ $i + 1 }}
+                                            </span>
+                                        </td>
+                                        <td class="px-3 py-2 text-[11px] font-semibold text-zinc-800 dark:text-white whitespace-nowrap">
+                                            {{ $deffect->deffect_item_name ?? '-' }}
+                                        </td>
+                                        <td class="px-3 py-2 text-[11px] whitespace-nowrap">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-mono font-semibold whitespace-nowrap">
+                                                {{ $item['component_location'] ?? '-' }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                </div>
-                @endif
 
-                {{-- Horizontal scroll wrapper --}}
-                <div class="overflow-x-auto -mx-1 px-1 pb-2">
-                    {{-- Grid 3 kolom --}}
-                    <div class="grid grid-cols-3 gap-4" style="min-width: 1280px;">
-
-                        {{-- ============ KOLOM 1: KUNCI JAWABAN ============ --}}
-                        <div class="rounded-xl border-2 border-blue-200 dark:border-blue-800 overflow-hidden shadow-sm flex flex-col">
-                            <div class="px-4 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white flex items-center gap-2 flex-shrink-0 whitespace-nowrap">
-                                <flux:icon name="lock-closed" class="w-4 h-4" />
-                                <div>
-                                    <div class="text-xs font-semibold">Kunci Jawaban</div>
-                                    <div class="text-[10px] text-blue-100">{{ count($blindTest->blind_test_items ?? []) }} soal</div>
-                                </div>
-                            </div>
-                            <div class="overflow-x-auto bg-white dark:bg-zinc-900 flex-1">
-                                <table class="w-full" style="min-width: 380px;">
-                                    <thead class="bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800">
-                                        <tr>
-                                            <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-blue-700 dark:text-blue-300 uppercase w-12 whitespace-nowrap">#</th>
-                                            <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-blue-700 dark:text-blue-300 uppercase whitespace-nowrap" style="min-width: 180px;">Defect Item</th>
-                                            <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-blue-700 dark:text-blue-300 uppercase whitespace-nowrap" style="min-width: 120px;">Location</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
-                                        @foreach($blindTest->blind_test_items ?? [] as $i => $item)
-                                        @php
-                                            $deffect = \App\Models\QAQC\BlindTest\Deffect::find($item['deffect_item_id'] ?? null);
-                                        @endphp
-                                        <tr class="hover:bg-blue-50/50 dark:hover:bg-blue-950/10 whitespace-nowrap">
-                                            <td class="px-3 py-2 text-[11px]">
-                                                <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold text-[10px]">
-                                                    {{ $i + 1 }}
-                                                </span>
-                                            </td>
-                                            <td class="px-3 py-2 text-[11px] font-semibold text-zinc-800 dark:text-white whitespace-nowrap">
-                                                {{ $deffect->deffect_item_name ?? '-' }}
-                                            </td>
-                                            <td class="px-3 py-2 text-[11px] whitespace-nowrap">
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-mono font-semibold whitespace-nowrap">
-                                                    {{ $item['component_location'] ?? '-' }}
-                                                </span>
-                                            </td>
-                                        </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
+                    {{-- ============ KOLOM 2: ATTEMPT 1 ============ --}}
+                    <div class="rounded-xl border-2 {{ ($firstAttemptResult ?? '') === 'PASS' ? 'border-green-200 dark:border-green-800' : 'border-red-200 dark:border-red-800' }} overflow-hidden shadow-sm flex flex-col">
+                        <div class="px-4 py-3 bg-gradient-to-r {{ ($firstAttemptResult ?? '') === 'PASS' ? 'from-green-500 to-emerald-500' : 'from-red-500 to-rose-500' }} text-white flex items-center gap-2 flex-shrink-0 whitespace-nowrap">
+                            <flux:icon name="document-text" class="w-4 h-4" />
+                            <div class="flex-1 min-w-0">
+                                <div class="text-xs font-semibold">Attempt 1</div>
+                                <div class="text-[10px] text-white/80">Result: {{ $firstAttemptResult ?? '-' }}</div>
                             </div>
                         </div>
+                        <div class="overflow-x-auto bg-white dark:bg-zinc-900 flex-1">
+                            <table class="w-full" style="min-width: 440px;">
+                                <thead class="bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-200 dark:border-zinc-700">
+                                    <tr>
+                                        <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase w-12">#</th>
+                                        <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase" style="min-width: 180px;">Defect Item</th>
+                                        <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase" style="min-width: 120px;">Location</th>
+                                        <th class="px-3 py-2.5 text-center text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase" style="min-width: 130px;">Hasil</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
+                                    @forelse($firstAttemptAnswers as $i => $row)
+                                    @php
+                                        $deffect     = $row['deffect_item_id'] ? \App\Models\QAQC\BlindTest\Deffect::find($row['deffect_item_id']) : null;
+                                        $userAnswer  = $row['user_answer'] ?? '';
+                                        $isCorrect   = $row['is_correct'] ?? false;
+                                        $isMissing   = $userAnswer === 'MISSING';
+                                    @endphp
+                                    <tr class="whitespace-nowrap @if($isCorrect) bg-green-50/40 dark:bg-green-950/10 @elseif($isMissing) bg-yellow-50/40 dark:bg-yellow-950/10 @else bg-red-50/40 dark:bg-red-950/10 @endif">
+                                        <td class="px-3 py-2 text-[11px]">
+                                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full font-semibold text-[10px]
+                                                @if($isCorrect) bg-green-100 text-green-700
+                                                @elseif($isMissing) bg-yellow-100 text-yellow-700
+                                                @else bg-red-100 text-red-700 @endif">
+                                                {{ $i + 1 }}
+                                            </span>
+                                        </td>
+                                        <td class="px-3 py-2 text-[11px] font-semibold text-zinc-800 dark:text-white whitespace-nowrap">
+                                            {{ $deffect->deffect_item_name ?? '-' }}
+                                        </td>
+                                        <td class="px-3 py-2 text-[11px] whitespace-nowrap">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-mono font-semibold whitespace-nowrap">
+                                                {{ $row['component_location'] ?? '-' }}
+                                            </span>
+                                        </td>
+                                        <td class="px-3 py-2 text-center whitespace-nowrap">
+                                            @if($isCorrect)
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-[10px] font-semibold border border-green-300 dark:border-green-700 whitespace-nowrap">
+                                                    <flux:icon name="check-circle" variant="mini" class="w-3 h-3" />
+                                                    Cocok
+                                                </span>
+                                            @elseif($isMissing)
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 text-[10px] font-semibold border border-yellow-300 dark:border-yellow-700 whitespace-nowrap">
+                                                    <flux:icon name="exclamation-triangle" variant="mini" class="w-3 h-3" />
+                                                    Tidak Dijawab
+                                                </span>
+                                            @else
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 text-[10px] font-semibold border border-red-300 dark:border-red-700 whitespace-nowrap">
+                                                    <flux:icon name="x-circle" variant="mini" class="w-3 h-3" />
+                                                    Tidak Cocok
+                                                </span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    @empty
+                                    <tr>
+                                        <td colspan="4" class="px-3 py-8 text-center text-[11px] text-zinc-400 italic whitespace-nowrap">
+                                            Tidak ada data attempt 1
+                                        </td>
+                                    </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
 
-                        {{-- ============ KOLOM 2: ATTEMPT 1 ============ --}}
-                        <div class="rounded-xl border-2 {{ ($firstAttemptResult ?? '') === 'PASS' ? 'border-green-200 dark:border-green-800' : 'border-red-200 dark:border-red-800' }} overflow-hidden shadow-sm flex flex-col">
-                            <div class="px-4 py-3 bg-gradient-to-r {{ ($firstAttemptResult ?? '') === 'PASS' ? 'from-green-500 to-emerald-500' : 'from-red-500 to-rose-500' }} text-white flex items-center gap-2 flex-shrink-0 whitespace-nowrap">
-                                <flux:icon name="document-text" class="w-4 h-4" />
-                                <div class="flex-1 min-w-0">
-                                    <div class="text-xs font-semibold">Attempt 1</div>
-                                    <div class="text-[10px] text-white/80">
-                                        Result: {{ $firstAttemptResult ?? '-' }}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="overflow-x-auto bg-white dark:bg-zinc-900 flex-1">
-                                <table class="w-full" style="min-width: 440px;">
-                                    <thead class="bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-200 dark:border-zinc-700">
-                                        <tr>
-                                            <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase w-12 whitespace-nowrap">#</th>
-                                            <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase whitespace-nowrap" style="min-width: 180px;">Defect Item</th>
-                                            <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase whitespace-nowrap" style="min-width: 120px;">Location</th>
-                                            <th class="px-3 py-2.5 text-center text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase whitespace-nowrap" style="min-width: 130px;">Hasil</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
-                                        @forelse($firstAttemptAnswers as $i => $row)
-                                        @php
-                                            $deffect = $row['deffect_item_id'] ? \App\Models\QAQC\BlindTest\Deffect::find($row['deffect_item_id']) : null;
-                                            $userAnswer = $row['user_answer'] ?? '';
-                                            $isCorrect = $row['is_correct'] ?? false;
-                                            $isMissing = $userAnswer === 'MISSING';
-                                        @endphp
-                                        <tr class="whitespace-nowrap @if($isCorrect) bg-green-50/40 dark:bg-green-950/10 @elseif($isMissing) bg-yellow-50/40 dark:bg-yellow-950/10 @else bg-red-50/40 dark:bg-red-950/10 @endif">
-                                            <td class="px-3 py-2 text-[11px]">
-                                                <span class="inline-flex items-center justify-center w-6 h-6 rounded-full font-semibold text-[10px]
-                                                    @if($isCorrect) bg-green-100 text-green-700
-                                                    @elseif($isMissing) bg-yellow-100 text-yellow-700
-                                                    @else bg-red-100 text-red-700 @endif">
-                                                    {{ $i + 1 }}
-                                                </span>
-                                            </td>
-                                            <td class="px-3 py-2 text-[11px] font-semibold text-zinc-800 dark:text-white whitespace-nowrap">
-                                                {{ $deffect->deffect_item_name ?? '-' }}
-                                            </td>
-                                            <td class="px-3 py-2 text-[11px] whitespace-nowrap">
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-mono font-semibold whitespace-nowrap">
-                                                    {{ $row['component_location'] ?? '-' }}
-                                                </span>
-                                            </td>
-                                            <td class="px-3 py-2 text-center whitespace-nowrap">
-                                                @if($isCorrect)
-                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-[10px] font-semibold border border-green-300 dark:border-green-700 whitespace-nowrap">
-                                                        <flux:icon name="check-circle" variant="mini" class="w-3 h-3" />
-                                                        Cocok
-                                                    </span>
-                                                @elseif($isMissing)
-                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 text-[10px] font-semibold border border-yellow-300 dark:border-yellow-700 whitespace-nowrap">
-                                                        <flux:icon name="exclamation-triangle" variant="mini" class="w-3 h-3" />
-                                                        Tidak Dijawab
-                                                    </span>
-                                                @else
-                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 text-[10px] font-semibold border border-red-300 dark:border-red-700 whitespace-nowrap">
-                                                        <flux:icon name="x-circle" variant="mini" class="w-3 h-3" />
-                                                        Tidak Cocok
-                                                    </span>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                        @empty
-                                        <tr>
-                                            <td colspan="4" class="px-3 py-8 text-center text-[11px] text-zinc-400 italic whitespace-nowrap">
-                                                Tidak ada data attempt 1
-                                            </td>
-                                        </tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
+                    {{-- ============ KOLOM 3: ATTEMPT CURRENT (2) ============ --}}
+                    <div class="rounded-xl border-2 {{ ($blindTest->overall_result ?? '') === 'PASS' ? 'border-green-200 dark:border-green-800' : 'border-red-200 dark:border-red-800' }} overflow-hidden shadow-sm flex flex-col">
+                        <div class="px-4 py-3 bg-gradient-to-r {{ ($blindTest->overall_result ?? '') === 'PASS' ? 'from-green-500 to-emerald-500' : 'from-red-500 to-rose-500' }} text-white flex items-center gap-2 flex-shrink-0 whitespace-nowrap">
+                            <flux:icon name="document-text" class="w-4 h-4" />
+                            <div class="flex-1 min-w-0">
+                                <div class="text-xs font-semibold">Attempt {{ $blindTest->attempt }}</div>
+                                <div class="text-[10px] text-white/80">Result: {{ $blindTest->overall_result ?? '-' }}</div>
                             </div>
                         </div>
-
-                        {{-- ============ KOLOM 3: ATTEMPT 2 (current) ============ --}}
-                        <div class="rounded-xl border-2 {{ ($blindTest->overall_result ?? '') === 'PASS' ? 'border-green-200 dark:border-green-800' : 'border-red-200 dark:border-red-800' }} overflow-hidden shadow-sm flex flex-col">
-                            <div class="px-4 py-3 bg-gradient-to-r {{ ($blindTest->overall_result ?? '') === 'PASS' ? 'from-green-500 to-emerald-500' : 'from-red-500 to-rose-500' }} text-white flex items-center gap-2 flex-shrink-0 whitespace-nowrap">
-                                <flux:icon name="document-text" class="w-4 h-4" />
-                                <div class="flex-1 min-w-0">
-                                    <div class="text-xs font-semibold">Attempt {{ $blindTest->attempt }}</div>
-                                    <div class="text-[10px] text-white/80">
-                                        Result: {{ $blindTest->overall_result ?? '-' }}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="overflow-x-auto bg-white dark:bg-zinc-900 flex-1">
-                                <table class="w-full" style="min-width: 440px;">
-                                    <thead class="bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-200 dark:border-zinc-700">
-                                        <tr>
-                                            <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase w-12 whitespace-nowrap">#</th>
-                                            <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase whitespace-nowrap" style="min-width: 180px;">Defect Item</th>
-                                            <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase whitespace-nowrap" style="min-width: 120px;">Location</th>
-                                            <th class="px-3 py-2.5 text-center text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase whitespace-nowrap" style="min-width: 130px;">Hasil</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
-                                        @forelse($evaluationResult ?? [] as $i => $row)
-                                        @php
-                                            $deffect = $row['deffect_item_id'] ? \App\Models\QAQC\BlindTest\Deffect::find($row['deffect_item_id']) : null;
-                                            $userAnswer = $row['user_answer'] ?? '';
-                                            $isCorrect = $row['is_correct'] ?? false;
-                                            $isMissing = $userAnswer === 'MISSING';
-                                            $locStatus = $row['location_status'] ?? null;
-                                        @endphp
-                                        <tr class="whitespace-nowrap @if($locStatus === 'pending') bg-amber-50/40 dark:bg-amber-950/10 @elseif($isCorrect) bg-green-50/40 dark:bg-green-950/10 @elseif($isMissing) bg-yellow-50/40 dark:bg-yellow-950/10 @else bg-red-50/40 dark:bg-red-950/10 @endif">
-                                            <td class="px-3 py-2 text-[11px]">
-                                                <span class="inline-flex items-center justify-center w-6 h-6 rounded-full font-semibold text-[10px]
-                                                    @if($locStatus === 'pending') bg-amber-100 text-amber-700
-                                                    @elseif($isCorrect) bg-green-100 text-green-700
-                                                    @elseif($isMissing) bg-yellow-100 text-yellow-700
-                                                    @else bg-red-100 text-red-700 @endif">
-                                                    {{ $i + 1 }}
+                        <div class="overflow-x-auto bg-white dark:bg-zinc-900 flex-1">
+                            <table class="w-full" style="min-width: 440px;">
+                                <thead class="bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-200 dark:border-zinc-700">
+                                    <tr>
+                                        <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase w-12">#</th>
+                                        <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase" style="min-width: 180px;">Defect Item</th>
+                                        <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase" style="min-width: 120px;">Location</th>
+                                        <th class="px-3 py-2.5 text-center text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase" style="min-width: 130px;">Hasil</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
+                                    @forelse($evaluationResult ?? [] as $i => $row)
+                                    @php
+                                        $deffect     = $row['deffect_item_id'] ? \App\Models\QAQC\BlindTest\Deffect::find($row['deffect_item_id']) : null;
+                                        $userAnswer  = $row['user_answer'] ?? '';
+                                        $isCorrect   = $row['is_correct'] ?? false;
+                                        $isMissing   = $userAnswer === 'MISSING';
+                                    @endphp
+                                    <tr class="whitespace-nowrap @if($isCorrect) bg-green-50/40 dark:bg-green-950/10 @elseif($isMissing) bg-yellow-50/40 dark:bg-yellow-950/10 @else bg-red-50/40 dark:bg-red-950/10 @endif">
+                                        <td class="px-3 py-2 text-[11px]">
+                                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full font-semibold text-[10px]
+                                                @if($isCorrect) bg-green-100 text-green-700
+                                                @elseif($isMissing) bg-yellow-100 text-yellow-700
+                                                @else bg-red-100 text-red-700 @endif">
+                                                {{ $i + 1 }}
+                                            </span>
+                                        </td>
+                                        <td class="px-3 py-2 text-[11px] font-semibold text-zinc-800 dark:text-white whitespace-nowrap">
+                                            {{ $deffect->deffect_item_name ?? '-' }}
+                                        </td>
+                                        <td class="px-3 py-2 text-[11px] whitespace-nowrap">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-mono font-semibold whitespace-nowrap">
+                                                {{ $row['component_location'] ?? '-' }}
+                                            </span>
+                                        </td>
+                                        <td class="px-3 py-2 text-center whitespace-nowrap">
+                                            @if($isCorrect)
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-[10px] font-semibold border border-green-300 dark:border-green-700 whitespace-nowrap">
+                                                    <flux:icon name="check-circle" variant="mini" class="w-3 h-3" />
+                                                    Cocok
                                                 </span>
-                                            </td>
-                                            <td class="px-3 py-2 text-[11px] font-semibold text-zinc-800 dark:text-white whitespace-nowrap">
-                                                {{ $deffect->deffect_item_name ?? '-' }}
-                                            </td>
-                                            <td class="px-3 py-2 text-[11px] whitespace-nowrap">
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-mono font-semibold whitespace-nowrap">
-                                                    {{ $row['component_location'] ?? '-' }}
+                                            @elseif($isMissing)
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 text-[10px] font-semibold border border-yellow-300 dark:border-yellow-700 whitespace-nowrap">
+                                                    <flux:icon name="exclamation-triangle" variant="mini" class="w-3 h-3" />
+                                                    Tidak Dijawab
                                                 </span>
-                                            </td>
-                                            <td class="px-3 py-2 text-center whitespace-nowrap">
-                                                @if($locStatus === 'pending')
-                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 text-[10px] font-semibold border border-amber-300 dark:border-amber-700 whitespace-nowrap">
-                                                        <flux:icon name="clock" variant="mini" class="w-3 h-3" />
-                                                        Menunggu Review
-                                                    </span>
-                                                @elseif($isCorrect)
-                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-[10px] font-semibold border border-green-300 dark:border-green-700 whitespace-nowrap">
-                                                        <flux:icon name="check-circle" variant="mini" class="w-3 h-3" />
-                                                        Cocok
-                                                    </span>
-                                                @elseif($isMissing)
-                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 text-[10px] font-semibold border border-yellow-300 dark:border-yellow-700 whitespace-nowrap">
-                                                        <flux:icon name="exclamation-triangle" variant="mini" class="w-3 h-3" />
-                                                        Tidak Dijawab
-                                                    </span>
-                                                @else
-                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 text-[10px] font-semibold border border-red-300 dark:border-red-700 whitespace-nowrap">
-                                                        <flux:icon name="x-circle" variant="mini" class="w-3 h-3" />
-                                                        Tidak Cocok
-                                                    </span>
-                                                @endif
-                                            </td>
-                                        </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            </div>
+                                            @else
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 text-[10px] font-semibold border border-red-300 dark:border-red-700 whitespace-nowrap">
+                                                    <flux:icon name="x-circle" variant="mini" class="w-3 h-3" />
+                                                    Tidak Cocok
+                                                </span>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>

@@ -164,7 +164,7 @@
     <!-- Table -->
     <flux:card class="p-6 h-full shadow-lg flex flex-col">
         <div class="overflow-x-auto flex-1">
-            <table class="w-full" style="min-width: 1500px; white-space: nowrap;">
+            <table class="w-full" style="min-width: 1600px; white-space: nowrap;">
                 <thead>
                     <tr class="bg-zinc-50 dark:bg-zinc-800/50">
                         <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase">#</th>
@@ -177,6 +177,7 @@
                         <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase">Durasi</th>
                         <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase">Status</th>
                         <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase">Result</th>
+                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase">Created</th>
                         <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase">Actions</th>
                     </tr>
                 </thead>
@@ -217,12 +218,10 @@
 
                         <td class="px-4 py-3 text-sm text-center">
                             <div class="flex flex-col items-center gap-1">
-                                {{-- Customer --}}
                                 <span class="font-medium text-zinc-800 dark:text-zinc-200">
                                     {{ $bt->customer->customer_name ?? '-' }}
                                 </span>
 
-                                {{-- Models (bisa multiple) --}}
                                 @php
                                     $modelIds = collect($bt->question_snapshot ?? [])
                                         ->pluck('model_id')
@@ -283,7 +282,6 @@
 
                         <td class="px-4 py-3 text-center">
                             @if($bt->status === 'completed' && !$bt->is_reviewed)
-                                {{-- Menunggu review QC --}}
                                 <div class="inline-flex flex-col items-center gap-1">
                                     <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 text-xs font-bold border border-amber-300 dark:border-amber-700">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">
@@ -296,13 +294,11 @@
                                     </div>
                                 </div>
                             @elseif($bt->overall_result)
-                                {{-- Final result --}}
                                 <flux:badge size="sm" color="{{ $bt->overall_result === 'PASS' ? 'green' : 'red' }}">
                                     {{ $bt->overall_result }}
                                 </flux:badge>
                                 <div class="text-xs text-zinc-500 mt-1">{{ $bt->total_correct }}/{{ $bt->total_items }}</div>
 
-                                {{-- Info attempt (opsional) --}}
                                 @if($bt->max_attempt > 1)
                                     <div class="text-[10px] font-semibold mt-0.5
                                         {{ $bt->attempt > 1
@@ -316,10 +312,24 @@
                             @endif
                         </td>
 
+                        {{-- ============ CREATED BY / AT ============ --}}
+                        <td class="px-4 py-3 text-center">
+                            <div class="flex flex-col items-center gap-0.5">
+                                <div class="inline-flex items-center gap-1 text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5 text-zinc-400">
+                                        <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z" clip-rule="evenodd" />
+                                    </svg>
+                                    {{ $bt->creator->name ?? '-' }}
+                                </div>
+                                <div class="text-[10px] text-zinc-500 dark:text-zinc-400 whitespace-nowrap">
+                                    {{ $bt->created_at ? $bt->created_at->format('d/m/Y H:i') : '-' }}
+                                </div>
+                            </div>
+                        </td>
+
                         {{-- ============ ACTIONS / REASON ============ --}}
                         <td class="px-4 py-3 text-center">
                             @if($isTrashed)
-                                {{-- Trashed: tampilkan Reason merah, tanpa tombol action --}}
                                 <div class="flex flex-col items-center gap-1.5 max-w-[220px] mx-auto">
                                     <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 text-[10px] font-bold uppercase tracking-wider">
                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3">
@@ -399,15 +409,6 @@
                                         @endif
                                     @endcan
 
-                                    @can('edit blind test')
-                                        @if($bt->status === 'pending')
-                                            <flux:tooltip content="Edit" position="top">
-                                                <flux:button size="sm" icon="pencil-square" variant="primary" color="amber" class="!p-2"
-                                                    wire:click="edit({{ $bt->id }})" />
-                                            </flux:tooltip>
-                                        @endif
-                                    @endcan
-
                                     @can('delete blind test')
                                         @if($bt->status === 'pending')
                                             <flux:tooltip content="Delete" position="top">
@@ -422,7 +423,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="11" class="px-4 py-8 text-center">
+                        <td colspan="12" class="px-4 py-8 text-center">
                             <div class="flex flex-col items-center gap-2 py-6">
                                 <flux:icon name="clipboard-document-check" class="w-10 h-10 text-zinc-400" />
                                 <h3 class="text-base font-medium text-zinc-900 dark:text-white">No blind test records found</h3>
@@ -597,7 +598,27 @@
                                     <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow-sm shadow-blue-500/30">
                                         <span class="text-xs font-bold text-white">2</span>
                                     </div>
-                                    <h3 class="text-sm font-bold text-zinc-800 dark:text-white">Pilih Employee</h3>
+                                    <div>
+                                        <h3 class="text-sm font-bold text-zinc-800 dark:text-white">Pilih Employee</h3>
+                                        @if($section)
+                                            @php
+                                                $allowedDepts = match($section) {
+                                                    'QC'  => 'IQC, QA/QC',
+                                                    'SMT' => 'PROD.1',
+                                                    'MI'  => 'PROD.1',
+                                                    'BE'  => 'PROD.2',
+                                                    default => '-',
+                                                };
+                                            @endphp
+                                            <p class="text-[10px] text-blue-600 dark:text-blue-400">
+                                                Department: <strong>{{ $allowedDepts }}</strong>
+                                            </p>
+                                        @else
+                                            <p class="text-[10px] text-amber-600 dark:text-amber-400 italic">
+                                                Pilih Section dulu
+                                            </p>
+                                        @endif
+                                    </div>
                                 </div>
                                 <span class="text-xs px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold">
                                     Total: {{ count($selectedEmployees) }}

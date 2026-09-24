@@ -133,9 +133,19 @@ class BlindTest extends EloquentModel
 
     // ==================== ATTEMPT HELPERS ====================
 
+    /**
+     * Masih bisa retry? Hanya kalau:
+     * - attempt < max_attempt
+     * - status completed
+     * - hasil FAIL
+     * - tidak ada pending review
+     */
     public function canRetry(): bool
     {
-        return $this->attempt < $this->max_attempt;
+        return $this->attempt < $this->max_attempt
+            && $this->status === 'completed'
+            && $this->overall_result === 'FAIL'
+            && !$this->hasPendingReview();
     }
 
     public function isLastAttempt(): bool
@@ -151,17 +161,50 @@ class BlindTest extends EloquentModel
     }
 
     /**
-     * Tampilkan hasil lengkap (kunci + jawaban) hanya kalau:
-     * - Attempt > 1 (percobaan terakhir / kedua), atau
-     * - Tidak bisa retry lagi
+     * Apakah masih ada jawaban yang menunggu review QC?
+     * Kalau sudah di-review (is_reviewed = true), tidak dianggap pending lagi.
+     */
+    public function hasPendingReview(): bool
+    {
+        if ($this->is_reviewed) return false;
+
+        return collect($this->user_answers ?? [])
+            ->contains(fn ($a) => ($a['location_status'] ?? null) === 'pending');
+    }
+
+    /**
+     * Tampilkan hasil LENGKAP (kunci + semua attempt) HANYA kalau:
+     * - Sudah attempt terakhir, DAN
+     * - Tidak ada pending review
      */
     public function shouldShowFullResult(): bool
     {
-        // Kalau attempt 1 dan FAIL dan masih bisa retry → sembunyikan
-        if ($this->attempt === 1 && $this->overall_result === 'FAIL' && $this->canRetry()) {
-            return false;
-        }
-        return true;
+        return $this->isLastAttempt() && !$this->hasPendingReview();
+    }
+
+    /**
+     * Filter baris untuk tampilan "belum full" (tanpa kunci):
+     * - Buang jawaban BENAR (is_correct = true)
+     * - Buang yang TIDAK DIJAWAB (user_answer = 'MISSING')
+     *
+     * Yang tersisa:
+     * - Jawaban SALAH yang benar-benar diinput user
+     * - Jawaban dengan status PENDING (menunggu review QC)
+     */
+    public function filterVisibleAnswers(?array $answers = null): array
+    {
+        $answers = $answers ?? $this->user_answers ?? [];
+
+        return collect($answers)
+            ->filter(function ($row) {
+                $isCorrect  = $row['is_correct'] ?? false;
+                $userAnswer = $row['user_answer'] ?? '';
+                $isMissing  = $userAnswer === 'MISSING';
+
+                return !$isCorrect && !$isMissing;
+            })
+            ->values()
+            ->toArray();
     }
 
     // ==================== EVALUATION ====================
@@ -253,11 +296,5 @@ class BlindTest extends EloquentModel
 
         $allCorrect = $answers->every(fn ($a) => ($a['is_correct'] ?? false) === true);
         return $allCorrect ? 'PASS' : 'FAIL';
-    }
-
-    public function hasPendingReview(): bool
-    {
-        return collect($this->user_answers ?? [])
-            ->contains(fn ($a) => ($a['location_status'] ?? null) === 'pending');
     }
 }

@@ -29,10 +29,10 @@ class BlindTestExecution extends Component
         $this->isExpired = $this->blindTest->isExpired();
 
         if ($this->blindTest->status === 'completed') {
-            $this->isFinished = true;
+            $this->isFinished       = true;
             $this->evaluationResult = $this->blindTest->user_answers;
-            $this->isPendingReview = !$this->blindTest->is_reviewed;
-            $this->overallResult = $this->blindTest->is_reviewed
+            $this->isPendingReview  = $this->blindTest->hasPendingReview();
+            $this->overallResult    = $this->blindTest->is_reviewed
                 ? $this->blindTest->overall_result
                 : null;
             return;
@@ -161,15 +161,19 @@ class BlindTestExecution extends Component
 
     private function finalizeSubmit(array $answers, bool $isAutoSave): void
     {
-        $evaluated = $this->blindTest->evaluateAnswers($answers);
+        $evaluated  = $this->blindTest->evaluateAnswers($answers);
         $hasPending = collect($evaluated)->contains(fn ($e) => ($e['location_status'] ?? null) === 'pending');
 
+        // Kalau ada pending → sementara FAIL (nunggu QC).
+        // Kalau tidak ada pending → hitung normal.
+        $result = $hasPending ? 'FAIL' : $this->blindTest->recalculateResult();
+
         $finishedAt = now();
-        $duration = $this->startedAt ? $finishedAt->timestamp - $this->startedAt : 0;
+        $duration   = $this->startedAt ? $finishedAt->timestamp - $this->startedAt : 0;
 
         $this->blindTest->update([
             'user_answers'     => $evaluated,
-            'overall_result'   => null,
+            'overall_result'   => $result,        // ← JANGAN null
             'status'           => 'completed',
             'finished_at'      => $finishedAt,
             'time_actual'      => $finishedAt->format('H:i'),
@@ -179,24 +183,22 @@ class BlindTestExecution extends Component
             'is_reviewed'      => !$hasPending,
         ]);
 
-        if (!$hasPending) {
-            $result = $this->blindTest->recalculateResult();
-            $this->blindTest->overall_result = $result;
-            $this->blindTest->save();
-
-            if ($this->blindTest->attempt === 1) {
-                $this->blindTest->update([
-                    'first_attempt_answers' => $evaluated,
-                    'first_attempt_result'  => $result,
-                    'first_attempt_at'      => $finishedAt,
-                ]);
-            }
+        // Simpan history attempt pertama
+        if ($this->blindTest->attempt === 1) {
+            $this->blindTest->update([
+                'first_attempt_answers' => $evaluated,
+                'first_attempt_result'  => $result,
+                'first_attempt_at'      => $finishedAt,
+            ]);
         }
 
+        // Refresh model biar state Livewire sinkron dengan DB
+        $this->blindTest->refresh();
+
         $this->evaluationResult = $evaluated;
-        $this->overallResult = null;
-        $this->isPendingReview = true;
-        $this->isFinished = true;
+        $this->overallResult    = $result;
+        $this->isPendingReview  = $hasPending;
+        $this->isFinished       = true;
         $this->remainingSeconds = $isAutoSave ? 0 : null;
 
         if ($isAutoSave) {
@@ -206,7 +208,7 @@ class BlindTestExecution extends Component
             $this->dispatch('notify',
                 message: $hasPending
                     ? "Test selesai! Menunggu review QC."
-                    : "Test selesai! Hasil akan diumumkan setelah verifikasi QC.",
+                    : "Test selesai!",
                 type: 'info');
         }
     }
@@ -256,8 +258,8 @@ class BlindTestExecution extends Component
     public function render()
     {
         return view('livewire.qaqc.blind-test.blind-test-execution', [
-            'blindTest' => $this->blindTest,
-            'deffects'  => Deffect::orderBy('deffect_item_name')->get(),
+            'blindTest'           => $this->blindTest,
+            'deffects'            => Deffect::orderBy('deffect_item_name')->get(),
             'firstAttemptAnswers' => $this->blindTest->first_attempt_answers ?? [],
             'firstAttemptResult'  => $this->blindTest->first_attempt_result,
             'firstAttemptAt'      => $this->blindTest->first_attempt_at,
