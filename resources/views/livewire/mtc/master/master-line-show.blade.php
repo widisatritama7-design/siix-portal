@@ -1211,7 +1211,7 @@
 
                 <!-- STEP 3: PCB CLEANER -->
                 @php
-                    $step3Fields = ['brush', 'air_presure', 'vacume_presure_unitech', 'vacume_presure_nix', 'vacume_brush', 'cleaning_roller', 'ionizer', 'conveyor_speed'];
+                    $step3Fields = ['brush', 'air_presure', 'vacume_presure_unitech', 'vacume_presure_nix', 'vacume_brush', 'cleaning_roller', 'ionizer', 'ionizer_air_presure', 'conveyor_speed'];
                     $step3Incomplete = isStepIncompleteForDetail($selectedDailyFuji, $step3Fields, $requiredFujiFields ?? []);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step3Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
@@ -1377,6 +1377,27 @@
                                 </span>
                             </div>
                         </div>
+
+                        <!-- Air Pressure Ionizer (5.a) -->
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Air Pressure Ionizer (5.a)
+                                    @if(isFujiFieldRequired('ionizer_air_presure', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check With Pressure Meter</p>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 0.05 Mpa - 0.10 Mpa</p>
+                            </div>
+                            <div class="text-right ml-4">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->ionizer_air_presure) }}">
+                                    Value : {{ $selectedDailyFuji->ionizer_air_presure ?? '-' }} Mpa
+                                </span>
+                            </div>
+                        </div>
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
@@ -1439,7 +1460,7 @@
                                         <span class="text-gray-400 text-xs">(Optional)</span>
                                     @endif
                                 </p>
-                                <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Make sure solvent minimal on mid level (half)</p>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Make sure solvent (IPA) minimal on mid level (half)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : Tank Minimal half</p>
                             </div>
                             <div class="text-right ml-4">
@@ -2317,7 +2338,7 @@
 
                 <!-- STEP 12: REFLOW 2 -->
                 @php
-                    $step12Fields = ['temperature_chiller', 'temperature_control_3'];
+                    $step12Fields = ['temperature_chiller', 'temperature_control_3', 'n2_air_presure_valve'];
                     $step12Incomplete = isStepIncompleteForDetail($selectedDailyFuji, $step12Fields, $requiredFujiFields ?? []);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step12Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
@@ -2380,6 +2401,27 @@
                             <div class="text-right ml-4">
                                 <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->temperature_control_3) }}">
                                     Value : {{ $selectedDailyFuji->temperature_control_3 ?? '-' }} ℃
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- N2 & Air Pressure (24.a) -->
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    N2 & Air Pressure (24.a)
+                                    @if(isFujiFieldRequired('n2_air_presure_valve', $requiredFujiFields ?? []))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Opening Valve N2 & Air Pressure</p>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : Position handle parallel di direction of pipe for open position</p>
+                            </div>
+                            <div class="text-right ml-4">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getBadgeClassForDetail($selectedDailyFuji->n2_air_presure_valve) }}">
+                                    Value : {{ ucfirst($selectedDailyFuji->n2_air_presure_valve ?? '-') }}
                                 </span>
                             </div>
                         </div>
@@ -3110,7 +3152,7 @@
 
                 <!-- STEP 3: PCB CLEANER -->
                 @php
-                    $step3Fields = ['brush', 'air_presure', 'vacume_presure_unitech', 'vacume_presure_nix', 'vacume_brush', 'cleaning_roller', 'ionizer', 'conveyor_speed'];
+                    $step3Fields = ['brush', 'air_presure', 'vacume_presure_unitech', 'vacume_presure_nix', 'vacume_brush', 'cleaning_roller', 'ionizer', 'ionizer_air_presure', 'conveyor_speed'];
                     $step3Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step3Fields, $requiredPanasonicFields);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step3Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
@@ -3276,6 +3318,27 @@
                                 </span>
                             </div>
                         </div>
+
+                        <!-- Air Pressure Ionizer (5.a) -->
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Air Pressure Ionizer (5.a)
+                                    @if(isPanasonicFieldRequired('ionizer_air_presure', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check With Pressure Meter</p>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 0.05 Mpa - 0.10 Mpa</p>
+                            </div>
+                            <div class="text-right ml-4">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->ionizer_air_presure) }}">
+                                    Value : {{ $selectedDailyPanasonic->ionizer_air_presure ?? '-' }} Mpa
+                                </span>
+                            </div>
+                        </div>
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
@@ -3338,7 +3401,7 @@
                                         <span class="text-gray-400 text-xs">(Optional)</span>
                                     @endif
                                 </p>
-                                <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Make sure solvent minimal on mid level (half)</p>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Make sure solvent (IPA) minimal on mid level (half)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : Tank Minimal half</p>
                             </div>
                             <div class="text-right ml-4">
@@ -4257,7 +4320,7 @@
 
                 <!-- STEP 12: REFLOW 2 -->
                 @php
-                    $step12Fields = ['temperature_chiller', 'temperature_control_3'];
+                    $step12Fields = ['temperature_chiller', 'temperature_control_3', 'n2_air_presure_valve'];
                     $step12Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step12Fields, $requiredPanasonicFields);
                 @endphp
                 <div class="border rounded-lg overflow-hidden {{ $step12Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700' }}">
@@ -4320,6 +4383,27 @@
                             <div class="text-right ml-4">
                                 <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->temperature_control_3) }}">
                                     Value : {{ $selectedDailyPanasonic->temperature_control_3 ?? '-' }} ℃
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- N2 & Air Pressure (24.a) -->
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    N2 & Air Pressure (24.a)
+                                    @if(isPanasonicFieldRequired('n2_air_presure_valve', $requiredPanasonicFields))
+                                        <span class="text-red-500 text-xs">*</span>
+                                    @else
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    @endif
+                                </p>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Opening Valve N2 & Air Pressure</p>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : Position handle parallel di direction of pipe for open position</p>
+                            </div>
+                            <div class="text-right ml-4">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ getPanasonicBadgeClass($selectedDailyPanasonic->n2_air_presure_valve) }}">
+                                    Value : {{ ucfirst($selectedDailyPanasonic->n2_air_presure_valve ?? '-') }}
                                 </span>
                             </div>
                         </div>

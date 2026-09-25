@@ -36,6 +36,7 @@ class DailyFujiEdit extends Component
     public $vacume_brush;
     public $cleaning_roller;
     public $ionizer;
+    public $ionizer_air_presure;        // ✅ TAMBAHKAN (5.a)
     public $conveyor_speed;
     
     // STEP 4: PRINTING
@@ -90,6 +91,7 @@ class DailyFujiEdit extends Component
     // STEP 12: REFLOW 2
     public $temperature_chiller;
     public $temperature_control_3;
+    public $n2_air_presure_valve;       // ✅ TAMBAHKAN (24.a)
     
     // STEP 13: CHIP MOUNTER 3
     public $fan_unit_1;
@@ -137,7 +139,8 @@ class DailyFujiEdit extends Component
         'abandonment', 'fire_posibilty', 'rail_and_transfer_unit', 'fire_posibilty_2',
         'cylinder_2', 'rail_and_magazine_pcb_2', 'cover_magazine_2',
         'angle_and_filter', 'lamp_indicator', 'fan_unit_1', 'fan_unit_2',
-        'water_reservoirs', 'filter', 'angle_and_filter_2'
+        'water_reservoirs', 'filter', 'angle_and_filter_2',
+        'n2_air_presure_valve',       // ✅ TAMBAHKAN
     ];
 
     protected $numericRanges = [
@@ -165,6 +168,7 @@ class DailyFujiEdit extends Component
         'temperature_control_3' => [290, 310],
         'air_presure_3' => [0.40, 0.50],
         'temperature_control_4' => [23, 27],
+        'ionizer_air_presure' => [0.05, 0.10],
     ];
 
     public function mount($masterLineId, $dailyFujiId)
@@ -244,7 +248,9 @@ class DailyFujiEdit extends Component
             'lamp_alarm_change_model',
             'cylinder', 'rail_and_magazine_pcb', 'cover_magazine',
             'brush', 'air_presure', 'vacume_presure_unitech', 'vacume_presure_nix',
-            'vacume_brush', 'cleaning_roller', 'ionizer', 'conveyor_speed',
+            'vacume_brush', 'cleaning_roller', 'ionizer',
+            'ionizer_air_presure',              // ✅ TAMBAHKAN
+            'conveyor_speed',
             'ipa_solvent', 'temperature_control_1', 'humidity_control_1', 'clamp_presure',
             'squeege_upper', 'cleaning_solvent', 'air_presure_meter', 'air_presure_meter_parmi',
             'capability_index', 'air_presure_supply', 'vaccuum_pump_1', 'box_1',
@@ -254,7 +260,9 @@ class DailyFujiEdit extends Component
             'rail_and_transfer_unit', 'n2_presure', 'oxygent_density_sek', 'oxygent_density_special',
             'fire_posibilty_2', 'air_presure_2', 'cylinder_2', 'rail_and_magazine_pcb_2',
             'cover_magazine_2', 'angle_and_filter', 'lamp_indicator', 'temperature_chiller',
-            'temperature_control_3', 'fan_unit_1', 'fan_unit_2', 'air_presure_3',
+            'temperature_control_3',
+            'n2_air_presure_valve',             // ✅ TAMBAHKAN
+            'fan_unit_1', 'fan_unit_2', 'air_presure_3',
             'temperature_control_4', 'water_reservoirs', 'filter', 'angle_and_filter_2',
             'stop_time', 'run_time', 'group', 'status', 'approval'
         ];
@@ -442,26 +450,30 @@ class DailyFujiEdit extends Component
         $this->judgement();
         
         $data = [];
-        $fillableFields = [
-            'customer',
-            'body_cover',
-            'lamp_alarm_change_model',
-            'cylinder', 'rail_and_magazine_pcb', 'cover_magazine',
-            'brush', 'air_presure', 'vacume_presure_unitech', 'vacume_presure_nix',
-            'vacume_brush', 'cleaning_roller', 'ionizer', 'conveyor_speed',
-            'ipa_solvent', 'temperature_control_1', 'humidity_control_1', 'clamp_presure',
-            'squeege_upper', 'cleaning_solvent', 'air_presure_meter', 'air_presure_meter_parmi',
-            'capability_index', 'air_presure_supply', 'vaccuum_pump_1', 'box_1',
-            'vaccuum_parameter_1', 'expire_date_1', 'air_presure_supply_2', 'vaccuum_pump_2',
-            'box_2', 'vaccuum_parameter_2', 'expire_date_2', 'abandonment', 'fire_posibilty',
-            'flashlight',
-            'rail_and_transfer_unit', 'n2_presure', 'oxygent_density_sek', 'oxygent_density_special',
-            'fire_posibilty_2', 'air_presure_2', 'cylinder_2', 'rail_and_magazine_pcb_2',
-            'cover_magazine_2', 'angle_and_filter', 'lamp_indicator', 'temperature_chiller',
-            'temperature_control_3', 'fan_unit_1', 'fan_unit_2', 'air_presure_3',
-            'temperature_control_4', 'water_reservoirs', 'filter', 'angle_and_filter_2',
-            'stop_time', 'run_time', 'group', 'status', 'approval'
-        ];
+            $fillableFields = [
+                'customer',
+                'body_cover',
+                'lamp_alarm_change_model',
+                'cylinder', 'rail_and_magazine_pcb', 'cover_magazine',
+                'brush', 'air_presure', 'vacume_presure_unitech', 'vacume_presure_nix',
+                'vacume_brush', 'cleaning_roller', 'ionizer',
+                'ionizer_air_presure',              // ✅ TAMBAHKAN
+                'conveyor_speed',
+                'ipa_solvent', 'temperature_control_1', 'humidity_control_1', 'clamp_presure',
+                'squeege_upper', 'cleaning_solvent', 'air_presure_meter', 'air_presure_meter_parmi',
+                'capability_index', 'air_presure_supply', 'vaccuum_pump_1', 'box_1',
+                'vaccuum_parameter_1', 'expire_date_1', 'air_presure_supply_2', 'vaccuum_pump_2',
+                'box_2', 'vaccuum_parameter_2', 'expire_date_2', 'abandonment', 'fire_posibilty',
+                'flashlight',
+                'rail_and_transfer_unit', 'n2_presure', 'oxygent_density_sek', 'oxygent_density_special',
+                'fire_posibilty_2', 'air_presure_2', 'cylinder_2', 'rail_and_magazine_pcb_2',
+                'cover_magazine_2', 'angle_and_filter', 'lamp_indicator', 'temperature_chiller',
+                'temperature_control_3',
+                'n2_air_presure_valve',             // ✅ TAMBAHKAN
+                'fan_unit_1', 'fan_unit_2', 'air_presure_3',
+                'temperature_control_4', 'water_reservoirs', 'filter', 'angle_and_filter_2',
+                'stop_time', 'run_time', 'group', 'status', 'approval'
+            ];
         
         foreach ($fillableFields as $field) {
             if (property_exists($this, $field)) {

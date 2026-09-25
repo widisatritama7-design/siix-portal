@@ -27,6 +27,7 @@ class DailyFujiStandardCheck extends Model
         'vacume_brush_required',
         'cleaning_roller_required',
         'ionizer_required',
+        'ionizer_air_presure_required',        // ✅ TAMBAHKAN (5.a)
         'conveyor_speed_required',
         'ipa_solvent_required',
         'temperature_control_1_required',
@@ -63,6 +64,7 @@ class DailyFujiStandardCheck extends Model
         'lamp_indicator_required',
         'temperature_chiller_required',
         'temperature_control_3_required',
+        'n2_air_presure_valve_required',       // ✅ TAMBAHKAN (24.a)
         'fan_unit_1_required',
         'fan_unit_2_required',
         'air_presure_3_required',
@@ -85,6 +87,7 @@ class DailyFujiStandardCheck extends Model
         'vacume_brush_required' => 'boolean',
         'cleaning_roller_required' => 'boolean',
         'ionizer_required' => 'boolean',
+        'ionizer_air_presure_required' => 'boolean',
         'conveyor_speed_required' => 'boolean',
         'ipa_solvent_required' => 'boolean',
         'temperature_control_1_required' => 'boolean',
@@ -121,6 +124,7 @@ class DailyFujiStandardCheck extends Model
         'lamp_indicator_required' => 'boolean',
         'temperature_chiller_required' => 'boolean',
         'temperature_control_3_required' => 'boolean',
+        'n2_air_presure_valve_required' => 'boolean',
         'fan_unit_1_required' => 'boolean',
         'fan_unit_2_required' => 'boolean',
         'air_presure_3_required' => 'boolean',
@@ -190,6 +194,7 @@ class DailyFujiStandardCheck extends Model
             'vacume_brush',
             'cleaning_roller',
             'ionizer',
+            'ionizer_air_presure',        // ✅ TAMBAHKAN (5.a)
             'conveyor_speed',
             
             // STEP 4: PRINTING
@@ -244,6 +249,7 @@ class DailyFujiStandardCheck extends Model
             // STEP 12: REFLOW 2
             'temperature_chiller',
             'temperature_control_3',
+            'n2_air_presure_valve',       // ✅ TAMBAHKAN (24.a)
             
             // STEP 13: CHIP MOUNTER 3
             'fan_unit_1',
@@ -289,6 +295,7 @@ class DailyFujiStandardCheck extends Model
             'vacume_brush' => 3,
             'cleaning_roller' => 3,
             'ionizer' => 3,
+            'ionizer_air_presure' => 3,           // ✅ TAMBAHKAN (5.a)
             'conveyor_speed' => 3,
             
             // STEP 4: PRINTING
@@ -343,6 +350,7 @@ class DailyFujiStandardCheck extends Model
             // STEP 12: REFLOW 2
             'temperature_chiller' => 12,
             'temperature_control_3' => 12,
+            'n2_air_presure_valve' => 12,         // ✅ TAMBAHKAN (24.a)
             
             // STEP 13: CHIP MOUNTER 3
             'fan_unit_1' => 13,

@@ -23,7 +23,7 @@ class DailyFuji extends Model
     protected $fillable = [
         'master_line_id',
         'body_cover',
-        'lamp_alarm_change_model', // TAMBAHKAN
+        'lamp_alarm_change_model',
         'cylinder',
         'rail_and_magazine_pcb',
         'cover_magazine',
@@ -34,6 +34,7 @@ class DailyFuji extends Model
         'vacume_brush',
         'cleaning_roller',
         'ionizer',
+        'ionizer_air_presure',        // ✅ TAMBAHKAN (5.a)
         'conveyor_speed',
         'ipa_solvent',
         'temperature_control_1',
@@ -56,7 +57,7 @@ class DailyFuji extends Model
         'expire_date_2',
         'abandonment',
         'fire_posibilty',
-        'flashlight', // TAMBAHKAN
+        'flashlight',
         'rail_and_transfer_unit',
         'n2_presure',
         'oxygent_density_sek',
@@ -70,6 +71,7 @@ class DailyFuji extends Model
         'lamp_indicator',
         'temperature_chiller',
         'temperature_control_3',
+        'n2_air_presure_valve',       // ✅ TAMBAHKAN (24.a)
         'fan_unit_1',
         'fan_unit_2',
         'air_presure_3',
@@ -162,6 +164,8 @@ class DailyFuji extends Model
             'updated_by',
             'approved_by',
             'customer',
+            'ionizer_air_presure',        // ✅ TAMBAHKAN
+            'n2_air_presure_valve',       // ✅ TAMBAHKAN
         ]);
     }
 
@@ -217,7 +221,8 @@ class DailyFuji extends Model
             'abandonment', 'fire_posibilty', 'rail_and_transfer_unit', 'fire_posibilty_2',
             'cylinder_2', 'rail_and_magazine_pcb_2', 'cover_magazine_2',
             'angle_and_filter', 'lamp_indicator', 'fan_unit_1', 'fan_unit_2',
-            'water_reservoirs', 'filter', 'angle_and_filter_2'
+            'water_reservoirs', 'filter', 'angle_and_filter_2',
+            'n2_air_presure_valve',       // ✅ TAMBAHKAN (24.a)
         ];
 
         foreach ($toggleFields as $field) {
@@ -245,6 +250,7 @@ class DailyFuji extends Model
             'air_presure' => [0.45, 0.54],
             'vacume_presure_unitech' => [0.45, 0.54],
             'vacume_presure_nix' => [0.60, 0.70],
+            'ionizer_air_presure' => [0.05, 0.10],      // ✅ TAMBAHKAN (5.a)
             'conveyor_speed' => [null, 40],
             'temperature_control_1' => [23, 27],
             'humidity_control_1' => [35, 70],
@@ -264,6 +270,7 @@ class DailyFuji extends Model
             'air_presure_2' => [0.40, 0.50],
             'temperature_chiller' => [17, 23],
             'temperature_control_3' => [290, 310],
+            'n2_air_presure_valve' => [null, null],     // ✅ TAMBAHKAN (24.a) — tanpa range, hanya cek terisi
             'air_presure_3' => [0.40, 0.50],
             'temperature_control_4' => [23, 27],
         ];

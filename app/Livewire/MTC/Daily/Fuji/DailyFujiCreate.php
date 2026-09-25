@@ -35,6 +35,7 @@ class DailyFujiCreate extends Component
     public $vacume_brush;
     public $cleaning_roller;
     public $ionizer;
+    public $ionizer_air_presure;        // ✅ TAMBAHKAN (5.a)
     public $conveyor_speed;
     
     // STEP 4: PRINTING
@@ -85,10 +86,11 @@ class DailyFujiCreate extends Component
     // STEP 11: AOI TABLE
     public $angle_and_filter;
     public $lamp_indicator;
-    
+        
     // STEP 12: REFLOW 2
     public $temperature_chiller;
     public $temperature_control_3;
+    public $n2_air_presure_valve;       // ✅ TAMBAHKAN (24.a)
     
     // STEP 13: CHIP MOUNTER 3
     public $fan_unit_1;
@@ -134,14 +136,15 @@ class DailyFujiCreate extends Component
         'abandonment', 'fire_posibilty', 'rail_and_transfer_unit', 'fire_posibilty_2',
         'cylinder_2', 'rail_and_magazine_pcb_2', 'cover_magazine_2',
         'angle_and_filter', 'lamp_indicator', 'fan_unit_1', 'fan_unit_2',
-        'water_reservoirs', 'filter', 'angle_and_filter_2'
+        'water_reservoirs', 'filter', 'angle_and_filter_2',
+        'n2_air_presure_valve',       // ✅ TAMBAHKAN (24.a)
     ];
 
-    // Field numeric dengan range validasi
     protected $numericRanges = [
         'air_presure' => [0.45, 0.54],
         'vacume_presure_unitech' => [0.45, 0.54],
         'vacume_presure_nix' => [0.60, 0.70],
+        'ionizer_air_presure' => [0.05, 0.10],      // ✅ TAMBAHKAN (5.a)
         'conveyor_speed' => [null, 40],
         'temperature_control_1' => [23, 27],
         'humidity_control_1' => [35, 70],

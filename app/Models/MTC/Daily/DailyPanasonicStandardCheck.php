@@ -27,6 +27,7 @@ class DailyPanasonicStandardCheck extends Model
         'vacume_brush_required',
         'cleaning_roller_required',
         'ionizer_required',
+        'ionizer_air_presure_required',        // ✅ TAMBAHKAN (5.a)
         'conveyor_speed_required',
         'ipa_solvent_required',
         'temperature_control_1_required',
@@ -65,6 +66,7 @@ class DailyPanasonicStandardCheck extends Model
         'lamp_indicator_required',
         'temperature_chiller_required',
         'temperature_control_3_required',
+        'n2_air_presure_valve_required',       // ✅ TAMBAHKAN (24.a)
         'box_3_required',
         'vaccuum_pump_3_required',
         'box_4_required',
@@ -89,6 +91,7 @@ class DailyPanasonicStandardCheck extends Model
         'vacume_brush_required' => 'boolean',
         'cleaning_roller_required' => 'boolean',
         'ionizer_required' => 'boolean',
+        'ionizer_air_presure_required' => 'boolean',        // ✅ TAMBAHKAN (5.a)
         'conveyor_speed_required' => 'boolean',
         'ipa_solvent_required' => 'boolean',
         'temperature_control_1_required' => 'boolean',
@@ -127,6 +130,7 @@ class DailyPanasonicStandardCheck extends Model
         'lamp_indicator_required' => 'boolean',
         'temperature_chiller_required' => 'boolean',
         'temperature_control_3_required' => 'boolean',
+        'n2_air_presure_valve_required' => 'boolean',       // ✅ TAMBAHKAN (24.a)
         'box_3_required' => 'boolean',
         'vaccuum_pump_3_required' => 'boolean',
         'box_4_required' => 'boolean',
@@ -191,6 +195,7 @@ class DailyPanasonicStandardCheck extends Model
             'vacume_brush',
             'cleaning_roller',
             'ionizer',
+            'ionizer_air_presure',        // ✅ TAMBAHKAN (5.a)
             'conveyor_speed',
             
             // STEP 4: PRINTING
@@ -247,6 +252,7 @@ class DailyPanasonicStandardCheck extends Model
             // STEP 12: REFLOW 2
             'temperature_chiller',
             'temperature_control_3',
+            'n2_air_presure_valve',       // ✅ TAMBAHKAN (24.a)
             
             // STEP 13: CHIP MOUNTER 3
             'box_3',
@@ -294,6 +300,7 @@ class DailyPanasonicStandardCheck extends Model
             'vacume_brush' => 3,
             'cleaning_roller' => 3,
             'ionizer' => 3,
+            'ionizer_air_presure' => 3,           // ✅ TAMBAHKAN (5.a)
             'conveyor_speed' => 3,
             
             // STEP 4: PRINTING
@@ -350,6 +357,7 @@ class DailyPanasonicStandardCheck extends Model
             // STEP 12: REFLOW 2
             'temperature_chiller' => 12,
             'temperature_control_3' => 12,
+            'n2_air_presure_valve' => 12,         // ✅ TAMBAHKAN (24.a)
             
             // STEP 13: CHIP MOUNTER 3
             'box_3' => 13,

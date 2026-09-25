@@ -7,27 +7,6 @@
 <?php # [BlazeFolded]:{flux::icon}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::card}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/card/index.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::icon}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::input}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/input/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.play}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/play.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.stop}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/stop.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::tooltip}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/tooltip/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::tooltip}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/tooltip/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::tooltip}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/tooltip/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::tooltip}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/tooltip/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::tooltip}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/tooltip/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.document-magnifying-glass}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/document-magnifying-glass.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.plus}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/plus.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::card}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/card/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::input}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/input/index.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
@@ -48,102 +27,115 @@
 <?php # [BlazeFolded]:{flux::card}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/card/index.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::icon}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.play}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/play.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.stop}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/stop.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::modal}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/modal/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::modal}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/modal/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::modal}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/modal/index.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::tooltip}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/tooltip/index.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::modal}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/modal/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::modal}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/modal/index.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::tooltip}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/tooltip/index.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::tooltip}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/tooltip/index.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::tooltip}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/tooltip/index.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::tooltip}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/tooltip/index.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.document-magnifying-glass}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/document-magnifying-glass.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.plus}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/plus.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::card}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/card/index.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.check-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/check-circle.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon.x-circle}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-circle.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::modal}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/modal/index.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
 <section class="w-full">
 
     <?php ob_start(); ?><div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-sm [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2 sr-only" data-flux-heading><?php ob_start(); ?>
@@ -548,45 +540,10 @@
                             <h3 class="font-semibold text-base text-zinc-900 dark:text-white">Daily Fuji Inspection Records</h3>
                         </div>
                         <div class="flex flex-wrap items-center gap-2">
-                            <?php ob_start(); ?><div class="w-full relative block group/input w-48 sm:w-64" data-flux-input>
-                            <div class="pointer-events-none absolute top-0 bottom-0 border-s border-transparent flex items-center justify-center text-xs text-zinc-400/75 dark:text-white/60 ps-3 start-0">
-                    <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-  <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd"/>
-</svg>
-
-                        </div>
-            
-            <input
-                type="text"
-                
-                class="w-full border rounded-lg block disabled:shadow-none dark:shadow-none appearance-none text-base sm:text-sm py-2 h-10 leading-[1.375rem] ps-10 pe-3 bg-white dark:bg-white/10 dark:disabled:bg-white/[7%] text-zinc-700 disabled:text-zinc-500 placeholder-zinc-400 disabled:placeholder-zinc-400/70 dark:text-zinc-300 dark:disabled:text-zinc-400 dark:placeholder-zinc-400 dark:disabled:placeholder-zinc-500 shadow-xs border-zinc-200 border-b-zinc-300/80 disabled:border-b-zinc-200 dark:border-white/10 dark:disabled:border-white/5 data-invalid:shadow-none data-invalid:border-red-500 dark:data-invalid:border-red-500 disabled:data-invalid:border-red-500 dark:disabled:data-invalid:border-red-500" wire:model.live.debounce.300ms="search" placeholder="Search..."
-                 name="search"                                                 <?php if (isset($scope)) $__scope = $scope; ?><?php $scope = array (
-  'name' => 'search',
-  'invalid' => false,
-); ?>
-                <?php if ($scope['invalid'] || ($scope['name'] && $errors->has($scope['name']))): ?>
-                aria-invalid="true" data-invalid
-                <?php endif; ?>
-                <?php if (isset($__scope)) { $scope = $__scope; unset($__scope); } ?>
-                data-flux-control
-                data-flux-group-target
-                 wire:loading.class="pe-10"                  wire:target="search"             >
-
-                            <div class="absolute top-0 bottom-0 flex items-center gap-x-1.5 pe-2 border-e border-transparent end-0 text-xs text-zinc-400">
-                    
-                                            <svg class="shrink-0 [:where(&amp;)]:size-5 animate-spin" wire:loading="" wire:target="search" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true" data-slot="icon">
-    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-</svg>
-                            
-                    
-                    
-                    
-                    
-                    
-                                    </div>
-                    </div>
-<?php echo ltrim(ob_get_clean()); ?>
+                            <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/input/index.blade.php', $__blaze->compiledPath.'/5ae551d98c08f0bc67bd05455e08306c.php'); ?>
+<?php $__blaze->pushData(['wire:model.live.debounce.300ms' => 'search','placeholder' => 'Search...','icon' => 'magnifying-glass','class' => 'w-48 sm:w-64']); ?>
+<?php _5ae551d98c08f0bc67bd05455e08306c($__blaze, ['wire:model.live.debounce.300ms' => 'search','placeholder' => 'Search...','icon' => 'magnifying-glass','class' => 'w-48 sm:w-64'], [], [], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php $__blaze->popData(); ?>
                             <select 
                                 wire:model.live="selectedStatus" 
                                 class="rounded-lg border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm focus:ring-2 focus:ring-green-500"
@@ -972,45 +929,10 @@
                             <h3 class="font-semibold text-base text-zinc-900 dark:text-white">Daily Panasonic Inspection Records</h3>
                         </div>
                         <div class="flex flex-wrap items-center gap-2">
-                            <?php ob_start(); ?><div class="w-full relative block group/input w-48 sm:w-64" data-flux-input>
-                            <div class="pointer-events-none absolute top-0 bottom-0 border-s border-transparent flex items-center justify-center text-xs text-zinc-400/75 dark:text-white/60 ps-3 start-0">
-                    <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-  <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd"/>
-</svg>
-
-                        </div>
-            
-            <input
-                type="text"
-                
-                class="w-full border rounded-lg block disabled:shadow-none dark:shadow-none appearance-none text-base sm:text-sm py-2 h-10 leading-[1.375rem] ps-10 pe-3 bg-white dark:bg-white/10 dark:disabled:bg-white/[7%] text-zinc-700 disabled:text-zinc-500 placeholder-zinc-400 disabled:placeholder-zinc-400/70 dark:text-zinc-300 dark:disabled:text-zinc-400 dark:placeholder-zinc-400 dark:disabled:placeholder-zinc-500 shadow-xs border-zinc-200 border-b-zinc-300/80 disabled:border-b-zinc-200 dark:border-white/10 dark:disabled:border-white/5 data-invalid:shadow-none data-invalid:border-red-500 dark:data-invalid:border-red-500 disabled:data-invalid:border-red-500 dark:disabled:data-invalid:border-red-500" wire:model.live.debounce.300ms="panasonicSearch" placeholder="Search..."
-                 name="panasonicSearch"                                                 <?php if (isset($scope)) $__scope = $scope; ?><?php $scope = array (
-  'name' => 'panasonicSearch',
-  'invalid' => false,
-); ?>
-                <?php if ($scope['invalid'] || ($scope['name'] && $errors->has($scope['name']))): ?>
-                aria-invalid="true" data-invalid
-                <?php endif; ?>
-                <?php if (isset($__scope)) { $scope = $__scope; unset($__scope); } ?>
-                data-flux-control
-                data-flux-group-target
-                 wire:loading.class="pe-10"                  wire:target="panasonicSearch"             >
-
-                            <div class="absolute top-0 bottom-0 flex items-center gap-x-1.5 pe-2 border-e border-transparent end-0 text-xs text-zinc-400">
-                    
-                                            <svg class="shrink-0 [:where(&amp;)]:size-5 animate-spin" wire:loading="" wire:target="panasonicSearch" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true" data-slot="icon">
-    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-</svg>
-                            
-                    
-                    
-                    
-                    
-                    
-                                    </div>
-                    </div>
-<?php echo ltrim(ob_get_clean()); ?>
+                            <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/input/index.blade.php', $__blaze->compiledPath.'/5ae551d98c08f0bc67bd05455e08306c.php'); ?>
+<?php $__blaze->pushData(['wire:model.live.debounce.300ms' => 'panasonicSearch','placeholder' => 'Search...','icon' => 'magnifying-glass','class' => 'w-48 sm:w-64']); ?>
+<?php _5ae551d98c08f0bc67bd05455e08306c($__blaze, ['wire:model.live.debounce.300ms' => 'panasonicSearch','placeholder' => 'Search...','icon' => 'magnifying-glass','class' => 'w-48 sm:w-64'], [], [], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php $__blaze->popData(); ?>
                             <select 
                                 wire:model.live="selectedPanasonicStatus" 
                                 class="rounded-lg border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
@@ -1398,20 +1320,13 @@
 <?php endif; ?>
 
     
-    <?php ob_start(); ?><ui-modal wire:model.self="showCustomerModal" data-flux-modal>
-    
-    <dialog
-        wire:ignore.self 
-        class="p-6 [:where(&amp;)]:max-w-xl [:where(&amp;)]:min-w-xs shadow-lg rounded-xl bg-white dark:bg-zinc-800 ring ring-black/5 dark:ring-zinc-700 shadow-lg rounded-xl max-w-md"
-                                <?php if (isset($scope)) $__scope = $scope; ?><?php $scope = array (
-  'name' => NULL,
-); ?>
-        x-data="fluxModal(<?php echo \Illuminate\Support\Js::from($scope['name'])->toHtml() ?>, <?php echo \Illuminate\Support\Js::from(isset($__livewire) ? $__livewire->getId() : null)->toHtml() ?>)"
-        <?php if (isset($__scope)) { $scope = $__scope; unset($__scope); } ?>
-        x-on:modal-show.document="handleShow($event)"
-        x-on:modal-close.document="handleClose($event)"
-    >
-                    <?php ob_start(); ?>
+    <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/modal/index.blade.php', $__blaze->compiledPath.'/d7daffae0f7d39417a577d7b57e3168f.php'); ?>
+<?php if (isset($__slotsd7daffae0f7d39417a577d7b57e3168f)) { $__slotsStackd7daffae0f7d39417a577d7b57e3168f[] = $__slotsd7daffae0f7d39417a577d7b57e3168f; } ?>
+<?php if (isset($__attrsd7daffae0f7d39417a577d7b57e3168f)) { $__attrsStackd7daffae0f7d39417a577d7b57e3168f[] = $__attrsd7daffae0f7d39417a577d7b57e3168f; } ?>
+<?php $__attrsd7daffae0f7d39417a577d7b57e3168f = ['wire:model' => 'showCustomerModal','class' => 'max-w-md']; ?>
+<?php $__slotsd7daffae0f7d39417a577d7b57e3168f = []; ?>
+<?php $__blaze->pushData($__attrsd7daffae0f7d39417a577d7b57e3168f); ?>
+<?php ob_start(); ?>
         <div class="space-y-4">
             <div class="flex justify-between items-center border-b border-zinc-200 dark:border-zinc-700 pb-3">
                 <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">
@@ -1528,37 +1443,21 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
 <?php echo ltrim(ob_get_clean()); ?>
             </div>
         </div>
-    <?php echo trim(ob_get_clean()); ?>
-
-
-                            <div class="absolute top-0 end-0 mt-4 me-4">
-                    <ui-close data-flux-modal-close >
-    <button type="button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-8 text-sm rounded-md w-8 inline-flex  bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-800 dark:text-white      text-zinc-400! hover:text-zinc-800! dark:text-zinc-500! dark:hover:text-white!" data-flux-button="data-flux-button" aria-label="Close modal">
-        <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-  <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"/>
-</svg>
-    </button>
-</ui-close>
-                </div>
-                        </dialog>
-</ui-modal>
-<?php echo ltrim(ob_get_clean()); ?>
+    <?php $__slotsd7daffae0f7d39417a577d7b57e3168f['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slotsd7daffae0f7d39417a577d7b57e3168f); ?>
+<?php _d7daffae0f7d39417a577d7b57e3168f($__blaze, $__attrsd7daffae0f7d39417a577d7b57e3168f, $__slotsd7daffae0f7d39417a577d7b57e3168f, [], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStackd7daffae0f7d39417a577d7b57e3168f)) { $__slotsd7daffae0f7d39417a577d7b57e3168f = array_pop($__slotsStackd7daffae0f7d39417a577d7b57e3168f); } ?>
+<?php if (! empty($__attrsStackd7daffae0f7d39417a577d7b57e3168f)) { $__attrsd7daffae0f7d39417a577d7b57e3168f = array_pop($__attrsStackd7daffae0f7d39417a577d7b57e3168f); } ?>
+<?php $__blaze->popData(); ?>
 
     <!-- Daily Fuji Detail Modal -->
-    <?php ob_start(); ?><ui-modal wire:model.self="showDailyFujiModal" data-flux-modal>
-    
-    <dialog
-        wire:ignore.self 
-        class="p-6 [:where(&amp;)]:max-w-xl [:where(&amp;)]:min-w-xs shadow-lg rounded-xl bg-white dark:bg-zinc-800 ring ring-black/5 dark:ring-zinc-700 shadow-lg rounded-xl max-w-4xl"
-                                <?php if (isset($scope)) $__scope = $scope; ?><?php $scope = array (
-  'name' => NULL,
-); ?>
-        x-data="fluxModal(<?php echo \Illuminate\Support\Js::from($scope['name'])->toHtml() ?>, <?php echo \Illuminate\Support\Js::from(isset($__livewire) ? $__livewire->getId() : null)->toHtml() ?>)"
-        <?php if (isset($__scope)) { $scope = $__scope; unset($__scope); } ?>
-        x-on:modal-show.document="handleShow($event)"
-        x-on:modal-close.document="handleClose($event)"
-    >
-                    <?php ob_start(); ?>
+    <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/modal/index.blade.php', $__blaze->compiledPath.'/d7daffae0f7d39417a577d7b57e3168f.php'); ?>
+<?php if (isset($__slotsd7daffae0f7d39417a577d7b57e3168f)) { $__slotsStackd7daffae0f7d39417a577d7b57e3168f[] = $__slotsd7daffae0f7d39417a577d7b57e3168f; } ?>
+<?php if (isset($__attrsd7daffae0f7d39417a577d7b57e3168f)) { $__attrsStackd7daffae0f7d39417a577d7b57e3168f[] = $__attrsd7daffae0f7d39417a577d7b57e3168f; } ?>
+<?php $__attrsd7daffae0f7d39417a577d7b57e3168f = ['wire:model' => 'showDailyFujiModal','class' => 'max-w-4xl']; ?>
+<?php $__slotsd7daffae0f7d39417a577d7b57e3168f = []; ?>
+<?php $__blaze->pushData($__attrsd7daffae0f7d39417a577d7b57e3168f); ?>
+<?php ob_start(); ?>
         <div class="space-y-4">
             <div class="flex justify-between items-center border-b border-zinc-200 dark:border-zinc-700 pb-3">
                 <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">
@@ -1872,7 +1771,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
 
                 <!-- STEP 3: PCB CLEANER -->
                 <?php
-                    $step3Fields = ['brush', 'air_presure', 'vacume_presure_unitech', 'vacume_presure_nix', 'vacume_brush', 'cleaning_roller', 'ionizer', 'conveyor_speed'];
+                    $step3Fields = ['brush', 'air_presure', 'vacume_presure_unitech', 'vacume_presure_nix', 'vacume_brush', 'cleaning_roller', 'ionizer', 'ionizer_air_presure', 'conveyor_speed'];
                     $step3Incomplete = isStepIncompleteForDetail($selectedDailyFuji, $step3Fields, $requiredFujiFields ?? []);
                 ?>
                 <div class="border rounded-lg overflow-hidden <?php echo e($step3Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700'); ?>">
@@ -2050,6 +1949,27 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                 </span>
                             </div>
                         </div>
+
+                        <!-- Air Pressure Ionizer (5.a) -->
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Air Pressure Ionizer (5.a)
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(isFujiFieldRequired('ionizer_air_presure', $requiredFujiFields ?? [])): ?>
+                                        <span class="text-red-500 text-xs">*</span>
+                                    <?php else: ?>
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                </p>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check With Pressure Meter</p>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 0.05 Mpa - 0.10 Mpa</p>
+                            </div>
+                            <div class="text-right ml-4">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium <?php echo e(getBadgeClassForDetail($selectedDailyFuji->ionizer_air_presure)); ?>">
+                                    Value : <?php echo e($selectedDailyFuji->ionizer_air_presure ?? '-'); ?> Mpa
+                                </span>
+                            </div>
+                        </div>
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
@@ -2121,7 +2041,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                         <span class="text-gray-400 text-xs">(Optional)</span>
                                     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </p>
-                                <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Make sure solvent minimal on mid level (half)</p>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Make sure solvent (IPA) minimal on mid level (half)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : Tank Minimal half</p>
                             </div>
                             <div class="text-right ml-4">
@@ -3073,7 +2993,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
 
                 <!-- STEP 12: REFLOW 2 -->
                 <?php
-                    $step12Fields = ['temperature_chiller', 'temperature_control_3'];
+                    $step12Fields = ['temperature_chiller', 'temperature_control_3', 'n2_air_presure_valve'];
                     $step12Incomplete = isStepIncompleteForDetail($selectedDailyFuji, $step12Fields, $requiredFujiFields ?? []);
                 ?>
                 <div class="border rounded-lg overflow-hidden <?php echo e($step12Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700'); ?>">
@@ -3144,6 +3064,28 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                             <div class="text-right ml-4">
                                 <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium <?php echo e(getBadgeClassForDetail($selectedDailyFuji->temperature_control_3)); ?>">
                                     Value : <?php echo e($selectedDailyFuji->temperature_control_3 ?? '-'); ?> ℃
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- N2 & Air Pressure (24.a) -->
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    N2 & Air Pressure (24.a)
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(isFujiFieldRequired('n2_air_presure_valve', $requiredFujiFields ?? [])): ?>
+                                        <span class="text-red-500 text-xs">*</span>
+                                    <?php else: ?>
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                </p>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Opening Valve N2 & Air Pressure</p>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : Position handle parallel di direction of pipe for open position</p>
+                            </div>
+                            <div class="text-right ml-4">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium <?php echo e(getBadgeClassForDetail($selectedDailyFuji->n2_air_presure_valve)); ?>">
+                                    Value : <?php echo e(ucfirst($selectedDailyFuji->n2_air_presure_valve ?? '-')); ?>
+
                                 </span>
                             </div>
                         </div>
@@ -3618,37 +3560,21 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
             </div>
             <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         </div>
-    <?php echo trim(ob_get_clean()); ?>
-
-
-                            <div class="absolute top-0 end-0 mt-4 me-4">
-                    <ui-close data-flux-modal-close >
-    <button type="button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-8 text-sm rounded-md w-8 inline-flex  bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-800 dark:text-white      text-zinc-400! hover:text-zinc-800! dark:text-zinc-500! dark:hover:text-white!" data-flux-button="data-flux-button" aria-label="Close modal">
-        <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-  <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"/>
-</svg>
-    </button>
-</ui-close>
-                </div>
-                        </dialog>
-</ui-modal>
-<?php echo ltrim(ob_get_clean()); ?>
+    <?php $__slotsd7daffae0f7d39417a577d7b57e3168f['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slotsd7daffae0f7d39417a577d7b57e3168f); ?>
+<?php _d7daffae0f7d39417a577d7b57e3168f($__blaze, $__attrsd7daffae0f7d39417a577d7b57e3168f, $__slotsd7daffae0f7d39417a577d7b57e3168f, [], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStackd7daffae0f7d39417a577d7b57e3168f)) { $__slotsd7daffae0f7d39417a577d7b57e3168f = array_pop($__slotsStackd7daffae0f7d39417a577d7b57e3168f); } ?>
+<?php if (! empty($__attrsStackd7daffae0f7d39417a577d7b57e3168f)) { $__attrsd7daffae0f7d39417a577d7b57e3168f = array_pop($__attrsStackd7daffae0f7d39417a577d7b57e3168f); } ?>
+<?php $__blaze->popData(); ?>
 
     <!-- Approval Modal -->
-    <?php ob_start(); ?><ui-modal wire:model.self="showApprovalModal" data-flux-modal>
-    
-    <dialog
-        wire:ignore.self 
-        class="p-6 [:where(&amp;)]:max-w-xl [:where(&amp;)]:min-w-xs shadow-lg rounded-xl bg-white dark:bg-zinc-800 ring ring-black/5 dark:ring-zinc-700 shadow-lg rounded-xl max-w-md"
-                                <?php if (isset($scope)) $__scope = $scope; ?><?php $scope = array (
-  'name' => NULL,
-); ?>
-        x-data="fluxModal(<?php echo \Illuminate\Support\Js::from($scope['name'])->toHtml() ?>, <?php echo \Illuminate\Support\Js::from(isset($__livewire) ? $__livewire->getId() : null)->toHtml() ?>)"
-        <?php if (isset($__scope)) { $scope = $__scope; unset($__scope); } ?>
-        x-on:modal-show.document="handleShow($event)"
-        x-on:modal-close.document="handleClose($event)"
-    >
-                    <?php ob_start(); ?>
+    <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/modal/index.blade.php', $__blaze->compiledPath.'/d7daffae0f7d39417a577d7b57e3168f.php'); ?>
+<?php if (isset($__slotsd7daffae0f7d39417a577d7b57e3168f)) { $__slotsStackd7daffae0f7d39417a577d7b57e3168f[] = $__slotsd7daffae0f7d39417a577d7b57e3168f; } ?>
+<?php if (isset($__attrsd7daffae0f7d39417a577d7b57e3168f)) { $__attrsStackd7daffae0f7d39417a577d7b57e3168f[] = $__attrsd7daffae0f7d39417a577d7b57e3168f; } ?>
+<?php $__attrsd7daffae0f7d39417a577d7b57e3168f = ['wire:model' => 'showApprovalModal','class' => 'max-w-md']; ?>
+<?php $__slotsd7daffae0f7d39417a577d7b57e3168f = []; ?>
+<?php $__blaze->pushData($__attrsd7daffae0f7d39417a577d7b57e3168f); ?>
+<?php ob_start(); ?>
         <div class="space-y-4">
             <div class="flex justify-between items-center border-b border-zinc-200 dark:border-zinc-700 pb-3">
                 <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">
@@ -3687,37 +3613,21 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                 </div>
             </div>
         </div>
-    <?php echo trim(ob_get_clean()); ?>
-
-
-                            <div class="absolute top-0 end-0 mt-4 me-4">
-                    <ui-close data-flux-modal-close >
-    <button type="button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-8 text-sm rounded-md w-8 inline-flex  bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-800 dark:text-white      text-zinc-400! hover:text-zinc-800! dark:text-zinc-500! dark:hover:text-white!" data-flux-button="data-flux-button" aria-label="Close modal">
-        <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-  <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"/>
-</svg>
-    </button>
-</ui-close>
-                </div>
-                        </dialog>
-</ui-modal>
-<?php echo ltrim(ob_get_clean()); ?>
+    <?php $__slotsd7daffae0f7d39417a577d7b57e3168f['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slotsd7daffae0f7d39417a577d7b57e3168f); ?>
+<?php _d7daffae0f7d39417a577d7b57e3168f($__blaze, $__attrsd7daffae0f7d39417a577d7b57e3168f, $__slotsd7daffae0f7d39417a577d7b57e3168f, [], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStackd7daffae0f7d39417a577d7b57e3168f)) { $__slotsd7daffae0f7d39417a577d7b57e3168f = array_pop($__slotsStackd7daffae0f7d39417a577d7b57e3168f); } ?>
+<?php if (! empty($__attrsStackd7daffae0f7d39417a577d7b57e3168f)) { $__attrsd7daffae0f7d39417a577d7b57e3168f = array_pop($__attrsStackd7daffae0f7d39417a577d7b57e3168f); } ?>
+<?php $__blaze->popData(); ?>
 
     <!-- Daily Panasonic Detail Modal -->
-    <?php ob_start(); ?><ui-modal wire:model.self="showDailyPanasonicModal" data-flux-modal>
-    
-    <dialog
-        wire:ignore.self 
-        class="p-6 [:where(&amp;)]:max-w-xl [:where(&amp;)]:min-w-xs shadow-lg rounded-xl bg-white dark:bg-zinc-800 ring ring-black/5 dark:ring-zinc-700 shadow-lg rounded-xl max-w-4xl"
-                                <?php if (isset($scope)) $__scope = $scope; ?><?php $scope = array (
-  'name' => NULL,
-); ?>
-        x-data="fluxModal(<?php echo \Illuminate\Support\Js::from($scope['name'])->toHtml() ?>, <?php echo \Illuminate\Support\Js::from(isset($__livewire) ? $__livewire->getId() : null)->toHtml() ?>)"
-        <?php if (isset($__scope)) { $scope = $__scope; unset($__scope); } ?>
-        x-on:modal-show.document="handleShow($event)"
-        x-on:modal-close.document="handleClose($event)"
-    >
-                    <?php ob_start(); ?>
+    <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/modal/index.blade.php', $__blaze->compiledPath.'/d7daffae0f7d39417a577d7b57e3168f.php'); ?>
+<?php if (isset($__slotsd7daffae0f7d39417a577d7b57e3168f)) { $__slotsStackd7daffae0f7d39417a577d7b57e3168f[] = $__slotsd7daffae0f7d39417a577d7b57e3168f; } ?>
+<?php if (isset($__attrsd7daffae0f7d39417a577d7b57e3168f)) { $__attrsStackd7daffae0f7d39417a577d7b57e3168f[] = $__attrsd7daffae0f7d39417a577d7b57e3168f; } ?>
+<?php $__attrsd7daffae0f7d39417a577d7b57e3168f = ['wire:model' => 'showDailyPanasonicModal','class' => 'max-w-4xl']; ?>
+<?php $__slotsd7daffae0f7d39417a577d7b57e3168f = []; ?>
+<?php $__blaze->pushData($__attrsd7daffae0f7d39417a577d7b57e3168f); ?>
+<?php ob_start(); ?>
         <div class="space-y-4">
             <div class="flex justify-between items-center border-b border-zinc-200 dark:border-zinc-700 pb-3 sticky top-0 bg-white dark:bg-zinc-900 z-10">
                 <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">
@@ -4046,7 +3956,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
 
                 <!-- STEP 3: PCB CLEANER -->
                 <?php
-                    $step3Fields = ['brush', 'air_presure', 'vacume_presure_unitech', 'vacume_presure_nix', 'vacume_brush', 'cleaning_roller', 'ionizer', 'conveyor_speed'];
+                    $step3Fields = ['brush', 'air_presure', 'vacume_presure_unitech', 'vacume_presure_nix', 'vacume_brush', 'cleaning_roller', 'ionizer', 'ionizer_air_presure', 'conveyor_speed'];
                     $step3Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step3Fields, $requiredPanasonicFields);
                 ?>
                 <div class="border rounded-lg overflow-hidden <?php echo e($step3Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700'); ?>">
@@ -4224,6 +4134,27 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                 </span>
                             </div>
                         </div>
+
+                        <!-- Air Pressure Ionizer (5.a) -->
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    Air Pressure Ionizer (5.a)
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(isPanasonicFieldRequired('ionizer_air_presure', $requiredPanasonicFields)): ?>
+                                        <span class="text-red-500 text-xs">*</span>
+                                    <?php else: ?>
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                </p>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Check With Pressure Meter</p>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : 0.05 Mpa - 0.10 Mpa</p>
+                            </div>
+                            <div class="text-right ml-4">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium <?php echo e(getPanasonicBadgeClass($selectedDailyPanasonic->ionizer_air_presure)); ?>">
+                                    Value : <?php echo e($selectedDailyPanasonic->ionizer_air_presure ?? '-'); ?> Mpa
+                                </span>
+                            </div>
+                        </div>
                         
                         <div class="flex justify-between items-start">
                             <div class="flex-1">
@@ -4295,7 +4226,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                         <span class="text-gray-400 text-xs">(Optional)</span>
                                     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </p>
-                                <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Make sure solvent minimal on mid level (half)</p>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Make sure solvent (IPA) minimal on mid level (half)</p>
                                 <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : Tank Minimal half</p>
                             </div>
                             <div class="text-right ml-4">
@@ -5288,7 +5219,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
 
                 <!-- STEP 12: REFLOW 2 -->
                 <?php
-                    $step12Fields = ['temperature_chiller', 'temperature_control_3'];
+                    $step12Fields = ['temperature_chiller', 'temperature_control_3', 'n2_air_presure_valve'];
                     $step12Incomplete = isPanasonicStepIncomplete($selectedDailyPanasonic, $step12Fields, $requiredPanasonicFields);
                 ?>
                 <div class="border rounded-lg overflow-hidden <?php echo e($step12Incomplete ? 'border-red-500 dark:border-red-500' : 'border-zinc-200 dark:border-zinc-700'); ?>">
@@ -5359,6 +5290,28 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                             <div class="text-right ml-4">
                                 <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium <?php echo e(getPanasonicBadgeClass($selectedDailyPanasonic->temperature_control_3)); ?>">
                                     Value : <?php echo e($selectedDailyPanasonic->temperature_control_3 ?? '-'); ?> ℃
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- N2 & Air Pressure (24.a) -->
+                        <div class="flex justify-between items-start">
+                            <div class="flex-1">
+                                <p class="font-medium text-zinc-800 dark:text-white">
+                                    N2 & Air Pressure (24.a)
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(isPanasonicFieldRequired('n2_air_presure_valve', $requiredPanasonicFields)): ?>
+                                        <span class="text-red-500 text-xs">*</span>
+                                    <?php else: ?>
+                                        <span class="text-gray-400 text-xs">(Optional)</span>
+                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                </p>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400 mt-1">Details On Check : Opening Valve N2 & Air Pressure</p>
+                                <p class="text-sm text-zinc-600 dark:text-zinc-400">Standard : Position handle parallel di direction of pipe for open position</p>
+                            </div>
+                            <div class="text-right ml-4">
+                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium <?php echo e(getPanasonicBadgeClass($selectedDailyPanasonic->n2_air_presure_valve)); ?>">
+                                    Value : <?php echo e(ucfirst($selectedDailyPanasonic->n2_air_presure_valve ?? '-')); ?>
+
                                 </span>
                             </div>
                         </div>
@@ -5873,37 +5826,21 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
             </div>
             <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         </div>
-    <?php echo trim(ob_get_clean()); ?>
-
-
-                            <div class="absolute top-0 end-0 mt-4 me-4">
-                    <ui-close data-flux-modal-close >
-    <button type="button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-8 text-sm rounded-md w-8 inline-flex  bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-800 dark:text-white      text-zinc-400! hover:text-zinc-800! dark:text-zinc-500! dark:hover:text-white!" data-flux-button="data-flux-button" aria-label="Close modal">
-        <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-  <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"/>
-</svg>
-    </button>
-</ui-close>
-                </div>
-                        </dialog>
-</ui-modal>
-<?php echo ltrim(ob_get_clean()); ?>
+    <?php $__slotsd7daffae0f7d39417a577d7b57e3168f['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slotsd7daffae0f7d39417a577d7b57e3168f); ?>
+<?php _d7daffae0f7d39417a577d7b57e3168f($__blaze, $__attrsd7daffae0f7d39417a577d7b57e3168f, $__slotsd7daffae0f7d39417a577d7b57e3168f, [], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStackd7daffae0f7d39417a577d7b57e3168f)) { $__slotsd7daffae0f7d39417a577d7b57e3168f = array_pop($__slotsStackd7daffae0f7d39417a577d7b57e3168f); } ?>
+<?php if (! empty($__attrsStackd7daffae0f7d39417a577d7b57e3168f)) { $__attrsd7daffae0f7d39417a577d7b57e3168f = array_pop($__attrsStackd7daffae0f7d39417a577d7b57e3168f); } ?>
+<?php $__blaze->popData(); ?>
 
     <!-- Panasonic Approval Modal -->
-    <?php ob_start(); ?><ui-modal wire:model.self="showPanasonicApprovalModal" data-flux-modal>
-    
-    <dialog
-        wire:ignore.self 
-        class="p-6 [:where(&amp;)]:max-w-xl [:where(&amp;)]:min-w-xs shadow-lg rounded-xl bg-white dark:bg-zinc-800 ring ring-black/5 dark:ring-zinc-700 shadow-lg rounded-xl max-w-md"
-                                <?php if (isset($scope)) $__scope = $scope; ?><?php $scope = array (
-  'name' => NULL,
-); ?>
-        x-data="fluxModal(<?php echo \Illuminate\Support\Js::from($scope['name'])->toHtml() ?>, <?php echo \Illuminate\Support\Js::from(isset($__livewire) ? $__livewire->getId() : null)->toHtml() ?>)"
-        <?php if (isset($__scope)) { $scope = $__scope; unset($__scope); } ?>
-        x-on:modal-show.document="handleShow($event)"
-        x-on:modal-close.document="handleClose($event)"
-    >
-                    <?php ob_start(); ?>
+    <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/modal/index.blade.php', $__blaze->compiledPath.'/d7daffae0f7d39417a577d7b57e3168f.php'); ?>
+<?php if (isset($__slotsd7daffae0f7d39417a577d7b57e3168f)) { $__slotsStackd7daffae0f7d39417a577d7b57e3168f[] = $__slotsd7daffae0f7d39417a577d7b57e3168f; } ?>
+<?php if (isset($__attrsd7daffae0f7d39417a577d7b57e3168f)) { $__attrsStackd7daffae0f7d39417a577d7b57e3168f[] = $__attrsd7daffae0f7d39417a577d7b57e3168f; } ?>
+<?php $__attrsd7daffae0f7d39417a577d7b57e3168f = ['wire:model' => 'showPanasonicApprovalModal','class' => 'max-w-md']; ?>
+<?php $__slotsd7daffae0f7d39417a577d7b57e3168f = []; ?>
+<?php $__blaze->pushData($__attrsd7daffae0f7d39417a577d7b57e3168f); ?>
+<?php ob_start(); ?>
         <div class="space-y-4">
             <div class="flex justify-between items-center border-b border-zinc-200 dark:border-zinc-700 pb-3">
                 <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">
@@ -5942,37 +5879,21 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                 </div>
             </div>
         </div>
-    <?php echo trim(ob_get_clean()); ?>
-
-
-                            <div class="absolute top-0 end-0 mt-4 me-4">
-                    <ui-close data-flux-modal-close >
-    <button type="button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-8 text-sm rounded-md w-8 inline-flex  bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-800 dark:text-white      text-zinc-400! hover:text-zinc-800! dark:text-zinc-500! dark:hover:text-white!" data-flux-button="data-flux-button" aria-label="Close modal">
-        <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-  <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"/>
-</svg>
-    </button>
-</ui-close>
-                </div>
-                        </dialog>
-</ui-modal>
-<?php echo ltrim(ob_get_clean()); ?>
+    <?php $__slotsd7daffae0f7d39417a577d7b57e3168f['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slotsd7daffae0f7d39417a577d7b57e3168f); ?>
+<?php _d7daffae0f7d39417a577d7b57e3168f($__blaze, $__attrsd7daffae0f7d39417a577d7b57e3168f, $__slotsd7daffae0f7d39417a577d7b57e3168f, [], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStackd7daffae0f7d39417a577d7b57e3168f)) { $__slotsd7daffae0f7d39417a577d7b57e3168f = array_pop($__slotsStackd7daffae0f7d39417a577d7b57e3168f); } ?>
+<?php if (! empty($__attrsStackd7daffae0f7d39417a577d7b57e3168f)) { $__attrsd7daffae0f7d39417a577d7b57e3168f = array_pop($__attrsStackd7daffae0f7d39417a577d7b57e3168f); } ?>
+<?php $__blaze->popData(); ?>
 
     <!-- MODAL ACTIVITY LOG -->
-    <?php ob_start(); ?><ui-modal wire:model.self="showActivityModal" data-flux-modal>
-    
-    <dialog
-        wire:ignore.self 
-        class="p-6 [:where(&amp;)]:max-w-xl [:where(&amp;)]:min-w-xs shadow-lg rounded-xl bg-white dark:bg-zinc-800 ring ring-black/5 dark:ring-zinc-700 shadow-lg rounded-xl w-full max-w-5xl"
-                                <?php if (isset($scope)) $__scope = $scope; ?><?php $scope = array (
-  'name' => NULL,
-); ?>
-        x-data="fluxModal(<?php echo \Illuminate\Support\Js::from($scope['name'])->toHtml() ?>, <?php echo \Illuminate\Support\Js::from(isset($__livewire) ? $__livewire->getId() : null)->toHtml() ?>)"
-        <?php if (isset($__scope)) { $scope = $__scope; unset($__scope); } ?>
-        x-on:modal-show.document="handleShow($event)"
-        x-on:modal-close.document="handleClose($event)"
-    >
-                    <?php ob_start(); ?>
+    <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/modal/index.blade.php', $__blaze->compiledPath.'/d7daffae0f7d39417a577d7b57e3168f.php'); ?>
+<?php if (isset($__slotsd7daffae0f7d39417a577d7b57e3168f)) { $__slotsStackd7daffae0f7d39417a577d7b57e3168f[] = $__slotsd7daffae0f7d39417a577d7b57e3168f; } ?>
+<?php if (isset($__attrsd7daffae0f7d39417a577d7b57e3168f)) { $__attrsStackd7daffae0f7d39417a577d7b57e3168f[] = $__attrsd7daffae0f7d39417a577d7b57e3168f; } ?>
+<?php $__attrsd7daffae0f7d39417a577d7b57e3168f = ['wire:model' => 'showActivityModal','class' => 'w-full max-w-5xl']; ?>
+<?php $__slotsd7daffae0f7d39417a577d7b57e3168f = []; ?>
+<?php $__blaze->pushData($__attrsd7daffae0f7d39417a577d7b57e3168f); ?>
+<?php ob_start(); ?>
         <div class="flex flex-col" style="height: auto; max-height: 85vh; overflow: hidden;">
             <div class="flex justify-between items-center px-6 py-4 border-b border-zinc-200 dark:border-zinc-700 flex-shrink-0">
                 <div>
@@ -6214,20 +6135,11 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
             </div>
             <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         </div>
-    <?php echo trim(ob_get_clean()); ?>
-
-
-                            <div class="absolute top-0 end-0 mt-4 me-4">
-                    <ui-close data-flux-modal-close >
-    <button type="button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-8 text-sm rounded-md w-8 inline-flex  bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-800 dark:text-white      text-zinc-400! hover:text-zinc-800! dark:text-zinc-500! dark:hover:text-white!" data-flux-button="data-flux-button" aria-label="Close modal">
-        <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-  <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"/>
-</svg>
-    </button>
-</ui-close>
-                </div>
-                        </dialog>
-</ui-modal>
-<?php echo ltrim(ob_get_clean()); ?>
+    <?php $__slotsd7daffae0f7d39417a577d7b57e3168f['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slotsd7daffae0f7d39417a577d7b57e3168f); ?>
+<?php _d7daffae0f7d39417a577d7b57e3168f($__blaze, $__attrsd7daffae0f7d39417a577d7b57e3168f, $__slotsd7daffae0f7d39417a577d7b57e3168f, [], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStackd7daffae0f7d39417a577d7b57e3168f)) { $__slotsd7daffae0f7d39417a577d7b57e3168f = array_pop($__slotsStackd7daffae0f7d39417a577d7b57e3168f); } ?>
+<?php if (! empty($__attrsStackd7daffae0f7d39417a577d7b57e3168f)) { $__attrsd7daffae0f7d39417a577d7b57e3168f = array_pop($__attrsStackd7daffae0f7d39417a577d7b57e3168f); } ?>
+<?php $__blaze->popData(); ?>
     
 </section><?php /**PATH /www/wwwroot/testings.siix-ems.co.id/siix-portal/resources/views/livewire/mtc/master/master-line-show.blade.php ENDPATH**/ ?>

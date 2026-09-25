@@ -33,6 +33,7 @@ class DailyPanasonic extends Model
         'vacume_brush',
         'cleaning_roller',
         'ionizer',
+        'ionizer_air_presure',        // ✅ TAMBAHKAN (5.a)
         'conveyor_speed',
         'ipa_solvent',
         'temperature_control_1',
@@ -68,6 +69,7 @@ class DailyPanasonic extends Model
         'lamp_indicator',
         'temperature_chiller',
         'temperature_control_3',
+        'n2_air_presure_valve',       // ✅ TAMBAHKAN (24.a)
         'air_presure_supply',
         'box_3',
         'vaccuum_pump_3',
@@ -111,6 +113,7 @@ class DailyPanasonic extends Model
             'vacume_brush',
             'cleaning_roller',
             'ionizer',
+            'ionizer_air_presure',        // ✅ TAMBAHKAN (5.a)
             'conveyor_speed',
             'ipa_solvent',
             'temperature_control_1',
@@ -146,6 +149,7 @@ class DailyPanasonic extends Model
             'lamp_indicator',
             'temperature_chiller',
             'temperature_control_3',
+            'n2_air_presure_valve',       // ✅ TAMBAHKAN (24.a)
             'air_presure_supply',
             'box_3',
             'vaccuum_pump_3',
@@ -216,6 +220,7 @@ class DailyPanasonic extends Model
             'fire_posibilty_2', 'cylinder_2', 'rail_and_magazine_pcb_2', 'cover_magazine_2',
             'angle_and_filter', 'lamp_indicator', 'box_3', 'box_4', 'water_reservoirs', 'filter',
             'angle_and_filter_2', 'expire_date', 'expire_date_2', 'lamp_alarm_change_model',
+            'n2_air_presure_valve',       // ✅ TAMBAHKAN (24.a)
         ];
 
         foreach ($toggleFields as $field) {
@@ -243,6 +248,7 @@ class DailyPanasonic extends Model
             'air_presure' => [0.45, 0.54],
             'vacume_presure_unitech' => [0.45, 0.54],
             'vacume_presure_nix' => [0.60, 0.70],
+            'ionizer_air_presure' => [0.05, 0.10],      // ✅ TAMBAHKAN (5.a)
             'conveyor_speed' => [null, 40],
             'temperature_control_1' => [23, 27],
             'humidity_control_1' => [35, 70],

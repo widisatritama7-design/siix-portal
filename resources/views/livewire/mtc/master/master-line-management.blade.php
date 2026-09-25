@@ -725,10 +725,33 @@
                 </div>
             </div>
 
-            <!-- STANDARD CONFIGURATION MODAL - SIMPLE STYLE -->
-            <div x-data="{ open: false }" 
+            <!-- STANDARD CONFIGURATION MODAL - FUJI (REDESIGNED TO MATCH PANASONIC) -->
+            <div x-data="{ 
+                    open: false, 
+                    activeStep: 0,
+                    steps: [
+                        { id: 0, name: 'GENERAL' },
+                        { id: 1, name: 'LOADER' },
+                        { id: 2, name: 'PCB CLEANER' },
+                        { id: 3, name: 'PRINTING' },
+                        { id: 4, name: 'SPI' },
+                        { id: 5, name: 'CHIP MOUNTER 1' },
+                        { id: 6, name: 'CHIP MOUNTER 2' },
+                        { id: 7, name: 'REFLOW' },
+                        { id: 8, name: 'AOI' },
+                        { id: 9, name: 'UNLOADER' },
+                        { id: 10, name: 'AOI TABLE' },
+                        { id: 11, name: 'REFLOW 2' },
+                        { id: 12, name: 'CHIP MOUNTER 3' },
+                        { id: 13, name: 'CHIP MOUNTER 4' },
+                        { id: 14, name: 'SPI 2' },
+                        { id: 15, name: 'PRINTER' },
+                        { id: 16, name: 'PCB CLEANER 2' },
+                        { id: 17, name: 'IONIZER' }
+                    ]
+                }" 
                 x-show="open" 
-                @open-standard-modal.window="open = true"
+                @open-standard-modal.window="open = true; activeStep = 0"
                 @close-standard-modal.window="open = false"
                 x-cloak>
 
@@ -737,7 +760,7 @@
 
                 <!-- Modal -->
                 <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-hidden border border-zinc-200 dark:border-zinc-700">
+                    <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-5xl max-h-[95vh] overflow-hidden border border-zinc-200 dark:border-zinc-700">
                         
                         <!-- Header -->
                         <div class="bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-5">
@@ -754,7 +777,7 @@
                                             Configure Standard Check
                                         </h3>
                                         <p class="text-sm text-purple-100">
-                                            {{ $selectedLineForStandard?->line_number }} - Select required fields
+                                            {{ $selectedLineForStandard?->line_number }} - Select required fields for Daily Fuji
                                         </p>
                                     </div>
                                 </div>
@@ -772,17 +795,17 @@
                                 <span class="text-sm font-medium text-zinc-600 dark:text-zinc-400">Quick Actions:</span>
                                 <button type="button" 
                                         wire:click="setAllRequired(true)"
-                                        class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-green-600 hover:bg-green-700 text-white rounded-lg transition-all duration-200">
+                                        class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-green-600 hover:bg-green-700 text-white rounded-lg transition-all duration-200 shadow-sm hover:shadow">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                                     </svg>
                                     All Required
                                 </button>
                                 <button type="button" 
                                         wire:click="setAllRequired(false)"
-                                        class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-zinc-500 hover:bg-zinc-600 text-white rounded-lg transition-all duration-200">
+                                        class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-zinc-500 hover:bg-zinc-600 text-white rounded-lg transition-all duration-200 shadow-sm hover:shadow">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/>
                                     </svg>
                                     All Optional
                                 </button>
@@ -795,411 +818,896 @@
                             </div>
                         </div>
 
-                        <!-- Content Area - Scrollable -->
-                        <div class="overflow-y-auto p-6 max-h-[calc(90vh-200px)]">
-                            <form wire:submit="saveStandardConfig" id="standardForm">
-                                
-                                <!-- STEP 1: GENERAL -->
-                                <div class="mb-6">
-                                    <h4 class="text-sm font-semibold text-purple-600 dark:text-purple-400 flex items-center gap-2 mb-3">
-                                        <span class="w-6 h-6 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center text-xs font-bold">1</span>
-                                        GENERAL
-                                    </h4>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['body_cover_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.body_cover_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Body Cover</span>
-                                        </label>
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['lamp_alarm_change_model_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.lamp_alarm_change_model_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Lamp Alarm & Change Model</span>
-                                        </label>
-                                    </div>
-                                </div>
+                        <!-- Content Area -->
+                        <div class="flex h-[calc(90vh-280px)]">
+                            <!-- Sidebar Steps -->
+                            <div class="w-48 bg-zinc-50 dark:bg-zinc-800/30 border-r border-zinc-200 dark:border-zinc-700 overflow-y-auto flex-shrink-0 p-2 scrollbar-hide hover:scrollbar-show">
+                                <template x-for="(step, index) in steps" :key="index">
+                                    <button 
+                                        type="button"
+                                        @click="activeStep = index"
+                                        class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all duration-200 mb-1"
+                                        :class="{
+                                            'bg-purple-600 text-white shadow-lg shadow-purple-600/20': activeStep === index,
+                                            'hover:bg-zinc-200 dark:hover:bg-zinc-700 text-zinc-600 dark:text-zinc-400': activeStep !== index
+                                        }"
+                                    >
+                                        <span class="w-6 h-6 flex items-center justify-center rounded-lg text-xs font-bold"
+                                            :class="{
+                                                'bg-white/20 text-white': activeStep === index,
+                                                'bg-zinc-200 dark:bg-zinc-700 text-zinc-500 dark:text-zinc-400': activeStep !== index
+                                            }"
+                                            x-text="step.id + 1">
+                                        </span>
+                                        <span x-text="step.name" class="truncate"></span>
+                                    </button>
+                                </template>
+                            </div>
 
-                                <!-- STEP 2: LOADER -->
-                                <div class="mb-6">
-                                    <h4 class="text-sm font-semibold text-purple-600 dark:text-purple-400 flex items-center gap-2 mb-3">
-                                        <span class="w-6 h-6 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center text-xs font-bold">2</span>
-                                        LOADER
-                                    </h4>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['cylinder_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.cylinder_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Cylinder (1)</span>
-                                        </label>
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['rail_and_magazine_pcb_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.rail_and_magazine_pcb_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Rail & Magazine PCB (1.a)</span>
-                                        </label>
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['cover_magazine_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.cover_magazine_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Cover Magazine (1.b)</span>
-                                        </label>
+                            <!-- Fields Content -->
+                            <div class="flex-1 overflow-y-auto p-6 bg-white dark:bg-zinc-900">
+                                <form wire:submit="saveStandardConfig" id="standardForm">
+                                    
+                                    <!-- STEP 1: GENERAL -->
+                                    <div x-show="activeStep === 0" x-cloak>
+                                        <div class="mb-4">
+                                            <h4 class="text-lg font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                                                <span class="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center text-sm font-bold">1</span>
+                                                GENERAL
+                                            </h4>
+                                            <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">General inspection parameters</p>
+                                        </div>
+                                        <div class="grid grid-cols-1 gap-3">
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['body_cover_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.body_cover_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Body Cover</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">Make sure all machine cover clean</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['body_cover_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['body_cover_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['lamp_alarm_change_model_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.lamp_alarm_change_model_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Lamp Alarm & Change Model</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">Make sure lamp Alarm & Change Model clean</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['lamp_alarm_change_model_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['lamp_alarm_change_model_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <!-- STEP 3: PCB CLEANER -->
-                                <div class="mb-6">
-                                    <h4 class="text-sm font-semibold text-purple-600 dark:text-purple-400 flex items-center gap-2 mb-3">
-                                        <span class="w-6 h-6 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center text-xs font-bold">3</span>
-                                        PCB CLEANER
-                                    </h4>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['brush_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.brush_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Brush (2)</span>
-                                        </label>
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['air_presure_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.air_presure_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Air Pressure (2.a)</span>
-                                        </label>
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['vacume_presure_unitech_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.vacume_presure_unitech_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Vacume Pressure Unitech (2.b)</span>
-                                        </label>
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['vacume_presure_nix_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.vacume_presure_nix_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Vacume Pressure Nix (2.c)</span>
-                                        </label>
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['vacume_brush_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.vacume_brush_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Vacume Brush (3)</span>
-                                        </label>
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['cleaning_roller_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.cleaning_roller_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Cleaning Roller (4)</span>
-                                        </label>
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['ionizer_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.ionizer_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Ionizer (5)</span>
-                                        </label>
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['conveyor_speed_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.conveyor_speed_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Conveyor Setting (6)</span>
-                                        </label>
+                                    <!-- STEP 2: LOADER -->
+                                    <div x-show="activeStep === 1" x-cloak>
+                                        <div class="mb-4">
+                                            <h4 class="text-lg font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                                                <span class="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center text-sm font-bold">2</span>
+                                                LOADER
+                                            </h4>
+                                            <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Loader inspection parameters</p>
+                                        </div>
+                                        <div class="grid grid-cols-1 gap-3">
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['cylinder_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.cylinder_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Cylinder (1)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">Operation And center - Smooth and center</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['cylinder_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['cylinder_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['rail_and_magazine_pcb_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.rail_and_magazine_pcb_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Rail & Magazine PCB (1.a)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">Cleaning Dust and dirty - No Dust and clean</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['rail_and_magazine_pcb_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['rail_and_magazine_pcb_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['cover_magazine_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.cover_magazine_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Cover Magazine (1.b)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">Cleaning Dust and dirty - No Dust and clean</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['cover_magazine_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['cover_magazine_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <!-- STEP 4: PRINTING -->
-                                <div class="mb-6">
-                                    <h4 class="text-sm font-semibold text-purple-600 dark:text-purple-400 flex items-center gap-2 mb-3">
-                                        <span class="w-6 h-6 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center text-xs font-bold">4</span>
-                                        PRINTING
-                                    </h4>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['ipa_solvent_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.ipa_solvent_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">IPA Solvent (7)</span>
-                                        </label>
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['temperature_control_1_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.temperature_control_1_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Temperature Control (8)</span>
-                                        </label>
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['humidity_control_1_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.humidity_control_1_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Humidity Control (8.a)</span>
-                                        </label>
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['clamp_presure_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.clamp_presure_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Clamp Pressure (9)</span>
-                                        </label>
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['squeege_upper_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.squeege_upper_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Squeege Upper (10)</span>
-                                        </label>
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['cleaning_solvent_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.cleaning_solvent_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Cleaning Solvent (11)</span>
-                                        </label>
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['air_presure_meter_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.air_presure_meter_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Air Pressure Meter (12)</span>
-                                        </label>
+                                    <!-- STEP 3: PCB CLEANER -->
+                                    <div x-show="activeStep === 2" x-cloak>
+                                        <div class="mb-4">
+                                            <h4 class="text-lg font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                                                <span class="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center text-sm font-bold">3</span>
+                                                PCB CLEANER
+                                            </h4>
+                                            <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">PCB Cleaner inspection parameters</p>
+                                        </div>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['brush_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.brush_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Brush (2)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">Cleaning touch PCB - Rotation</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['brush_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['brush_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['air_presure_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.air_presure_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Air Pressure (2.a)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">0.45 - 0.54 Mpa</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['air_presure_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['air_presure_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['vacume_presure_unitech_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.vacume_presure_unitech_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Vacume Pressure Unitech (2.b)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">0.45 - 0.54 Mpa (Unitech)</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['vacume_presure_unitech_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['vacume_presure_unitech_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['vacume_presure_nix_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.vacume_presure_nix_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Vacume Pressure Nix (2.c)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">0.60 - 0.70 Mpa (N.I.X)</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['vacume_presure_nix_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['vacume_presure_nix_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['vacume_brush_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.vacume_brush_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Vacume Brush (3)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">Operation - Rotation</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['vacume_brush_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['vacume_brush_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['cleaning_roller_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.cleaning_roller_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Cleaning Roller (4)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">Smooth rotation & Clean</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['cleaning_roller_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['cleaning_roller_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['ionizer_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.ionizer_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Ionizer (5)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">5 Times to push cleaner</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['ionizer_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['ionizer_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['ionizer_air_presure_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.ionizer_air_presure_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Air Pressure Ionizer (5.a)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">Check With Pressure Meter - 0.05-0.10 Mpa</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['ionizer_air_presure_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['ionizer_air_presure_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['conveyor_speed_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.conveyor_speed_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Conveyor Setting (6)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">Analog panel - ≤ 40</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['conveyor_speed_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['conveyor_speed_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <!-- STEP 5: SPI -->
-                                <div class="mb-6">
-                                    <h4 class="text-sm font-semibold text-purple-600 dark:text-purple-400 flex items-center gap-2 mb-3">
-                                        <span class="w-6 h-6 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center text-xs font-bold">5</span>
-                                        SPI
-                                    </h4>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['air_presure_meter_parmi_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.air_presure_meter_parmi_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Air Pressure Meter Parmi (12.a)</span>
-                                        </label>
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['capability_index_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.capability_index_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Capability Index (12.b)</span>
-                                        </label>
+                                    <!-- STEP 4: PRINTING -->
+                                    <div x-show="activeStep === 3" x-cloak>
+                                        <div class="mb-4">
+                                            <h4 class="text-lg font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                                                <span class="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center text-sm font-bold">4</span>
+                                                PRINTING
+                                            </h4>
+                                            <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Printing inspection parameters</p>
+                                        </div>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['ipa_solvent_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.ipa_solvent_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">IPA Solvent (7)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">Tank Minimal half</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['ipa_solvent_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['ipa_solvent_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['temperature_control_1_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.temperature_control_1_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Temperature Control (8)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">Result-01 - 23-27℃</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['temperature_control_1_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['temperature_control_1_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['humidity_control_1_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.humidity_control_1_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Humidity Control (8.a)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">Result-01 - 35-70%</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['humidity_control_1_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['humidity_control_1_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['clamp_presure_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.clamp_presure_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Clamp Pressure (9)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">0.20 - 0.4 Mpa</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['clamp_presure_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['clamp_presure_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['squeege_upper_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.squeege_upper_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Squeege Upper (10)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">0.12 ± 0.01 Mpa</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['squeege_upper_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['squeege_upper_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['cleaning_solvent_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.cleaning_solvent_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Cleaning Solvent (11)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">0.20 ± 0.01 Mpa</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['cleaning_solvent_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['cleaning_solvent_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['air_presure_meter_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.air_presure_meter_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Air Pressure Meter (12)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">0.50 - 0.55 Mpa</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['air_presure_meter_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['air_presure_meter_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <!-- STEP 6: CHIP MOUNTER 1 -->
-                                <div class="mb-6">
-                                    <h4 class="text-sm font-semibold text-purple-600 dark:text-purple-400 flex items-center gap-2 mb-3">
-                                        <span class="w-6 h-6 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center text-xs font-bold">6</span>
-                                        CHIP MOUNTER 1
-                                    </h4>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['air_presure_supply_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.air_presure_supply_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Air Pressure Supply (13)</span>
-                                        </label>
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['vaccuum_pump_1_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.vaccuum_pump_1_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Vaccuum Pump (13.a)</span>
-                                        </label>
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['box_1_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.box_1_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Box (13.b)</span>
-                                        </label>
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['vaccuum_parameter_1_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.vaccuum_parameter_1_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Vaccuum Parameter (13.c)</span>
-                                        </label>
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['expire_date_1_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.expire_date_1_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Expire Date (14)</span>
-                                        </label>
+                                    <!-- STEP 5: SPI -->
+                                    <div x-show="activeStep === 4" x-cloak>
+                                        <div class="mb-4">
+                                            <h4 class="text-lg font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                                                <span class="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center text-sm font-bold">5</span>
+                                                SPI
+                                            </h4>
+                                            <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">SPI inspection parameters</p>
+                                        </div>
+                                        <div class="grid grid-cols-1 gap-3">
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['air_presure_meter_parmi_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.air_presure_meter_parmi_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Air Pressure Meter Parmi (12.a)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">0.40 - 0.50 Mpa (PARMI)</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['air_presure_meter_parmi_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['air_presure_meter_parmi_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['capability_index_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.capability_index_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Capability Index (12.b)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">CpK for Masspro > 1.33</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['capability_index_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['capability_index_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <!-- STEP 7: CHIP MOUNTER 2 -->
-                                <div class="mb-6">
-                                    <h4 class="text-sm font-semibold text-purple-600 dark:text-purple-400 flex items-center gap-2 mb-3">
-                                        <span class="w-6 h-6 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center text-xs font-bold">7</span>
-                                        CHIP MOUNTER 2
-                                    </h4>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['air_presure_supply_2_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.air_presure_supply_2_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Air Pressure Supply (15)</span>
-                                        </label>
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['vaccuum_pump_2_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.vaccuum_pump_2_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Vaccuum Pump (15.a)</span>
-                                        </label>
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['box_2_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.box_2_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Box (15.b)</span>
-                                        </label>
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['vaccuum_parameter_2_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.vaccuum_parameter_2_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Vaccuum Parameter (15.c)</span>
-                                        </label>
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['expire_date_2_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.expire_date_2_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Expire Date (16)</span>
-                                        </label>
+                                    <!-- STEP 6: CHIP MOUNTER 1 -->
+                                    <div x-show="activeStep === 5" x-cloak>
+                                        <div class="mb-4">
+                                            <h4 class="text-lg font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                                                <span class="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center text-sm font-bold">6</span>
+                                                CHIP MOUNTER 1
+                                            </h4>
+                                            <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Chip Mounter 1 inspection parameters</p>
+                                        </div>
+                                        <div class="grid grid-cols-1 gap-3">
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['air_presure_supply_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.air_presure_supply_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Air Pressure Supply (13)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">0.49 - 0.54 Mpa</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['air_presure_supply_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['air_presure_supply_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['vaccuum_pump_1_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.vaccuum_pump_1_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Vaccuum Pump (13.a)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">-87 to -100 Kpa</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['vaccuum_pump_1_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['vaccuum_pump_1_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['box_1_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.box_1_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Box (13.b)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">No components</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['box_1_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['box_1_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['vaccuum_parameter_1_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.vaccuum_parameter_1_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Vaccuum Parameter (13.c)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">No Yellow initial</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['vaccuum_parameter_1_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['vaccuum_parameter_1_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['expire_date_1_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.expire_date_1_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Expire Date (14)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">No Expired</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['expire_date_1_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['expire_date_1_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <!-- STEP 8: REFLOW -->
-                                <div class="mb-6">
-                                    <h4 class="text-sm font-semibold text-purple-600 dark:text-purple-400 flex items-center gap-2 mb-3">
-                                        <span class="w-6 h-6 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center text-xs font-bold">8</span>
-                                        REFLOW
-                                    </h4>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['abandonment_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.abandonment_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Abandonment (17)</span>
-                                        </label>
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['fire_posibilty_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.fire_posibilty_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Fire Possibility (17.a)</span>
-                                        </label>
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['flashlight_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.flashlight_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Flashlight (17.b)</span>
-                                        </label>
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['rail_and_transfer_unit_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.rail_and_transfer_unit_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Rail & Transfer Unit (18)</span>
-                                        </label>
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['n2_presure_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.n2_presure_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">N2 Pressure (19)</span>
-                                        </label>
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['oxygent_density_sek_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.oxygent_density_sek_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Oxygen Density SEK (20)</span>
-                                        </label>
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['oxygent_density_special_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.oxygent_density_special_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Oxygen Density Special (20)</span>
-                                        </label>
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['fire_posibilty_2_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.fire_posibilty_2_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Fire Possibility (20.a)</span>
-                                        </label>
+                                    <!-- STEP 7: CHIP MOUNTER 2 -->
+                                    <div x-show="activeStep === 6" x-cloak>
+                                        <div class="mb-4">
+                                            <h4 class="text-lg font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                                                <span class="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center text-sm font-bold">7</span>
+                                                CHIP MOUNTER 2
+                                            </h4>
+                                            <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Chip Mounter 2 inspection parameters</p>
+                                        </div>
+                                        <div class="grid grid-cols-1 gap-3">
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['air_presure_supply_2_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.air_presure_supply_2_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Air Pressure Supply (15)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">0.49 - 0.54 Mpa</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['air_presure_supply_2_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['air_presure_supply_2_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['vaccuum_pump_2_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.vaccuum_pump_2_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Vaccuum Pump (15.a)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">-87 to -100 Kpa</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['vaccuum_pump_2_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['vaccuum_pump_2_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['box_2_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.box_2_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Box (15.b)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">No components</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['box_2_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['box_2_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['vaccuum_parameter_2_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.vaccuum_parameter_2_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Vaccuum Parameter (15.c)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">No Yellow initial</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['vaccuum_parameter_2_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['vaccuum_parameter_2_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['expire_date_2_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.expire_date_2_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Expire Date (16)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">No Expired</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['expire_date_2_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['expire_date_2_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <!-- STEP 9: AOI -->
-                                <div class="mb-6">
-                                    <h4 class="text-sm font-semibold text-purple-600 dark:text-purple-400 flex items-center gap-2 mb-3">
-                                        <span class="w-6 h-6 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center text-xs font-bold">9</span>
-                                        AOI
-                                    </h4>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['air_presure_2_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.air_presure_2_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Air Pressure (20.b)</span>
-                                        </label>
+                                    <!-- STEP 8: REFLOW -->
+                                    <div x-show="activeStep === 7" x-cloak>
+                                        <div class="mb-4">
+                                            <h4 class="text-lg font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                                                <span class="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center text-sm font-bold">8</span>
+                                                REFLOW
+                                            </h4>
+                                            <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Reflow inspection parameters</p>
+                                        </div>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['abandonment_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.abandonment_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Abandonment (17)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">No Damage</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['abandonment_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['abandonment_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['fire_posibilty_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.fire_posibilty_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Fire Possibility (17.a)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">No Paper, No plastic</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['fire_posibilty_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['fire_posibilty_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['flashlight_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.flashlight_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Flashlight (17.b)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">On/Off Check - Standard: On</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['flashlight_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['flashlight_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['rail_and_transfer_unit_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.rail_and_transfer_unit_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Rail & Transfer Unit (18)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">No jammed</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['rail_and_transfer_unit_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['rail_and_transfer_unit_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['n2_presure_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.n2_presure_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">N2 Pressure (19)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">0.4 - 0.5 MPa</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['n2_presure_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['n2_presure_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['oxygent_density_sek_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.oxygent_density_sek_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Oxygen Density SEK (20)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">1200 - 1800 ppm</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['oxygent_density_sek_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['oxygent_density_sek_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['oxygent_density_special_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.oxygent_density_special_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Oxygen Density Special (20)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">500 - 1000 ppm</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['oxygent_density_special_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['oxygent_density_special_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['fire_posibilty_2_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.fire_posibilty_2_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Fire Possibility (20.a)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">No Paper, No plastic</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['fire_posibilty_2_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['fire_posibilty_2_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <!-- STEP 10: UNLOADER -->
-                                <div class="mb-6">
-                                    <h4 class="text-sm font-semibold text-purple-600 dark:text-purple-400 flex items-center gap-2 mb-3">
-                                        <span class="w-6 h-6 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center text-xs font-bold">10</span>
-                                        UNLOADER
-                                    </h4>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['cylinder_2_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.cylinder_2_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Cylinder (21)</span>
-                                        </label>
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['rail_and_magazine_pcb_2_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.rail_and_magazine_pcb_2_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Rail & Magazine PCB (21.a)</span>
-                                        </label>
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['cover_magazine_2_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.cover_magazine_2_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Cover Magazine (21.b)</span>
-                                        </label>
+                                    <!-- STEP 9: AOI -->
+                                    <div x-show="activeStep === 8" x-cloak>
+                                        <div class="mb-4">
+                                            <h4 class="text-lg font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                                                <span class="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center text-sm font-bold">9</span>
+                                                AOI
+                                            </h4>
+                                            <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">AOI inspection parameters</p>
+                                        </div>
+                                        <div class="grid grid-cols-1 gap-3">
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['air_presure_2_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.air_presure_2_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Air Pressure (20.b)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">0.40 - 0.50 Mpa</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['air_presure_2_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['air_presure_2_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <!-- STEP 11: AOI TABLE -->
-                                <div class="mb-6">
-                                    <h4 class="text-sm font-semibold text-purple-600 dark:text-purple-400 flex items-center gap-2 mb-3">
-                                        <span class="w-6 h-6 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center text-xs font-bold">11</span>
-                                        AOI TABLE
-                                    </h4>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['angle_and_filter_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.angle_and_filter_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Angle & Filter (22)</span>
-                                        </label>
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['lamp_indicator_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.lamp_indicator_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Lamp Indicator (22.a)</span>
-                                        </label>
+                                    <!-- STEP 10: UNLOADER -->
+                                    <div x-show="activeStep === 9" x-cloak>
+                                        <div class="mb-4">
+                                            <h4 class="text-lg font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                                                <span class="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center text-sm font-bold">10</span>
+                                                UNLOADER
+                                            </h4>
+                                            <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Unloader inspection parameters</p>
+                                        </div>
+                                        <div class="grid grid-cols-1 gap-3">
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['cylinder_2_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.cylinder_2_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Cylinder (21)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">Smooth and center</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['cylinder_2_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['cylinder_2_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['rail_and_magazine_pcb_2_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.rail_and_magazine_pcb_2_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Rail & Magazine PCB (21.a)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">No Dust and clean</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['rail_and_magazine_pcb_2_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['rail_and_magazine_pcb_2_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['cover_magazine_2_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.cover_magazine_2_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Cover Magazine (21.b)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">No Dust and clean</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['cover_magazine_2_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['cover_magazine_2_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <!-- STEP 12: REFLOW 2 -->
-                                <div class="mb-6">
-                                    <h4 class="text-sm font-semibold text-purple-600 dark:text-purple-400 flex items-center gap-2 mb-3">
-                                        <span class="w-6 h-6 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center text-xs font-bold">12</span>
-                                        REFLOW 2
-                                    </h4>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['temperature_chiller_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.temperature_chiller_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Temperature Chiller (23)</span>
-                                        </label>
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['temperature_control_3_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.temperature_control_3_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Temperature Control (24)</span>
-                                        </label>
+                                    <!-- STEP 11: AOI TABLE -->
+                                    <div x-show="activeStep === 10" x-cloak>
+                                        <div class="mb-4">
+                                            <h4 class="text-lg font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                                                <span class="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center text-sm font-bold">11</span>
+                                                AOI TABLE
+                                            </h4>
+                                            <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">AOI Table inspection parameters</p>
+                                        </div>
+                                        <div class="grid grid-cols-1 gap-3">
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['angle_and_filter_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.angle_and_filter_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Angle & Filter (22)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">No dirt / no dust</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['angle_and_filter_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['angle_and_filter_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['lamp_indicator_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.lamp_indicator_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Lamp Indicator (22.a)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">LED Lamp (Green) - Function</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['lamp_indicator_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['lamp_indicator_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <!-- STEP 13: CHIP MOUNTER 3 -->
-                                <div class="mb-6">
-                                    <h4 class="text-sm font-semibold text-purple-600 dark:text-purple-400 flex items-center gap-2 mb-3">
-                                        <span class="w-6 h-6 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center text-xs font-bold">13</span>
-                                        CHIP MOUNTER 3
-                                    </h4>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['fan_unit_1_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.fan_unit_1_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Fan Unit 1 (25)</span>
-                                        </label>
+                                    <!-- STEP 12: REFLOW 2 -->
+                                    <div x-show="activeStep === 11" x-cloak>
+                                        <div class="mb-4">
+                                            <h4 class="text-lg font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                                                <span class="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center text-sm font-bold">12</span>
+                                                REFLOW 2
+                                            </h4>
+                                            <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Reflow 2 inspection parameters</p>
+                                        </div>
+                                        <div class="grid grid-cols-1 gap-3">
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['temperature_chiller_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.temperature_chiller_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Temperature Chiller (23)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">17 - 23℃</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['temperature_chiller_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['temperature_chiller_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['temperature_control_3_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.temperature_control_3_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Temperature Control (24)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">300℃ ±10℃</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['temperature_control_3_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['temperature_control_3_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['n2_air_presure_valve_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.n2_air_presure_valve_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">N2 & Air Pressure (24.a)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">Opening Valve - Position handle parallel</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['n2_air_presure_valve_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['n2_air_presure_valve_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <!-- STEP 14: CHIP MOUNTER 4 -->
-                                <div class="mb-6">
-                                    <h4 class="text-sm font-semibold text-purple-600 dark:text-purple-400 flex items-center gap-2 mb-3">
-                                        <span class="w-6 h-6 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center text-xs font-bold">14</span>
-                                        CHIP MOUNTER 4
-                                    </h4>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['fan_unit_2_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.fan_unit_2_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Fan Unit 2 (26)</span>
-                                        </label>
+                                    <!-- STEP 13: CHIP MOUNTER 3 -->
+                                    <div x-show="activeStep === 12" x-cloak>
+                                        <div class="mb-4">
+                                            <h4 class="text-lg font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                                                <span class="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center text-sm font-bold">13</span>
+                                                CHIP MOUNTER 3
+                                            </h4>
+                                            <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Chip Mounter 3 inspection parameters</p>
+                                        </div>
+                                        <div class="grid grid-cols-1 gap-3">
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['fan_unit_1_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.fan_unit_1_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Fan Unit 1 (25)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">Make sure all Fan clean</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['fan_unit_1_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['fan_unit_1_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <!-- STEP 15: SPI 2 -->
-                                <div class="mb-6">
-                                    <h4 class="text-sm font-semibold text-purple-600 dark:text-purple-400 flex items-center gap-2 mb-3">
-                                        <span class="w-6 h-6 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center text-xs font-bold">15</span>
-                                        SPI 2
-                                    </h4>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['air_presure_3_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.air_presure_3_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Air Pressure (27)</span>
-                                        </label>
+                                    <!-- STEP 14: CHIP MOUNTER 4 -->
+                                    <div x-show="activeStep === 13" x-cloak>
+                                        <div class="mb-4">
+                                            <h4 class="text-lg font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                                                <span class="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center text-sm font-bold">14</span>
+                                                CHIP MOUNTER 4
+                                            </h4>
+                                            <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Chip Mounter 4 inspection parameters</p>
+                                        </div>
+                                        <div class="grid grid-cols-1 gap-3">
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['fan_unit_2_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.fan_unit_2_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Fan Unit 2 (26)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">Make sure all Fan clean</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['fan_unit_2_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['fan_unit_2_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <!-- STEP 16: PRINTER -->
-                                <div class="mb-6">
-                                    <h4 class="text-sm font-semibold text-purple-600 dark:text-purple-400 flex items-center gap-2 mb-3">
-                                        <span class="w-6 h-6 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center text-xs font-bold">16</span>
-                                        PRINTER
-                                    </h4>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['temperature_control_4_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.temperature_control_4_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Temperature Control (28)</span>
-                                        </label>
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['water_reservoirs_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.water_reservoirs_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Water Reservoirs (28.a)</span>
-                                        </label>
+                                    <!-- STEP 15: SPI 2 -->
+                                    <div x-show="activeStep === 14" x-cloak>
+                                        <div class="mb-4">
+                                            <h4 class="text-lg font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                                                <span class="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center text-sm font-bold">15</span>
+                                                SPI 2
+                                            </h4>
+                                            <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">SPI 2 inspection parameters</p>
+                                        </div>
+                                        <div class="grid grid-cols-1 gap-3">
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['air_presure_3_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.air_presure_3_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Air Pressure (27)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">0.40 - 0.50 Mpa (Kohyoung)</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['air_presure_3_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['air_presure_3_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <!-- STEP 17: PCB CLEANER 2 -->
-                                <div class="mb-6">
-                                    <h4 class="text-sm font-semibold text-purple-600 dark:text-purple-400 flex items-center gap-2 mb-3">
-                                        <span class="w-6 h-6 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center text-xs font-bold">17</span>
-                                        PCB CLEANER 2
-                                    </h4>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['filter_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.filter_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Filter (29)</span>
-                                        </label>
+                                    <!-- STEP 16: PRINTER -->
+                                    <div x-show="activeStep === 15" x-cloak>
+                                        <div class="mb-4">
+                                            <h4 class="text-lg font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                                                <span class="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center text-sm font-bold">16</span>
+                                                PRINTER
+                                            </h4>
+                                            <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Printer inspection parameters</p>
+                                        </div>
+                                        <div class="grid grid-cols-1 gap-3">
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['temperature_control_4_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.temperature_control_4_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Temperature Control (28)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">23 - 27℃</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['temperature_control_4_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['temperature_control_4_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                            
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['water_reservoirs_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.water_reservoirs_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Water Reservoirs (28.a)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">Function, No Damage</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['water_reservoirs_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['water_reservoirs_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <!-- STEP 18: IONIZER -->
-                                <div class="mb-6">
-                                    <h4 class="text-sm font-semibold text-purple-600 dark:text-purple-400 flex items-center gap-2 mb-3">
-                                        <span class="w-6 h-6 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center text-xs font-bold">18</span>
-                                        IONIZER
-                                    </h4>
-                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                        <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['angle_and_filter_2_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
-                                            <input type="checkbox" wire:model="standardConfig.angle_and_filter_2_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
-                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Angle & Filter (30)</span>
-                                        </label>
+                                    <!-- STEP 17: PCB CLEANER 2 -->
+                                    <div x-show="activeStep === 16" x-cloak>
+                                        <div class="mb-4">
+                                            <h4 class="text-lg font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                                                <span class="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center text-sm font-bold">17</span>
+                                                PCB CLEANER 2
+                                            </h4>
+                                            <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">PCB Cleaner 2 inspection parameters</p>
+                                        </div>
+                                        <div class="grid grid-cols-1 gap-3">
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['filter_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.filter_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Filter (29)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">Clean</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['filter_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['filter_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                        </div>
                                     </div>
-                                </div>
 
-                            </form>
+                                    <!-- STEP 18: IONIZER -->
+                                    <div x-show="activeStep === 17" x-cloak>
+                                        <div class="mb-4">
+                                            <h4 class="text-lg font-bold text-zinc-900 dark:text-white flex items-center gap-2">
+                                                <span class="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 rounded-lg flex items-center justify-center text-sm font-bold">18</span>
+                                                IONIZER
+                                            </h4>
+                                            <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Ionizer inspection parameters</p>
+                                        </div>
+                                        <div class="grid grid-cols-1 gap-3">
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-purple-300 dark:hover:border-purple-700 {{ $standardConfig['angle_and_filter_2_required'] ?? false ? 'border-purple-500 bg-purple-50 dark:bg-purple-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="standardConfig.angle_and_filter_2_required" class="w-4 h-4 text-purple-600 rounded border-zinc-300 focus:ring-purple-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Angle & Filter (30)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">No dirt / no dust</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $standardConfig['angle_and_filter_2_required'] ?? false ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $standardConfig['angle_and_filter_2_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+                                        </div>
+                                    </div>
+
+                                    <!-- Navigation Buttons -->
+                                    <div class="flex justify-between mt-6 pt-4 border-t border-zinc-200 dark:border-zinc-700">
+                                        <button type="button" 
+                                                @click="activeStep > 0 ? activeStep-- : null"
+                                                class="px-4 py-2 text-sm font-medium rounded-xl border border-zinc-300 dark:border-zinc-600 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
+                                                :class="{'opacity-50 cursor-not-allowed': activeStep === 0}">
+                                            ← Previous
+                                        </button>
+                                        <button type="button" 
+                                                @click="activeStep < steps.length - 1 ? activeStep++ : null"
+                                                class="px-4 py-2 text-sm font-medium rounded-xl bg-purple-600 hover:bg-purple-700 text-white transition-colors shadow-lg shadow-purple-600/20"
+                                                :class="{'opacity-50 cursor-not-allowed': activeStep === steps.length - 1}">
+                                            Next →
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
 
                         <!-- Footer -->
@@ -1510,6 +2018,17 @@
                                                     {{ $panasonicStandardConfig['ionizer_required'] ?? false ? 'Required' : 'Optional' }}
                                                 </span>
                                             </label>
+
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-blue-300 dark:hover:border-blue-700 {{ $panasonicStandardConfig['ionizer_air_presure_required'] ?? false ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="panasonicStandardConfig.ionizer_air_presure_required" class="w-4 h-4 text-blue-600 rounded border-zinc-300 focus:ring-blue-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Air Pressure Ionizer (5.a)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">Check With Pressure Meter - 0.05-0.10 Mpa</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $panasonicStandardConfig['ionizer_air_presure_required'] ?? false ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $panasonicStandardConfig['ionizer_air_presure_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
                                             
                                             <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-blue-300 dark:hover:border-blue-700 {{ $panasonicStandardConfig['conveyor_speed_required'] ?? false ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
                                                 <input type="checkbox" wire:model="panasonicStandardConfig.conveyor_speed_required" class="w-4 h-4 text-blue-600 rounded border-zinc-300 focus:ring-blue-500">
@@ -1538,7 +2057,7 @@
                                                 <input type="checkbox" wire:model="panasonicStandardConfig.ipa_solvent_required" class="w-4 h-4 text-blue-600 rounded border-zinc-300 focus:ring-blue-500">
                                                 <div class="flex-1">
                                                     <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">IPA Solvent (7)</span>
-                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">Make sure solvent minimal on mid level</p>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">Make sure solvent (IPA) minimal on mid level (half)</p>
                                                 </div>
                                                 <span class="text-xs font-medium px-2 py-1 rounded-full {{ $panasonicStandardConfig['ipa_solvent_required'] ?? false ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
                                                     {{ $panasonicStandardConfig['ipa_solvent_required'] ?? false ? 'Required' : 'Optional' }}
@@ -2034,6 +2553,17 @@
                                                 </div>
                                                 <span class="text-xs font-medium px-2 py-1 rounded-full {{ $panasonicStandardConfig['temperature_control_3_required'] ?? false ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
                                                     {{ $panasonicStandardConfig['temperature_control_3_required'] ?? false ? 'Required' : 'Optional' }}
+                                                </span>
+                                            </label>
+
+                                            <label class="flex items-center gap-3 p-3 rounded-xl border-2 transition-all duration-200 cursor-pointer hover:border-blue-300 dark:hover:border-blue-700 {{ $panasonicStandardConfig['n2_air_presure_valve_required'] ?? false ? 'border-blue-500 bg-blue-50 dark:bg-blue-950/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                                <input type="checkbox" wire:model="panasonicStandardConfig.n2_air_presure_valve_required" class="w-4 h-4 text-blue-600 rounded border-zinc-300 focus:ring-blue-500">
+                                                <div class="flex-1">
+                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">N2 & Air Pressure (24.a)</span>
+                                                    <p class="text-xs text-zinc-500 dark:text-zinc-400">Opening Valve - Position handle parallel</p>
+                                                </div>
+                                                <span class="text-xs font-medium px-2 py-1 rounded-full {{ $panasonicStandardConfig['n2_air_presure_valve_required'] ?? false ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-500' }}">
+                                                    {{ $panasonicStandardConfig['n2_air_presure_valve_required'] ?? false ? 'Required' : 'Optional' }}
                                                 </span>
                                             </label>
                                         </div>

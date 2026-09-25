@@ -535,6 +535,27 @@
                                                 @endif
                                             </div>
                                         </div>
+
+                                        <div>
+                                            <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                                                Air Pressure Ionizer (5.a)
+                                                @if($this->isFieldRequired('ionizer_air_presure'))
+                                                    <span class="text-red-500">*</span>
+                                                @else
+                                                    <span class="text-gray-400 text-xs font-normal">(Disabled)</span>
+                                                @endif
+                                            </label>
+                                            <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Check With Pressure Meter | Standard : 0.05 Mpa - 0.10 Mpa</p>
+                                            <input type="text" 
+                                                wire:model.live="ionizer_air_presure" 
+                                                placeholder="{{ $this->isNAAllowed() ? 'Enter value or - for NA' : 'Enter value' }}" 
+                                                class="w-full rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 {{ $this->getFieldColorClass('ionizer_air_presure', $ionizer_air_presure) }}" 
+                                                {{ $this->isFieldDisabled('ionizer_air_presure') ? 'disabled' : '' }}>
+                                            @php $validation = $this->validateNumericField('ionizer_air_presure', $ionizer_air_presure); @endphp
+                                            @if(!$validation['valid'] && $ionizer_air_presure !== null && $ionizer_air_presure !== '' && !$this->isFieldDisabled('ionizer_air_presure'))
+                                                <p class="text-xs text-red-600 mt-1">{{ $validation['message'] }}</p>
+                                            @endif
+                                        </div>
                                         
                                         <div>
                                             <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">
@@ -587,7 +608,7 @@
                                                     <span class="text-gray-400 text-xs font-normal">(Disabled)</span>
                                                 @endif
                                             </label>
-                                            <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Make sure solvent minimal on mid level (half) | Standard : Tank Minimal half</p>
+                                            <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Make sure solvent (IPA) minimal on mid level (half) | Standard : Tank Minimal half</p>
                                             <div class="flex gap-6">
                                                 <label class="inline-flex items-center gap-2">
                                                     <input type="radio" wire:model.live="ipa_solvent" value="checked" class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500" {{ $this->isFieldDisabled('ipa_solvent') ? 'disabled' : '' }}>
@@ -1576,6 +1597,30 @@
                                             @if(!$validation['valid'] && $temperature_control_3 !== null && $temperature_control_3 !== '' && !$this->isFieldDisabled('temperature_control_3'))
                                                 <p class="text-xs text-red-600 mt-1">{{ $validation['message'] }}</p>
                                             @endif
+                                        </div>
+
+                                        <div>
+                                            <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                                                N2 & Air Pressure (24.a)
+                                                @if($this->isFieldRequired('n2_air_presure_valve'))
+                                                    <span class="text-red-500">*</span>
+                                                @else
+                                                    <span class="text-gray-400 text-xs font-normal">(Disabled)</span>
+                                                @endif
+                                            </label>
+                                            <p class="text-xs text-zinc-500 mt-1 mb-2">Details On Check : Opening Valve N2 & Air Pressure | Standard : Position handle parallel di direction of pipe for open position</p>
+                                            <div class="flex gap-6">
+                                                <label class="inline-flex items-center gap-2">
+                                                    <input type="radio" wire:model.live="n2_air_presure_valve" value="checked" class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500" {{ $this->isFieldDisabled('n2_air_presure_valve') ? 'disabled' : '' }}>
+                                                    <span class="text-sm {{ $this->isFieldDisabled('n2_air_presure_valve') ? 'text-gray-400' : '' }}">Checked ✓</span>
+                                                </label>
+                                                @if($this->isNAAllowed())
+                                                <label class="inline-flex items-center gap-2">
+                                                    <input type="radio" wire:model.live="n2_air_presure_valve" value="na" class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500" {{ $this->isFieldDisabled('n2_air_presure_valve') ? 'disabled' : '' }}>
+                                                    <span class="text-sm {{ $this->isFieldDisabled('n2_air_presure_valve') ? 'text-gray-400' : '' }}">N/A</span>
+                                                </label>
+                                                @endif
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="px-6 py-3 bg-zinc-50 dark:bg-zinc-800/30 border-t border-zinc-200 dark:border-zinc-700 flex justify-between">
