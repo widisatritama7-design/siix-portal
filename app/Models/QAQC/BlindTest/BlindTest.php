@@ -10,6 +10,7 @@ use App\Models\User;
 use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Facades\Storage;
 
 class BlindTest extends EloquentModel
 {
@@ -36,6 +37,23 @@ class BlindTest extends EloquentModel
         'attempt', 'max_attempt',
         'first_attempt_answers', 'first_attempt_result', 'first_attempt_at',
         'retry_from_id',
+
+        // Camera / browser proctoring
+        'browser_verified',
+        'camera_enabled',
+        'browser_info',
+        'camera_recording_path',
+        'camera_recording_size',
+        'camera_started_at',
+        'camera_stopped_at',
+
+        // Screen recording
+        'screen_recording_path', 'screen_recording_size',
+        'screen_enabled', 'screen_started_at', 'screen_stopped_at',
+
+        // Attempt 1 recordings
+        'first_attempt_camera_path', 'first_attempt_camera_size',
+        'first_attempt_screen_path', 'first_attempt_screen_size',
     ];
 
     protected $casts = [
@@ -63,6 +81,24 @@ class BlindTest extends EloquentModel
         'deleted_at'            => 'datetime',
         'attempt'               => 'integer',
         'max_attempt'           => 'integer',
+
+        // Camera / browser proctoring
+        'browser_info'          => 'array',
+        'browser_verified'      => 'boolean',
+        'camera_enabled'        => 'boolean',
+        'camera_started_at'     => 'datetime',
+        'camera_stopped_at'     => 'datetime',
+        'camera_recording_size' => 'integer',
+
+        // Screen recording
+        'screen_enabled'        => 'boolean',
+        'screen_started_at'     => 'datetime',
+        'screen_stopped_at'     => 'datetime',
+        'screen_recording_size' => 'integer',
+
+        // Attempt 1 recordings
+        'first_attempt_camera_size' => 'integer',
+        'first_attempt_screen_size' => 'integer',
     ];
 
     // ==================== RELATIONS ====================
@@ -182,6 +218,149 @@ class BlindTest extends EloquentModel
         return $this->isLastAttempt() && !$this->hasPendingReview();
     }
 
+    // ==================== CAMERA RECORDING HELPERS ====================
+
+    /**
+     * URL publik untuk streaming rekaman kamera.
+     */
+    public function getCameraRecordingUrlAttribute(): ?string
+    {
+        return $this->camera_recording_path
+            ? Storage::disk('public')->url($this->camera_recording_path)
+            : null;
+    }
+
+    /**
+     * Ukuran rekaman dalam format manusiawi (B / KB / MB).
+     */
+    public function getCameraRecordingSizeFormattedAttribute(): ?string
+    {
+        return $this->formatSize($this->camera_recording_size);
+    }
+
+    /**
+     * Durasi rekaman kamera (detik).
+     */
+    public function getCameraDurationSecondsAttribute(): ?int
+    {
+        if (!$this->camera_started_at || !$this->camera_stopped_at) return null;
+        return $this->camera_stopped_at->diffInSeconds($this->camera_started_at);
+    }
+
+    /**
+     * Cek apakah rekaman kamera sudah tersedia.
+     */
+    public function hasCameraRecording(): bool
+    {
+        return !empty($this->camera_recording_path);
+    }
+
+    /**
+     * Cek apakah user sudah menyelesaikan verifikasi browser & kamera.
+     */
+    public function isBrowserVerified(): bool
+    {
+        return (bool) $this->browser_verified;
+    }
+
+    // ==================== SCREEN RECORDING HELPERS ====================
+
+    public function getScreenRecordingUrlAttribute(): ?string
+    {
+        return $this->screen_recording_path
+            ? Storage::disk('public')->url($this->screen_recording_path)
+            : null;
+    }
+
+    public function getScreenRecordingSizeFormattedAttribute(): ?string
+    {
+        return $this->formatSize($this->screen_recording_size);
+    }
+
+    public function hasScreenRecording(): bool
+    {
+        return !empty($this->screen_recording_path);
+    }
+
+    // ==================== ATTEMPT 1 RECORDING HELPERS ====================
+
+    public function getFirstAttemptCameraUrlAttribute(): ?string
+    {
+        return $this->first_attempt_camera_path
+            ? Storage::disk('public')->url($this->first_attempt_camera_path)
+            : null;
+    }
+
+    public function getFirstAttemptScreenUrlAttribute(): ?string
+    {
+        return $this->first_attempt_screen_path
+            ? Storage::disk('public')->url($this->first_attempt_screen_path)
+            : null;
+    }
+
+    public function getFirstAttemptCameraSizeFormattedAttribute(): ?string
+    {
+        return $this->formatSize($this->first_attempt_camera_size);
+    }
+
+    public function getFirstAttemptScreenSizeFormattedAttribute(): ?string
+    {
+        return $this->formatSize($this->first_attempt_screen_size);
+    }
+
+    // ==================== RECORDINGS AGGREGATOR ====================
+
+    /**
+     * Kumpulkan semua rekaman yang tersedia, dikelompokkan per attempt.
+     *
+     * Return:
+     * [
+     *   'attempt1'        => ['label', 'finished_at', 'camera_url', 'camera_size', 'screen_url', 'screen_size'],
+     *   'attempt_current' => ['label', 'finished_at', 'camera_url', 'camera_size', 'screen_url', 'screen_size'],
+     * ]
+     */
+    public function getRecordingsAttribute(): array
+    {
+        $attempts = [];
+
+        // Attempt 1 (hanya tampil kalau sudah lebih dari 1 attempt)
+        if ($this->attempt > 1) {
+            $attempts['attempt1'] = [
+                'label'       => 'Attempt 1',
+                'finished_at' => $this->first_attempt_at?->toIso8601String(),
+                'camera_url'  => $this->first_attempt_camera_url,
+                'camera_size' => $this->first_attempt_camera_size_formatted,
+                'screen_url'  => $this->first_attempt_screen_url,
+                'screen_size' => $this->first_attempt_screen_size_formatted,
+            ];
+        }
+
+        // Attempt terakhir (current)
+        $attempts['attempt_current'] = [
+            'label'       => 'Attempt ' . $this->attempt,
+            'finished_at' => $this->finished_at?->toIso8601String(),
+            'camera_url'  => $this->camera_recording_url,
+            'camera_size' => $this->camera_recording_size_formatted,
+            'screen_url'  => $this->screen_recording_url,
+            'screen_size' => $this->screen_recording_size_formatted,
+        ];
+
+        return $attempts;
+    }
+
+    /**
+     * Cek apakah ADA rekaman sama sekali (untuk tampilkan tombol preview).
+     */
+    public function hasAnyRecording(): bool
+    {
+        return $this->hasCameraRecording()
+            || $this->hasScreenRecording()
+            || !empty($this->first_attempt_camera_path)
+            || !empty($this->first_attempt_screen_path);
+    }
+
+    // ==================== FILTER & EVALUATION ====================
+
     /**
      * Filter baris untuk tampilan "belum full" (tanpa kunci):
      * - Buang jawaban BENAR (is_correct = true)
@@ -206,8 +385,6 @@ class BlindTest extends EloquentModel
             ->values()
             ->toArray();
     }
-
-    // ==================== EVALUATION ====================
 
     public function evaluateAnswers(array $userInputs): array
     {
@@ -296,5 +473,18 @@ class BlindTest extends EloquentModel
 
         $allCorrect = $answers->every(fn ($a) => ($a['is_correct'] ?? false) === true);
         return $allCorrect ? 'PASS' : 'FAIL';
+    }
+
+    // ==================== PRIVATE HELPERS ====================
+
+    /**
+     * Helper: format ukuran byte ke string manusiawi.
+     */
+    private function formatSize(?int $size): ?string
+    {
+        if (!$size) return null;
+        if ($size < 1024) return $size . ' B';
+        if ($size < 1024 * 1024) return round($size / 1024, 1) . ' KB';
+        return round($size / (1024 * 1024), 2) . ' MB';
     }
 }

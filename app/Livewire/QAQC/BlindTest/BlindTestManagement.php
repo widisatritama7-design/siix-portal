@@ -50,6 +50,9 @@ class BlindTestManagement extends Component
     public $filterCustomer = '';
     public $filterModel = '';
     public $filterResult = '';
+    // Date range filter
+    public $filterDateFrom = '';
+    public $filterDateTo   = '';
 
     // ==================== TABS ====================
     public $activeTab = 'all';
@@ -115,6 +118,18 @@ class BlindTestManagement extends Component
         if ($newTotal === 5) {
             $this->dispatch('notify', message: 'Total defect sudah 5. Siap disimpan!', type: 'success');
         }
+    }
+
+    /**
+     * Kembalikan list ID employee yang sudah dipilih.
+     * Dipakai untuk cek duplikat dari frontend.
+     */
+    public function getSelectedEmployeeIds(): array
+    {
+        return collect($this->selectedEmployees)
+            ->pluck('id')
+            ->map(fn ($id) => (int) $id)
+            ->toArray();
     }
 
     /**
@@ -199,7 +214,8 @@ class BlindTestManagement extends Component
     public function updatedFilterCustomer()   { $this->resetPage(); $this->filterModel = ''; }
     public function updatedFilterModel()      { $this->resetPage(); }
     public function updatedFilterResult()     { $this->resetPage(); }
-
+    public function updatedFilterDateFrom()   { $this->resetPage(); }
+    public function updatedFilterDateTo()     { $this->resetPage(); }
     // ==================== TAB & FILTER ====================
     public function setTab($tab)
     {
@@ -212,6 +228,7 @@ class BlindTestManagement extends Component
         $this->reset([
             'search', 'filterDepartment', 'filterShift', 'filterGroup', 'filterSection',
             'filterCustomer', 'filterModel', 'filterResult',
+            'filterDateFrom', 'filterDateTo',
         ]);
         $this->resetPage();
     }
@@ -238,7 +255,13 @@ class BlindTestManagement extends Component
             return;
         }
 
-        // Validasi department sesuai section
+        // ← Cek duplikat pakai ID (int), paling awal
+        $selectedIds = $this->getSelectedEmployeeIds();
+        if (in_array((int) $e->id, $selectedIds, true)) {
+            $this->dispatch('notify', message: 'Employee sudah ada di daftar!', type: 'warning');
+            return;
+        }
+
         $allowedDepartments = match ($this->section) {
             'QC'  => ['IQC', 'QA/QC'],
             'SMT' => ['PROD.1'],
@@ -265,12 +288,7 @@ class BlindTestManagement extends Component
             return;
         }
 
-        foreach ($this->selectedEmployees as $emp) {
-            if ($emp['id'] == $e->id) {
-                $this->dispatch('notify', message: 'Employee sudah ditambahkan!', type: 'warning');
-                return;
-            }
-        }
+        // (hapus loop duplikat lama, sudah diganti cek di atas)
 
         $this->selectedEmployees[] = [
             'id'         => $e->id,
@@ -652,12 +670,10 @@ class BlindTestManagement extends Component
     {
         if (strlen($search) < 2) return [];
 
-        // Kalau section belum dipilih, jangan tampilkan employee
         if (empty($this->section)) {
             return [];
         }
 
-        // Map section → department yang diizinkan
         $allowedDepartments = match ($this->section) {
             'QC'  => ['IQC', 'QA/QC'],
             'SMT' => ['PROD.1'],
@@ -670,6 +686,9 @@ class BlindTestManagement extends Component
             return [];
         }
 
+        // ← Dapatkan ID employee yang sudah dipilih
+        $selectedIds = $this->getSelectedEmployeeIds();
+
         return Employee::where(function ($q) use ($search) {
                 $q->where('nik', 'like', "%{$search}%")
                     ->orWhere('name', 'like', "%{$search}%");
@@ -679,10 +698,12 @@ class BlindTestManagement extends Component
             ->limit(20)
             ->get()
             ->map(fn ($e) => [
-                'id'         => $e->id,
-                'nik'        => $e->nik ?? '-',
-                'name'       => $e->name ?? '-',
-                'department' => $e->department ?? '-',
+                'id'               => $e->id,
+                'nik'              => $e->nik ?? '-',
+                'name'             => $e->name ?? '-',
+                'department'       => $e->department ?? '-',
+                // ← Flag baru
+                'already_selected' => in_array((int) $e->id, $selectedIds, true),
             ]);
     }
 
@@ -734,6 +755,14 @@ class BlindTestManagement extends Component
             });
         };
         if ($this->filterResult)     $query->where('overall_result', $this->filterResult);
+
+        // Date range filter (created_at)
+        if ($this->filterDateFrom) {
+            $query->whereDate('created_at', '>=', $this->filterDateFrom);
+        }
+        if ($this->filterDateTo) {
+            $query->whereDate('created_at', '<=', $this->filterDateTo);
+        }
 
         $blindTests = $query->orderByDesc('id')->paginate(10);
 

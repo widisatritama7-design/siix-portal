@@ -22,22 +22,66 @@
     </div>
 
     <!-- Filter Card -->
-    <flux:card class="p-4 shadow-sm">
-        <div class="space-y-3">
-            <div class="flex flex-col sm:flex-row gap-3">
-                <div class="flex-1">
-                    <flux:input wire:model.live.debounce.300ms="search"
-                        placeholder="Search NIK, Name, Customer, Model..." icon="magnifying-glass" clearable />
-                </div>
-                @if($search || $filterDepartment || $filterShift || $filterGroup || $filterSection || $filterCustomer || $filterModel || $filterResult)
+    <flux:card class="p-4 shadow-sm"
+        x-data="{
+            filterOpen: localStorage.getItem('blindTest_filterOpen') !== 'false',
+            toggleFilter() {
+                this.filterOpen = !this.filterOpen;
+                localStorage.setItem('blindTest_filterOpen', this.filterOpen ? 'true' : 'false');
+            }
+        }">
+
+        {{-- Header Filter (selalu tampil) --}}
+        <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+            <div class="flex-1 w-full">
+                <flux:input wire:model.live.debounce.300ms="search"
+                    placeholder="Search NIK, Name, Customer, Model..." icon="magnifying-glass" clearable />
+            </div>
+
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+                {{-- Tombol Toggle Filter --}}
+                <button type="button" @click="toggleFilter()"
+                    class="inline-flex items-center gap-2 px-3 py-2 rounded-lg
+                           bg-orange-500 hover:bg-orange-600 active:bg-orange-700
+                           text-white text-sm font-medium whitespace-nowrap
+                           shadow-md shadow-orange-500/30
+                           border border-orange-600
+                           transition-all duration-200 hover:scale-105 active:scale-95">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                        class="w-4 h-4 transition-transform duration-200"
+                        :class="filterOpen ? 'rotate-180' : ''">
+                        <path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clip-rule="evenodd" />
+                    </svg>
+                    <span x-text="filterOpen ? 'Hide Filter' : 'Unhide Filter'"></span>
+
+                    {{-- Badge jumlah filter aktif --}}
+                    @php
+                        $activeFilterCount = collect([
+                            $filterDepartment, $filterShift, $filterGroup, $filterSection,
+                            $filterCustomer, $filterModel, $filterResult,
+                            $filterDateFrom, $filterDateTo,
+                        ])->filter(fn ($v) => !empty($v))->count();
+                    @endphp
+                    @if($activeFilterCount > 0)
+                        <span class="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full
+                                     bg-white text-orange-600 text-[10px] font-bold">
+                            {{ $activeFilterCount }}
+                        </span>
+                    @endif
+                </button>
+                @if($search || $filterDepartment || $filterShift || $filterGroup || $filterSection || $filterCustomer || $filterModel || $filterResult || $filterDateFrom || $filterDateTo)
                     <flux:button wire:click="resetFilters" variant="danger" color="red" icon="arrow-path"
                         class="whitespace-nowrap bg-red-600 hover:bg-red-700 text-white">
                         Reset Filter
                     </flux:button>
                 @endif
             </div>
+        </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-3">
+        {{-- Body Filter (bisa disembunyikan) --}}
+        <div x-show="filterOpen" x-collapse class="space-y-3 pt-3">
+            {{-- Row 1: Department, Shift, Group, Section, Customer --}}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
                 {{-- Department --}}
                 <div>
                     <label class="block text-[11px] font-semibold text-zinc-500 uppercase mb-1">Department</label>
@@ -97,7 +141,10 @@
                         @endforeach
                     </select>
                 </div>
+            </div>
 
+            {{-- Row 2: Model, Result, Date From, Date To --}}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 {{-- Model --}}
                 <div>
                     <label class="block text-[11px] font-semibold text-zinc-500 uppercase mb-1">
@@ -122,6 +169,20 @@
                         <option value="PASS">PASS</option>
                         <option value="FAIL">FAIL</option>
                     </select>
+                </div>
+
+                {{-- Date From --}}
+                <div>
+                    <label class="block text-[11px] font-semibold text-zinc-500 uppercase mb-1">From Date</label>
+                    <input type="date" wire:model.live="filterDateFrom"
+                        class="w-full border border-zinc-300 dark:border-zinc-700 rounded-lg px-3 py-2 text-sm dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-500">
+                </div>
+
+                {{-- Date To --}}
+                <div>
+                    <label class="block text-[11px] font-semibold text-zinc-500 uppercase mb-1">Until Date</label>
+                    <input type="date" wire:model.live="filterDateTo"
+                        class="w-full border border-zinc-300 dark:border-zinc-700 rounded-lg px-3 py-2 text-sm dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-500">
                 </div>
             </div>
         </div>
@@ -428,7 +489,7 @@
                                 <flux:icon name="clipboard-document-check" class="w-10 h-10 text-zinc-400" />
                                 <h3 class="text-base font-medium text-zinc-900 dark:text-white">No blind test records found</h3>
                                 <p class="text-sm text-zinc-500">
-                                    @if($search || $filterDepartment || $filterShift || $filterGroup || $filterSection || $filterCustomer || $filterModel || $filterResult)
+                                    @if($search || $filterDepartment || $filterShift || $filterGroup || $filterSection || $filterCustomer || $filterModel || $filterResult || $filterDateFrom || $filterDateTo)
                                         Try adjusting your search or filters
                                     @else
                                         Get started by creating a new blind test
@@ -589,6 +650,9 @@
                                     if (!this.pickedId) return;
                                     await $wire.addEmployee(this.pickedId);
                                     this.resetPick();
+                                    if (this.search.length >= 2) {
+                                        this.load();
+                                    }
                                 }
                             }"
                             x-on:employee-added.window="resetPick()">
@@ -659,15 +723,35 @@
                                             </thead>
                                             <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
                                                 <template x-for="emp in employees" :key="emp.id">
-                                                    <tr class="hover:bg-blue-50 dark:hover:bg-blue-950/10">
+                                                    <tr class="transition-colors"
+                                                        :class="emp.already_selected
+                                                            ? 'bg-zinc-100 dark:bg-zinc-800/50 opacity-60 cursor-not-allowed'
+                                                            : 'hover:bg-blue-50 dark:hover:bg-blue-950/10'">
                                                         <td class="px-3 py-2 text-center font-mono text-xs" x-text="emp.nik"></td>
-                                                        <td class="px-3 py-2 text-sm font-medium" x-text="emp.name"></td>
+                                                        <td class="px-3 py-2 text-sm font-medium">
+                                                            <span x-text="emp.name"></span>
+                                                            <template x-if="emp.already_selected">
+                                                                <span class="ml-2 inline-flex items-center gap-1 px-1.5 py-0.5 rounded
+                                                                            bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300
+                                                                            text-[10px] font-semibold">
+                                                                    Sudah ditambahkan
+                                                                </span>
+                                                            </template>
+                                                        </td>
                                                         <td class="px-3 py-2 text-center text-xs" x-text="emp.department"></td>
                                                         <td class="px-3 py-2 text-center">
-                                                            <button type="button" @click="pick(emp)"
-                                                                class="px-2.5 py-1 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded-md font-medium">
-                                                                Pilih
-                                                            </button>
+                                                            <template x-if="!emp.already_selected">
+                                                                <button type="button" @click="pick(emp)"
+                                                                    class="px-2.5 py-1 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded-md font-medium">
+                                                                    Pilih
+                                                                </button>
+                                                            </template>
+                                                            <template x-if="emp.already_selected">
+                                                                <span class="px-2.5 py-1 text-xs bg-zinc-200 dark:bg-zinc-700 text-zinc-500 dark:text-zinc-400
+                                                                            rounded-md font-medium cursor-not-allowed inline-block">
+                                                                    Sudah Ada
+                                                                </span>
+                                                            </template>
                                                         </td>
                                                     </tr>
                                                 </template>

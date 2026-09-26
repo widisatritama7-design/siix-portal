@@ -1,21 +1,85 @@
+<?php # [BlazeFolded]:{flux::breadcrumbs.item}:{D:\laragon\www\siix-portal\vendor\livewire\flux\src/../stubs/resources/views/flux/breadcrumbs/item.blade.php}:{1776934808} ?>
+<?php # [BlazeFolded]:{flux::breadcrumbs}:{D:\laragon\www\siix-portal\vendor\livewire\flux\src/../stubs/resources/views/flux/breadcrumbs/index.blade.php}:{1776934808} ?>
+<?php # [BlazeFolded]:{flux::card}:{D:\laragon\www\siix-portal\vendor\livewire\flux\src/../stubs/resources/views/flux/card/index.blade.php}:{1776934808} ?>
+<?php # [BlazeFolded]:{flux::button}:{D:\laragon\www\siix-portal\vendor\livewire\flux\src/../stubs/resources/views/flux/button/index.blade.php}:{1776934808} ?>
+<?php # [BlazeFolded]:{flux::button}:{D:\laragon\www\siix-portal\vendor\livewire\flux\src/../stubs/resources/views/flux/button/index.blade.php}:{1776934808} ?>
+<?php # [BlazeFolded]:{flux::button}:{D:\laragon\www\siix-portal\vendor\livewire\flux\src/../stubs/resources/views/flux/button/index.blade.php}:{1776934808} ?>
+<?php # [BlazeFolded]:{flux::card}:{D:\laragon\www\siix-portal\vendor\livewire\flux\src/../stubs/resources/views/flux/card/index.blade.php}:{1776934808} ?>
+<?php # [BlazeFolded]:{flux::button}:{D:\laragon\www\siix-portal\vendor\livewire\flux\src/../stubs/resources/views/flux/button/index.blade.php}:{1776934808} ?>
+<?php # [BlazeFolded]:{flux::select.option}:{D:\laragon\www\siix-portal\vendor\livewire\flux\src/../stubs/resources/views/flux/select/option/index.blade.php}:{1776934808} ?>
+<?php # [BlazeFolded]:{flux::select}:{D:\laragon\www\siix-portal\vendor\livewire\flux\src/../stubs/resources/views/flux/select/index.blade.php}:{1776934808} ?>
+<?php # [BlazeFolded]:{flux::button}:{D:\laragon\www\siix-portal\vendor\livewire\flux\src/../stubs/resources/views/flux/button/index.blade.php}:{1776934808} ?>
+<?php # [BlazeFolded]:{flux::button}:{D:\laragon\www\siix-portal\vendor\livewire\flux\src/../stubs/resources/views/flux/button/index.blade.php}:{1776934808} ?>
+<?php # [BlazeFolded]:{flux::card}:{D:\laragon\www\siix-portal\vendor\livewire\flux\src/../stubs/resources/views/flux/card/index.blade.php}:{1776934808} ?>
+<?php # [BlazeFolded]:{flux::icon}:{D:\laragon\www\siix-portal\vendor\livewire\flux\src/../stubs/resources/views/flux/icon/index.blade.php}:{1776934808} ?>
+<?php # [BlazeFolded]:{flux::icon}:{D:\laragon\www\siix-portal\vendor\livewire\flux\src/../stubs/resources/views/flux/icon/index.blade.php}:{1776934808} ?>
+<?php # [BlazeFolded]:{flux::card}:{D:\laragon\www\siix-portal\vendor\livewire\flux\src/../stubs/resources/views/flux/card/index.blade.php}:{1776934808} ?>
+<?php # [BlazeFolded]:{flux::icon}:{D:\laragon\www\siix-portal\vendor\livewire\flux\src/../stubs/resources/views/flux/icon/index.blade.php}:{1776934808} ?>
+<?php # [BlazeFolded]:{flux::icon}:{D:\laragon\www\siix-portal\vendor\livewire\flux\src/../stubs/resources/views/flux/icon/index.blade.php}:{1776934808} ?>
+<?php # [BlazeFolded]:{flux::icon}:{D:\laragon\www\siix-portal\vendor\livewire\flux\src/../stubs/resources/views/flux/icon/index.blade.php}:{1776934808} ?>
+<?php # [BlazeFolded]:{flux::icon}:{D:\laragon\www\siix-portal\vendor\livewire\flux\src/../stubs/resources/views/flux/icon/index.blade.php}:{1776934808} ?>
+<?php # [BlazeFolded]:{flux::icon}:{D:\laragon\www\siix-portal\vendor\livewire\flux\src/../stubs/resources/views/flux/icon/index.blade.php}:{1776934808} ?>
+<?php # [BlazeFolded]:{flux::icon}:{D:\laragon\www\siix-portal\vendor\livewire\flux\src/../stubs/resources/views/flux/icon/index.blade.php}:{1776934808} ?>
+<?php # [BlazeFolded]:{flux::icon}:{D:\laragon\www\siix-portal\vendor\livewire\flux\src/../stubs/resources/views/flux/icon/index.blade.php}:{1776934808} ?>
+<?php # [BlazeFolded]:{flux::icon}:{D:\laragon\www\siix-portal\vendor\livewire\flux\src/../stubs/resources/views/flux/icon/index.blade.php}:{1776934808} ?>
+<?php # [BlazeFolded]:{flux::icon}:{D:\laragon\www\siix-portal\vendor\livewire\flux\src/../stubs/resources/views/flux/icon/index.blade.php}:{1776934808} ?>
+<?php # [BlazeFolded]:{flux::icon}:{D:\laragon\www\siix-portal\vendor\livewire\flux\src/../stubs/resources/views/flux/icon/index.blade.php}:{1776934808} ?>
+<?php # [BlazeFolded]:{flux::card}:{D:\laragon\www\siix-portal\vendor\livewire\flux\src/../stubs/resources/views/flux/card/index.blade.php}:{1776934808} ?>
 <div class="p-1 space-y-3"
-     @if($isStarted && !$isFinished) wire:poll.3s="syncTimer" @endif
+     <?php if($isStarted && !$isFinished): ?> wire:poll.3s="syncTimer" <?php endif; ?>
      x-data="cameraProctoring()"
      x-init="initProctoring()">
 
     <!-- Breadcrumbs -->
-    <flux:breadcrumbs>
-        <flux:breadcrumbs.item href="{{ route('dashboard') }}" wire:navigate separator="slash">Dashboard</flux:breadcrumbs.item>
-        <flux:breadcrumbs.item href="{{ route('qaqc.blind-test') }}" wire:navigate separator="slash" class="font-semibold text-blue-600">QA/QC</flux:breadcrumbs.item>
-        <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600">Blind Test Execution</flux:breadcrumbs.item>
-    </flux:breadcrumbs>
+    <?php ob_start(); ?><div class="flex" data-flux-breadcrumbs>
+    <?php ob_start(); ?>
+        <?php $__blaze->ensureRequired('D:\laragon\www\siix-portal\vendor\livewire\flux\src/../stubs/resources/views/flux/breadcrumbs/item.blade.php', $__blaze->compiledPath.'/3307f3fa286eb4573b0b443e25863146.php'); ?>
+<?php if (isset($__slots3307f3fa286eb4573b0b443e25863146)) { $__slotsStack3307f3fa286eb4573b0b443e25863146[] = $__slots3307f3fa286eb4573b0b443e25863146; } ?>
+<?php if (isset($__attrs3307f3fa286eb4573b0b443e25863146)) { $__attrsStack3307f3fa286eb4573b0b443e25863146[] = $__attrs3307f3fa286eb4573b0b443e25863146; } ?>
+<?php $__attrs3307f3fa286eb4573b0b443e25863146 = ['href' => e(route('dashboard')),'wire:navigate' => true,'separator' => 'slash']; ?>
+<?php $__slots3307f3fa286eb4573b0b443e25863146 = []; ?>
+<?php $__blaze->pushData($__attrs3307f3fa286eb4573b0b443e25863146); ?>
+<?php ob_start(); ?>Dashboard<?php $__slots3307f3fa286eb4573b0b443e25863146['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slots3307f3fa286eb4573b0b443e25863146); ?>
+<?php _3307f3fa286eb4573b0b443e25863146($__blaze, $__attrs3307f3fa286eb4573b0b443e25863146, $__slots3307f3fa286eb4573b0b443e25863146, ['wire:navigate'], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStack3307f3fa286eb4573b0b443e25863146)) { $__slots3307f3fa286eb4573b0b443e25863146 = array_pop($__slotsStack3307f3fa286eb4573b0b443e25863146); } ?>
+<?php if (! empty($__attrsStack3307f3fa286eb4573b0b443e25863146)) { $__attrs3307f3fa286eb4573b0b443e25863146 = array_pop($__attrsStack3307f3fa286eb4573b0b443e25863146); } ?>
+<?php $__blaze->popData(); ?>
+        <?php $__blaze->ensureRequired('D:\laragon\www\siix-portal\vendor\livewire\flux\src/../stubs/resources/views/flux/breadcrumbs/item.blade.php', $__blaze->compiledPath.'/3307f3fa286eb4573b0b443e25863146.php'); ?>
+<?php if (isset($__slots3307f3fa286eb4573b0b443e25863146)) { $__slotsStack3307f3fa286eb4573b0b443e25863146[] = $__slots3307f3fa286eb4573b0b443e25863146; } ?>
+<?php if (isset($__attrs3307f3fa286eb4573b0b443e25863146)) { $__attrsStack3307f3fa286eb4573b0b443e25863146[] = $__attrs3307f3fa286eb4573b0b443e25863146; } ?>
+<?php $__attrs3307f3fa286eb4573b0b443e25863146 = ['href' => e(route('qaqc.blind-test')),'wire:navigate' => true,'separator' => 'slash','class' => 'font-semibold text-blue-600']; ?>
+<?php $__slots3307f3fa286eb4573b0b443e25863146 = []; ?>
+<?php $__blaze->pushData($__attrs3307f3fa286eb4573b0b443e25863146); ?>
+<?php ob_start(); ?>QA/QC<?php $__slots3307f3fa286eb4573b0b443e25863146['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slots3307f3fa286eb4573b0b443e25863146); ?>
+<?php _3307f3fa286eb4573b0b443e25863146($__blaze, $__attrs3307f3fa286eb4573b0b443e25863146, $__slots3307f3fa286eb4573b0b443e25863146, ['wire:navigate'], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStack3307f3fa286eb4573b0b443e25863146)) { $__slots3307f3fa286eb4573b0b443e25863146 = array_pop($__slotsStack3307f3fa286eb4573b0b443e25863146); } ?>
+<?php if (! empty($__attrsStack3307f3fa286eb4573b0b443e25863146)) { $__attrs3307f3fa286eb4573b0b443e25863146 = array_pop($__attrsStack3307f3fa286eb4573b0b443e25863146); } ?>
+<?php $__blaze->popData(); ?>
+        <?php ob_start(); ?><div class="flex items-center text-sm font-medium group/breadcrumb font-semibold text-blue-600" data-flux-breadcrumbs-item>
+            <div class="text-gray-500 dark:text-white/80">
+                            <?php ob_start(); ?>Blind Test Execution<?php echo trim(ob_get_clean()); ?>
+
+                    </div>
+    
+    <!--[if BLOCK]><![endif]-->        <svg class="shrink-0 [:where(&amp;)]:size-5 mx-1 text-zinc-300 dark:text-white/80 group-last/breadcrumb:hidden rtl:-scale-x-100" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M12.528 3.047a.75.75 0 0 1 .449.961L8.433 16.504a.75.75 0 1 1-1.41-.512l4.544-12.496a.75.75 0 0 1 .961-.449Z" clip-rule="evenodd"/>
+</svg>
+
+            <!--[if ENDBLOCK]><![endif]--></div>
+<?php echo ltrim(ob_get_clean()); ?>
+    <?php echo trim(ob_get_clean()); ?>
+
+</div>
+<?php echo ltrim(ob_get_clean()); ?>
 
     <!-- ==================== MODAL BROWSER & CAMERA CHECK ==================== -->
-    @if($showBrowserCheckModal)
+    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($showBrowserCheckModal): ?>
     <div class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
         <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden">
 
-            {{-- Header --}}
+            
             <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-5 text-white">
                 <div class="flex items-center gap-3">
                     <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center border-2 border-white/40">
@@ -31,10 +95,10 @@
                 </div>
             </div>
 
-            {{-- Body --}}
+            
             <div class="p-5 space-y-3">
 
-                {{-- Checklist --}}
+                
                 <template x-for="(item, idx) in checks" :key="idx">
                     <div class="flex items-center gap-3 p-3 rounded-lg border"
                          :class="item.ok ? 'border-green-200 bg-green-50 dark:bg-green-950/20' : 'border-red-200 bg-red-50 dark:bg-red-950/20'">
@@ -54,19 +118,19 @@
                     </div>
                 </template>
 
-                {{-- Video Preview kecil --}}
+                
                 <div x-show="cameraOk" x-cloak class="rounded-lg overflow-hidden border-2 border-green-300 bg-black">
                     <video x-ref="preview" autoplay muted playsinline class="w-full h-40 object-cover"></video>
                 </div>
 
-                {{-- Alert --}}
+                
                 <div x-show="!allOk" class="p-3 rounded-lg bg-amber-50 dark:bg-amber-950/20 border border-amber-300 dark:border-amber-700 text-xs text-amber-800 dark:text-amber-300">
                     <strong>Perhatian:</strong> Kamu wajib mengizinkan akses kamera depan.
                     Jika ditolak, klik <em>Allow Camera</em> lagi dan pilih <strong>Allow</strong> di popup browser.
                 </div>
             </div>
 
-            {{-- Footer --}}
+            
             <div class="p-4 border-t border-zinc-200 dark:border-zinc-700 flex justify-end gap-2">
                 <button type="button" @click="requestCamera()"
                     class="px-4 py-2 rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 text-sm font-medium">
@@ -81,12 +145,12 @@
             </div>
         </div>
     </div>
-    @endif
+    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
     <!-- ==================== FLOATING CAMERA + SCREEN PREVIEW ==================== -->
-    @if($isStarted && !$isFinished)
+    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($isStarted && !$isFinished): ?>
     <div class="fixed top-4 left-4 z-40 space-y-2">
-        {{-- Kamera --}}
+        
         <div x-show="recordingActive" x-cloak>
             <div class="bg-black/90 backdrop-blur-md rounded-xl shadow-2xl border-2 border-red-500 overflow-hidden"
                  style="width: 220px;">
@@ -102,7 +166,7 @@
             </div>
         </div>
 
-        {{-- Screen --}}
+        
         <div x-show="screenRecordingActive" x-cloak>
             <div class="bg-black/90 backdrop-blur-md rounded-xl shadow-2xl border-2 border-emerald-500 overflow-hidden"
                  style="width: 220px;">
@@ -111,7 +175,7 @@
                     <span class="text-[10px] font-bold text-white uppercase tracking-wider">SCREEN REC</span>
                     <span class="ml-auto text-[10px] text-white font-mono" x-text="screenDuration"></span>
                 </div>
-                {{-- Preview layar live --}}
+                
                 <video x-ref="screenPreview" autoplay muted playsinline
                        class="w-full h-32 object-cover bg-black"></video>
                 <div class="px-2 py-1 bg-black/70 text-center">
@@ -120,7 +184,7 @@
             </div>
         </div>
     </div>
-    @endif
+    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
     <!-- ==================== HEADER ==================== -->
     <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 shadow-xl">
@@ -138,24 +202,24 @@
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
                                 <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z" clip-rule="evenodd" />
                             </svg>
-                            {{ $blindTest->employee->name ?? '-' }} ({{ $blindTest->employee->nik ?? '-' }})
+                            <?php echo e($blindTest->employee->name ?? '-'); ?> (<?php echo e($blindTest->employee->nik ?? '-'); ?>)
                         </span>
                         <span class="text-blue-200">•</span>
-                        <span>Shift: {{ $blindTest->shift ?? '-' }}</span>
+                        <span>Shift: <?php echo e($blindTest->shift ?? '-'); ?></span>
                         <span class="text-blue-200">•</span>
-                        <span>Group: {{ $blindTest->group ?? '-' }}</span>
+                        <span>Group: <?php echo e($blindTest->group ?? '-'); ?></span>
                     </p>
                 </div>
             </div>
 
             <div class="flex items-center gap-3 flex-wrap">
-                {{-- Timer --}}
-                @if($isStarted && !$isFinished)
+                
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($isStarted && !$isFinished): ?>
                 <div class="bg-white/15 backdrop-blur-sm border border-white/30 text-white px-5 py-3 rounded-2xl shadow-lg">
-                    @if($remainingSeconds !== null)
-                        @php $sec = (int) floor(abs($remainingSeconds)); @endphp
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($remainingSeconds !== null): ?>
+                        <?php $sec = (int) floor(abs($remainingSeconds)); ?>
                         <div class="flex items-center gap-2"
-                            x-data="{ left: {{ $sec }} }"
+                            x-data="{ left: <?php echo e($sec); ?> }"
                             x-init="setInterval(() => { if (left > 0) left--; }, 1000)">
                             <span class="text-xs opacity-80 flex items-center gap-1">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5">
@@ -165,12 +229,13 @@
                             </span>
                             <span class="text-2xl font-bold font-mono"
                                 x-text="String(Math.floor(left/60)).padStart(2,'0') + ':' + String(left%60).padStart(2,'0')">
-                                {{ sprintf('%02d:%02d', intdiv($sec, 60), $sec % 60) }}
+                                <?php echo e(sprintf('%02d:%02d', intdiv($sec, 60), $sec % 60)); ?>
+
                             </span>
                         </div>
-                    @else
+                    <?php else: ?>
                         <div class="flex items-center gap-2"
-                            x-data="{ sec: 0, start: {{ $startedAt }} }"
+                            x-data="{ sec: 0, start: <?php echo e($startedAt); ?> }"
                             x-init="setInterval(() => { sec = Math.floor(Date.now()/1000) - start; }, 1000)">
                             <span class="text-xs opacity-80 flex items-center gap-1">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5">
@@ -183,12 +248,12 @@
                                 00:00
                             </span>
                         </div>
-                    @endif
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                 </div>
-                @endif
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-                {{-- Tombol Back --}}
-                <a href="{{ route('qaqc.blind-test') }}" wire:navigate>
+                
+                <a href="<?php echo e(route('qaqc.blind-test')); ?>" wire:navigate>
                     <button type="button"
                         class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl
                             bg-white/20 hover:bg-white/30 backdrop-blur-sm
@@ -205,7 +270,7 @@
     </div>
 
     <!-- ==================== EXPIRED BANNER ==================== -->
-    @if($isExpired && !$isFinished)
+    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($isExpired && !$isFinished): ?>
     <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-red-500 to-rose-600 shadow-xl">
         <div class="p-5 flex items-center gap-4">
             <div class="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border-2 border-white/40">
@@ -216,23 +281,24 @@
             <div>
                 <div class="text-lg font-bold text-white">Waktu Test Sudah Habis</div>
                 <div class="text-sm text-red-100">
-                    Waktu pengerjaan ({{ $blindTest->duration_minutes }} menit) sudah habis.
+                    Waktu pengerjaan (<?php echo e($blindTest->duration_minutes); ?> menit) sudah habis.
                     Jawaban Anda <strong>otomatis disimpan</strong> dan test sudah ditutup.
                 </div>
             </div>
         </div>
     </div>
-    @endif
+    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
     <!-- ==================== INFO CARD + RESULT ==================== -->
     <div class="grid grid-cols-1 lg:grid-cols-5 gap-3">
 
         <!-- Info Card 80% -->
         <div class="lg:col-span-4">
-            <flux:card class="p-6 shadow-lg h-full">
+            <?php ob_start(); ?><div class="[:where(&amp;)]:bg-white dark:[:where(&amp;)]:bg-white/10 border border-zinc-200 dark:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl p-6 shadow-lg h-full" data-flux-card>
+    <?php ob_start(); ?>
                 <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
 
-                    {{-- Customer --}}
+                    
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-emerald-600 dark:text-emerald-400">
@@ -241,12 +307,12 @@
                         </div>
                         <div>
                             <div class="text-xs text-zinc-500 dark:text-zinc-400">Customer</div>
-                            <div class="text-sm font-semibold text-zinc-800 dark:text-white">{{ $blindTest->customer->customer_name ?? '-' }}</div>
+                            <div class="text-sm font-semibold text-zinc-800 dark:text-white"><?php echo e($blindTest->customer->customer_name ?? '-'); ?></div>
                         </div>
                     </div>
 
-                    {{-- Model --}}
-                    @php
+                    
+                    <?php
                         $modelIds = collect($blindTest->question_snapshot ?? [])
                             ->pluck('model_id')
                             ->filter()
@@ -260,7 +326,7 @@
                         $infoModels = $modelIds->isNotEmpty()
                             ? \App\Models\QAQC\BlindTest\Model::whereIn('id', $modelIds)->get()
                             : collect();
-                    @endphp
+                    ?>
 
                     <div class="flex items-start gap-3">
                         <div class="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0">
@@ -272,32 +338,34 @@
                         <div class="min-w-0 flex-1">
                             <div class="text-xs text-zinc-500 dark:text-zinc-400">
                                 Model
-                                @if($infoModels->count() > 1)
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($infoModels->count() > 1): ?>
                                     <span class="text-[10px] text-purple-600 dark:text-purple-400 font-semibold">
-                                        ({{ $infoModels->count() }})
+                                        (<?php echo e($infoModels->count()); ?>)
                                     </span>
-                                @endif
+                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                             </div>
 
-                            @if($infoModels->count() === 0)
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($infoModels->count() === 0): ?>
                                 <div class="text-sm font-semibold text-zinc-800 dark:text-white">-</div>
-                            @elseif($infoModels->count() === 1)
+                            <?php elseif($infoModels->count() === 1): ?>
                                 <div class="text-sm font-semibold text-zinc-800 dark:text-white">
-                                    {{ $infoModels->first()->model_name }}
+                                    <?php echo e($infoModels->first()->model_name); ?>
+
                                 </div>
-                            @else
+                            <?php else: ?>
                                 <div class="flex flex-wrap gap-1 mt-0.5">
-                                    @foreach($infoModels as $m)
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $infoModels; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $m): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                                         <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">
-                                            {{ $m->model_name }}
+                                            <?php echo e($m->model_name); ?>
+
                                         </span>
-                                    @endforeach
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
                                 </div>
-                            @endif
+                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </div>
                     </div>
 
-                    {{-- Section --}}
+                    
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-lg bg-cyan-100 dark:bg-cyan-900/30 flex items-center justify-center">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-cyan-600 dark:text-cyan-400">
@@ -306,11 +374,11 @@
                         </div>
                         <div>
                             <div class="text-xs text-zinc-500 dark:text-zinc-400">Section</div>
-                            <div class="text-sm font-semibold text-zinc-800 dark:text-white">{{ $blindTest->section ?? '-' }}</div>
+                            <div class="text-sm font-semibold text-zinc-800 dark:text-white"><?php echo e($blindTest->section ?? '-'); ?></div>
                         </div>
                     </div>
 
-                    {{-- Durasi Max --}}
+                    
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-lg bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-orange-600 dark:text-orange-400">
@@ -320,12 +388,13 @@
                         <div>
                             <div class="text-xs text-zinc-500 dark:text-zinc-400">Durasi Maks</div>
                             <div class="text-sm font-semibold text-zinc-800 dark:text-white">
-                                {{ $blindTest->duration_minutes ? $blindTest->duration_minutes . ' menit' : 'Tanpa batas' }}
+                                <?php echo e($blindTest->duration_minutes ? $blindTest->duration_minutes . ' menit' : 'Tanpa batas'); ?>
+
                             </div>
                         </div>
                     </div>
 
-                    {{-- Time Finish --}}
+                    
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-lg bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-indigo-600 dark:text-indigo-400">
@@ -335,12 +404,13 @@
                         <div>
                             <div class="text-xs text-zinc-500 dark:text-zinc-400">Time Finish</div>
                             <div class="text-sm font-semibold text-zinc-800 dark:text-white">
-                                {{ $blindTest->finished_at ? $blindTest->finished_at->format('H:i') : '-' }}
+                                <?php echo e($blindTest->finished_at ? $blindTest->finished_at->format('H:i') : '-'); ?>
+
                             </div>
                         </div>
                     </div>
 
-                    {{-- Waktu Pengerjaan --}}
+                    
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-lg bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-teal-600 dark:text-teal-400">
@@ -350,12 +420,13 @@
                         <div>
                             <div class="text-xs text-zinc-500 dark:text-zinc-400">Waktu Pengerjaan</div>
                             <div class="text-sm font-semibold text-zinc-800 dark:text-white">
-                                {{ $blindTest->duration_formatted }}
+                                <?php echo e($blindTest->duration_formatted); ?>
+
                             </div>
                         </div>
                     </div>
 
-                    {{-- Total Soal --}}
+                    
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-lg bg-rose-100 dark:bg-rose-900/30 flex items-center justify-center">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-rose-600 dark:text-rose-400">
@@ -364,11 +435,11 @@
                         </div>
                         <div>
                             <div class="text-xs text-zinc-500 dark:text-zinc-400">Total Soal</div>
-                            <div class="text-sm font-semibold text-zinc-800 dark:text-white">{{ $blindTest->total_items }}</div>
+                            <div class="text-sm font-semibold text-zinc-800 dark:text-white"><?php echo e($blindTest->total_items); ?></div>
                         </div>
                     </div>
 
-                    {{-- Soal Dijawab --}}
+                    
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-lg bg-sky-100 dark:bg-sky-900/30 flex items-center justify-center">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-sky-600 dark:text-sky-400">
@@ -378,55 +449,71 @@
                         <div>
                             <div class="text-xs text-zinc-500 dark:text-zinc-400">Soal Dijawab</div>
                             <div class="text-sm font-semibold text-zinc-800 dark:text-white">
-                                {{ $blindTest->total_correct }} / {{ $blindTest->total_items }}
+                                <?php echo e($blindTest->total_correct); ?> / <?php echo e($blindTest->total_items); ?>
+
                             </div>
                         </div>
                     </div>
 
-                    {{-- Status --}}
+                    
                     <div class="flex items-center gap-3">
                         <div class="w-10 h-10 rounded-lg flex items-center justify-center
-                            @if($blindTest->status === 'pending') bg-yellow-100 dark:bg-yellow-900/30
-                            @elseif($blindTest->status === 'in_progress') bg-blue-100 dark:bg-blue-900/30
-                            @else bg-green-100 dark:bg-green-900/30 @endif">
+                            <?php if($blindTest->status === 'pending'): ?> bg-yellow-100 dark:bg-yellow-900/30
+                            <?php elseif($blindTest->status === 'in_progress'): ?> bg-blue-100 dark:bg-blue-900/30
+                            <?php else: ?> bg-green-100 dark:bg-green-900/30 <?php endif; ?>">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5
-                                @if($blindTest->status === 'pending') text-yellow-600 dark:text-yellow-400
-                                @elseif($blindTest->status === 'in_progress') text-blue-600 dark:text-blue-400
-                                @else text-green-600 dark:text-green-400 @endif">
+                                <?php if($blindTest->status === 'pending'): ?> text-yellow-600 dark:text-yellow-400
+                                <?php elseif($blindTest->status === 'in_progress'): ?> text-blue-600 dark:text-blue-400
+                                <?php else: ?> text-green-600 dark:text-green-400 <?php endif; ?>">
                                 <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
                             </svg>
                         </div>
                         <div>
                             <div class="text-xs text-zinc-500 dark:text-zinc-400">Status</div>
-                            @php $sc = ['pending' => 'yellow', 'in_progress' => 'blue', 'completed' => 'green']; @endphp
-                            <flux:badge size="sm" color="{{ $sc[$blindTest->status] ?? 'gray' }}">
-                                {{ ucfirst(str_replace('_', ' ', $blindTest->status)) }}
-                            </flux:badge>
+                            <?php $sc = ['pending' => 'yellow', 'in_progress' => 'blue', 'completed' => 'green']; ?>
+                            <?php $__blaze->ensureRequired('D:\laragon\www\siix-portal\vendor\livewire\flux\src/../stubs/resources/views/flux/badge/index.blade.php', $__blaze->compiledPath.'/31c2ca2df5903ae1f72c7f26ed543039.php'); ?>
+<?php if (isset($__slots31c2ca2df5903ae1f72c7f26ed543039)) { $__slotsStack31c2ca2df5903ae1f72c7f26ed543039[] = $__slots31c2ca2df5903ae1f72c7f26ed543039; } ?>
+<?php if (isset($__attrs31c2ca2df5903ae1f72c7f26ed543039)) { $__attrsStack31c2ca2df5903ae1f72c7f26ed543039[] = $__attrs31c2ca2df5903ae1f72c7f26ed543039; } ?>
+<?php $__attrs31c2ca2df5903ae1f72c7f26ed543039 = ['size' => 'sm','color' => e($sc[$blindTest->status] ?? 'gray')]; ?>
+<?php $__slots31c2ca2df5903ae1f72c7f26ed543039 = []; ?>
+<?php $__blaze->pushData($__attrs31c2ca2df5903ae1f72c7f26ed543039); ?>
+<?php ob_start(); ?>
+                                <?php echo e(ucfirst(str_replace('_', ' ', $blindTest->status))); ?>
+
+                            <?php $__slots31c2ca2df5903ae1f72c7f26ed543039['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slots31c2ca2df5903ae1f72c7f26ed543039); ?>
+<?php _31c2ca2df5903ae1f72c7f26ed543039($__blaze, $__attrs31c2ca2df5903ae1f72c7f26ed543039, $__slots31c2ca2df5903ae1f72c7f26ed543039, [], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStack31c2ca2df5903ae1f72c7f26ed543039)) { $__slots31c2ca2df5903ae1f72c7f26ed543039 = array_pop($__slotsStack31c2ca2df5903ae1f72c7f26ed543039); } ?>
+<?php if (! empty($__attrsStack31c2ca2df5903ae1f72c7f26ed543039)) { $__attrs31c2ca2df5903ae1f72c7f26ed543039 = array_pop($__attrsStack31c2ca2df5903ae1f72c7f26ed543039); } ?>
+<?php $__blaze->popData(); ?>
                         </div>
                     </div>
                 </div>
-            </flux:card>
+            <?php echo trim(ob_get_clean()); ?>
+
+</div>
+<?php echo ltrim(ob_get_clean()); ?>
         </div>
 
         <!-- Result 20% -->
         <div class="lg:col-span-1">
             <div class="rounded-2xl shadow-xl p-5 h-full flex flex-col justify-center items-center text-center
-                @if($isFinished)
-                    @if($isPendingReview)
+                <?php if($isFinished): ?>
+                    <?php if($isPendingReview): ?>
                         bg-gradient-to-br from-amber-500 to-orange-600
-                    @elseif($overallResult === 'PASS')
+                    <?php elseif($overallResult === 'PASS'): ?>
                         bg-gradient-to-br from-green-500 to-emerald-600
-                    @elseif($overallResult === 'FAIL')
+                    <?php elseif($overallResult === 'FAIL'): ?>
                         bg-gradient-to-br from-red-500 to-rose-600
-                    @else
+                    <?php else: ?>
                         bg-gradient-to-br from-zinc-400 to-zinc-500
-                    @endif
-                @else
+                    <?php endif; ?>
+                <?php else: ?>
                     bg-gradient-to-br from-zinc-400 to-zinc-500
-                @endif">
+                <?php endif; ?>">
 
-                @if($isFinished)
-                    @if($isPendingReview)
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($isFinished): ?>
+                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($isPendingReview): ?>
                         <div class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border-2 border-white/40 mb-2">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-7 h-7 text-white">
                                 <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 6a.75.75 0 0 0-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 0 0 0-1.5h-3.75V6Z" clip-rule="evenodd" />
@@ -435,21 +522,21 @@
                         <div class="text-[10px] text-white/80 uppercase tracking-wider font-semibold">Result</div>
                         <div class="text-lg font-bold text-white leading-tight">Menunggu Review</div>
                         <div class="text-xs text-white/90 mt-1">QC</div>
-                    @elseif($overallResult)
+                    <?php elseif($overallResult): ?>
                         <div class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border-2 border-white/40 mb-2">
-                            @if($overallResult === 'PASS')
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($overallResult === 'PASS'): ?>
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-7 h-7 text-white">
                                     <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
                                 </svg>
-                            @else
+                            <?php else: ?>
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-7 h-7 text-white">
                                     <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z" clip-rule="evenodd" />
                                 </svg>
-                            @endif
+                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </div>
                         <div class="text-[10px] text-white/80 uppercase tracking-wider font-semibold">Result</div>
-                        <div class="text-3xl font-bold text-white">{{ $overallResult }}</div>
-                    @else
+                        <div class="text-3xl font-bold text-white"><?php echo e($overallResult); ?></div>
+                    <?php else: ?>
                         <div class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border-2 border-white/40 mb-2">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-7 h-7 text-white">
                                 <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 6a.75.75 0 0 0-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 0 0 0-1.5h-3.75V6Z" clip-rule="evenodd" />
@@ -457,8 +544,8 @@
                         </div>
                         <div class="text-[10px] text-white/80 uppercase tracking-wider font-semibold">Result</div>
                         <div class="text-xl font-bold text-white">Pending</div>
-                    @endif
-                @else
+                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                <?php else: ?>
                     <div class="w-12 h-12 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border-2 border-white/40 mb-2">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-7 h-7 text-white">
                             <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 6a.75.75 0 0 0-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 0 0 0-1.5h-3.75V6Z" clip-rule="evenodd" />
@@ -466,15 +553,16 @@
                     </div>
                     <div class="text-[10px] text-white/80 uppercase tracking-wider font-semibold">Result</div>
                     <div class="text-xl font-bold text-white">Pending</div>
-                @endif
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
             </div>
         </div>
     </div>
 
     <!-- ==================== BELUM MULAI ==================== -->
-    @if(!$isStarted && !$isFinished)
-    <flux:card class="p-12 text-center shadow-lg">
-        @if($isExpired)
+    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!$isStarted && !$isFinished): ?>
+    <?php ob_start(); ?><div class="[:where(&amp;)]:bg-white dark:[:where(&amp;)]:bg-white/10 border border-zinc-200 dark:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl p-12 text-center shadow-lg" data-flux-card>
+    <?php ob_start(); ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($isExpired): ?>
             <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-red-500 to-rose-600 flex items-center justify-center shadow-xl shadow-red-500/30">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-12 h-12 text-white">
                     <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 6a.75.75 0 0 0-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 0 0 0-1.5h-3.75V6Z" clip-rule="evenodd" />
@@ -483,15 +571,25 @@
             <h2 class="text-2xl font-bold mb-2 text-red-600 dark:text-red-400">Waktu Habis</h2>
             <p class="text-sm text-zinc-500 mb-8 max-w-md mx-auto">
                 Test ini hanya bisa dilakukan sebelum jam
-                <strong>{{ $blindTest->time_test ? $blindTest->time_test->format('H:i') : '-' }}</strong>.
+                <strong><?php echo e($blindTest->time_test ? $blindTest->time_test->format('H:i') : '-'); ?></strong>.
                 Silakan hubungi QC untuk reset jadwal.
             </p>
-            <a href="{{ route('qaqc.blind-test') }}" wire:navigate>
-                <flux:button variant="primary" icon="arrow-left" class="!px-6">
+            <a href="<?php echo e(route('qaqc.blind-test')); ?>" wire:navigate>
+                <?php ob_start(); ?><button type="button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-10 text-sm rounded-lg ps-3 pe-4 inline-flex  bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 dark:border-0 shadow-[inset_0px_1px_--theme(--color-white/.2)] [[data-flux-button-group]_&amp;]:border-e-0 [:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-[1px] dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-0 dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-s-[1px] [:is([data-flux-button-group]&gt;&amp;:not(:first-child),_[data-flux-button-group]_:not(:first-child)&gt;&amp;)]:border-s-[color-mix(in_srgb,var(--color-accent-foreground),transparent_85%)]   !px-6" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target">
+        <svg class="shrink-0 [:where(&amp;)]:size-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M14 8a.75.75 0 0 1-.75.75H4.56l3.22 3.22a.75.75 0 1 1-1.06 1.06l-4.5-4.5a.75.75 0 0 1 0-1.06l4.5-4.5a.75.75 0 0 1 1.06 1.06L4.56 7.25h8.69A.75.75 0 0 1 14 8Z" clip-rule="evenodd"/>
+</svg>
+
+                
+                    
+            
+            <span><?php ob_start(); ?>
                     Back to Management
-                </flux:button>
+                <?php echo trim(ob_get_clean()); ?></span>
+    </button>
+<?php echo ltrim(ob_get_clean()); ?>
             </a>
-        @else
+        <?php else: ?>
             <div class="w-24 h-24 mx-auto mb-6 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-xl shadow-blue-500/30">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-12 h-12 text-white">
                     <path fill-rule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clip-rule="evenodd" />
@@ -501,39 +599,77 @@
             <p class="text-sm text-zinc-500 mb-2 max-w-md mx-auto">
                 Klik tombol di bawah untuk memulai test.
             </p>
-            @if($blindTest->time_test)
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($blindTest->time_test): ?>
             <p class="text-xs text-red-500 dark:text-red-400 font-medium mb-2 max-w-md mx-auto">
-                Deadline mulai: <strong>{{ $blindTest->time_test->format('H:i') }}</strong>
+                Deadline mulai: <strong><?php echo e($blindTest->time_test->format('H:i')); ?></strong>
             </p>
-            @endif
-            @if($blindTest->duration_minutes)
+            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($blindTest->duration_minutes): ?>
             <p class="text-xs text-orange-500 dark:text-orange-400 font-medium mb-6 max-w-md mx-auto">
-                Durasi pengerjaan: <strong>{{ $blindTest->duration_minutes }} menit</strong>
+                Durasi pengerjaan: <strong><?php echo e($blindTest->duration_minutes); ?> menit</strong>
             </p>
-            @endif
+            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-            {{-- TOMBOL START --}}
-            @if(!$browserCheckPassed)
+            
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!$browserCheckPassed): ?>
                 <div class="mb-4 p-3 rounded-lg bg-amber-50 dark:bg-amber-950/20 border border-amber-300 dark:border-amber-700 text-xs text-amber-800 dark:text-amber-300 max-w-md mx-auto">
                     Kamu harus lulus <strong>Pemeriksaan Browser & Kamera</strong> terlebih dahulu.
                 </div>
-                <flux:button wire:click="$set('showBrowserCheckModal', true)" variant="primary" icon="shield-check" class="bg-amber-600 hover:bg-amber-700 !text-base !px-8 !py-3">
+                <?php ob_start(); ?><button type="button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-10 text-sm rounded-lg ps-3 pe-4 inline-flex  bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 dark:border-0 shadow-[inset_0px_1px_--theme(--color-white/.2)] [[data-flux-button-group]_&amp;]:border-e-0 [:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-[1px] dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-0 dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-s-[1px] [:is([data-flux-button-group]&gt;&amp;:not(:first-child),_[data-flux-button-group]_:not(:first-child)&gt;&amp;)]:border-s-[color-mix(in_srgb,var(--color-accent-foreground),transparent_85%)] *:transition-opacity [&amp;[data-loading]&gt;:not([data-flux-loading-indicator])]:opacity-0 [&amp;[data-flux-loading]&gt;:not([data-flux-loading-indicator])]:opacity-0 [&amp;[data-loading]&gt;[data-flux-loading-indicator]]:opacity-100 [&amp;[data-flux-loading]&gt;[data-flux-loading-indicator]]:opacity-100 data-loading:pointer-events-none data-flux-loading:pointer-events-none  bg-amber-600 hover:bg-amber-700 !text-base !px-8 !py-3" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target" wire:target="$set('showBrowserCheckModal', true)" wire:loading.attr="data-flux-loading" wire:click="$set('showBrowserCheckModal', true)">
+        <div class="absolute inset-0 flex items-center justify-center opacity-0" data-flux-loading-indicator>
+                <svg class="shrink-0 [:where(&amp;)]:size-4 animate-spin" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true" data-slot="icon">
+    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+</svg>
+                    </div>
+        
+                    <svg class="shrink-0 [:where(&amp;)]:size-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M8.5 1.709a.75.75 0 0 0-1 0 8.963 8.963 0 0 1-4.84 2.217.75.75 0 0 0-.654.72 10.499 10.499 0 0 0 5.647 9.672.75.75 0 0 0 .694-.001 10.499 10.499 0 0 0 5.647-9.672.75.75 0 0 0-.654-.719A8.963 8.963 0 0 1 8.5 1.71Zm2.34 5.504a.75.75 0 0 0-1.18-.926L7.394 9.17l-1.156-.99a.75.75 0 1 0-.976 1.138l1.75 1.5a.75.75 0 0 0 1.078-.106l2.75-3.5Z" clip-rule="evenodd"/>
+</svg>
+
+                
+                    
+            
+            <span><?php ob_start(); ?>
                     Buka Pemeriksaan Browser
-                </flux:button>
-            @else
-                <flux:button wire:click="startTest" variant="primary" icon="play" class="bg-blue-600 hover:bg-blue-700 !text-base !px-8 !py-3">
+                <?php echo trim(ob_get_clean()); ?></span>
+    </button>
+<?php echo ltrim(ob_get_clean()); ?>
+            <?php else: ?>
+                <?php ob_start(); ?><button type="button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-10 text-sm rounded-lg ps-3 pe-4 inline-flex  bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 dark:border-0 shadow-[inset_0px_1px_--theme(--color-white/.2)] [[data-flux-button-group]_&amp;]:border-e-0 [:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-[1px] dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-0 dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-s-[1px] [:is([data-flux-button-group]&gt;&amp;:not(:first-child),_[data-flux-button-group]_:not(:first-child)&gt;&amp;)]:border-s-[color-mix(in_srgb,var(--color-accent-foreground),transparent_85%)] *:transition-opacity [&amp;[data-loading]&gt;:not([data-flux-loading-indicator])]:opacity-0 [&amp;[data-flux-loading]&gt;:not([data-flux-loading-indicator])]:opacity-0 [&amp;[data-loading]&gt;[data-flux-loading-indicator]]:opacity-100 [&amp;[data-flux-loading]&gt;[data-flux-loading-indicator]]:opacity-100 data-loading:pointer-events-none data-flux-loading:pointer-events-none  bg-blue-600 hover:bg-blue-700 !text-base !px-8 !py-3" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target" wire:target="startTest" wire:loading.attr="data-flux-loading" wire:click="startTest">
+        <div class="absolute inset-0 flex items-center justify-center opacity-0" data-flux-loading-indicator>
+                <svg class="shrink-0 [:where(&amp;)]:size-4 animate-spin" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true" data-slot="icon">
+    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+</svg>
+                    </div>
+        
+                    <svg class="shrink-0 [:where(&amp;)]:size-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path d="M3 3.732a1.5 1.5 0 0 1 2.305-1.265l6.706 4.267a1.5 1.5 0 0 1 0 2.531l-6.706 4.268A1.5 1.5 0 0 1 3 12.267V3.732Z"/>
+</svg>
+
+                
+                    
+            
+            <span><?php ob_start(); ?>
                     Start Test Now
-                </flux:button>
-            @endif
-        @endif
-    </flux:card>
-    @endif
+                <?php echo trim(ob_get_clean()); ?></span>
+    </button>
+<?php echo ltrim(ob_get_clean()); ?>
+            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+    <?php echo trim(ob_get_clean()); ?>
+
+</div>
+<?php echo ltrim(ob_get_clean()); ?>
+    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
     <!-- ==================== SEDANG TEST ==================== -->
-    @if($isStarted && !$isFinished)
-    <flux:card class="p-6 shadow-lg">
+    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($isStarted && !$isFinished): ?>
+    <?php ob_start(); ?><?php $__blaze->pushData(['class' => 'p-6 shadow-lg']); $__env->pushConsumableComponentData(['class' => 'p-6 shadow-lg']); ?><div class="[:where(&amp;)]:bg-white dark:[:where(&amp;)]:bg-white/10 border border-zinc-200 dark:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl p-6 shadow-lg" data-flux-card>
+    <?php ob_start(); ?>
 
-        @if($remainingSeconds !== null && $remainingSeconds <= 300 && $remainingSeconds > 0)
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($remainingSeconds !== null && $remainingSeconds <= 300 && $remainingSeconds > 0): ?>
         <div class="mb-4 rounded-xl bg-yellow-50 dark:bg-yellow-950/20 border-2 border-yellow-300 dark:border-yellow-700 p-4 flex items-center gap-3">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-yellow-600 dark:text-yellow-400 flex-shrink-0">
                 <path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
@@ -545,7 +681,7 @@
                 </div>
             </div>
         </div>
-        @endif
+        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 pb-4 border-b border-zinc-200 dark:border-zinc-700">
             <div class="flex items-center gap-3">
@@ -559,9 +695,26 @@
                     <p class="text-xs text-zinc-500 dark:text-zinc-400">Isi defect item + component location. Urutan bebas.</p>
                 </div>
             </div>
-            <flux:button wire:click="addRow" size="sm" icon="plus" variant="primary" class="bg-blue-600 hover:bg-blue-700">
+            <?php ob_start(); ?><button type="button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-8 text-sm rounded-md px-3 inline-flex  bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 dark:border-0 shadow-[inset_0px_1px_--theme(--color-white/.2)] [[data-flux-button-group]_&amp;]:border-e-0 [:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-[1px] dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-0 dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-s-[1px] [:is([data-flux-button-group]&gt;&amp;:not(:first-child),_[data-flux-button-group]_:not(:first-child)&gt;&amp;)]:border-s-[color-mix(in_srgb,var(--color-accent-foreground),transparent_85%)] *:transition-opacity [&amp;[data-loading]&gt;:not([data-flux-loading-indicator])]:opacity-0 [&amp;[data-flux-loading]&gt;:not([data-flux-loading-indicator])]:opacity-0 [&amp;[data-loading]&gt;[data-flux-loading-indicator]]:opacity-100 [&amp;[data-flux-loading]&gt;[data-flux-loading-indicator]]:opacity-100 data-loading:pointer-events-none data-flux-loading:pointer-events-none  bg-blue-600 hover:bg-blue-700" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target" wire:target="addRow" wire:loading.attr="data-flux-loading" wire:click="addRow">
+        <div class="absolute inset-0 flex items-center justify-center opacity-0" data-flux-loading-indicator>
+                <svg class="shrink-0 [:where(&amp;)]:size-4 animate-spin" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true" data-slot="icon">
+    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+</svg>
+                    </div>
+        
+                    <svg class="shrink-0 [:where(&amp;)]:size-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z"/>
+</svg>
+
+                
+                    
+            
+            <span><?php ob_start(); ?>
                 Tambah Baris
-            </flux:button>
+            <?php echo trim(ob_get_clean()); ?></span>
+    </button>
+<?php echo ltrim(ob_get_clean()); ?>
         </div>
 
         <div class="mb-4 p-3 rounded-lg bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 flex items-start gap-2">
@@ -575,39 +728,84 @@
         </div>
 
         <div class="space-y-3">
-            @foreach($userAnswers as $i => $row)
-            <div class="flex gap-3 items-start p-3 rounded-lg bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700" wire:key="row-{{ $i }}">
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $userAnswers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+            <div class="flex gap-3 items-start p-3 rounded-lg bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700" <?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::$currentLoop['key'] = 'row-'.e($i).''; ?>wire:key="row-<?php echo e($i); ?>">
                 <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">
-                    <span class="text-sm font-bold text-blue-600 dark:text-blue-400">{{ $i + 1 }}</span>
+                    <span class="text-sm font-bold text-blue-600 dark:text-blue-400"><?php echo e($i + 1); ?></span>
                 </div>
                 <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <flux:select wire:model="userAnswers.{{ $i }}.deffect_item_id" placeholder="Pilih defect item...">
-                        @foreach($deffects as $d)
-                            <flux:select.option value="{{ $d->id }}">{{ $d->deffect_item_name }}</flux:select.option>
-                        @endforeach
-                    </flux:select>
-                    <flux:input wire:model="userAnswers.{{ $i }}.component_location"
-                        placeholder="Component location (e.g. CN4)" class="uppercase" />
+                    <?php ob_start(); ?><?php $__blaze->pushData(['wire:model' => 'userAnswers.'.e($i).'.deffect_item_id', 'placeholder' => 'Pilih defect item...']); $__env->pushConsumableComponentData(['wire:model' => 'userAnswers.'.e($i).'.deffect_item_id', 'placeholder' => 'Pilih defect item...']); ?><select
+    class="appearance-none [:where(&amp;)]:w-full ps-3 pe-10 block h-10 py-2 text-base sm:text-sm leading-[1.375rem] rounded-lg shadow-xs border bg-white dark:bg-white/10 dark:disabled:bg-white/[7%] text-zinc-700 dark:text-zinc-300 disabled:text-zinc-500 dark:disabled:text-zinc-400 has-[option.placeholder:checked]:text-zinc-400 dark:has-[option.placeholder:checked]:text-zinc-400 dark:[&amp;&gt;option]:bg-zinc-700 dark:[&amp;&gt;option]:text-white disabled:shadow-none border border-zinc-200 border-b-zinc-300/80 dark:border-white/10" wire:model="userAnswers.<?php echo e($i); ?>.deffect_item_id"         name="userAnswers.<?php echo e($i); ?>.deffect_item_id"         data-flux-control
+    data-flux-select-native
+    data-flux-group-target
+>
+            <option value="" disabled selected class="placeholder">Pilih defect item...</option>
+    
+    <?php ob_start(); ?>
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $deffects; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $d): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                            <?php ob_start(); ?><option
+    
+     value="<?php echo e($d->id); ?>"      <?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::$currentLoop['key'] = ''.e($d->id).''; ?>wire:key="<?php echo e($d->id); ?>" ><?php ob_start(); ?><?php echo e($d->deffect_item_name); ?><?php echo trim(ob_get_clean()); ?></option><?php echo ltrim(ob_get_clean()); ?>
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
+                    <?php echo trim(ob_get_clean()); ?>
+
+</select>
+<?php $__blaze->popData(); $__env->popConsumableComponentData(); ?><?php echo ltrim(ob_get_clean()); ?>
+                    <?php $__blaze->ensureRequired('D:\laragon\www\siix-portal\vendor\livewire\flux\src/../stubs/resources/views/flux/input/index.blade.php', $__blaze->compiledPath.'/9b589e47daba64f30d55ecafdc7f6a83.php'); ?>
+<?php $__blaze->pushData(['wire:model' => 'userAnswers.'.e($i).'.component_location','placeholder' => 'Component location (e.g. CN4)','class' => 'uppercase']); ?>
+<?php _9b589e47daba64f30d55ecafdc7f6a83($__blaze, ['wire:model' => 'userAnswers.'.e($i).'.component_location','placeholder' => 'Component location (e.g. CN4)','class' => 'uppercase'], [], [], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php $__blaze->popData(); ?>
                 </div>
-                @if(count($userAnswers) > 1)
-                <flux:button wire:click="removeRow({{ $i }})" size="sm" icon="trash"
-                    variant="primary" color="red" class="!p-2 flex-shrink-0" />
-                @endif
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(count($userAnswers) > 1): ?>
+                <?php ob_start(); ?><button type="button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-8 text-sm rounded-md w-8 inline-flex  bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 dark:border-0 shadow-[inset_0px_1px_--theme(--color-white/.2)] [[data-flux-button-group]_&amp;]:border-e-0 [:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-[1px] dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-0 dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-s-[1px] [:is([data-flux-button-group]&gt;&amp;:not(:first-child),_[data-flux-button-group]_:not(:first-child)&gt;&amp;)]:border-s-[color-mix(in_srgb,var(--color-accent-foreground),transparent_85%)] *:transition-opacity [&amp;[data-loading]&gt;:not([data-flux-loading-indicator])]:opacity-0 [&amp;[data-flux-loading]&gt;:not([data-flux-loading-indicator])]:opacity-0 [&amp;[data-loading]&gt;[data-flux-loading-indicator]]:opacity-100 [&amp;[data-flux-loading]&gt;[data-flux-loading-indicator]]:opacity-100 data-loading:pointer-events-none data-flux-loading:pointer-events-none [--color-accent:var(--color-red-500)] [--color-accent-content:var(--color-red-600)] [--color-accent-foreground:var(--color-white)] dark:[--color-accent:var(--color-red-500)] dark:[--color-accent-content:var(--color-red-400)] dark:[--color-accent-foreground:var(--color-white)] !p-2 flex-shrink-0" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target" wire:target="removeRow(<?php echo e($i); ?>)" wire:loading.attr="data-flux-loading" wire:click="removeRow(<?php echo e($i); ?>)">
+        <div class="absolute inset-0 flex items-center justify-center opacity-0" data-flux-loading-indicator>
+                <svg class="shrink-0 [:where(&amp;)]:size-5 animate-spin" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true" data-slot="icon">
+    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+</svg>
+                    </div>
+        
+                    <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 0 0 6 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 1 0 .23 1.482l.149-.022.841 10.518A2.75 2.75 0 0 0 7.596 19h4.807a2.75 2.75 0 0 0 2.742-2.53l.841-10.52.149.023a.75.75 0 0 0 .23-1.482A41.03 41.03 0 0 0 14 4.193V3.75A2.75 2.75 0 0 0 11.25 1h-2.5ZM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4ZM8.58 7.72a.75.75 0 0 0-1.5.06l.3 7.5a.75.75 0 1 0 1.5-.06l-.3-7.5Zm4.34.06a.75.75 0 1 0-1.5-.06l-.3 7.5a.75.75 0 1 0 1.5.06l.3-7.5Z" clip-rule="evenodd"/>
+</svg>
+    </button>
+<?php echo ltrim(ob_get_clean()); ?>
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
             </div>
-            @endforeach
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
         </div>
 
         <div class="mt-6 flex justify-end pt-4 border-t border-zinc-200 dark:border-zinc-700">
-            <flux:button wire:click="submit" variant="primary" icon="check-circle" class="bg-blue-600 hover:bg-blue-700 !px-6">
+            <?php ob_start(); ?><button type="button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-10 text-sm rounded-lg ps-3 pe-4 inline-flex  bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 dark:border-0 shadow-[inset_0px_1px_--theme(--color-white/.2)] [[data-flux-button-group]_&amp;]:border-e-0 [:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-[1px] dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-0 dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-s-[1px] [:is([data-flux-button-group]&gt;&amp;:not(:first-child),_[data-flux-button-group]_:not(:first-child)&gt;&amp;)]:border-s-[color-mix(in_srgb,var(--color-accent-foreground),transparent_85%)] *:transition-opacity [&amp;[data-loading]&gt;:not([data-flux-loading-indicator])]:opacity-0 [&amp;[data-flux-loading]&gt;:not([data-flux-loading-indicator])]:opacity-0 [&amp;[data-loading]&gt;[data-flux-loading-indicator]]:opacity-100 [&amp;[data-flux-loading]&gt;[data-flux-loading-indicator]]:opacity-100 data-loading:pointer-events-none data-flux-loading:pointer-events-none  bg-blue-600 hover:bg-blue-700 !px-6" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target" wire:target="submit" wire:loading.attr="data-flux-loading" wire:click="submit">
+        <div class="absolute inset-0 flex items-center justify-center opacity-0" data-flux-loading-indicator>
+                <svg class="shrink-0 [:where(&amp;)]:size-4 animate-spin" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true" data-slot="icon">
+    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+</svg>
+                    </div>
+        
+                    <svg class="shrink-0 [:where(&amp;)]:size-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M8 15A7 7 0 1 0 8 1a7 7 0 0 0 0 14Zm3.844-8.791a.75.75 0 0 0-1.188-.918l-3.7 4.79-1.649-1.833a.75.75 0 1 0-1.114 1.004l2.25 2.5a.75.75 0 0 0 1.15-.043l4.25-5.5Z" clip-rule="evenodd"/>
+</svg>
+
+                
+                    
+            
+            <span><?php ob_start(); ?>
                 Submit Test
-            </flux:button>
+            <?php echo trim(ob_get_clean()); ?></span>
+    </button>
+<?php echo ltrim(ob_get_clean()); ?>
         </div>
-    </flux:card>
-    @endif
+    <?php echo trim(ob_get_clean()); ?>
+
+</div>
+<?php $__blaze->popData(); $__env->popConsumableComponentData(); ?><?php echo ltrim(ob_get_clean()); ?>
+    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
     <!-- ==================== HASIL ==================== -->
-    @if($isFinished)
-        @php
+    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($isFinished): ?>
+        <?php
             $showFullResult  = $blindTest->shouldShowFullResult();
             $isSecondAttempt = $blindTest->attempt > 1;
             $hasPending      = $blindTest->hasPendingReview();
@@ -618,16 +816,16 @@
             // Rekaman per attempt
             $recordings = $blindTest->recordings;
             $hasAnyRec  = $blindTest->hasAnyRecording();
-        @endphp
+        ?>
 
-        {{-- ==================== TOMBOL PREVIEW REKAMAN ==================== --}}
-        @if($hasAnyRec)
+        
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($hasAnyRec): ?>
         <div class="mb-3 p-4 rounded-2xl bg-gradient-to-r from-zinc-900 to-zinc-800 shadow-lg"
              x-data="{
                 showCameraModal: false,
                 showScreenModal: false,
                 activeAttempt: 'attempt_current',
-                recordings: @js($recordings),
+                recordings: <?php echo \Illuminate\Support\Js::from($recordings)->toHtml() ?>,
              }">
 
             <div class="flex flex-col sm:flex-row items-start sm:items-center gap-3 justify-between">
@@ -665,7 +863,7 @@
                 </div>
             </div>
 
-            {{-- ==================== MODAL: KAMERA ==================== --}}
+            
             <div x-show="showCameraModal" x-cloak
                  class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
                 <div class="bg-zinc-900 rounded-2xl shadow-2xl max-w-2xl w-full overflow-hidden border border-zinc-700">
@@ -733,7 +931,7 @@
                 </div>
             </div>
 
-            {{-- ==================== MODAL: SCREEN ==================== --}}
+            
             <div x-show="showScreenModal" x-cloak
                  class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
                 <div class="bg-zinc-900 rounded-2xl shadow-2xl max-w-4xl w-full overflow-hidden border border-zinc-700">
@@ -800,15 +998,16 @@
                 </div>
             </div>
         </div>
-        @endif
+        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-        @if(!$showFullResult)
-        {{-- ============================================================ --}}
-        {{-- CASE A: BELUM FULL — attempt 1 atau ada pending review        --}}
-        {{-- ============================================================ --}}
-        <flux:card class="p-6 shadow-lg">
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!$showFullResult): ?>
+        
+        
+        
+        <?php ob_start(); ?><div class="[:where(&amp;)]:bg-white dark:[:where(&amp;)]:bg-white/10 border border-zinc-200 dark:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl p-6 shadow-lg" data-flux-card>
+    <?php ob_start(); ?>
 
-            @if($hasPending)
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($hasPending): ?>
                 <div class="mb-5 relative overflow-hidden rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 shadow-lg">
                     <div class="p-5 flex items-center gap-4">
                         <div class="w-14 h-14 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border-2 border-white/40 flex-shrink-0">
@@ -825,7 +1024,7 @@
                         </div>
                     </div>
                 </div>
-            @elseif($blindTest->overall_result === 'FAIL' && $blindTest->canRetry())
+            <?php elseif($blindTest->overall_result === 'FAIL' && $blindTest->canRetry()): ?>
                 <div class="mb-5 relative overflow-hidden rounded-2xl bg-gradient-to-r from-red-500 via-rose-600 to-pink-600 shadow-xl">
                     <div class="p-6 flex items-center gap-5">
                         <div class="w-16 h-16 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border-2 border-white/40 flex-shrink-0">
@@ -834,28 +1033,28 @@
                             </svg>
                         </div>
                         <div class="flex-1 min-w-0">
-                            <div class="text-2xl font-bold text-white">FAIL — Percobaan ke-{{ $blindTest->attempt }}</div>
+                            <div class="text-2xl font-bold text-white">FAIL — Percobaan ke-<?php echo e($blindTest->attempt); ?></div>
                             <div class="text-sm text-red-50 mt-1">
-                                Anda masih memiliki <strong>{{ $blindTest->max_attempt - $blindTest->attempt }} kesempatan lagi</strong>.
+                                Anda masih memiliki <strong><?php echo e($blindTest->max_attempt - $blindTest->attempt); ?> kesempatan lagi</strong>.
                                 Kunci jawaban <strong>tidak ditampilkan</strong> sampai percobaan terakhir.
                             </div>
                         </div>
                     </div>
                 </div>
-            @endif
+            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
             <div class="space-y-4">
-                {{-- HANYA tampilkan current attempt --}}
+                
                 <div class="rounded-xl border-2 border-red-200 dark:border-red-800 overflow-hidden shadow-sm">
                     <div class="px-4 py-3 bg-gradient-to-r from-red-500 to-rose-500 text-white flex items-center gap-2">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
                             <path fill-rule="evenodd" d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625Z" clip-rule="evenodd" />
                         </svg>
                         <div>
-                            <div class="text-xs font-semibold">Attempt {{ $blindTest->attempt }}</div>
+                            <div class="text-xs font-semibold">Attempt <?php echo e($blindTest->attempt); ?></div>
                             <div class="text-[10px] text-white/80">
-                                Result: {{ $blindTest->overall_result ?? '-' }} —
-                                {{ count($currentVisible) }} jawaban salah
+                                Result: <?php echo e($blindTest->overall_result ?? '-'); ?> —
+                                <?php echo e(count($currentVisible)); ?> jawaban salah
                             </div>
                         </div>
                     </div>
@@ -870,47 +1069,58 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
-                                @forelse($currentVisible as $i => $row)
-                                    @php
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $currentVisible; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                                    <?php
                                         $deffect   = $row['deffect_item_id'] ? \App\Models\QAQC\BlindTest\Deffect::find($row['deffect_item_id']) : null;
                                         $locStatus = $row['location_status'] ?? null;
-                                    @endphp
-                                    <tr class="@if($locStatus === 'pending') bg-amber-50/40 dark:bg-amber-950/10 @else bg-red-50/40 dark:bg-red-950/10 @endif">
+                                    ?>
+                                    <tr class="<?php if($locStatus === 'pending'): ?> bg-amber-50/40 dark:bg-amber-950/10 <?php else: ?> bg-red-50/40 dark:bg-red-950/10 <?php endif; ?>">
                                         <td class="px-3 py-2 text-[11px]">
                                             <span class="inline-flex items-center justify-center w-6 h-6 rounded-full font-semibold text-[10px]
-                                                @if($locStatus === 'pending') bg-amber-100 text-amber-700 @else bg-red-100 text-red-700 @endif">
-                                                {{ $i + 1 }}
+                                                <?php if($locStatus === 'pending'): ?> bg-amber-100 text-amber-700 <?php else: ?> bg-red-100 text-red-700 <?php endif; ?>">
+                                                <?php echo e($i + 1); ?>
+
                                             </span>
                                         </td>
                                         <td class="px-3 py-2 text-[11px] font-semibold text-zinc-800 dark:text-white">
-                                            {{ $deffect->deffect_item_name ?? '-' }}
+                                            <?php echo e($deffect->deffect_item_name ?? '-'); ?>
+
                                         </td>
                                         <td class="px-3 py-2 text-[11px]">
                                             <span class="inline-flex items-center px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-mono font-semibold">
-                                                {{ $row['component_location'] ?? '-' }}
+                                                <?php echo e($row['component_location'] ?? '-'); ?>
+
                                             </span>
                                         </td>
                                         <td class="px-3 py-2 text-center">
-                                            @if($locStatus === 'pending')
+                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($locStatus === 'pending'): ?>
                                                 <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 text-[10px] font-semibold border border-amber-300 dark:border-amber-700">
-                                                    <flux:icon name="clock" variant="mini" class="w-3 h-3" />
+                                                    <?php ob_start(); ?><svg class="shrink-0 [:where(&amp;)]:size-5 w-3 h-3" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z" clip-rule="evenodd"/>
+</svg>
+
+        <?php echo ltrim(ob_get_clean()); ?>
                                                     Menunggu Review
                                                 </span>
-                                            @else
+                                            <?php else: ?>
                                                 <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 text-[10px] font-semibold border border-red-300 dark:border-red-700">
-                                                    <flux:icon name="x-circle" variant="mini" class="w-3 h-3" />
+                                                    <?php ob_start(); ?><svg class="shrink-0 [:where(&amp;)]:size-5 w-3 h-3" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16ZM8.28 7.22a.75.75 0 0 0-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 1 0 1.06 1.06L10 11.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L11.06 10l1.72-1.72a.75.75 0 0 0-1.06-1.06L10 8.94 8.28 7.22Z" clip-rule="evenodd"/>
+</svg>
+
+        <?php echo ltrim(ob_get_clean()); ?>
                                                     Tidak Cocok
                                                 </span>
-                                            @endif
+                                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                         </td>
                                     </tr>
-                                @empty
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
                                     <tr>
                                         <td colspan="4" class="px-3 py-8 text-center text-[11px] text-zinc-400 italic">
                                             Tidak ada jawaban salah pada attempt ini.
                                         </td>
                                     </tr>
-                                @endforelse
+                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                             </tbody>
                         </table>
                     </div>
@@ -918,45 +1128,49 @@
             </div>
 
             <div class="flex justify-center gap-3 pt-5">
-                <a href="{{ route('qaqc.blind-test') }}" wire:navigate>
+                <a href="<?php echo e(route('qaqc.blind-test')); ?>" wire:navigate>
                     <button type="button"
                         class="px-5 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800 text-sm font-medium">
                         Back to Management
                     </button>
                 </a>
-                @if($blindTest->overall_result === 'FAIL' && $blindTest->canRetry())
+                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($blindTest->overall_result === 'FAIL' && $blindTest->canRetry()): ?>
                     <button type="button" wire:click="retryTest"
-                        @if($isUploadingRecording) disabled @endif
+                        <?php if($isUploadingRecording): ?> disabled <?php endif; ?>
                         class="inline-flex items-center gap-2 px-6 py-2.5 rounded-lg text-white text-sm font-semibold shadow-lg transition-all
-                            @if($isUploadingRecording)
+                            <?php if($isUploadingRecording): ?>
                                 bg-zinc-400 cursor-not-allowed
-                            @else
+                            <?php else: ?>
                                 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-blue-500/30
-                            @endif">
-                        @if($isUploadingRecording)
+                            <?php endif; ?>">
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($isUploadingRecording): ?>
                             <svg class="animate-spin w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
                             Mengunggah rekaman...
-                        @else
+                        <?php else: ?>
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
                                 <path fill-rule="evenodd" d="M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z" clip-rule="evenodd" />
                             </svg>
                             Kerjakan Ulang Test
-                        @endif
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </button>
-                @endif
+                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
             </div>
-        </flux:card>
+        <?php echo trim(ob_get_clean()); ?>
 
-        @else
-        {{-- ============================================================ --}}
-        {{-- CASE B: FULL RESULT — attempt terakhir & tidak ada pending    --}}
-        {{-- ============================================================ --}}
-        <flux:card class="p-6 shadow-lg">
+</div>
+<?php echo ltrim(ob_get_clean()); ?>
 
-            @if($isSecondAttempt)
+        <?php else: ?>
+        
+        
+        
+        <?php ob_start(); ?><div class="[:where(&amp;)]:bg-white dark:[:where(&amp;)]:bg-white/10 border border-zinc-200 dark:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl p-6 shadow-lg" data-flux-card>
+    <?php ob_start(); ?>
+
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($isSecondAttempt): ?>
             <div class="mb-5 relative overflow-hidden rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 shadow-lg">
                 <div class="p-4 flex items-center gap-3">
                     <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center border-2 border-white/40 flex-shrink-0">
@@ -965,51 +1179,61 @@
                         </svg>
                     </div>
                     <div class="flex-1">
-                        <div class="text-sm font-bold text-white">Percobaan ke-{{ $blindTest->attempt }} (Terakhir)</div>
+                        <div class="text-sm font-bold text-white">Percobaan ke-<?php echo e($blindTest->attempt); ?> (Terakhir)</div>
                         <div class="text-xs text-indigo-100 mt-0.5">
                             Semua hasil ditampilkan: kunci jawaban & jawaban Anda.
                         </div>
                     </div>
                 </div>
             </div>
-            @endif
+            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-            @if(!empty($firstAttemptAnswers))
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!empty($firstAttemptAnswers)): ?>
             <div class="mb-4 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-600 shadow-lg p-4">
                 <div class="flex items-center gap-3 flex-wrap">
                     <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center border-2 border-white/40 flex-shrink-0">
-                        <flux:icon name="arrows-right-left" class="w-5 h-5 text-white" />
+                        <?php ob_start(); ?><svg class="shrink-0 [:where(&amp;)]:size-6 w-5 h-5 text-white" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/>
+</svg>
+
+        <?php echo ltrim(ob_get_clean()); ?>
                     </div>
                     <div class="flex-1 min-w-0">
                         <div class="text-sm font-bold text-white">Perbandingan Hasil Percobaan</div>
                         <div class="text-xs text-purple-100 mt-0.5">
-                            Attempt 1 ({{ $firstAttemptAt?->format('d M Y H:i') ?? '-' }})
+                            Attempt 1 (<?php echo e($firstAttemptAt?->format('d M Y H:i') ?? '-'); ?>)
                             vs
-                            Attempt {{ $blindTest->attempt }} ({{ $blindTest->finished_at?->format('d M Y H:i') ?? '-' }})
+                            Attempt <?php echo e($blindTest->attempt); ?> (<?php echo e($blindTest->finished_at?->format('d M Y H:i') ?? '-'); ?>)
                         </div>
                     </div>
                     <div class="flex items-center gap-2 flex-wrap">
                         <div class="px-3 py-1.5 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 text-white text-xs font-bold whitespace-nowrap">
-                            Attempt 1: {{ $firstAttemptResult ?? '-' }}
+                            Attempt 1: <?php echo e($firstAttemptResult ?? '-'); ?>
+
                         </div>
                         <div class="px-3 py-1.5 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 text-white text-xs font-bold whitespace-nowrap">
-                            Attempt {{ $blindTest->attempt }}: {{ $blindTest->overall_result ?? '-' }}
+                            Attempt <?php echo e($blindTest->attempt); ?>: <?php echo e($blindTest->overall_result ?? '-'); ?>
+
                         </div>
                     </div>
                 </div>
             </div>
-            @endif
+            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
             <div class="overflow-x-auto -mx-1 px-1 pb-2">
                 <div class="grid grid-cols-3 gap-4" style="min-width: 1280px;">
 
-                    {{-- KOLOM 1: KUNCI JAWABAN --}}
+                    
                     <div class="rounded-xl border-2 border-blue-200 dark:border-blue-800 overflow-hidden shadow-sm flex flex-col">
                         <div class="px-4 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white flex items-center gap-2 flex-shrink-0 whitespace-nowrap">
-                            <flux:icon name="lock-closed" class="w-4 h-4" />
+                            <?php ob_start(); ?><svg class="shrink-0 [:where(&amp;)]:size-6 w-4 h-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/>
+</svg>
+
+        <?php echo ltrim(ob_get_clean()); ?>
                             <div>
                                 <div class="text-xs font-semibold">Kunci Jawaban</div>
-                                <div class="text-[10px] text-blue-100">{{ count($blindTest->blind_test_items ?? []) }} soal</div>
+                                <div class="text-[10px] text-blue-100"><?php echo e(count($blindTest->blind_test_items ?? [])); ?> soal</div>
                             </div>
                         </div>
                         <div class="overflow-x-auto bg-white dark:bg-zinc-900 flex-1">
@@ -1022,38 +1246,45 @@
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
-                                    @foreach($blindTest->blind_test_items ?? [] as $i => $item)
-                                    @php
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $blindTest->blind_test_items ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                                    <?php
                                         $deffect = \App\Models\QAQC\BlindTest\Deffect::find($item['deffect_item_id'] ?? null);
-                                    @endphp
+                                    ?>
                                     <tr class="hover:bg-blue-50/50 dark:hover:bg-blue-950/10 whitespace-nowrap">
                                         <td class="px-3 py-2 text-[11px]">
                                             <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold text-[10px]">
-                                                {{ $i + 1 }}
+                                                <?php echo e($i + 1); ?>
+
                                             </span>
                                         </td>
                                         <td class="px-3 py-2 text-[11px] font-semibold text-zinc-800 dark:text-white whitespace-nowrap">
-                                            {{ $deffect->deffect_item_name ?? '-' }}
+                                            <?php echo e($deffect->deffect_item_name ?? '-'); ?>
+
                                         </td>
                                         <td class="px-3 py-2 text-[11px] whitespace-nowrap">
                                             <span class="inline-flex items-center px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-mono font-semibold whitespace-nowrap">
-                                                {{ $item['component_location'] ?? '-' }}
+                                                <?php echo e($item['component_location'] ?? '-'); ?>
+
                                             </span>
                                         </td>
                                     </tr>
-                                    @endforeach
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
                                 </tbody>
                             </table>
                         </div>
                     </div>
 
-                    {{-- KOLOM 2: ATTEMPT 1 --}}
-                    <div class="rounded-xl border-2 {{ ($firstAttemptResult ?? '') === 'PASS' ? 'border-green-200 dark:border-green-800' : 'border-red-200 dark:border-red-800' }} overflow-hidden shadow-sm flex flex-col">
-                        <div class="px-4 py-3 bg-gradient-to-r {{ ($firstAttemptResult ?? '') === 'PASS' ? 'from-green-500 to-emerald-500' : 'from-red-500 to-rose-500' }} text-white flex items-center gap-2 flex-shrink-0 whitespace-nowrap">
-                            <flux:icon name="document-text" class="w-4 h-4" />
+                    
+                    <div class="rounded-xl border-2 <?php echo e(($firstAttemptResult ?? '') === 'PASS' ? 'border-green-200 dark:border-green-800' : 'border-red-200 dark:border-red-800'); ?> overflow-hidden shadow-sm flex flex-col">
+                        <div class="px-4 py-3 bg-gradient-to-r <?php echo e(($firstAttemptResult ?? '') === 'PASS' ? 'from-green-500 to-emerald-500' : 'from-red-500 to-rose-500'); ?> text-white flex items-center gap-2 flex-shrink-0 whitespace-nowrap">
+                            <?php ob_start(); ?><svg class="shrink-0 [:where(&amp;)]:size-6 w-4 h-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/>
+</svg>
+
+        <?php echo ltrim(ob_get_clean()); ?>
                             <div class="flex-1 min-w-0">
                                 <div class="text-xs font-semibold">Attempt 1</div>
-                                <div class="text-[10px] text-white/80">Result: {{ $firstAttemptResult ?? '-' }}</div>
+                                <div class="text-[10px] text-white/80">Result: <?php echo e($firstAttemptResult ?? '-'); ?></div>
                             </div>
                         </div>
                         <div class="overflow-x-auto bg-white dark:bg-zinc-900 flex-1">
@@ -1067,68 +1298,87 @@
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
-                                    @forelse($firstAttemptAnswers as $i => $row)
-                                    @php
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $firstAttemptAnswers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                                    <?php
                                         $deffect     = $row['deffect_item_id'] ? \App\Models\QAQC\BlindTest\Deffect::find($row['deffect_item_id']) : null;
                                         $userAnswer  = $row['user_answer'] ?? '';
                                         $isCorrect   = $row['is_correct'] ?? false;
                                         $isMissing   = $userAnswer === 'MISSING';
-                                    @endphp
-                                    <tr class="whitespace-nowrap @if($isCorrect) bg-green-50/40 dark:bg-green-950/10 @elseif($isMissing) bg-yellow-50/40 dark:bg-yellow-950/10 @else bg-red-50/40 dark:bg-red-950/10 @endif">
+                                    ?>
+                                    <tr class="whitespace-nowrap <?php if($isCorrect): ?> bg-green-50/40 dark:bg-green-950/10 <?php elseif($isMissing): ?> bg-yellow-50/40 dark:bg-yellow-950/10 <?php else: ?> bg-red-50/40 dark:bg-red-950/10 <?php endif; ?>">
                                         <td class="px-3 py-2 text-[11px]">
                                             <span class="inline-flex items-center justify-center w-6 h-6 rounded-full font-semibold text-[10px]
-                                                @if($isCorrect) bg-green-100 text-green-700
-                                                @elseif($isMissing) bg-yellow-100 text-yellow-700
-                                                @else bg-red-100 text-red-700 @endif">
-                                                {{ $i + 1 }}
+                                                <?php if($isCorrect): ?> bg-green-100 text-green-700
+                                                <?php elseif($isMissing): ?> bg-yellow-100 text-yellow-700
+                                                <?php else: ?> bg-red-100 text-red-700 <?php endif; ?>">
+                                                <?php echo e($i + 1); ?>
+
                                             </span>
                                         </td>
                                         <td class="px-3 py-2 text-[11px] font-semibold text-zinc-800 dark:text-white whitespace-nowrap">
-                                            {{ $deffect->deffect_item_name ?? '-' }}
+                                            <?php echo e($deffect->deffect_item_name ?? '-'); ?>
+
                                         </td>
                                         <td class="px-3 py-2 text-[11px] whitespace-nowrap">
                                             <span class="inline-flex items-center px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-mono font-semibold whitespace-nowrap">
-                                                {{ $row['component_location'] ?? '-' }}
+                                                <?php echo e($row['component_location'] ?? '-'); ?>
+
                                             </span>
                                         </td>
                                         <td class="px-3 py-2 text-center whitespace-nowrap">
-                                            @if($isCorrect)
+                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($isCorrect): ?>
                                                 <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-[10px] font-semibold border border-green-300 dark:border-green-700 whitespace-nowrap">
-                                                    <flux:icon name="check-circle" variant="mini" class="w-3 h-3" />
+                                                    <?php ob_start(); ?><svg class="shrink-0 [:where(&amp;)]:size-5 w-3 h-3" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd"/>
+</svg>
+
+        <?php echo ltrim(ob_get_clean()); ?>
                                                     Cocok
                                                 </span>
-                                            @elseif($isMissing)
+                                            <?php elseif($isMissing): ?>
                                                 <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 text-[10px] font-semibold border border-yellow-300 dark:border-yellow-700 whitespace-nowrap">
-                                                    <flux:icon name="exclamation-triangle" variant="mini" class="w-3 h-3" />
+                                                    <?php ob_start(); ?><svg class="shrink-0 [:where(&amp;)]:size-5 w-3 h-3" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495ZM10 5a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 10 5Zm0 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd"/>
+</svg>
+
+        <?php echo ltrim(ob_get_clean()); ?>
                                                     Tidak Dijawab
                                                 </span>
-                                            @else
+                                            <?php else: ?>
                                                 <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 text-[10px] font-semibold border border-red-300 dark:border-red-700 whitespace-nowrap">
-                                                    <flux:icon name="x-circle" variant="mini" class="w-3 h-3" />
+                                                    <?php ob_start(); ?><svg class="shrink-0 [:where(&amp;)]:size-5 w-3 h-3" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16ZM8.28 7.22a.75.75 0 0 0-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 1 0 1.06 1.06L10 11.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L11.06 10l1.72-1.72a.75.75 0 0 0-1.06-1.06L10 8.94 8.28 7.22Z" clip-rule="evenodd"/>
+</svg>
+
+        <?php echo ltrim(ob_get_clean()); ?>
                                                     Tidak Cocok
                                                 </span>
-                                            @endif
+                                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                         </td>
                                     </tr>
-                                    @empty
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
                                     <tr>
                                         <td colspan="4" class="px-3 py-8 text-center text-[11px] text-zinc-400 italic whitespace-nowrap">
                                             Tidak ada data attempt 1
                                         </td>
                                     </tr>
-                                    @endforelse
+                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 </tbody>
                             </table>
                         </div>
                     </div>
 
-                    {{-- KOLOM 3: ATTEMPT CURRENT --}}
-                    <div class="rounded-xl border-2 {{ ($blindTest->overall_result ?? '') === 'PASS' ? 'border-green-200 dark:border-green-800' : 'border-red-200 dark:border-red-800' }} overflow-hidden shadow-sm flex flex-col">
-                        <div class="px-4 py-3 bg-gradient-to-r {{ ($blindTest->overall_result ?? '') === 'PASS' ? 'from-green-500 to-emerald-500' : 'from-red-500 to-rose-500' }} text-white flex items-center gap-2 flex-shrink-0 whitespace-nowrap">
-                            <flux:icon name="document-text" class="w-4 h-4" />
+                    
+                    <div class="rounded-xl border-2 <?php echo e(($blindTest->overall_result ?? '') === 'PASS' ? 'border-green-200 dark:border-green-800' : 'border-red-200 dark:border-red-800'); ?> overflow-hidden shadow-sm flex flex-col">
+                        <div class="px-4 py-3 bg-gradient-to-r <?php echo e(($blindTest->overall_result ?? '') === 'PASS' ? 'from-green-500 to-emerald-500' : 'from-red-500 to-rose-500'); ?> text-white flex items-center gap-2 flex-shrink-0 whitespace-nowrap">
+                            <?php ob_start(); ?><svg class="shrink-0 [:where(&amp;)]:size-6 w-4 h-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/>
+</svg>
+
+        <?php echo ltrim(ob_get_clean()); ?>
                             <div class="flex-1 min-w-0">
-                                <div class="text-xs font-semibold">Attempt {{ $blindTest->attempt }}</div>
-                                <div class="text-[10px] text-white/80">Result: {{ $blindTest->overall_result ?? '-' }}</div>
+                                <div class="text-xs font-semibold">Attempt <?php echo e($blindTest->attempt); ?></div>
+                                <div class="text-[10px] text-white/80">Result: <?php echo e($blindTest->overall_result ?? '-'); ?></div>
                             </div>
                         </div>
                         <div class="overflow-x-auto bg-white dark:bg-zinc-900 flex-1">
@@ -1142,59 +1392,77 @@
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
-                                    @forelse($evaluationResult ?? [] as $i => $row)
-                                    @php
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $evaluationResult ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                                    <?php
                                         $deffect     = $row['deffect_item_id'] ? \App\Models\QAQC\BlindTest\Deffect::find($row['deffect_item_id']) : null;
                                         $userAnswer  = $row['user_answer'] ?? '';
                                         $isCorrect   = $row['is_correct'] ?? false;
                                         $isMissing   = $userAnswer === 'MISSING';
-                                    @endphp
-                                    <tr class="whitespace-nowrap @if($isCorrect) bg-green-50/40 dark:bg-green-950/10 @elseif($isMissing) bg-yellow-50/40 dark:bg-yellow-950/10 @else bg-red-50/40 dark:bg-red-950/10 @endif">
+                                    ?>
+                                    <tr class="whitespace-nowrap <?php if($isCorrect): ?> bg-green-50/40 dark:bg-green-950/10 <?php elseif($isMissing): ?> bg-yellow-50/40 dark:bg-yellow-950/10 <?php else: ?> bg-red-50/40 dark:bg-red-950/10 <?php endif; ?>">
                                         <td class="px-3 py-2 text-[11px]">
                                             <span class="inline-flex items-center justify-center w-6 h-6 rounded-full font-semibold text-[10px]
-                                                @if($isCorrect) bg-green-100 text-green-700
-                                                @elseif($isMissing) bg-yellow-100 text-yellow-700
-                                                @else bg-red-100 text-red-700 @endif">
-                                                {{ $i + 1 }}
+                                                <?php if($isCorrect): ?> bg-green-100 text-green-700
+                                                <?php elseif($isMissing): ?> bg-yellow-100 text-yellow-700
+                                                <?php else: ?> bg-red-100 text-red-700 <?php endif; ?>">
+                                                <?php echo e($i + 1); ?>
+
                                             </span>
                                         </td>
                                         <td class="px-3 py-2 text-[11px] font-semibold text-zinc-800 dark:text-white whitespace-nowrap">
-                                            {{ $deffect->deffect_item_name ?? '-' }}
+                                            <?php echo e($deffect->deffect_item_name ?? '-'); ?>
+
                                         </td>
                                         <td class="px-3 py-2 text-[11px] whitespace-nowrap">
                                             <span class="inline-flex items-center px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-mono font-semibold whitespace-nowrap">
-                                                {{ $row['component_location'] ?? '-' }}
+                                                <?php echo e($row['component_location'] ?? '-'); ?>
+
                                             </span>
                                         </td>
                                         <td class="px-3 py-2 text-center whitespace-nowrap">
-                                            @if($isCorrect)
+                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($isCorrect): ?>
                                                 <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-[10px] font-semibold border border-green-300 dark:border-green-700 whitespace-nowrap">
-                                                    <flux:icon name="check-circle" variant="mini" class="w-3 h-3" />
+                                                    <?php ob_start(); ?><svg class="shrink-0 [:where(&amp;)]:size-5 w-3 h-3" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd"/>
+</svg>
+
+        <?php echo ltrim(ob_get_clean()); ?>
                                                     Cocok
                                                 </span>
-                                            @elseif($isMissing)
+                                            <?php elseif($isMissing): ?>
                                                 <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 text-[10px] font-semibold border border-yellow-300 dark:border-yellow-700 whitespace-nowrap">
-                                                    <flux:icon name="exclamation-triangle" variant="mini" class="w-3 h-3" />
+                                                    <?php ob_start(); ?><svg class="shrink-0 [:where(&amp;)]:size-5 w-3 h-3" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495ZM10 5a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 10 5Zm0 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd"/>
+</svg>
+
+        <?php echo ltrim(ob_get_clean()); ?>
                                                     Tidak Dijawab
                                                 </span>
-                                            @else
+                                            <?php else: ?>
                                                 <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 text-[10px] font-semibold border border-red-300 dark:border-red-700 whitespace-nowrap">
-                                                    <flux:icon name="x-circle" variant="mini" class="w-3 h-3" />
+                                                    <?php ob_start(); ?><svg class="shrink-0 [:where(&amp;)]:size-5 w-3 h-3" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16ZM8.28 7.22a.75.75 0 0 0-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 1 0 1.06 1.06L10 11.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L11.06 10l1.72-1.72a.75.75 0 0 0-1.06-1.06L10 8.94 8.28 7.22Z" clip-rule="evenodd"/>
+</svg>
+
+        <?php echo ltrim(ob_get_clean()); ?>
                                                     Tidak Cocok
                                                 </span>
-                                            @endif
+                                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                         </td>
                                     </tr>
-                                    @endforeach
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
                                 </tbody>
                             </table>
                         </div>
                     </div>
                 </div>
             </div>
-        </flux:card>
-        @endif
-    @endif
+        <?php echo trim(ob_get_clean()); ?>
+
+</div>
+<?php echo ltrim(ob_get_clean()); ?>
+        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
     <!-- Notifikasi -->
     <div x-data="{ show: false, message: '', type: 'success' }"
@@ -1213,7 +1481,7 @@
 
     <style>[x-cloak] { display: none !important; }</style>
 
-    {{-- ==================== SCRIPT CAMERA PROCTORING ==================== --}}
+    
     <script>
     function cameraProctoring() {
         return {
@@ -1247,13 +1515,13 @@
 
             // ===== INIT =====
             initProctoring() {
-                @if($showBrowserCheckModal)
+                <?php if($showBrowserCheckModal): ?>
                     this.runBrowserChecks();
-                @endif
+                <?php endif; ?>
 
-                @if($isStarted && !$isFinished)
+                <?php if($isStarted && !$isFinished): ?>
                     this.$nextTick(() => this.attachExistingStream());
-                @endif
+                <?php endif; ?>
 
                 window.addEventListener('camera-start-recording', () => {
                     this.startRecording();
@@ -1371,7 +1639,7 @@
                     this.previewStream = null;
                 }
 
-                @this.confirmBrowserCheck(info);
+                window.Livewire.find('<?php echo e($_instance->getId()); ?>').confirmBrowserCheck(info);
             },
 
             // ===== ATTACH STREAM (test in_progress) =====
@@ -1456,7 +1724,7 @@
                         this.recordingDuration = `${m}:${s}`;
                     }, 1000);
 
-                    @this.markCameraStarted();
+                    window.Livewire.find('<?php echo e($_instance->getId()); ?>').markCameraStarted();
 
                 } catch (e) {
                     console.error('Gagal mulai rekam kamera:', e);
@@ -1488,19 +1756,19 @@
                     { type: blob.type || 'video/webm' }
                 );
 
-                @this.setUploadingRecording(true);
+                window.Livewire.find('<?php echo e($_instance->getId()); ?>').setUploadingRecording(true);
 
-                @this.upload('cameraRecordingTemp', file,
+                window.Livewire.find('<?php echo e($_instance->getId()); ?>').upload('cameraRecordingTemp', file,
                     () => {
-                        @this.uploadCameraRecording();
+                        window.Livewire.find('<?php echo e($_instance->getId()); ?>').uploadCameraRecording();
                         this.cleanupCameraStream();
-                        @this.setUploadingRecording(false);
+                        window.Livewire.find('<?php echo e($_instance->getId()); ?>').setUploadingRecording(false);
                     },
                     (err) => {
                         console.error('Upload kamera gagal:', err);
-                        @this.dispatch('notify', { message: 'Gagal upload rekaman kamera.', type: 'error' });
+                        window.Livewire.find('<?php echo e($_instance->getId()); ?>').dispatch('notify', { message: 'Gagal upload rekaman kamera.', type: 'error' });
                         this.cleanupCameraStream();
-                        @this.setUploadingRecording(false);
+                        window.Livewire.find('<?php echo e($_instance->getId()); ?>').setUploadingRecording(false);
                     },
                     (event) => {}
                 );
@@ -1520,7 +1788,7 @@
                 if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
                     this.screenSupported = false;
                     console.warn('Screen recording tidak didukung browser ini.');
-                    @this.dispatch('notify', {
+                    window.Livewire.find('<?php echo e($_instance->getId()); ?>').dispatch('notify', {
                         message: 'Browser ini tidak mendukung perekaman layar. Hanya kamera yang direkam.',
                         type: 'warning'
                     });
@@ -1578,7 +1846,7 @@
                         videoTrack.addEventListener('ended', () => {
                             console.warn('User menghentikan share screen.');
                             this.stopScreenRecording();
-                            @this.dispatch('notify', {
+                            window.Livewire.find('<?php echo e($_instance->getId()); ?>').dispatch('notify', {
                                 message: 'Anda menghentikan share screen. Kamera tetap merekam.',
                                 type: 'warning'
                             });
@@ -1599,13 +1867,13 @@
                         this.screenDuration = `${m}:${s}`;
                     }, 1000);
 
-                    @this.markScreenStarted();
+                    window.Livewire.find('<?php echo e($_instance->getId()); ?>').markScreenStarted();
 
                 } catch (err) {
                     this.screenSupported = false;
                     console.warn('Screen recording dibatalkan:', err);
 
-                    @this.dispatch('notify', {
+                    window.Livewire.find('<?php echo e($_instance->getId()); ?>').dispatch('notify', {
                         message: 'Perekaman layar dibatalkan. Test tetap berjalan dengan kamera saja.',
                         type: 'warning'
                     });
@@ -1636,19 +1904,19 @@
                     { type: blob.type || 'video/webm' }
                 );
 
-                @this.setUploadingRecording(true);
+                window.Livewire.find('<?php echo e($_instance->getId()); ?>').setUploadingRecording(true);
 
-                @this.upload('screenRecordingTemp', file,
+                window.Livewire.find('<?php echo e($_instance->getId()); ?>').upload('screenRecordingTemp', file,
                     () => {
-                        @this.uploadScreenRecording();
+                        window.Livewire.find('<?php echo e($_instance->getId()); ?>').uploadScreenRecording();
                         this.cleanupScreenStream();
-                        @this.setUploadingRecording(false);
+                        window.Livewire.find('<?php echo e($_instance->getId()); ?>').setUploadingRecording(false);
                     },
                     (err) => {
                         console.error('Upload screen gagal:', err);
-                        @this.dispatch('notify', { message: 'Gagal upload rekaman layar.', type: 'error' });
+                        window.Livewire.find('<?php echo e($_instance->getId()); ?>').dispatch('notify', { message: 'Gagal upload rekaman layar.', type: 'error' });
                         this.cleanupScreenStream();
-                        @this.setUploadingRecording(false);
+                        window.Livewire.find('<?php echo e($_instance->getId()); ?>').setUploadingRecording(false);
                     },
                     (event) => {}
                 );
@@ -1689,19 +1957,19 @@
                     { type: blob.type || 'video/webm' }
                 );
 
-                @this.setUploadingRecording(true);
+                window.Livewire.find('<?php echo e($_instance->getId()); ?>').setUploadingRecording(true);
 
-                @this.upload('screenRecordingTemp', file,
+                window.Livewire.find('<?php echo e($_instance->getId()); ?>').upload('screenRecordingTemp', file,
                     () => {
-                        @this.uploadScreenRecording();
+                        window.Livewire.find('<?php echo e($_instance->getId()); ?>').uploadScreenRecording();
                         this.cleanupScreenStream();
-                        @this.setUploadingRecording(false);
+                        window.Livewire.find('<?php echo e($_instance->getId()); ?>').setUploadingRecording(false);
                     },
                     (err) => {
                         console.error('Upload screen gagal:', err);
-                        @this.dispatch('notify', { message: 'Gagal upload rekaman layar.', type: 'error' });
+                        window.Livewire.find('<?php echo e($_instance->getId()); ?>').dispatch('notify', { message: 'Gagal upload rekaman layar.', type: 'error' });
                         this.cleanupScreenStream();
-                        @this.setUploadingRecording(false);
+                        window.Livewire.find('<?php echo e($_instance->getId()); ?>').setUploadingRecording(false);
                     },
                     (event) => {}
                 );
@@ -1717,4 +1985,4 @@
         };
     }
     </script>
-</div>
+</div><?php /**PATH D:\laragon\www\siix-portal\resources\views/livewire/qaqc/blind-test/blind-test-execution.blade.php ENDPATH**/ ?>
