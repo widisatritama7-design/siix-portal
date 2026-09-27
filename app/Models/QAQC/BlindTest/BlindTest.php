@@ -54,6 +54,9 @@ class BlindTest extends EloquentModel
         // Attempt 1 recordings
         'first_attempt_camera_path', 'first_attempt_camera_size',
         'first_attempt_screen_path', 'first_attempt_screen_size',
+
+        'screen_resume_log',
+        'screen_resume_count',
     ];
 
     protected $casts = [
@@ -99,6 +102,8 @@ class BlindTest extends EloquentModel
         // Attempt 1 recordings
         'first_attempt_camera_size' => 'integer',
         'first_attempt_screen_size' => 'integer',
+
+        'screen_resume_log'     => 'array',
     ];
 
     // ==================== RELATIONS ====================

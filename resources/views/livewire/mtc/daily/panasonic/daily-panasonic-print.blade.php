@@ -170,6 +170,14 @@
             color: #856404;
         }
 
+        /* ✅ TAMBAHAN: Badge untuk field opsional */
+        .status-optional {
+            background-color: #e2e3e5;
+            color: #6c757d;
+            font-style: italic;
+            border: 1px dashed #adb5bd;
+        }
+
         .badge-success { background-color: #28a745; color: #fff; }
         .badge-danger { background-color: #dc3545; color: #fff; }
         .badge-warning { background-color: #ffc107; color: #212529; }
@@ -219,6 +227,7 @@
             .status-na,
             .status-not-ok,
             .status-not-checked,
+            .status-optional,
             .badge-success,
             .badge-danger,
             .badge-warning,
@@ -248,6 +257,12 @@
         <div class="sub-title">Print Date: {{ now()->format('Y-m-d H:i') }}</div>
     </div>
 
+    @php
+        // ✅ Ambil required fields dari master line
+        $requiredFields = $dailyPanasonic->masterLine->getRequiredPanasonicFields();
+        $requiredFields = $dailyPanasonic->applyCustomerOxygenOverride($requiredFields);
+    @endphp
+
     <!-- Information Grid 5 Columns -->
     <div class="info-grid">
         <div class="info-item">
@@ -263,18 +278,26 @@
         <div class="info-item">
             <div class="info-label">RUN TIME</div>
             <div class="info-value">
-                <span class="status-badge badge-success">
-                    {{ $dailyPanasonic->run_time ? $dailyPanasonic->run_time->format('H:i') : '-' }}
-                </span>
+                @if($dailyPanasonic->run_time)
+                    <span class="status-badge badge-success">
+                        {{ $dailyPanasonic->run_time->format('H:i') }}
+                    </span>
+                @else
+                    <span class="status-badge status-optional">OPSIONAL</span>
+                @endif
             </div>
         </div>
 
         <div class="info-item">
             <div class="info-label">STOP TIME</div>
             <div class="info-value">
-                <span class="status-badge badge-danger">
-                    {{ $dailyPanasonic->stop_time ? $dailyPanasonic->stop_time->format('H:i') : '-' }}
-                </span>
+                @if($dailyPanasonic->stop_time)
+                    <span class="status-badge badge-danger">
+                        {{ $dailyPanasonic->stop_time->format('H:i') }}
+                    </span>
+                @else
+                    <span class="status-badge status-optional">OPSIONAL</span>
+                @endif
             </div>
         </div>
 
@@ -379,7 +402,16 @@
                     return '';
                 }
 
-                function getPanasonicStatusBadge($value) {
+                // ✅ getPanasonicStatusBadge dengan parameter $fieldName & $requiredFields
+                function getPanasonicStatusBadge($value, $fieldName, $requiredFields) {
+                    $isOptional = !in_array($fieldName, $requiredFields);
+                    
+                    // ✅ Field OPSIONAL & kosong → "OPSIONAL"
+                    if ($isOptional && ($value === null || $value === '')) {
+                        return '<span class="status-badge status-optional">OPSIONAL</span>';
+                    }
+                    
+                    // Field wajib & kosong → "Not Checked"
                     if ($value === null || $value === '') {
                         return '<span class="status-badge status-not-checked">Not Checked</span>';
                     }
@@ -403,21 +435,33 @@
                     return '<span class="status-badge status-not-checked">Not Checked</span>';
                 }
 
-                function getPanasonicNumericStatus($value, $min, $max) {
-                    if ($value === null || $value === '' || $value === 'na' || $value === '-') {
-                        return 'status-na';
+                // ✅ getPanasonicNumericStatusBadge dengan parameter $fieldName & $requiredFields
+                function getPanasonicNumericStatusBadge($value, $min, $max, $fieldName, $requiredFields) {
+                    $isOptional = !in_array($fieldName, $requiredFields);
+                    
+                    // ✅ Field OPSIONAL & kosong → "OPSIONAL"
+                    if ($isOptional && ($value === null || $value === '')) {
+                        return '<span class="status-badge status-optional">OPSIONAL</span>';
                     }
+                    
+                    // N/A
+                    if ($value === 'na' || $value === '-') {
+                        return '<span class="status-badge status-na">N/A</span>';
+                    }
+                    
+                    // Field wajib & kosong → "Not Checked"
+                    if ($value === null || $value === '') {
+                        return '<span class="status-badge status-not-checked">Not Checked</span>';
+                    }
+                    
                     $numValue = floatval($value);
                     if ($min !== null && $max !== null) {
-                        return ($numValue >= $min && $numValue <= $max) ? 'status-ok' : 'status-not-ok';
+                        $isOk = ($numValue >= $min && $numValue <= $max);
+                        return $isOk 
+                            ? '<span class="status-badge status-ok">OK</span>' 
+                            : '<span class="status-badge status-not-ok">NOT OK</span>';
                     }
-                    return 'status-ok';
-                }
-
-                function getPanasonicNumericStatusBadge($value, $min, $max) {
-                    $class = getPanasonicNumericStatus($value, $min, $max);
-                    $text = $class === 'status-ok' ? 'OK' : ($class === 'status-na' ? 'N/A' : 'NOT OK');
-                    return '<span class="status-badge ' . $class . '">' . $text . '</span>';
+                    return '<span class="status-badge status-ok">OK</span>';
                 }
             @endphp
 
@@ -432,13 +476,13 @@
                 <td class="item-name">Body Cover</td>
                 <td class="item-standard">Standard: No Dust and clean</td>
                 <td class="item-value">{{ displayPanasonicValue($dailyPanasonic->body_cover) }}</td>
-                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->body_cover) !!}</td>
+                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->body_cover, 'body_cover', $requiredFields) !!}</td>
             </tr>
             <tr>
                 <td class="item-name">Lamp Alarm & Change Model</td>
                 <td class="item-standard">Standard: No Dust and clean</td>
                 <td class="item-value">{{ displayPanasonicValue($dailyPanasonic->lamp_alarm_change_model) }}</td>
-                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->lamp_alarm_change_model) !!}</td>
+                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->lamp_alarm_change_model, 'lamp_alarm_change_model', $requiredFields) !!}</td>
             </tr>
 
             <!-- STEP 2: LOADER -->
@@ -452,7 +496,7 @@
                 <td class="item-name">Cylinder (1)</td>
                 <td class="item-standard">Standard: Smooth and center</td>
                 <td class="item-value">{{ displayPanasonicValue($dailyPanasonic->cylinder) }}</td>
-                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->cylinder) !!}</td>
+                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->cylinder, 'cylinder', $requiredFields) !!}</td>
             </tr>
 
             <tr class="section-header">
@@ -462,13 +506,13 @@
                 <td class="item-name">Rail & Magazine PCB (1.a)</td>
                 <td class="item-standard">Standard: No Dust and clean</td>
                 <td class="item-value">{{ displayPanasonicValue($dailyPanasonic->rail_and_magazine_pcb) }}</td>
-                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->rail_and_magazine_pcb) !!}</td>
+                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->rail_and_magazine_pcb, 'rail_and_magazine_pcb', $requiredFields) !!}</td>
             </tr>
             <tr>
                 <td class="item-name">Cover Magazine (1.b)</td>
                 <td class="item-standard">Standard: No Dust and clean</td>
                 <td class="item-value">{{ displayPanasonicValue($dailyPanasonic->cover_magazine) }}</td>
-                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->cover_magazine) !!}</td>
+                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->cover_magazine, 'cover_magazine', $requiredFields) !!}</td>
             </tr>
 
             <!-- STEP 3: PCB CLEANER -->
@@ -482,7 +526,7 @@
                 <td class="item-name">Brush (2)</td>
                 <td class="item-standard">Standard: Rotation</td>
                 <td class="item-value">{{ displayPanasonicValue($dailyPanasonic->brush) }}</td>
-                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->brush) !!}</td>
+                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->brush, 'brush', $requiredFields) !!}</td>
             </tr>
 
             <tr class="section-header">
@@ -494,7 +538,7 @@
                 <td class="item-value {{ getPanasonicValueClass($dailyPanasonic->air_presure, '0.45 - 0.54') }}">
                     {{ displayPanasonicValue($dailyPanasonic->air_presure) }}
                 </td>
-                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->air_presure, 0.45, 0.54) !!}</td>
+                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->air_presure, 0.45, 0.54, 'air_presure', $requiredFields) !!}</td>
             </tr>
             <tr>
                 <td class="item-name">Vacume Pressure Unitech (2.b)</td>
@@ -502,7 +546,7 @@
                 <td class="item-value {{ getPanasonicValueClass($dailyPanasonic->vacume_presure_unitech, '0.45 - 0.54') }}">
                     {{ displayPanasonicValue($dailyPanasonic->vacume_presure_unitech) }}
                 </td>
-                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->vacume_presure_unitech, 0.45, 0.54) !!}</td>
+                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->vacume_presure_unitech, 0.45, 0.54, 'vacume_presure_unitech', $requiredFields) !!}</td>
             </tr>
             <tr>
                 <td class="item-name">Vacume Pressure Nix (2.c)</td>
@@ -510,7 +554,7 @@
                 <td class="item-value {{ getPanasonicValueClass($dailyPanasonic->vacume_presure_nix, '0.60 - 0.70') }}">
                     {{ displayPanasonicValue($dailyPanasonic->vacume_presure_nix) }}
                 </td>
-                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->vacume_presure_nix, 0.60, 0.70) !!}</td>
+                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->vacume_presure_nix, 0.60, 0.70, 'vacume_presure_nix', $requiredFields) !!}</td>
             </tr>
 
             <tr class="section-header">
@@ -520,19 +564,19 @@
                 <td class="item-name">Vacume Brush (3)</td>
                 <td class="item-standard">Standard: Rotation</td>
                 <td class="item-value">{{ displayPanasonicValue($dailyPanasonic->vacume_brush) }}</td>
-                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->vacume_brush) !!}</td>
+                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->vacume_brush, 'vacume_brush', $requiredFields) !!}</td>
             </tr>
             <tr>
                 <td class="item-name">Cleaning Roller (4)</td>
                 <td class="item-standard">Standard: Smooth rotation & Clean</td>
                 <td class="item-value">{{ displayPanasonicValue($dailyPanasonic->cleaning_roller) }}</td>
-                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->cleaning_roller) !!}</td>
+                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->cleaning_roller, 'cleaning_roller', $requiredFields) !!}</td>
             </tr>
             <tr>
                 <td class="item-name">Ionizer (5)</td>
                 <td class="item-standard">Standard: 5 Times to push cleaner</td>
                 <td class="item-value">{{ displayPanasonicValue($dailyPanasonic->ionizer) }}</td>
-                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->ionizer) !!}</td>
+                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->ionizer, 'ionizer', $requiredFields) !!}</td>
             </tr>
             <tr>
                 <td class="item-name">Air Pressure Ionizer (5.a)</td>
@@ -540,7 +584,7 @@
                 <td class="item-value {{ getPanasonicValueClass($dailyPanasonic->ionizer_air_presure, '0.05-0.10') }}">
                     {{ displayPanasonicValue($dailyPanasonic->ionizer_air_presure) }}
                 </td>
-                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->ionizer_air_presure, 0.05, 0.10) !!}</td>
+                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->ionizer_air_presure, 0.05, 0.10, 'ionizer_air_presure', $requiredFields) !!}</td>
             </tr>
             <tr>
                 <td class="item-name">Conveyor Setting (6)</td>
@@ -548,7 +592,7 @@
                 <td class="item-value {{ getPanasonicValueClass($dailyPanasonic->conveyor_speed, '<= 40') }}">
                     {{ displayPanasonicValue($dailyPanasonic->conveyor_speed) }}
                 </td>
-                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->conveyor_speed, null, 40) !!}</td>
+                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->conveyor_speed, null, 40, 'conveyor_speed', $requiredFields) !!}</td>
             </tr>
 
             <!-- STEP 4: PRINTING -->
@@ -562,7 +606,7 @@
                 <td class="item-name">IPA Solvent (7)</td>
                 <td class="item-standard">Standard: Tank Minimal half</td>
                 <td class="item-value">{{ displayPanasonicValue($dailyPanasonic->ipa_solvent) }}</td>
-                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->ipa_solvent) !!}</td>
+                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->ipa_solvent, 'ipa_solvent', $requiredFields) !!}</td>
             </tr>
 
             <tr class="section-header">
@@ -574,7 +618,7 @@
                 <td class="item-value {{ getPanasonicValueClass($dailyPanasonic->temperature_control_1, '23-27') }}">
                     {{ displayPanasonicValue($dailyPanasonic->temperature_control_1) }}
                 </td>
-                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->temperature_control_1, 23, 27) !!}</td>
+                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->temperature_control_1, 23, 27, 'temperature_control_1', $requiredFields) !!}</td>
             </tr>
             <tr>
                 <td class="item-name">Humidity Control (8.a)</td>
@@ -582,7 +626,7 @@
                 <td class="item-value {{ getPanasonicValueClass($dailyPanasonic->humidity_control_1, '35-70') }}">
                     {{ displayPanasonicValue($dailyPanasonic->humidity_control_1) }}
                 </td>
-                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->humidity_control_1, 35, 70) !!}</td>
+                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->humidity_control_1, 35, 70, 'humidity_control_1', $requiredFields) !!}</td>
             </tr>
 
             <tr class="section-header">
@@ -594,7 +638,7 @@
                 <td class="item-value {{ getPanasonicValueClass($dailyPanasonic->clamp_presure_sp_60, '0.20-0.40') }}">
                     {{ displayPanasonicValue($dailyPanasonic->clamp_presure_sp_60) }}
                 </td>
-                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->clamp_presure_sp_60, 0.20, 0.40) !!}</td>
+                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->clamp_presure_sp_60, 0.20, 0.40, 'clamp_presure_sp_60', $requiredFields) !!}</td>
             </tr>
             <tr>
                 <td class="item-name">Clamp Pressure SPG-2 (9.a)</td>
@@ -602,7 +646,7 @@
                 <td class="item-value {{ getPanasonicValueClass($dailyPanasonic->clamp_presure_spg_2, '0.20-0.40') }}">
                     {{ displayPanasonicValue($dailyPanasonic->clamp_presure_spg_2) }}
                 </td>
-                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->clamp_presure_spg_2, 0.20, 0.40) !!}</td>
+                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->clamp_presure_spg_2, 0.20, 0.40, 'clamp_presure_spg_2', $requiredFields) !!}</td>
             </tr>
             <tr>
                 <td class="item-name">Squeege SP-60 (10)</td>
@@ -610,7 +654,7 @@
                 <td class="item-value {{ getPanasonicValueClass($dailyPanasonic->squeege_sp_60, '0.19-0.21') }}">
                     {{ displayPanasonicValue($dailyPanasonic->squeege_sp_60) }}
                 </td>
-                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->squeege_sp_60, 0.19, 0.21) !!}</td>
+                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->squeege_sp_60, 0.19, 0.21, 'squeege_sp_60', $requiredFields) !!}</td>
             </tr>
             <tr>
                 <td class="item-name">Squeege SPG-2 (10.a)</td>
@@ -618,7 +662,7 @@
                 <td class="item-value {{ getPanasonicValueClass($dailyPanasonic->squeege_spg_2, '0.11-0.13') }}">
                     {{ displayPanasonicValue($dailyPanasonic->squeege_spg_2) }}
                 </td>
-                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->squeege_spg_2, 0.11, 0.13) !!}</td>
+                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->squeege_spg_2, 0.11, 0.13, 'squeege_spg_2', $requiredFields) !!}</td>
             </tr>
             <tr>
                 <td class="item-name">Cleaning Solvent (11)</td>
@@ -626,7 +670,7 @@
                 <td class="item-value {{ getPanasonicValueClass($dailyPanasonic->cleaning_solvent, '0.19-0.21') }}">
                     {{ displayPanasonicValue($dailyPanasonic->cleaning_solvent) }}
                 </td>
-                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->cleaning_solvent, 0.19, 0.21) !!}</td>
+                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->cleaning_solvent, 0.19, 0.21, 'cleaning_solvent', $requiredFields) !!}</td>
             </tr>
             <tr>
                 <td class="item-name">Air Pressure Meter (12)</td>
@@ -634,7 +678,7 @@
                 <td class="item-value {{ getPanasonicValueClass($dailyPanasonic->air_presure_meter, '0.50-0.55') }}">
                     {{ displayPanasonicValue($dailyPanasonic->air_presure_meter) }}
                 </td>
-                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->air_presure_meter, 0.50, 0.55) !!}</td>
+                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->air_presure_meter, 0.50, 0.55, 'air_presure_meter', $requiredFields) !!}</td>
             </tr>
 
             <!-- STEP 5: SPI -->
@@ -650,7 +694,7 @@
                 <td class="item-value {{ getPanasonicValueClass($dailyPanasonic->air_presure_meter_parmi, '0.40-0.50') }}">
                     {{ displayPanasonicValue($dailyPanasonic->air_presure_meter_parmi) }}
                 </td>
-                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->air_presure_meter_parmi, 0.40, 0.50) !!}</td>
+                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->air_presure_meter_parmi, 0.40, 0.50, 'air_presure_meter_parmi', $requiredFields) !!}</td>
             </tr>
 
             <tr class="section-header">
@@ -663,7 +707,10 @@
                     {{ displayPanasonicValue($dailyPanasonic->capability_index) }}
                 </td>
                 <td class="item-status">
-                    @if($dailyPanasonic->capability_index !== null && $dailyPanasonic->capability_index !== '' && $dailyPanasonic->capability_index !== 'na' && $dailyPanasonic->capability_index !== '-')
+                    @php $isCapabilityOptional = !in_array('capability_index', $requiredFields); @endphp
+                    @if($isCapabilityOptional && ($dailyPanasonic->capability_index === null || $dailyPanasonic->capability_index === ''))
+                        <span class="status-badge status-optional">OPSIONAL</span>
+                    @elseif($dailyPanasonic->capability_index !== null && $dailyPanasonic->capability_index !== '' && $dailyPanasonic->capability_index !== 'na' && $dailyPanasonic->capability_index !== '-')
                         @php $isOk = floatval($dailyPanasonic->capability_index) > 1.67; @endphp
                         <span class="status-badge {{ $isOk ? 'status-ok' : 'status-not-ok' }}">{{ $isOk ? 'OK' : 'NOT OK' }}</span>
                     @else
@@ -683,7 +730,7 @@
                 <td class="item-name">Box (13)</td>
                 <td class="item-standard">Standard: No components</td>
                 <td class="item-value">{{ displayPanasonicValue($dailyPanasonic->box) }}</td>
-                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->box) !!}</td>
+                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->box, 'box', $requiredFields) !!}</td>
             </tr>
 
             <tr class="section-header">
@@ -693,7 +740,7 @@
                 <td class="item-name">Vaccuum Parameter (13.a)</td>
                 <td class="item-standard">Standard: No Yellow initial (display)</td>
                 <td class="item-value">{{ displayPanasonicValue($dailyPanasonic->vaccuum_parameter) }}</td>
-                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->vaccuum_parameter) !!}</td>
+                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->vaccuum_parameter, 'vaccuum_parameter', $requiredFields) !!}</td>
             </tr>
 
             <tr class="section-header">
@@ -703,7 +750,7 @@
                 <td class="item-name">Expire Date (14)</td>
                 <td class="item-standard">Standard: No Expired</td>
                 <td class="item-value">{{ displayPanasonicValue($dailyPanasonic->expire_date) }}</td>
-                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->expire_date) !!}</td>
+                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->expire_date, 'expire_date', $requiredFields) !!}</td>
             </tr>
 
             <tr class="section-header">
@@ -715,7 +762,7 @@
                 <td class="item-value {{ getPanasonicValueClass($dailyPanasonic->vaccuum_pump, '-100--87') }}">
                     {{ displayPanasonicValue($dailyPanasonic->vaccuum_pump) }}
                 </td>
-                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->vaccuum_pump, -100, -87) !!}</td>
+                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->vaccuum_pump, -100, -87, 'vaccuum_pump', $requiredFields) !!}</td>
             </tr>
 
             <!-- STEP 7: CHIP MOUNTER 2 -->
@@ -729,7 +776,7 @@
                 <td class="item-name">Box 2 (15)</td>
                 <td class="item-standard">Standard: No components</td>
                 <td class="item-value">{{ displayPanasonicValue($dailyPanasonic->box_2) }}</td>
-                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->box_2) !!}</td>
+                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->box_2, 'box_2', $requiredFields) !!}</td>
             </tr>
 
             <tr class="section-header">
@@ -739,7 +786,7 @@
                 <td class="item-name">Vaccuum Parameter 2 (15.a)</td>
                 <td class="item-standard">Standard: No Yellow initial (display)</td>
                 <td class="item-value">{{ displayPanasonicValue($dailyPanasonic->vaccuum_parameter_2) }}</td>
-                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->vaccuum_parameter_2) !!}</td>
+                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->vaccuum_parameter_2, 'vaccuum_parameter_2', $requiredFields) !!}</td>
             </tr>
 
             <tr class="section-header">
@@ -749,7 +796,7 @@
                 <td class="item-name">Expire Date (16)</td>
                 <td class="item-standard">Standard: No Expired</td>
                 <td class="item-value">{{ displayPanasonicValue($dailyPanasonic->expire_date_2) }}</td>
-                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->expire_date_2) !!}</td>
+                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->expire_date_2, 'expire_date_2', $requiredFields) !!}</td>
             </tr>
 
             <tr class="section-header">
@@ -761,7 +808,7 @@
                 <td class="item-value {{ getPanasonicValueClass($dailyPanasonic->vaccuum_pump_2, '-100--87') }}">
                     {{ displayPanasonicValue($dailyPanasonic->vaccuum_pump_2) }}
                 </td>
-                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->vaccuum_pump_2, -100, -87) !!}</td>
+                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->vaccuum_pump_2, -100, -87, 'vaccuum_pump_2', $requiredFields) !!}</td>
             </tr>
 
             <!-- STEP 8: REFLOW -->
@@ -775,7 +822,7 @@
                 <td class="item-name">Abandonment (17)</td>
                 <td class="item-standard">Standard: No Damage</td>
                 <td class="item-value">{{ displayPanasonicValue($dailyPanasonic->abandonment) }}</td>
-                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->abandonment) !!}</td>
+                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->abandonment, 'abandonment', $requiredFields) !!}</td>
             </tr>
 
             <tr class="section-header">
@@ -785,14 +832,17 @@
                 <td class="item-name">Fire Possibility (17.a)</td>
                 <td class="item-standard">Standard: No Paper, No plastic</td>
                 <td class="item-value">{{ displayPanasonicValue($dailyPanasonic->fire_posibilty) }}</td>
-                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->fire_posibilty) !!}</td>
+                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->fire_posibilty, 'fire_posibilty', $requiredFields) !!}</td>
             </tr>
             <tr>
                 <td class="item-name">Flashlight (17.b)</td>
                 <td class="item-standard">Standard: On</td>
                 <td class="item-value">{{ displayPanasonicValue($dailyPanasonic->flashlight) }}</td>
                 <td class="item-status">
-                    @if($dailyPanasonic->flashlight === 'on' || $dailyPanasonic->flashlight === 'na' || $dailyPanasonic->flashlight === '-')
+                    @php $isFlashlightOptional = !in_array('flashlight', $requiredFields); @endphp
+                    @if($isFlashlightOptional && ($dailyPanasonic->flashlight === null || $dailyPanasonic->flashlight === ''))
+                        <span class="status-badge status-optional">OPSIONAL</span>
+                    @elseif($dailyPanasonic->flashlight === 'on' || $dailyPanasonic->flashlight === 'na' || $dailyPanasonic->flashlight === '-')
                         <span class="status-badge status-ok">OK</span>
                     @elseif($dailyPanasonic->flashlight === 'off')
                         <span class="status-badge status-not-ok">NOT OK</span>
@@ -809,7 +859,7 @@
                 <td class="item-name">Rail & Transfer Unit (18)</td>
                 <td class="item-standard">Standard: No jammed</td>
                 <td class="item-value">{{ displayPanasonicValue($dailyPanasonic->rail_and_transfer_unit) }}</td>
-                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->rail_and_transfer_unit) !!}</td>
+                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->rail_and_transfer_unit, 'rail_and_transfer_unit', $requiredFields) !!}</td>
             </tr>
 
             <tr class="section-header">
@@ -821,7 +871,7 @@
                 <td class="item-value {{ getPanasonicValueClass($dailyPanasonic->n2_presure, '0.4-0.5') }}">
                     {{ displayPanasonicValue($dailyPanasonic->n2_presure) }}
                 </td>
-                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->n2_presure, 0.4, 0.5) !!}</td>
+                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->n2_presure, 0.4, 0.5, 'n2_presure', $requiredFields) !!}</td>
             </tr>
             <tr>
                 <td class="item-name">Oxygen Density SEK (20)</td>
@@ -829,7 +879,7 @@
                 <td class="item-value {{ getPanasonicValueClass($dailyPanasonic->oxygent_density_sek, '1200-1800') }}">
                     {{ displayPanasonicValue($dailyPanasonic->oxygent_density_sek) }}
                 </td>
-                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->oxygent_density_sek, 1200, 1800) !!}</td>
+                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->oxygent_density_sek, 1200, 1800, 'oxygent_density_sek', $requiredFields) !!}</td>
             </tr>
             <tr>
                 <td class="item-name">Oxygen Density Special (20)</td>
@@ -837,7 +887,7 @@
                 <td class="item-value {{ getPanasonicValueClass($dailyPanasonic->oxygent_density_special, '500-1000') }}">
                     {{ displayPanasonicValue($dailyPanasonic->oxygent_density_special) }}
                 </td>
-                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->oxygent_density_special, 500, 1000) !!}</td>
+                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->oxygent_density_special, 500, 1000, 'oxygent_density_special', $requiredFields) !!}</td>
             </tr>
 
             <tr class="section-header">
@@ -847,7 +897,7 @@
                 <td class="item-name">Fire Possibility 2 (20.a)</td>
                 <td class="item-standard">Standard: No Paper, No plastic</td>
                 <td class="item-value">{{ displayPanasonicValue($dailyPanasonic->fire_posibilty_2) }}</td>
-                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->fire_posibilty_2) !!}</td>
+                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->fire_posibilty_2, 'fire_posibilty_2', $requiredFields) !!}</td>
             </tr>
 
             <!-- STEP 9: AOI -->
@@ -863,7 +913,7 @@
                 <td class="item-value {{ getPanasonicValueClass($dailyPanasonic->air_presure_2, '0.40-0.50') }}">
                     {{ displayPanasonicValue($dailyPanasonic->air_presure_2) }}
                 </td>
-                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->air_presure_2, 0.40, 0.50) !!}</td>
+                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->air_presure_2, 0.40, 0.50, 'air_presure_2', $requiredFields) !!}</td>
             </tr>
 
             <!-- STEP 10: UNLOADER -->
@@ -877,7 +927,7 @@
                 <td class="item-name">Cylinder 2 (21)</td>
                 <td class="item-standard">Standard: Smooth and center</td>
                 <td class="item-value">{{ displayPanasonicValue($dailyPanasonic->cylinder_2) }}</td>
-                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->cylinder_2) !!}</td>
+                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->cylinder_2, 'cylinder_2', $requiredFields) !!}</td>
             </tr>
 
             <tr class="section-header">
@@ -887,13 +937,13 @@
                 <td class="item-name">Rail & Magazine PCB 2 (21.a)</td>
                 <td class="item-standard">Standard: No Dust and clean</td>
                 <td class="item-value">{{ displayPanasonicValue($dailyPanasonic->rail_and_magazine_pcb_2) }}</td>
-                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->rail_and_magazine_pcb_2) !!}</td>
+                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->rail_and_magazine_pcb_2, 'rail_and_magazine_pcb_2', $requiredFields) !!}</td>
             </tr>
             <tr>
                 <td class="item-name">Cover Magazine 2 (21.b)</td>
                 <td class="item-standard">Standard: No Dust and clean</td>
                 <td class="item-value">{{ displayPanasonicValue($dailyPanasonic->cover_magazine_2) }}</td>
-                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->cover_magazine_2) !!}</td>
+                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->cover_magazine_2, 'cover_magazine_2', $requiredFields) !!}</td>
             </tr>
 
             <!-- STEP 11: AOI TABLE -->
@@ -907,7 +957,7 @@
                 <td class="item-name">Angle & Filter (22)</td>
                 <td class="item-standard">Standard: No dirt / no dust</td>
                 <td class="item-value">{{ displayPanasonicValue($dailyPanasonic->angle_and_filter) }}</td>
-                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->angle_and_filter) !!}</td>
+                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->angle_and_filter, 'angle_and_filter', $requiredFields) !!}</td>
             </tr>
 
             <tr class="section-header">
@@ -917,7 +967,7 @@
                 <td class="item-name">Lamp Indicator (22.a)</td>
                 <td class="item-standard">Standard: Function</td>
                 <td class="item-value">{{ displayPanasonicValue($dailyPanasonic->lamp_indicator) }}</td>
-                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->lamp_indicator) !!}</td>
+                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->lamp_indicator, 'lamp_indicator', $requiredFields) !!}</td>
             </tr>
 
             <!-- STEP 12: REFLOW 2 -->
@@ -933,7 +983,7 @@
                 <td class="item-value {{ getPanasonicValueClass($dailyPanasonic->temperature_chiller, '17-23') }}">
                     {{ displayPanasonicValue($dailyPanasonic->temperature_chiller) }}
                 </td>
-                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->temperature_chiller, 17, 23) !!}</td>
+                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->temperature_chiller, 17, 23, 'temperature_chiller', $requiredFields) !!}</td>
             </tr>
 
             <tr class="section-header">
@@ -945,13 +995,13 @@
                 <td class="item-value {{ getPanasonicValueClass($dailyPanasonic->temperature_control_3, '290-310') }}">
                     {{ displayPanasonicValue($dailyPanasonic->temperature_control_3) }}
                 </td>
-                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->temperature_control_3, 290, 310) !!}</td>
+                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->temperature_control_3, 290, 310, 'temperature_control_3', $requiredFields) !!}</td>
             </tr>
             <tr>
                 <td class="item-name">N2 & Air Pressure (24.a)</td>
                 <td class="item-standard">Standard: Position handle parallel di direction of pipe for open position</td>
                 <td class="item-value">{{ displayPanasonicValue($dailyPanasonic->n2_air_presure_valve) }}</td>
-                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->n2_air_presure_valve) !!}</td>
+                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->n2_air_presure_valve, 'n2_air_presure_valve', $requiredFields) !!}</td>
             </tr>
 
             <!-- STEP 13: CHIP MOUNTER 1 (BACK) -->
@@ -967,7 +1017,7 @@
                 <td class="item-value {{ getPanasonicValueClass($dailyPanasonic->air_presure_supply, '0.49-0.54') }}">
                     {{ displayPanasonicValue($dailyPanasonic->air_presure_supply) }}
                 </td>
-                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->air_presure_supply, 0.49, 0.54) !!}</td>
+                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->air_presure_supply, 0.49, 0.54, 'air_presure_supply', $requiredFields) !!}</td>
             </tr>
 
             <tr class="section-header">
@@ -977,7 +1027,7 @@
                 <td class="item-name">Box 3 (25.a)</td>
                 <td class="item-standard">Standard: No components</td>
                 <td class="item-value">{{ displayPanasonicValue($dailyPanasonic->box_3) }}</td>
-                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->box_3) !!}</td>
+                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->box_3, 'box_3', $requiredFields) !!}</td>
             </tr>
 
             <tr class="section-header">
@@ -989,7 +1039,7 @@
                 <td class="item-value {{ getPanasonicValueClass($dailyPanasonic->vaccuum_pump_3, '-100--87') }}">
                     {{ displayPanasonicValue($dailyPanasonic->vaccuum_pump_3) }}
                 </td>
-                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->vaccuum_pump_3, -100, -87) !!}</td>
+                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->vaccuum_pump_3, -100, -87, 'vaccuum_pump_3', $requiredFields) !!}</td>
             </tr>
 
             <!-- STEP 14: CHIP MOUNTER 2 (BACK) -->
@@ -1005,7 +1055,7 @@
                 <td class="item-value {{ getPanasonicValueClass($dailyPanasonic->air_presure_supply_2, '0.49-0.54') }}">
                     {{ displayPanasonicValue($dailyPanasonic->air_presure_supply_2) }}
                 </td>
-                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->air_presure_supply_2, 0.49, 0.54) !!}</td>
+                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->air_presure_supply_2, 0.49, 0.54, 'air_presure_supply_2', $requiredFields) !!}</td>
             </tr>
 
             <tr class="section-header">
@@ -1015,7 +1065,7 @@
                 <td class="item-name">Box 4 (26.a)</td>
                 <td class="item-standard">Standard: No components</td>
                 <td class="item-value">{{ displayPanasonicValue($dailyPanasonic->box_4) }}</td>
-                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->box_4) !!}</td>
+                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->box_4, 'box_4', $requiredFields) !!}</td>
             </tr>
 
             <tr class="section-header">
@@ -1027,7 +1077,7 @@
                 <td class="item-value {{ getPanasonicValueClass($dailyPanasonic->vaccuum_pump_4, '-100--87') }}">
                     {{ displayPanasonicValue($dailyPanasonic->vaccuum_pump_4) }}
                 </td>
-                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->vaccuum_pump_4, -100, -87) !!}</td>
+                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->vaccuum_pump_4, -100, -87, 'vaccuum_pump_4', $requiredFields) !!}</td>
             </tr>
 
             <!-- STEP 15: SPI (BACK) -->
@@ -1043,7 +1093,7 @@
                 <td class="item-value {{ getPanasonicValueClass($dailyPanasonic->air_presure_3, '0.40-0.50') }}">
                     {{ displayPanasonicValue($dailyPanasonic->air_presure_3) }}
                 </td>
-                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->air_presure_3, 0.40, 0.50) !!}</td>
+                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->air_presure_3, 0.40, 0.50, 'air_presure_3', $requiredFields) !!}</td>
             </tr>
 
             <!-- STEP 16: PRINTER -->
@@ -1059,7 +1109,7 @@
                 <td class="item-value {{ getPanasonicValueClass($dailyPanasonic->temperature_control_4, '23-27') }}">
                     {{ displayPanasonicValue($dailyPanasonic->temperature_control_4) }}
                 </td>
-                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->temperature_control_4, 23, 27) !!}</td>
+                <td class="item-status">{!! getPanasonicNumericStatusBadge($dailyPanasonic->temperature_control_4, 23, 27, 'temperature_control_4', $requiredFields) !!}</td>
             </tr>
 
             <tr class="section-header">
@@ -1069,7 +1119,7 @@
                 <td class="item-name">Water Reservoirs (28.a)</td>
                 <td class="item-standard">Standard: Function, No Damage</td>
                 <td class="item-value">{{ displayPanasonicValue($dailyPanasonic->water_reservoirs) }}</td>
-                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->water_reservoirs) !!}</td>
+                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->water_reservoirs, 'water_reservoirs', $requiredFields) !!}</td>
             </tr>
 
             <!-- STEP 17: PCB CLEANER (BACK) -->
@@ -1083,7 +1133,7 @@
                 <td class="item-name">Filter (29)</td>
                 <td class="item-standard">Standard: Clean</td>
                 <td class="item-value">{{ displayPanasonicValue($dailyPanasonic->filter) }}</td>
-                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->filter) !!}</td>
+                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->filter, 'filter', $requiredFields) !!}</td>
             </tr>
 
             <!-- STEP 18: IONIZER -->
@@ -1097,7 +1147,7 @@
                 <td class="item-name">Angle & Filter 2 (30)</td>
                 <td class="item-standard">Standard: No dirt / no dust</td>
                 <td class="item-value">{{ displayPanasonicValue($dailyPanasonic->angle_and_filter_2) }}</td>
-                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->angle_and_filter_2) !!}</td>
+                <td class="item-status">{!! getPanasonicStatusBadge($dailyPanasonic->angle_and_filter_2, 'angle_and_filter_2', $requiredFields) !!}</td>
             </tr>
 
         </tbody>

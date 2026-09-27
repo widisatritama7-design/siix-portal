@@ -130,6 +130,54 @@ class BlindTestExecution extends Component
         ]);
     }
 
+    /**
+     * Dipanggil dari JS ketika kamera benar-benar aktif.
+     * Dipakai untuk validasi tombol Start.
+     */
+    public function confirmCameraReady(): void
+    {
+        $this->cameraStreamActive = true;
+    }
+
+    /**
+     * Dipanggil dari JS ketika track kamera berhenti
+     * (user cabut webcam / matikan izin / tutup device).
+     */
+    public function cameraLost(): void
+    {
+        $this->cameraStreamActive = false;
+        $this->dispatch('notify', message: 'Kamera terputus/dimatikan! Test tidak bisa dilanjutkan.', type: 'error');
+    }
+
+    /**
+     * OPSIONAL: dipanggil dari JS setiap kali user klik tombol Resume Screen.
+     * Berguna untuk audit proctoring — berapa kali screen recording terputus.
+     */
+    public function logScreenResume(): void
+    {
+        $log = $this->blindTest->screen_resume_log ?? [];
+        $log[] = [
+            'at'     => now()->toIso8601String(),
+            'reason' => 'manual_resume_after_refresh_or_stop',
+        ];
+
+        $this->blindTest->update([
+            'screen_resume_log'   => $log,
+            'screen_resume_count' => ($this->blindTest->screen_resume_count ?? 0) + 1,
+        ]);
+    }
+
+    /**
+     * OPSIONAL: dipanggil saat screen recording berhenti di tengah test.
+     */
+    public function screenLost(): void
+    {
+        $this->dispatch('notify',
+            message: 'Rekaman layar berhenti! Silakan klik Resume untuk melanjutkan.',
+            type: 'warning'
+        );
+    }
+
     public function setUploadingRecording(bool $value): void
     {
         $this->isUploadingRecording = $value;
@@ -162,7 +210,6 @@ class BlindTestExecution extends Component
             'camera_stopped_at'     => now(),
         ];
 
-        // Kalau ini attempt 1 → sekaligus simpan sebagai first_attempt
         if ($this->blindTest->attempt === 1) {
             $payload['first_attempt_camera_path'] = $path;
             $payload['first_attempt_camera_size'] = $size;
@@ -202,7 +249,6 @@ class BlindTestExecution extends Component
             'screen_stopped_at'     => now(),
         ];
 
-        // Kalau ini attempt 1 → sekaligus simpan sebagai first_attempt
         if ($this->blindTest->attempt === 1) {
             $payload['first_attempt_screen_path'] = $path;
             $payload['first_attempt_screen_size'] = $size;
@@ -224,6 +270,12 @@ class BlindTestExecution extends Component
         if (!$this->browserCheckPassed || !$this->blindTest->browser_verified) {
             $this->showBrowserCheckModal = true;
             $this->dispatch('notify', message: 'Lakukan pemeriksaan browser & izinkan kamera terlebih dahulu!', type: 'error');
+            return;
+        }
+
+        // Validasi kamera aktif
+        if (!$this->cameraStreamActive) {
+            $this->dispatch('notify', message: 'Kamera belum aktif. Izinkan akses kamera terlebih dahulu!', type: 'error');
             return;
         }
 
@@ -369,7 +421,6 @@ class BlindTestExecution extends Component
 
     public function retryTest()
     {
-        // Blokir kalau upload belum selesai
         if ($this->isUploadingRecording) {
             $this->dispatch('notify', message: 'Tunggu rekaman selesai diupload dulu.', type: 'warning');
             return;
@@ -388,27 +439,21 @@ class BlindTestExecution extends Component
         $bt = $this->blindTest;
 
         $update = [
-            // Pindahkan path rekaman (selalu, sebagai fallback)
             'first_attempt_camera_path' => $bt->first_attempt_camera_path ?: $bt->camera_recording_path,
             'first_attempt_camera_size' => $bt->first_attempt_camera_size ?: $bt->camera_recording_size,
             'first_attempt_screen_path' => $bt->first_attempt_screen_path ?: $bt->screen_recording_path,
             'first_attempt_screen_size' => $bt->first_attempt_screen_size ?: $bt->screen_recording_size,
         ];
 
-        // Simpan history answers attempt pertama kalau belum
         if (!$bt->first_attempt_answers) {
             $update['first_attempt_answers'] = $bt->user_answers;
             $update['first_attempt_result']  = $bt->overall_result;
             $update['first_attempt_at']      = $bt->finished_at;
         }
 
-        // Simpan dulu (biar path tersimpan sebelum reset)
         $bt->update($update);
-
-        // Refresh biar sinkron
         $bt->refresh();
 
-        // Reset untuk attempt berikutnya
         $bt->update([
             'attempt'          => $bt->attempt + 1,
             'status'           => 'pending',
