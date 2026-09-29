@@ -317,19 +317,37 @@
 
                     
                     <?php
-                        $modelIds = collect($blindTest->question_snapshot ?? [])
-                            ->pluck('model_id')
-                            ->filter()
-                            ->unique()
+                        // Kumpulkan model dari snapshot (support multi-model di nested items)
+                        $infoModels = collect($blindTest->question_snapshot ?? [])
+                            ->flatMap(function ($q) {
+                                $items = $q['items'] ?? [];
+
+                                // Format baru: nested group per model
+                                if (!empty($items) && isset($items[0]['model_id'])) {
+                                    return collect($items)->map(function ($g) {
+                                        $m = !empty($g['model_id'])
+                                            ? \App\Models\QAQC\BlindTest\Model::find($g['model_id'])
+                                            : null;
+                                        return $m ? ['id' => $m->id, 'name' => $m->model_name] : null;
+                                    })->filter();
+                                }
+
+                                // Format lama: flat, model dari kolom model_id
+                                if (!empty($q['model_id'])) {
+                                    $m = \App\Models\QAQC\BlindTest\Model::find($q['model_id']);
+                                    return $m ? [['id' => $m->id, 'name' => $m->model_name]] : [];
+                                }
+
+                                return [];
+                            })
+                            ->unique('id')
                             ->values();
 
-                        if ($modelIds->isEmpty() && $blindTest->model_id) {
-                            $modelIds = collect([$blindTest->model_id]);
+                        // Fallback kalau snapshot kosong
+                        if ($infoModels->isEmpty() && $blindTest->model_id) {
+                            $m = \App\Models\QAQC\BlindTest\Model::find($blindTest->model_id);
+                            if ($m) $infoModels = collect([['id' => $m->id, 'name' => $m->model_name]]);
                         }
-
-                        $infoModels = $modelIds->isNotEmpty()
-                            ? \App\Models\QAQC\BlindTest\Model::whereIn('id', $modelIds)->get()
-                            : collect();
                     ?>
 
                     <div class="flex items-start gap-3">
@@ -353,14 +371,14 @@
                                 <div class="text-sm font-semibold text-zinc-800 dark:text-white">-</div>
                             <?php elseif($infoModels->count() === 1): ?>
                                 <div class="text-sm font-semibold text-zinc-800 dark:text-white">
-                                    <?php echo e($infoModels->first()->model_name); ?>
+                                    <?php echo e($infoModels->first()['name']); ?>
 
                                 </div>
                             <?php else: ?>
                                 <div class="flex flex-wrap gap-1 mt-0.5">
                                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $infoModels; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $m): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                                         <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">
-                                            <?php echo e($m->model_name); ?>
+                                            <?php echo e($m['name']); ?>
 
                                         </span>
                                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
@@ -882,14 +900,6 @@
                         </svg>
                         Lihat Rekaman Kamera
                     </button>
-
-                    <button type="button" @click="showScreenModal = true; activeAttempt = 'attempt_current'"
-                        class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold transition-all shadow-lg shadow-emerald-500/20">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
-                            <path fill-rule="evenodd" d="M2.25 5.25a3 3 0 0 1 3-3h13.5a3 3 0 0 1 3 3V15a3 3 0 0 1-3 3h-3v.257c0 .597.237 1.17.659 1.591l.621.622a.75.75 0 0 1-.53 1.28h-9a.75.75 0 0 1-.53-1.28l.621-.622a2.25 2.25 0 0 0 .659-1.59V18h-3a3 3 0 0 1-3-3V5.25Zm1.5 0v7.5a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5v-7.5a1.5 1.5 0 0 0-1.5-1.5H5.25a1.5 1.5 0 0 0-1.5 1.5Z" clip-rule="evenodd" />
-                        </svg>
-                        Lihat Rekaman Layar
-                    </button>
                 </div>
             </div>
 
@@ -1200,23 +1210,6 @@
 <?php $__slots3d4fe4e3a30081183402a5280be0d46f = []; ?>
 <?php $__blaze->pushData($__attrs3d4fe4e3a30081183402a5280be0d46f); ?>
 <?php ob_start(); ?>
-            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($isSecondAttempt): ?>
-            <div class="mb-5 relative overflow-hidden rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 shadow-lg">
-                <div class="p-4 flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center border-2 border-white/40 flex-shrink-0">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-white">
-                            <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 0 1 .67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 1 1-.671-1.34l.041-.022ZM12 9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
-                        </svg>
-                    </div>
-                    <div class="flex-1">
-                        <div class="text-sm font-bold text-white">Percobaan ke-<?php echo e($blindTest->attempt); ?> (Terakhir)</div>
-                        <div class="text-xs text-indigo-100 mt-0.5">
-                            Semua hasil ditampilkan: kunci jawaban & jawaban Anda.
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!empty($firstAttemptAnswers)): ?>
             <div class="mb-4 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-600 shadow-lg p-4">

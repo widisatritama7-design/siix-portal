@@ -15,17 +15,14 @@ class BlindTestManagement extends Component
 {
     use WithPagination;
 
-    // ==================== BANK SOAL PAGINATION ====================
-    public $questionPage = 1;
-    public $questionPerPage = 5;
-    public $searchQuestion = '';
+    public const DEFAULT_DURATION_MINUTES = 5;
 
     // ==================== FORM PROPERTIES ====================
     public $blind_test_id;
     public $section = '';
     public $customer_id = '';
-    public $model_id = '';          // optional filter
-    public $question_ids = [];      // array soal
+    public $model_id = '';
+    public $question_ids = [];      // array soal (biasanya cuma 1 dari bank soal)
 
     // Multi employee picker
     public $selectedEmployees = [];
@@ -33,8 +30,8 @@ class BlindTestManagement extends Component
     public $tempShift = '';
     public $tempGroup = '';
 
-    // Timing
-    public $duration_minutes = '';
+    // Timing (fixed 5 menit)
+    public $duration_minutes = 5;
 
     // ==================== APPROVAL ====================
     public $approvalType = null;
@@ -43,6 +40,7 @@ class BlindTestManagement extends Component
 
     // ==================== SEARCH & FILTER ====================
     public $search = '';
+    public $bankMonth = '';   // '' = bulan ini, format 'YYYY-MM'
     public $filterDepartment = '';
     public $filterShift = '';
     public $filterGroup = '';
@@ -50,7 +48,6 @@ class BlindTestManagement extends Component
     public $filterCustomer = '';
     public $filterModel = '';
     public $filterResult = '';
-    // Date range filter
     public $filterDateFrom = '';
     public $filterDateTo   = '';
 
@@ -62,120 +59,12 @@ class BlindTestManagement extends Component
     ];
 
     // ==================== MODAL STATE ====================
-    public $modalTitle = 'Add New Blind Test';
+    public $modalTitle = 'Create Blind Test';
     public $blindTestToDelete = null;
     public $deleteReason = '';
     public $viewData = null;
 
     public const SECTIONS = ['QC', 'SMT', 'BE', 'MI'];
-
-    /* ================= BANK SOAL PAGINATION ================= */
-
-    public function setQuestionPage($page)
-    {
-        $this->questionPage = $page;
-    }
-
-    public function updatedSearchQuestion()
-    {
-        $this->questionPage = 1;
-    }
-
-    /**
-     * Toggle pilih/hapus soal. Validasi total item tidak boleh > 5.
-     */
-    public function toggleQuestion($id)
-    {
-        $question = Question::find($id);
-        if (!$question) {
-            $this->dispatch('notify', message: 'Question tidak ditemukan!', type: 'error');
-            return;
-        }
-
-        $itemCount = count($question->items ?? []);
-
-        // Kalau sudah dipilih → hapus (toggle off)
-        if (in_array($id, $this->question_ids)) {
-            $this->question_ids = array_values(array_diff($this->question_ids, [$id]));
-            return;
-        }
-
-        // Hitung total kalau soal ini ditambahkan
-        $currentTotal = $this->getTotalSelectedItems();
-        $newTotal = $currentTotal + $itemCount;
-
-        if ($newTotal > 5) {
-            $this->dispatch(
-                'notify',
-                message: "Total defect tidak boleh lebih dari 5. Saat ini: {$currentTotal}, soal ini: {$itemCount} → total {$newTotal}.",
-                type: 'error'
-            );
-            return;
-        }
-
-        $this->question_ids[] = $id;
-
-        if ($newTotal === 5) {
-            $this->dispatch('notify', message: 'Total defect sudah 5. Siap disimpan!', type: 'success');
-        }
-    }
-
-    /**
-     * Kembalikan list ID employee yang sudah dipilih.
-     * Dipakai untuk cek duplikat dari frontend.
-     */
-    public function getSelectedEmployeeIds(): array
-    {
-        return collect($this->selectedEmployees)
-            ->pluck('id')
-            ->map(fn ($id) => (int) $id)
-            ->toArray();
-    }
-
-    /**
-     * Hitung total item semua soal yang dipilih.
-     */
-    public function getTotalSelectedItems(): int
-    {
-        if (empty($this->question_ids)) return 0;
-
-        return Question::whereIn('id', $this->question_ids)
-            ->get()
-            ->sum(fn($q) => count($q->items ?? []));
-    }
-
-    /**
-     * Reset pagination bank soal saat filter berubah.
-     */
-    public function updatedSection()
-    {
-        $this->question_ids = [];
-        $this->customer_id = '';
-        $this->model_id = '';
-        $this->questionPage = 1;
-        $this->searchQuestion = '';
-
-        // Reset employee karena filter department berubah
-        $this->selectedEmployees = [];
-        $this->employeeSearch = '';
-        $this->tempShift = '';
-        $this->tempGroup = '';
-    }
-
-    public function updatedCustomerId()
-    {
-        $this->model_id = '';
-        $this->question_ids = [];
-        $this->questionPage = 1;
-        $this->searchQuestion = '';
-    }
-
-    public function updatedModelId()
-    {
-        $this->question_ids = [];
-        $this->questionPage = 1;
-        $this->searchQuestion = '';
-    }
 
     // ==================== VALIDATION ====================
     protected function rules()
@@ -189,20 +78,16 @@ class BlindTestManagement extends Component
             'selectedEmployees.*.id'    => 'required|exists:tb_hr_employee,id',
             'selectedEmployees.*.shift' => 'required|string|max:50',
             'selectedEmployees.*.group' => 'nullable|string|max:50',
-            'duration_minutes'  => 'required|integer|min:1|max:600',
         ];
     }
 
     protected $messages = [
         'section.required'           => 'Section is required.',
         'customer_id.required'       => 'Customer is required.',
-        'question_ids.required'      => 'Minimal pilih 1 soal.',
-        'question_ids.min'           => 'Minimal pilih 1 soal.',
+        'question_ids.required'      => 'Question wajib dipilih.',
+        'question_ids.min'           => 'Question wajib dipilih.',
         'selectedEmployees.required' => 'Minimal 1 employee harus dipilih.',
         'selectedEmployees.min'      => 'Minimal 1 employee harus dipilih.',
-        'duration_minutes.required'  => 'Durasi wajib diisi.',
-        'duration_minutes.min'       => 'Durasi minimal 1 menit.',
-        'duration_minutes.max'       => 'Durasi maksimal 600 menit.',
     ];
 
     // ==================== WATCHERS ====================
@@ -216,6 +101,11 @@ class BlindTestManagement extends Component
     public function updatedFilterResult()     { $this->resetPage(); }
     public function updatedFilterDateFrom()   { $this->resetPage(); }
     public function updatedFilterDateTo()     { $this->resetPage(); }
+    public function updatedBankMonth()
+    {
+        // Tidak perlu resetPage karena bank soal tidak paginated
+    }
+
     // ==================== TAB & FILTER ====================
     public function setTab($tab)
     {
@@ -239,13 +129,45 @@ class BlindTestManagement extends Component
         $this->reset([
             'blind_test_id', 'section', 'customer_id', 'model_id', 'question_ids',
             'selectedEmployees', 'employeeSearch', 'tempShift', 'tempGroup',
-            'duration_minutes',
         ]);
-        $this->modalTitle = 'Add New Blind Test';
+        $this->duration_minutes = self::DEFAULT_DURATION_MINUTES;
+        $this->modalTitle = 'Create Blind Test';
         $this->resetValidation();
     }
 
-    /* ================= EMPLOYEE MULTI PICKER ================= */
+    /**
+     * Dipanggil dari halaman utama saat user klik 1 soal di bank soal.
+     * Auto-set section, customer, model dari soal, durasi fixed 5 menit.
+     */
+    public function openCreateModal($questionId)
+    {
+        $this->resetForm();
+
+        $question = Question::with('model')->find($questionId);
+        if (!$question) {
+            $this->dispatch('notify', message: 'Question tidak ditemukan!', type: 'error');
+            return;
+        }
+
+        $this->section          = $question->section;
+        $this->customer_id      = $question->customer_id;
+        $this->model_id         = $question->model_id;
+        $this->question_ids     = [$question->id];
+        $this->duration_minutes = self::DEFAULT_DURATION_MINUTES;
+
+        $this->modalTitle = 'Create Blind Test';
+        $this->dispatch('open-modal-blind-test');
+    }
+
+    // ==================== EMPLOYEE MULTI PICKER ====================
+
+    public function getSelectedEmployeeIds(): array
+    {
+        return collect($this->selectedEmployees)
+            ->pluck('id')
+            ->map(fn ($id) => (int) $id)
+            ->toArray();
+    }
 
     public function addEmployee($id)
     {
@@ -255,7 +177,6 @@ class BlindTestManagement extends Component
             return;
         }
 
-        // ← Cek duplikat pakai ID (int), paling awal
         $selectedIds = $this->getSelectedEmployeeIds();
         if (in_array((int) $e->id, $selectedIds, true)) {
             $this->dispatch('notify', message: 'Employee sudah ada di daftar!', type: 'warning');
@@ -288,8 +209,6 @@ class BlindTestManagement extends Component
             return;
         }
 
-        // (hapus loop duplikat lama, sudah diganti cek di atas)
-
         $this->selectedEmployees[] = [
             'id'         => $e->id,
             'nik'        => $e->nik,
@@ -315,18 +234,66 @@ class BlindTestManagement extends Component
     /* ================= HELPER: MODEL ID ================= */
 
     /**
-     * Kalau semua soal dari 1 model → pakai model itu.
-     * Kalau beda model → pakai model pertama (untuk backward compat).
+     * Resolve model_id untuk kolom `model_id` di blind_test.
+     * - Kalau cuma 1 model → pakai model itu
+     * - Kalau lebih dari 1 model → return null (multi-model disimpan di snapshot)
      */
     protected function resolveModelId($questions): ?int
     {
-        $modelIds = $questions->pluck('model_id')->unique()->filter()->values();
+        $modelIds = collect();
 
-        if ($modelIds->count() === 1) {
-            return (int) $modelIds->first();
+        foreach ($questions as $q) {
+            $items = $q->items ?? [];
+
+            // Format baru: group per model
+            if (!empty($items) && isset($items[0]['model_id'])) {
+                foreach ($items as $group) {
+                    if (!empty($group['model_id'])) {
+                        $modelIds->push((int) $group['model_id']);
+                    }
+                }
+            } else {
+                // Format lama: flat, model dari kolom model_id
+                if ($q->model_id) {
+                    $modelIds->push((int) $q->model_id);
+                }
+            }
         }
 
-        return $modelIds->first() ? (int) $modelIds->first() : null;
+        $unique = $modelIds->unique()->values();
+
+        // Cuma 1 model → simpan
+        if ($unique->count() === 1) {
+            return $unique->first();
+        }
+
+        // Multi model → null
+        return null;
+    }
+
+    /**
+     * Ambil semua defect dari question (support format lama & baru).
+     */
+    protected function extractDefects($question): array
+    {
+        $raw = $question->items ?? [];
+        $all = [];
+
+        if (!empty($raw) && isset($raw[0]['model_id'])) {
+            // Format baru: group per model
+            foreach ($raw as $group) {
+                foreach ($group['items'] ?? [] as $it) {
+                    $all[] = $it;
+                }
+            }
+        } else {
+            // Format lama: flat
+            foreach ($raw as $it) {
+                $all[] = $it;
+            }
+        }
+
+        return $all;
     }
 
     /* ================= SAVE ================= */
@@ -347,15 +314,16 @@ class BlindTestManagement extends Component
             }
         }
 
+        // Paksa durasi 5 menit
+        $this->duration_minutes = self::DEFAULT_DURATION_MINUTES;
+
         $this->validate();
 
-        // ========== VALIDASI: total item semua soal harus tepat 5 ==========
         if (empty($this->question_ids)) {
-            $this->addError('question_ids', 'Minimal pilih 1 soal.');
+            $this->addError('question_ids', 'Question wajib dipilih.');
             return;
         }
 
-        // Soal boleh dari model berbeda — yang penting section + customer sama
         $questions = Question::whereIn('id', $this->question_ids)
             ->where('section', $this->section)
             ->where('customer_id', $this->customer_id)
@@ -366,32 +334,23 @@ class BlindTestManagement extends Component
             return;
         }
 
-        // Hitung total defect item
+        // Kumpulkan defect
         $allItems = collect();
         foreach ($questions as $q) {
-            foreach ($q->items ?? [] as $item) {
+            foreach ($this->extractDefects($q) as $item) {
                 $allItems->push($item);
             }
         }
 
-        $totalItems = $allItems->count();
-
-        if ($totalItems !== 5) {
-            $this->addError('question_ids', "Total defect item harus tepat 5. Saat ini: {$totalItems}.");
-            return;
-        }
-
-        // Convert question items → blind_test_items
         $blindTestItems = $allItems
             ->map(fn ($i) => [
-                'deffect_item_id'    => (int) $i['deffect_id'],
+                'deffect_item_id'    => (int) ($i['deffect_id'] ?? $i['deffect_item_id'] ?? 0),
                 'deffect_name'       => $i['deffect_name'] ?? null,
-                'component_location' => strtoupper(trim((string) ($i['location'] ?? ''))),
+                'component_location' => strtoupper(trim((string) ($i['location'] ?? $i['component_location'] ?? ''))),
             ])
             ->values()
             ->toArray();
 
-        // Snapshot gabungan semua soal
         $questionSnapshot = $questions->map(fn($q) => [
             'id'       => $q->id,
             'text'     => $q->question_text,
@@ -399,10 +358,7 @@ class BlindTestManagement extends Component
             'items'    => $q->items,
         ])->values()->toArray();
 
-        // Soal pertama (backward compat)
         $firstQuestionId = $questions->first()->id;
-
-        // Resolve model_id (dari soal-soal yang dipilih)
         $resolvedModelId = $this->resolveModelId($questions);
 
         // ========== EDIT MODE ==========
@@ -430,7 +386,7 @@ class BlindTestManagement extends Component
                 'question_ids'      => $this->question_ids,
                 'question_snapshot' => $questionSnapshot,
                 'blind_test_items'  => $blindTestItems,
-                'duration_minutes'  => (int) $this->duration_minutes,
+                'duration_minutes'  => self::DEFAULT_DURATION_MINUTES,
                 'updated_by'        => auth()->id(),
             ]);
 
@@ -455,7 +411,7 @@ class BlindTestManagement extends Component
                 'question_ids'      => $this->question_ids,
                 'question_snapshot' => $questionSnapshot,
                 'blind_test_items'  => $blindTestItems,
-                'duration_minutes'  => (int) $this->duration_minutes,
+                'duration_minutes'  => self::DEFAULT_DURATION_MINUTES,
                 'time_test'         => null,
                 'status'            => 'pending',
                 'created_by'        => auth()->id(),
@@ -465,7 +421,7 @@ class BlindTestManagement extends Component
         }
 
         $this->resetForm();
-        $this->dispatch('notify', message: "{$count} blind test berhasil dibuat!");
+        $this->dispatch('notify', message: "{$count} blind test berhasil dibuat! (durasi 5 menit)");
         $this->dispatch('close-modal-blind-test');
     }
 
@@ -488,9 +444,8 @@ class BlindTestManagement extends Component
         $this->section          = $bt->section;
         $this->customer_id      = $bt->customer_id;
         $this->model_id         = $bt->model_id;
-        $this->duration_minutes = $bt->duration_minutes;
+        $this->duration_minutes = self::DEFAULT_DURATION_MINUTES;
 
-        // Load question_ids (multiple), fallback ke question_id kalau kosong
         $this->question_ids = is_array($bt->question_ids)
             ? $bt->question_ids
             : ($bt->question_id ? [$bt->question_id] : []);
@@ -669,10 +624,7 @@ class BlindTestManagement extends Component
     public function searchEmployees($search)
     {
         if (strlen($search) < 2) return [];
-
-        if (empty($this->section)) {
-            return [];
-        }
+        if (empty($this->section)) return [];
 
         $allowedDepartments = match ($this->section) {
             'QC'  => ['IQC', 'QA/QC'],
@@ -682,11 +634,8 @@ class BlindTestManagement extends Component
             default => [],
         };
 
-        if (empty($allowedDepartments)) {
-            return [];
-        }
+        if (empty($allowedDepartments)) return [];
 
-        // ← Dapatkan ID employee yang sudah dipilih
         $selectedIds = $this->getSelectedEmployeeIds();
 
         return Employee::where(function ($q) use ($search) {
@@ -702,7 +651,6 @@ class BlindTestManagement extends Component
                 'nik'              => $e->nik ?? '-',
                 'name'             => $e->name ?? '-',
                 'department'       => $e->department ?? '-',
-                // ← Flag baru
                 'already_selected' => in_array((int) $e->id, $selectedIds, true),
             ]);
     }
@@ -756,13 +704,8 @@ class BlindTestManagement extends Component
         };
         if ($this->filterResult)     $query->where('overall_result', $this->filterResult);
 
-        // Date range filter (created_at)
-        if ($this->filterDateFrom) {
-            $query->whereDate('created_at', '>=', $this->filterDateFrom);
-        }
-        if ($this->filterDateTo) {
-            $query->whereDate('created_at', '<=', $this->filterDateTo);
-        }
+        if ($this->filterDateFrom) $query->whereDate('created_at', '>=', $this->filterDateFrom);
+        if ($this->filterDateTo)   $query->whereDate('created_at', '<=', $this->filterDateTo);
 
         $blindTests = $query->orderByDesc('id')->paginate(10);
 
@@ -778,49 +721,41 @@ class BlindTestManagement extends Component
             ? QaqcModel::where('customer_id', $this->filterCustomer)->orderBy('model_name')->get()
             : collect();
 
-        $formModels = $this->customer_id
-            ? QaqcModel::where('customer_id', $this->customer_id)->orderBy('model_name')->get()
-            : collect();
+        // ============ BANK SOAL PER SECTION (by month) ============
+        $bankDate = $this->bankMonth
+            ? \Carbon\Carbon::createFromFormat('Y-m', $this->bankMonth)
+            : now();
 
-        // Query bank soal: filter section + customer, model optional
-        $questionsQuery = ($this->section && $this->customer_id)
-            ? Question::where('section', $this->section)
-                ->where('customer_id', $this->customer_id)
-                ->when($this->model_id, fn($q) => $q->where('model_id', $this->model_id))
-            : null;
+        $startOfMonth = $bankDate->copy()->startOfMonth()->startOfDay();
+        $endOfMonth   = $bankDate->copy()->endOfMonth()->endOfDay();
 
-        if ($questionsQuery && $this->searchQuestion) {
-            $questionsQuery->where(function ($q) {
-                $q->where('id', 'like', '%' . $this->searchQuestion . '%')
-                ->orWhere('question_text', 'like', '%' . $this->searchQuestion . '%');
-            });
+        $questionBank = [];
+        foreach (self::SECTIONS as $sec) {
+            $questionBank[$sec] = Question::with(['customer', 'model', 'models'])
+                ->where('section', $sec)
+                ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+                ->orderByDesc('id')
+                ->get();
         }
 
-        $questions = $questionsQuery
-            ? $questionsQuery->orderByDesc('id')->get()
-            : collect();
-
-        // Soal terpilih (multiple)
-        $selectedQuestions = !empty($this->question_ids)
-            ? Question::whereIn('id', $this->question_ids)->get()
-            : collect();
-
-        $totalSelectedItems = $selectedQuestions->sum(fn($q) => count($q->items ?? []));
+        // Soal terpilih (untuk ditampilkan di modal)
+        $selectedQuestion = !empty($this->question_ids)
+            ? Question::with(['customer', 'model'])->find($this->question_ids[0])
+            : null;
 
         return view('livewire.qaqc.blind-test.blind-test-management', [
-            'blindTests'         => $blindTests,
-            'customers'          => Customer::orderBy('customer_name')->get(),
-            'allModels'          => QaqcModel::with('customer')->orderBy('model_name')->get(),
-            'filterModels'       => $filterModels,
-            'formModels'         => $formModels,
-            'questions'          => $questions,
-            'selectedQuestions'  => $selectedQuestions,
-            'totalSelectedItems' => $totalSelectedItems,
-            'users'              => User::select('id', 'name')->orderBy('name')->get(),
-            'departments'        => $departments,
-            'shifts'             => ['NS', '1', '2', '3'],
-            'groups'             => ['NS', 'A', 'B', 'C'],
-            'sections'           => self::SECTIONS,
+            'blindTests'        => $blindTests,
+            'customers'         => Customer::orderBy('customer_name')->get(),
+            'allModels'         => QaqcModel::with('customer')->orderBy('model_name')->get(),
+            'filterModels'      => $filterModels,
+            'users'             => User::select('id', 'name')->orderBy('name')->get(),
+            'departments'       => $departments,
+            'shifts'            => ['NS', '1', '2', '3'],
+            'groups'            => ['NS', 'A', 'B', 'C'],
+            'sections'          => self::SECTIONS,
+            'questionBank'      => $questionBank,
+            'selectedQuestion'  => $selectedQuestion,
+            'bankDate'          => $bankDate,   // ← TAMBAH INI
         ]);
     }
 }

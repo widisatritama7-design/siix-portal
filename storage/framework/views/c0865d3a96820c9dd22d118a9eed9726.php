@@ -146,7 +146,7 @@
                     <tr class="bg-zinc-50 dark:bg-zinc-800/50">
                         <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase" style="min-width: 50px;">#</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase" style="min-width: 180px;">Customer</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase" style="min-width: 180px;">Model</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase" style="min-width: 220px;">Model</th>
                         <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase" style="min-width: 90px;">Section</th>
                         <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase" style="min-width: 100px;">Items</th>
                         <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase" style="min-width: 150px;">Created By</th>
@@ -168,10 +168,24 @@
                             </span>
                         </td>
                         <td class="px-4 py-3 text-left">
-                            <span class="text-sm text-zinc-800 dark:text-white">
-                                <?php echo e($question->model->model_name ?? '-'); ?>
+                            <?php
+                                $modelList = $question->models->pluck('model_name')->all();
+                                if (empty($modelList) && $question->model) {
+                                    $modelList = [$question->model->model_name];
+                                }
+                            ?>
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!empty($modelList)): ?>
+                                <div class="flex flex-wrap gap-1">
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $modelList; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $mName): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
+                                            <?php echo e($mName); ?>
 
-                            </span>
+                                        </span>
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
+                                </div>
+                            <?php else: ?>
+                                <span class="text-sm text-zinc-400 italic">-</span>
+                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </td>
                         <td class="px-4 py-3 text-center">
                             <span class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold
@@ -185,7 +199,7 @@
                         </td>
                         <td class="px-4 py-3 text-center text-sm text-zinc-600 dark:text-zinc-400">
                             <div class="font-semibold">
-                                <?php echo e(count($question->items ?? [])); ?> item(s)
+                                <?php echo e($question->totalDefects()); ?> defect(s)
                             </div>
 
                             <?php $usageCount = $question->blindTests()->count(); ?>
@@ -208,14 +222,11 @@
                         </td>
                         <td class="px-4 py-3 text-center">
                             <?php
-                                // Cek apakah question ini sudah dipakai blind test
                                 $usageCount = $question->blindTests()->count();
                                 $isUsed = $usageCount > 0;
                             ?>
 
                             <div class="flex items-center justify-center gap-1" style="flex-wrap: nowrap;">
-
-                                
                                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view question')): ?>
                                 <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/tooltip/index.blade.php', $__blaze->compiledPath.'/1e349890a464f9948f6af12013af6f7e.php'); ?>
 <?php if (isset($__slots1e349890a464f9948f6af12013af6f7e)) { $__slotsStack1e349890a464f9948f6af12013af6f7e[] = $__slots1e349890a464f9948f6af12013af6f7e; } ?>
@@ -236,7 +247,6 @@
 <?php $__blaze->popData(); ?>
                                 <?php endif; ?>
 
-                                
                                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('edit question')): ?>
                                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($isUsed): ?>
                                         <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/tooltip/index.blade.php', $__blaze->compiledPath.'/1e349890a464f9948f6af12013af6f7e.php'); ?>
@@ -278,7 +288,6 @@
                                     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                 <?php endif; ?>
 
-                                
                                 <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('delete question')): ?>
                                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($isUsed): ?>
                                         <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/tooltip/index.blade.php', $__blaze->compiledPath.'/1e349890a464f9948f6af12013af6f7e.php'); ?>
@@ -384,7 +393,7 @@
         <div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40" @click="open = false"></div>
 
         <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden">
+            <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
 
                 
                 <div class="relative overflow-hidden bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 px-6 py-5 flex items-center justify-between">
@@ -396,7 +405,7 @@
                         </div>
                         <div>
                             <h2 class="text-lg font-bold text-white"><?php echo e($modalTitle); ?></h2>
-                            <p class="text-xs text-blue-100">Setup bank soal — defect item &amp; lokasi</p>
+                            <p class="text-xs text-blue-100">Setup bank soal — multi model &amp; defect</p>
                         </div>
                     </div>
                     <button type="button" @click="open = false"
@@ -482,57 +491,6 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
 <?php $__attrs6e3df0cbb45590d4e257d5a3f5651198 = ['required' => true]; ?>
 <?php $__slots6e3df0cbb45590d4e257d5a3f5651198 = []; ?>
 <?php $__blaze->pushData($__attrs6e3df0cbb45590d4e257d5a3f5651198); ?>
-<?php ob_start(); ?>Model<?php $__slots6e3df0cbb45590d4e257d5a3f5651198['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
-<?php $__blaze->pushSlots($__slots6e3df0cbb45590d4e257d5a3f5651198); ?>
-<?php _6e3df0cbb45590d4e257d5a3f5651198($__blaze, $__attrs6e3df0cbb45590d4e257d5a3f5651198, $__slots6e3df0cbb45590d4e257d5a3f5651198, ['required'], [], $__this ?? (isset($this) ? $this : null)); ?>
-<?php if (! empty($__slotsStack6e3df0cbb45590d4e257d5a3f5651198)) { $__slots6e3df0cbb45590d4e257d5a3f5651198 = array_pop($__slotsStack6e3df0cbb45590d4e257d5a3f5651198); } ?>
-<?php if (! empty($__attrsStack6e3df0cbb45590d4e257d5a3f5651198)) { $__attrs6e3df0cbb45590d4e257d5a3f5651198 = array_pop($__attrsStack6e3df0cbb45590d4e257d5a3f5651198); } ?>
-<?php $__blaze->popData(); ?>
-                                    <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/select/index.blade.php', $__blaze->compiledPath.'/0542375cda8648d8e959b5ab0467d096.php'); ?>
-<?php if (isset($__slots0542375cda8648d8e959b5ab0467d096)) { $__slotsStack0542375cda8648d8e959b5ab0467d096[] = $__slots0542375cda8648d8e959b5ab0467d096; } ?>
-<?php if (isset($__attrs0542375cda8648d8e959b5ab0467d096)) { $__attrsStack0542375cda8648d8e959b5ab0467d096[] = $__attrs0542375cda8648d8e959b5ab0467d096; } ?>
-<?php $__attrs0542375cda8648d8e959b5ab0467d096 = ['wire:model' => 'model_id','placeholder' => 'Select model...','disabled' => !$customer_id]; ?>
-<?php $__slots0542375cda8648d8e959b5ab0467d096 = []; ?>
-<?php $__blaze->pushData($__attrs0542375cda8648d8e959b5ab0467d096); ?>
-<?php ob_start(); ?>
-                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $models; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $model): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
-                                            <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/select/option/index.blade.php', $__blaze->compiledPath.'/99256298ab1a7e1f739d671e96475396.php'); ?>
-<?php if (isset($__slots99256298ab1a7e1f739d671e96475396)) { $__slotsStack99256298ab1a7e1f739d671e96475396[] = $__slots99256298ab1a7e1f739d671e96475396; } ?>
-<?php if (isset($__attrs99256298ab1a7e1f739d671e96475396)) { $__attrsStack99256298ab1a7e1f739d671e96475396[] = $__attrs99256298ab1a7e1f739d671e96475396; } ?>
-<?php $__attrs99256298ab1a7e1f739d671e96475396 = ['value' => e($model->id)]; ?>
-<?php $__slots99256298ab1a7e1f739d671e96475396 = []; ?>
-<?php $__blaze->pushData($__attrs99256298ab1a7e1f739d671e96475396); ?>
-<?php ob_start(); ?><?php echo e($model->model_name); ?><?php $__slots99256298ab1a7e1f739d671e96475396['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
-<?php $__blaze->pushSlots($__slots99256298ab1a7e1f739d671e96475396); ?>
-<?php _99256298ab1a7e1f739d671e96475396($__blaze, $__attrs99256298ab1a7e1f739d671e96475396, $__slots99256298ab1a7e1f739d671e96475396, [], [], $__this ?? (isset($this) ? $this : null)); ?>
-<?php if (! empty($__slotsStack99256298ab1a7e1f739d671e96475396)) { $__slots99256298ab1a7e1f739d671e96475396 = array_pop($__slotsStack99256298ab1a7e1f739d671e96475396); } ?>
-<?php if (! empty($__attrsStack99256298ab1a7e1f739d671e96475396)) { $__attrs99256298ab1a7e1f739d671e96475396 = array_pop($__attrsStack99256298ab1a7e1f739d671e96475396); } ?>
-<?php $__blaze->popData(); ?>
-                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
-                                    <?php $__slots0542375cda8648d8e959b5ab0467d096['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
-<?php $__blaze->pushSlots($__slots0542375cda8648d8e959b5ab0467d096); ?>
-<?php _0542375cda8648d8e959b5ab0467d096($__blaze, $__attrs0542375cda8648d8e959b5ab0467d096, $__slots0542375cda8648d8e959b5ab0467d096, ['disabled'], [], $__this ?? (isset($this) ? $this : null)); ?>
-<?php if (! empty($__slotsStack0542375cda8648d8e959b5ab0467d096)) { $__slots0542375cda8648d8e959b5ab0467d096 = array_pop($__slotsStack0542375cda8648d8e959b5ab0467d096); } ?>
-<?php if (! empty($__attrsStack0542375cda8648d8e959b5ab0467d096)) { $__attrs0542375cda8648d8e959b5ab0467d096 = array_pop($__attrsStack0542375cda8648d8e959b5ab0467d096); } ?>
-<?php $__blaze->popData(); ?>
-                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['model_id'];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> <span class="text-red-500 text-xs"><?php echo e($message); ?></span> <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-                                </div>
-
-                                
-                                <div>
-                                    <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/label.blade.php', $__blaze->compiledPath.'/6e3df0cbb45590d4e257d5a3f5651198.php'); ?>
-<?php if (isset($__slots6e3df0cbb45590d4e257d5a3f5651198)) { $__slotsStack6e3df0cbb45590d4e257d5a3f5651198[] = $__slots6e3df0cbb45590d4e257d5a3f5651198; } ?>
-<?php if (isset($__attrs6e3df0cbb45590d4e257d5a3f5651198)) { $__attrsStack6e3df0cbb45590d4e257d5a3f5651198[] = $__attrs6e3df0cbb45590d4e257d5a3f5651198; } ?>
-<?php $__attrs6e3df0cbb45590d4e257d5a3f5651198 = ['required' => true]; ?>
-<?php $__slots6e3df0cbb45590d4e257d5a3f5651198 = []; ?>
-<?php $__blaze->pushData($__attrs6e3df0cbb45590d4e257d5a3f5651198); ?>
 <?php ob_start(); ?>Section<?php $__slots6e3df0cbb45590d4e257d5a3f5651198['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
 <?php $__blaze->pushSlots($__slots6e3df0cbb45590d4e257d5a3f5651198); ?>
 <?php _6e3df0cbb45590d4e257d5a3f5651198($__blaze, $__attrs6e3df0cbb45590d4e257d5a3f5651198, $__slots6e3df0cbb45590d4e257d5a3f5651198, ['required'], [], $__this ?? (isset($this) ? $this : null)); ?>
@@ -588,21 +546,147 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                             <path fill-rule="evenodd" d="M12 1.5a5.25 5.25 0 0 0-5.25 5.25v3a3 3 0 0 0-3 3v6.75a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3v-6.75a3 3 0 0 0-3-3v-3c0-2.9-2.35-5.25-5.25-5.25Zm3.75 8.25v-3a3.75 3.75 0 1 0-7.5 0v3h7.5Z" clip-rule="evenodd" />
                                         </svg>
                                     </div>
-                                    <h3 class="text-sm font-bold text-zinc-800 dark:text-white">Defect Item &amp; Location</h3>
+                                    <h3 class="text-sm font-bold text-zinc-800 dark:text-white">Models &amp; Defect Items</h3>
                                 </div>
-                                <span class="text-xs px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 font-semibold">
-                                    <?php echo e(count($items)); ?> item(s)
-                                </span>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs px-2.5 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold">
+                                        <?php echo e(count($modelGroups)); ?> model(s)
+                                    </span>
+                                    <span class="text-xs px-2.5 py-1 rounded-full font-semibold
+                                        <?php if($this->totalDefects >= $maxDefects): ?>
+                                            bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300
+                                        <?php else: ?>
+                                            bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300
+                                        <?php endif; ?>">
+                                        <?php echo e($this->totalDefects); ?> / <?php echo e($maxDefects); ?> defects
+                                    </span>
+                                </div>
                             </div>
-                            <div class="p-5">
+                            <div class="p-5 space-y-4">
 
                                 
-                                <div class="p-4 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20 border-2 border-amber-200 dark:border-amber-800 mb-4">
-                                    <div class="text-[10px] text-amber-700 dark:text-amber-400 uppercase font-bold tracking-wider mb-3">
-                                        Tambah Item Baru
+                                <div class="p-4 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 border-2 border-blue-200 dark:border-blue-800">
+                                    <div class="text-[10px] text-blue-700 dark:text-blue-400 uppercase font-bold tracking-wider mb-3">
+                                        Step 1 — Tambah Model
                                     </div>
                                     <div class="grid grid-cols-12 gap-2 items-start">
-                                        <div class="col-span-5">
+                                        <div class="col-span-10">
+                                            <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/select/index.blade.php', $__blaze->compiledPath.'/0542375cda8648d8e959b5ab0467d096.php'); ?>
+<?php if (isset($__slots0542375cda8648d8e959b5ab0467d096)) { $__slotsStack0542375cda8648d8e959b5ab0467d096[] = $__slots0542375cda8648d8e959b5ab0467d096; } ?>
+<?php if (isset($__attrs0542375cda8648d8e959b5ab0467d096)) { $__attrsStack0542375cda8648d8e959b5ab0467d096[] = $__attrs0542375cda8648d8e959b5ab0467d096; } ?>
+<?php $__attrs0542375cda8648d8e959b5ab0467d096 = ['wire:model' => 'selectedModelId','placeholder' => 'Select model...','disabled' => !$customer_id]; ?>
+<?php $__slots0542375cda8648d8e959b5ab0467d096 = []; ?>
+<?php $__blaze->pushData($__attrs0542375cda8648d8e959b5ab0467d096); ?>
+<?php ob_start(); ?>
+                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $models; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $model): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                                                    <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/select/option/index.blade.php', $__blaze->compiledPath.'/99256298ab1a7e1f739d671e96475396.php'); ?>
+<?php if (isset($__slots99256298ab1a7e1f739d671e96475396)) { $__slotsStack99256298ab1a7e1f739d671e96475396[] = $__slots99256298ab1a7e1f739d671e96475396; } ?>
+<?php if (isset($__attrs99256298ab1a7e1f739d671e96475396)) { $__attrsStack99256298ab1a7e1f739d671e96475396[] = $__attrs99256298ab1a7e1f739d671e96475396; } ?>
+<?php $__attrs99256298ab1a7e1f739d671e96475396 = ['value' => e($model->id)]; ?>
+<?php $__slots99256298ab1a7e1f739d671e96475396 = []; ?>
+<?php $__blaze->pushData($__attrs99256298ab1a7e1f739d671e96475396); ?>
+<?php ob_start(); ?><?php echo e($model->model_name); ?><?php $__slots99256298ab1a7e1f739d671e96475396['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slots99256298ab1a7e1f739d671e96475396); ?>
+<?php _99256298ab1a7e1f739d671e96475396($__blaze, $__attrs99256298ab1a7e1f739d671e96475396, $__slots99256298ab1a7e1f739d671e96475396, [], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStack99256298ab1a7e1f739d671e96475396)) { $__slots99256298ab1a7e1f739d671e96475396 = array_pop($__slotsStack99256298ab1a7e1f739d671e96475396); } ?>
+<?php if (! empty($__attrsStack99256298ab1a7e1f739d671e96475396)) { $__attrs99256298ab1a7e1f739d671e96475396 = array_pop($__attrsStack99256298ab1a7e1f739d671e96475396); } ?>
+<?php $__blaze->popData(); ?>
+                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
+                                            <?php $__slots0542375cda8648d8e959b5ab0467d096['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slots0542375cda8648d8e959b5ab0467d096); ?>
+<?php _0542375cda8648d8e959b5ab0467d096($__blaze, $__attrs0542375cda8648d8e959b5ab0467d096, $__slots0542375cda8648d8e959b5ab0467d096, ['disabled'], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStack0542375cda8648d8e959b5ab0467d096)) { $__slots0542375cda8648d8e959b5ab0467d096 = array_pop($__slotsStack0542375cda8648d8e959b5ab0467d096); } ?>
+<?php if (! empty($__attrsStack0542375cda8648d8e959b5ab0467d096)) { $__attrs0542375cda8648d8e959b5ab0467d096 = array_pop($__attrsStack0542375cda8648d8e959b5ab0467d096); } ?>
+<?php $__blaze->popData(); ?>
+                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['selectedModelId'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <span class="text-red-500 text-xs"><?php echo e($message); ?></span> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                        </div>
+                                        <div class="col-span-2">
+                                            <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php', $__blaze->compiledPath.'/487eed12f4c62537fd888f693822b25a.php'); ?>
+<?php if (isset($__slots487eed12f4c62537fd888f693822b25a)) { $__slotsStack487eed12f4c62537fd888f693822b25a[] = $__slots487eed12f4c62537fd888f693822b25a; } ?>
+<?php if (isset($__attrs487eed12f4c62537fd888f693822b25a)) { $__attrsStack487eed12f4c62537fd888f693822b25a[] = $__attrs487eed12f4c62537fd888f693822b25a; } ?>
+<?php $__attrs487eed12f4c62537fd888f693822b25a = ['type' => 'button','wire:click' => 'addModel','icon' => 'plus','variant' => 'primary','color' => 'blue','class' => 'w-full']; ?>
+<?php $__slots487eed12f4c62537fd888f693822b25a = []; ?>
+<?php $__blaze->pushData($__attrs487eed12f4c62537fd888f693822b25a); ?>
+<?php ob_start(); ?>
+                                                Add
+                                            <?php $__slots487eed12f4c62537fd888f693822b25a['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slots487eed12f4c62537fd888f693822b25a); ?>
+<?php _487eed12f4c62537fd888f693822b25a($__blaze, $__attrs487eed12f4c62537fd888f693822b25a, $__slots487eed12f4c62537fd888f693822b25a, [], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStack487eed12f4c62537fd888f693822b25a)) { $__slots487eed12f4c62537fd888f693822b25a = array_pop($__slotsStack487eed12f4c62537fd888f693822b25a); } ?>
+<?php if (! empty($__attrsStack487eed12f4c62537fd888f693822b25a)) { $__attrs487eed12f4c62537fd888f693822b25a = array_pop($__attrsStack487eed12f4c62537fd888f693822b25a); } ?>
+<?php $__blaze->popData(); ?>
+                                        </div>
+                                    </div>
+                                    <p class="text-[11px] text-blue-700 dark:text-blue-400 mt-2 italic">
+                                        Pilih model, klik <strong>Add</strong> untuk menambah ke daftar.
+                                    </p>
+                                </div>
+
+                                
+                                <div class="p-4 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20 border-2 border-amber-200 dark:border-amber-800">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div class="text-[10px] text-amber-700 dark:text-amber-400 uppercase font-bold tracking-wider">
+                                            Step 2 — Tambah Defect Item + Location
+                                        </div>
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($this->remainingQuota <= 0): ?>
+                                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-red-100 text-red-700 font-bold">QUOTA FULL</span>
+                                        <?php else: ?>
+                                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-bold">
+                                                Sisa: <?php echo e($this->remainingQuota); ?>
+
+                                            </span>
+                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                    </div>
+                                    <div class="grid grid-cols-12 gap-2 items-start">
+                                        <div class="col-span-3">
+                                            <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/select/index.blade.php', $__blaze->compiledPath.'/0542375cda8648d8e959b5ab0467d096.php'); ?>
+<?php if (isset($__slots0542375cda8648d8e959b5ab0467d096)) { $__slotsStack0542375cda8648d8e959b5ab0467d096[] = $__slots0542375cda8648d8e959b5ab0467d096; } ?>
+<?php if (isset($__attrs0542375cda8648d8e959b5ab0467d096)) { $__attrsStack0542375cda8648d8e959b5ab0467d096[] = $__attrs0542375cda8648d8e959b5ab0467d096; } ?>
+<?php $__attrs0542375cda8648d8e959b5ab0467d096 = ['wire:model' => 'selectedModelId','placeholder' => '-- Pilih Model --']; ?>
+<?php $__slots0542375cda8648d8e959b5ab0467d096 = []; ?>
+<?php $__blaze->pushData($__attrs0542375cda8648d8e959b5ab0467d096); ?>
+<?php ob_start(); ?>
+                                                <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/select/option/index.blade.php', $__blaze->compiledPath.'/99256298ab1a7e1f739d671e96475396.php'); ?>
+<?php if (isset($__slots99256298ab1a7e1f739d671e96475396)) { $__slotsStack99256298ab1a7e1f739d671e96475396[] = $__slots99256298ab1a7e1f739d671e96475396; } ?>
+<?php if (isset($__attrs99256298ab1a7e1f739d671e96475396)) { $__attrsStack99256298ab1a7e1f739d671e96475396[] = $__attrs99256298ab1a7e1f739d671e96475396; } ?>
+<?php $__attrs99256298ab1a7e1f739d671e96475396 = ['value' => '']; ?>
+<?php $__slots99256298ab1a7e1f739d671e96475396 = []; ?>
+<?php $__blaze->pushData($__attrs99256298ab1a7e1f739d671e96475396); ?>
+<?php ob_start(); ?>-- Pilih Model --<?php $__slots99256298ab1a7e1f739d671e96475396['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slots99256298ab1a7e1f739d671e96475396); ?>
+<?php _99256298ab1a7e1f739d671e96475396($__blaze, $__attrs99256298ab1a7e1f739d671e96475396, $__slots99256298ab1a7e1f739d671e96475396, [], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStack99256298ab1a7e1f739d671e96475396)) { $__slots99256298ab1a7e1f739d671e96475396 = array_pop($__slotsStack99256298ab1a7e1f739d671e96475396); } ?>
+<?php if (! empty($__attrsStack99256298ab1a7e1f739d671e96475396)) { $__attrs99256298ab1a7e1f739d671e96475396 = array_pop($__attrsStack99256298ab1a7e1f739d671e96475396); } ?>
+<?php $__blaze->popData(); ?>
+                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $modelGroups; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $g): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                                                    <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/select/option/index.blade.php', $__blaze->compiledPath.'/99256298ab1a7e1f739d671e96475396.php'); ?>
+<?php if (isset($__slots99256298ab1a7e1f739d671e96475396)) { $__slotsStack99256298ab1a7e1f739d671e96475396[] = $__slots99256298ab1a7e1f739d671e96475396; } ?>
+<?php if (isset($__attrs99256298ab1a7e1f739d671e96475396)) { $__attrsStack99256298ab1a7e1f739d671e96475396[] = $__attrs99256298ab1a7e1f739d671e96475396; } ?>
+<?php $__attrs99256298ab1a7e1f739d671e96475396 = ['value' => e($g['model_id'])]; ?>
+<?php $__slots99256298ab1a7e1f739d671e96475396 = []; ?>
+<?php $__blaze->pushData($__attrs99256298ab1a7e1f739d671e96475396); ?>
+<?php ob_start(); ?><?php echo e($g['model_name']); ?><?php $__slots99256298ab1a7e1f739d671e96475396['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slots99256298ab1a7e1f739d671e96475396); ?>
+<?php _99256298ab1a7e1f739d671e96475396($__blaze, $__attrs99256298ab1a7e1f739d671e96475396, $__slots99256298ab1a7e1f739d671e96475396, [], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStack99256298ab1a7e1f739d671e96475396)) { $__slots99256298ab1a7e1f739d671e96475396 = array_pop($__slotsStack99256298ab1a7e1f739d671e96475396); } ?>
+<?php if (! empty($__attrsStack99256298ab1a7e1f739d671e96475396)) { $__attrs99256298ab1a7e1f739d671e96475396 = array_pop($__attrsStack99256298ab1a7e1f739d671e96475396); } ?>
+<?php $__blaze->popData(); ?>
+                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
+                                            <?php $__slots0542375cda8648d8e959b5ab0467d096['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slots0542375cda8648d8e959b5ab0467d096); ?>
+<?php _0542375cda8648d8e959b5ab0467d096($__blaze, $__attrs0542375cda8648d8e959b5ab0467d096, $__slots0542375cda8648d8e959b5ab0467d096, [], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStack0542375cda8648d8e959b5ab0467d096)) { $__slots0542375cda8648d8e959b5ab0467d096 = array_pop($__slotsStack0542375cda8648d8e959b5ab0467d096); } ?>
+<?php if (! empty($__attrsStack0542375cda8648d8e959b5ab0467d096)) { $__attrs0542375cda8648d8e959b5ab0467d096 = array_pop($__attrsStack0542375cda8648d8e959b5ab0467d096); } ?>
+<?php $__blaze->popData(); ?>
+                                        </div>
+                                        <div class="col-span-4">
                                             <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/select/index.blade.php', $__blaze->compiledPath.'/0542375cda8648d8e959b5ab0467d096.php'); ?>
 <?php if (isset($__slots0542375cda8648d8e959b5ab0467d096)) { $__slotsStack0542375cda8648d8e959b5ab0467d096[] = $__slots0542375cda8648d8e959b5ab0467d096; } ?>
 <?php if (isset($__attrs0542375cda8648d8e959b5ab0467d096)) { $__attrsStack0542375cda8648d8e959b5ab0467d096[] = $__attrs0542375cda8648d8e959b5ab0467d096; } ?>
@@ -639,7 +723,7 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                         </div>
-                                        <div class="col-span-5">
+                                        <div class="col-span-3">
                                             <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/input/index.blade.php', $__blaze->compiledPath.'/5ae551d98c08f0bc67bd05455e08306c.php'); ?>
 <?php $__blaze->pushData(['wire:model' => 'tempLocation','wire:keydown.enter.prevent' => 'addItem','placeholder' => 'Location (ex: A1)','class' => 'uppercase']); ?>
 <?php _5ae551d98c08f0bc67bd05455e08306c($__blaze, ['wire:model' => 'tempLocation','wire:keydown.enter.prevent' => 'addItem','placeholder' => 'Location (ex: A1)','class' => 'uppercase'], [], [], [], $__this ?? (isset($this) ? $this : null)); ?>
@@ -657,94 +741,121 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                             <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php', $__blaze->compiledPath.'/487eed12f4c62537fd888f693822b25a.php'); ?>
 <?php if (isset($__slots487eed12f4c62537fd888f693822b25a)) { $__slotsStack487eed12f4c62537fd888f693822b25a[] = $__slots487eed12f4c62537fd888f693822b25a; } ?>
 <?php if (isset($__attrs487eed12f4c62537fd888f693822b25a)) { $__attrsStack487eed12f4c62537fd888f693822b25a[] = $__attrs487eed12f4c62537fd888f693822b25a; } ?>
-<?php $__attrs487eed12f4c62537fd888f693822b25a = ['type' => 'button','wire:click' => 'addItem','icon' => 'plus','variant' => 'primary','color' => 'blue','class' => 'w-full']; ?>
+<?php $__attrs487eed12f4c62537fd888f693822b25a = ['type' => 'button','wire:click' => 'addItem','icon' => 'plus','variant' => 'primary','color' => 'blue','class' => 'w-full','disabled' => $this->totalDefects >= $maxDefects]; ?>
 <?php $__slots487eed12f4c62537fd888f693822b25a = []; ?>
 <?php $__blaze->pushData($__attrs487eed12f4c62537fd888f693822b25a); ?>
 <?php ob_start(); ?>
                                                 Add
                                             <?php $__slots487eed12f4c62537fd888f693822b25a['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
 <?php $__blaze->pushSlots($__slots487eed12f4c62537fd888f693822b25a); ?>
-<?php _487eed12f4c62537fd888f693822b25a($__blaze, $__attrs487eed12f4c62537fd888f693822b25a, $__slots487eed12f4c62537fd888f693822b25a, [], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php _487eed12f4c62537fd888f693822b25a($__blaze, $__attrs487eed12f4c62537fd888f693822b25a, $__slots487eed12f4c62537fd888f693822b25a, ['disabled'], [], $__this ?? (isset($this) ? $this : null)); ?>
 <?php if (! empty($__slotsStack487eed12f4c62537fd888f693822b25a)) { $__slots487eed12f4c62537fd888f693822b25a = array_pop($__slotsStack487eed12f4c62537fd888f693822b25a); } ?>
 <?php if (! empty($__attrsStack487eed12f4c62537fd888f693822b25a)) { $__attrs487eed12f4c62537fd888f693822b25a = array_pop($__attrsStack487eed12f4c62537fd888f693822b25a); } ?>
 <?php $__blaze->popData(); ?>
                                         </div>
                                     </div>
                                     <p class="text-[11px] text-amber-700 dark:text-amber-400 mt-2 italic">
-                                        Pilih defect item, ketik lokasi, lalu klik <strong>Add</strong> (atau tekan Enter).
+                                        Pilih model, defect item, dan lokasi. Max <strong><?php echo e($maxDefects); ?></strong> defect per question.
                                     </p>
                                 </div>
 
-                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['items'];
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['modelGroups'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?> <span class="text-red-500 text-xs block mb-3"><?php echo e($message); ?></span> <?php unset($message);
+$message = $__bag->first($__errorArgs[0]); ?> <span class="text-red-500 text-xs block"><?php echo e($message); ?></span> <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
                                 
-                                <div class="border-2 border-zinc-200 dark:border-zinc-700 rounded-xl overflow-hidden">
-                                    <table class="w-full text-sm">
-                                        <thead class="bg-gradient-to-r from-zinc-100 to-zinc-50 dark:from-zinc-800 dark:to-zinc-800/50 border-b border-zinc-200 dark:border-zinc-700">
-                                            <tr>
-                                                <th class="px-3 py-2.5 text-left text-[11px] font-bold text-zinc-600 dark:text-zinc-300 uppercase tracking-wider w-12">#</th>
-                                                <th class="px-3 py-2.5 text-left text-[11px] font-bold text-zinc-600 dark:text-zinc-300 uppercase tracking-wider">Defect Item</th>
-                                                <th class="px-3 py-2.5 text-left text-[11px] font-bold text-zinc-600 dark:text-zinc-300 uppercase tracking-wider w-32">Location</th>
-                                                <th class="px-3 py-2.5 text-center text-[11px] font-bold text-zinc-600 dark:text-zinc-300 uppercase tracking-wider w-16">Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700 bg-white dark:bg-zinc-900">
-                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $items; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
-                                            <tr <?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::$currentLoop['key'] = 'item-'.e($i).''; ?>wire:key="item-<?php echo e($i); ?>" class="hover:bg-amber-50/50 dark:hover:bg-amber-950/10 transition-colors">
-                                                <td class="px-3 py-2.5">
-                                                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 font-bold text-[10px]">
-                                                        <?php echo e($i + 1); ?>
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $modelGroups; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $mi => $group): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                                    <div <?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::$currentLoop['key'] = 'mg-'.e($mi).'-'.e($group['model_id']).''; ?>wire:key="mg-<?php echo e($mi); ?>-<?php echo e($group['model_id']); ?>"
+                                         class="border-2 border-zinc-200 dark:border-zinc-700 rounded-xl overflow-hidden">
 
-                                                    </span>
-                                                </td>
-                                                <td class="px-3 py-2.5">
-                                                    <div class="font-semibold text-zinc-800 dark:text-white">
-                                                        <?php echo e($item['deffect_name'] ?? '-'); ?>
+                                        
+                                        <div class="px-4 py-2.5 bg-gradient-to-r from-zinc-100 to-zinc-50 dark:from-zinc-800 dark:to-zinc-800/50 border-b border-zinc-200 dark:border-zinc-700 flex items-center justify-between">
+                                            <div class="flex items-center gap-2">
+                                                <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white font-bold text-[10px]">
+                                                    <?php echo e($mi + 1); ?>
 
-                                                    </div>
-                                                </td>
-                                                <td class="px-3 py-2.5">
-                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-mono text-[11px] font-bold">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3">
-                                                            <path fill-rule="evenodd" d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd" />
-                                                        </svg>
-                                                        <?php echo e($item['location'] ?? '-'); ?>
+                                                </span>
+                                                <span class="text-sm font-bold text-zinc-800 dark:text-white">
+                                                    <?php echo e($group['model_name']); ?>
 
-                                                    </span>
-                                                </td>
-                                                <td class="px-3 py-2.5 text-center">
-                                                    <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php', $__blaze->compiledPath.'/487eed12f4c62537fd888f693822b25a.php'); ?>
-<?php $__blaze->pushData(['wire:click' => 'removeItem('.e($i).')','size' => 'sm','icon' => 'trash','variant' => 'primary','color' => 'red','class' => '!p-2']); ?>
-<?php _487eed12f4c62537fd888f693822b25a($__blaze, ['wire:click' => 'removeItem('.e($i).')','size' => 'sm','icon' => 'trash','variant' => 'primary','color' => 'red','class' => '!p-2'], [], [], [], $__this ?? (isset($this) ? $this : null)); ?>
+                                                </span>
+                                                <span class="text-[10px] px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold">
+                                                    <?php echo e(count($group['items'])); ?> defect(s)
+                                                </span>
+                                            </div>
+                                            <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php', $__blaze->compiledPath.'/487eed12f4c62537fd888f693822b25a.php'); ?>
+<?php $__blaze->pushData(['wire:click' => 'removeModel('.e($mi).')','size' => 'sm','icon' => 'trash','variant' => 'primary','color' => 'red','class' => '!p-2','wire:confirm' => 'Hapus model ini beserta semua defect-nya?']); ?>
+<?php _487eed12f4c62537fd888f693822b25a($__blaze, ['wire:click' => 'removeModel('.e($mi).')','size' => 'sm','icon' => 'trash','variant' => 'primary','color' => 'red','class' => '!p-2','wire:confirm' => 'Hapus model ini beserta semua defect-nya?'], [], [], [], $__this ?? (isset($this) ? $this : null)); ?>
 <?php $__blaze->popData(); ?>
-                                                </td>
-                                            </tr>
-                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
-                                            <tr>
-                                                <td colspan="4" class="px-3 py-10 text-center">
-                                                    <div class="flex flex-col items-center gap-2">
-                                                        <div class="w-12 h-12 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-zinc-400">
-                                                                <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 9a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25V15a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V9Z" clip-rule="evenodd" />
-                                                            </svg>
-                                                        </div>
-                                                        <div class="text-xs text-zinc-500 dark:text-zinc-400">
-                                                            Belum ada item. Tambahkan defect item + location di atas.
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-                                        </tbody>
-                                    </table>
-                                </div>
+                                        </div>
+
+                                        
+                                        <table class="w-full text-sm">
+                                            <thead class="bg-zinc-50 dark:bg-zinc-800/30 border-b border-zinc-200 dark:border-zinc-700">
+                                                <tr>
+                                                    <th class="px-3 py-2 text-left text-[10px] font-bold text-zinc-600 dark:text-zinc-300 uppercase w-12">#</th>
+                                                    <th class="px-3 py-2 text-left text-[10px] font-bold text-zinc-600 dark:text-zinc-300 uppercase">Defect Item</th>
+                                                    <th class="px-3 py-2 text-left text-[10px] font-bold text-zinc-600 dark:text-zinc-300 uppercase w-32">Location</th>
+                                                    <th class="px-3 py-2 text-center text-[10px] font-bold text-zinc-600 dark:text-zinc-300 uppercase w-16">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700 bg-white dark:bg-zinc-900">
+                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__empty_2 = true; $__currentLoopData = $group['items']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ii => $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_2 = false; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                                                    <tr <?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::$currentLoop['key'] = 'item-'.e($mi).'-'.e($ii).''; ?>wire:key="item-<?php echo e($mi); ?>-<?php echo e($ii); ?>" class="hover:bg-amber-50/50 dark:hover:bg-amber-950/10">
+                                                        <td class="px-3 py-2">
+                                                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 font-bold text-[10px]">
+                                                                <?php echo e($ii + 1); ?>
+
+                                                            </span>
+                                                        </td>
+                                                        <td class="px-3 py-2">
+                                                            <div class="font-semibold text-zinc-800 dark:text-white">
+                                                                <?php echo e($item['deffect_name'] ?? '-'); ?>
+
+                                                            </div>
+                                                        </td>
+                                                        <td class="px-3 py-2">
+                                                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-mono text-[11px] font-bold">
+                                                                <?php echo e($item['location'] ?? '-'); ?>
+
+                                                            </span>
+                                                        </td>
+                                                        <td class="px-3 py-2 text-center">
+                                                            <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php', $__blaze->compiledPath.'/487eed12f4c62537fd888f693822b25a.php'); ?>
+<?php $__blaze->pushData(['wire:click' => 'removeItem('.e($mi).', '.e($ii).')','size' => 'sm','icon' => 'trash','variant' => 'primary','color' => 'red','class' => '!p-2']); ?>
+<?php _487eed12f4c62537fd888f693822b25a($__blaze, ['wire:click' => 'removeItem('.e($mi).', '.e($ii).')','size' => 'sm','icon' => 'trash','variant' => 'primary','color' => 'red','class' => '!p-2'], [], [], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php $__blaze->popData(); ?>
+                                                        </td>
+                                                    </tr>
+                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_2): ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
+                                                    <tr>
+                                                        <td colspan="4" class="px-3 py-6 text-center text-xs text-zinc-500 dark:text-zinc-400 italic">
+                                                            Belum ada defect. Tambahkan di Step 2 di atas.
+                                                        </td>
+                                                    </tr>
+                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
+                                    <div class="border-2 border-dashed border-zinc-300 dark:border-zinc-700 rounded-xl p-8 text-center">
+                                        <div class="flex flex-col items-center gap-2">
+                                            <div class="w-12 h-12 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-zinc-400">
+                                                    <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 9a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25V15a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V9Z" clip-rule="evenodd" />
+                                                </svg>
+                                            </div>
+                                            <div class="text-xs text-zinc-500 dark:text-zinc-400">
+                                                Belum ada model. Tambahkan model di Step 1 di atas.
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
                             </div>
                         </div>
@@ -829,7 +940,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
         <div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40" @click="open = false"></div>
 
         <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
+            <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden">
 
                 
                 <div class="relative overflow-hidden bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 px-6 py-5 flex items-center justify-between">
@@ -857,12 +968,27 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                 <div class="flex-1 overflow-y-auto p-6 bg-zinc-50 dark:bg-zinc-950/30">
                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($viewData): ?>
 
+                    <?php
+                        $rawItems = $viewData->items ?? [];
+                        $isNewFormat = !empty($rawItems) && isset($rawItems[0]['model_id']);
+                        $groups = [];
+
+                        if ($isNewFormat) {
+                            $groups = $rawItems;
+                        } elseif (!empty($rawItems)) {
+                            $groups = [[
+                                'model_id'   => $viewData->model_id,
+                                'model_name' => $viewData->model->model_name ?? '-',
+                                'items'      => $rawItems,
+                            ]];
+                        }
+
+                        $totalDefects = collect($groups)->sum(fn($g) => count($g['items'] ?? []));
+                    ?>
+
                     
-                    <div class="mb-5 flex items-center gap-3">
+                    <div class="mb-5 flex flex-wrap items-center gap-2">
                         <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-xs font-bold shadow-lg shadow-blue-500/30">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5">
-                                <path fill-rule="evenodd" d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625ZM7.5 15a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 7.5 15Zm.75 2.25a.75.75 0 0 0 0 1.5H12a.75.75 0 0 0 0-1.5H8.25Z" clip-rule="evenodd" />
-                            </svg>
                             Question #<?php echo e($viewData->id); ?>
 
                         </span>
@@ -872,19 +998,17 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                 <?php elseif($viewData->section === 'SMT'): ?> bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300
                                 <?php elseif($viewData->section === 'BE'): ?> bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300
                                 <?php else: ?> bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 <?php endif; ?>">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5">
-                                    <path fill-rule="evenodd" d="M3 6a3 3 0 0 1 3-3h2.25a3 3 0 0 1 3 3v2.25a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V6Zm9.75 0a3 3 0 0 1 3-3H18a3 3 0 0 1 3 3v2.25a3 3 0 0 1-3 3h-2.25a3 3 0 0 1-3-3V6ZM3 15.75a3 3 0 0 1 3-3h2.25a3 3 0 0 1 3 3V18a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3v-2.25Zm9.75 0a3 3 0 0 1 3-3H18a3 3 0 0 1 3 3V18a3 3 0 0 1-3 3h-2.25a3 3 0 0 1-3-3v-2.25Z" clip-rule="evenodd" />
-                                </svg>
                                 Section <?php echo e($viewData->section); ?>
 
                             </span>
                         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300 text-xs font-bold">
+                            <?php echo e(count($groups)); ?> model(s) · <?php echo e($totalDefects); ?> defect(s)
+                        </span>
                     </div>
 
                     
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
-
-                        
                         <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-4 flex items-center gap-3">
                             <div class="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center flex-shrink-0">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-emerald-600 dark:text-emerald-400">
@@ -897,17 +1021,16 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                             </div>
                         </div>
 
-                        
                         <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-4 flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-amber-600 dark:text-amber-400">
+                            <div class="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-blue-600 dark:text-blue-400">
                                     <path d="M3.375 3C2.339 3 1.5 3.84 1.5 4.875v.75c0 1.036.84 1.875 1.875 1.875h17.25c1.035 0 1.875-.84 1.875-1.875v-.75C22.5 3.839 21.66 3 20.625 3H3.375Z" />
                                     <path fill-rule="evenodd" d="m3.087 9 .54 9.176A3 3 0 0 0 6.62 21h10.757a3 3 0 0 0 2.995-2.824L20.913 9H3.087Zm6.163 3.75A.75.75 0 0 1 10 12h4a.75.75 0 0 1 0 1.5h-4a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
                                 </svg>
                             </div>
                             <div class="min-w-0">
-                                <div class="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold">Model</div>
-                                <div class="text-sm font-bold text-zinc-800 dark:text-white truncate"><?php echo e($viewData->model->model_name ?? '-'); ?></div>
+                                <div class="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold">Total Models</div>
+                                <div class="text-sm font-bold text-zinc-800 dark:text-white"><?php echo e(count($groups)); ?> model(s)</div>
                             </div>
                         </div>
                     </div>
@@ -927,60 +1050,66 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
                     
-                    <div class="mb-5">
-                        <div class="flex items-center justify-between mb-2">
-                            <div class="flex items-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-zinc-500">
-                                    <path fill-rule="evenodd" d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625ZM7.5 15a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 7.5 15Zm.75 2.25a.75.75 0 0 0 0 1.5H12a.75.75 0 0 0 0-1.5H8.25Z" clip-rule="evenodd" />
-                                </svg>
-                                <span class="text-[10px] text-zinc-500 uppercase tracking-wider font-bold">Defect Items & Locations</span>
+                    <div class="space-y-3">
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $groups; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $gi => $group): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                            <div class="border-2 border-blue-200 dark:border-blue-800 rounded-xl overflow-hidden bg-white dark:bg-zinc-900">
+                                <div class="px-4 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-500 text-white flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-white/20 font-bold text-[10px]">
+                                            <?php echo e($gi + 1); ?>
+
+                                        </span>
+                                        <span class="text-sm font-bold">
+                                            <?php echo e($group['model_name'] ?? '-'); ?>
+
+                                        </span>
+                                    </div>
+                                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-white/20 font-bold">
+                                        <?php echo e(count($group['items'] ?? [])); ?> defect(s)
+                                    </span>
+                                </div>
+                                <table class="w-full text-sm">
+                                    <thead class="bg-zinc-50 dark:bg-zinc-800/30 border-b border-zinc-200 dark:border-zinc-700">
+                                        <tr>
+                                            <th class="px-4 py-2 text-left text-[10px] font-bold text-zinc-600 dark:text-zinc-300 uppercase w-14">#</th>
+                                            <th class="px-4 py-2 text-left text-[10px] font-bold text-zinc-600 dark:text-zinc-300 uppercase">Defect Item</th>
+                                            <th class="px-4 py-2 text-left text-[10px] font-bold text-zinc-600 dark:text-zinc-300 uppercase w-32">Location</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__empty_2 = true; $__currentLoopData = $group['items'] ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ii => $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_2 = false; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                                            <tr>
+                                                <td class="px-4 py-2">
+                                                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-bold text-[10px]">
+                                                        <?php echo e($ii + 1); ?>
+
+                                                    </span>
+                                                </td>
+                                                <td class="px-4 py-2">
+                                                    <div class="font-semibold text-zinc-800 dark:text-white"><?php echo e($item['deffect_name'] ?? '-'); ?></div>
+                                                </td>
+                                                <td class="px-4 py-2">
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-mono text-[11px] font-bold">
+                                                        <?php echo e($item['location'] ?? '-'); ?>
+
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_2): ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
+                                            <tr>
+                                                <td colspan="3" class="px-4 py-4 text-center text-xs text-zinc-400 italic">
+                                                    Tidak ada defect.
+                                                </td>
+                                            </tr>
+                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                    </tbody>
+                                </table>
                             </div>
-                            <span class="text-xs px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold">
-                                <?php echo e(count($viewData->items ?? [])); ?> item(s)
-                            </span>
-                        </div>
-
-                        <div class="border-2 border-blue-200 dark:border-blue-800 rounded-xl overflow-hidden bg-white dark:bg-zinc-900">
-                            <table class="w-full text-sm">
-                                <thead class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white">
-                                    <tr>
-                                        <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider w-14">#</th>
-                                        <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider">Defect Item</th>
-                                        <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider w-32">Location</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
-                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $viewData->items ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
-                                    <tr class="hover:bg-blue-50/50 dark:hover:bg-blue-950/10 transition-colors">
-                                        <td class="px-4 py-3">
-                                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-bold text-[10px]">
-                                                <?php echo e($i + 1); ?>
-
-                                            </span>
-                                        </td>
-                                        <td class="px-4 py-3">
-                                            <div class="font-semibold text-zinc-800 dark:text-white"><?php echo e($item['deffect_name'] ?? '-'); ?></div>
-                                        </td>
-                                        <td class="px-4 py-3">
-                                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-mono text-[11px] font-bold">
-                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3">
-                                                    <path fill-rule="evenodd" d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd" />
-                                                </svg>
-                                                <?php echo e($item['location'] ?? '-'); ?>
-
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
-                                    <tr>
-                                        <td colspan="3" class="px-4 py-8 text-center text-zinc-400 italic">
-                                            Tidak ada item.
-                                        </td>
-                                    </tr>
-                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-                                </tbody>
-                            </table>
-                        </div>
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
+                            <div class="text-center py-8 text-sm text-zinc-400 italic">
+                                Tidak ada model.
+                            </div>
+                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                     </div>
 
                     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
@@ -1010,8 +1139,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                 <h3 class="text-lg font-bold mb-2 text-center">Delete Question</h3>
                 <p class="text-gray-600 dark:text-gray-400 mb-4 text-center">
                     Are you sure you want to delete this question for customer
-                    <span class="font-semibold"><?php echo e($questionToDelete?->customer->customer_name); ?></span>
-                    - model <span class="font-semibold"><?php echo e($questionToDelete?->model->model_name); ?></span>?
+                    <span class="font-semibold"><?php echo e($questionToDelete?->customer->customer_name); ?></span>?
                 </p>
 
                 <div class="flex justify-center gap-3 mt-4">

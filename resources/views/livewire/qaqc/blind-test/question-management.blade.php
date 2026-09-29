@@ -60,7 +60,7 @@
                     <tr class="bg-zinc-50 dark:bg-zinc-800/50">
                         <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase" style="min-width: 50px;">#</th>
                         <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase" style="min-width: 180px;">Customer</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase" style="min-width: 180px;">Model</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase" style="min-width: 220px;">Model</th>
                         <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase" style="min-width: 90px;">Section</th>
                         <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase" style="min-width: 100px;">Items</th>
                         <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase" style="min-width: 150px;">Created By</th>
@@ -80,9 +80,23 @@
                             </span>
                         </td>
                         <td class="px-4 py-3 text-left">
-                            <span class="text-sm text-zinc-800 dark:text-white">
-                                {{ $question->model->model_name ?? '-' }}
-                            </span>
+                            @php
+                                $modelList = $question->models->pluck('model_name')->all();
+                                if (empty($modelList) && $question->model) {
+                                    $modelList = [$question->model->model_name];
+                                }
+                            @endphp
+                            @if(!empty($modelList))
+                                <div class="flex flex-wrap gap-1">
+                                    @foreach($modelList as $mName)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
+                                            {{ $mName }}
+                                        </span>
+                                    @endforeach
+                                </div>
+                            @else
+                                <span class="text-sm text-zinc-400 italic">-</span>
+                            @endif
                         </td>
                         <td class="px-4 py-3 text-center">
                             <span class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold
@@ -95,7 +109,7 @@
                         </td>
                         <td class="px-4 py-3 text-center text-sm text-zinc-600 dark:text-zinc-400">
                             <div class="font-semibold">
-                                {{ count($question->items ?? []) }} item(s)
+                                {{ $question->totalDefects() }} defect(s)
                             </div>
 
                             @php $usageCount = $question->blindTests()->count(); @endphp
@@ -116,21 +130,17 @@
                         </td>
                         <td class="px-4 py-3 text-center">
                             @php
-                                // Cek apakah question ini sudah dipakai blind test
                                 $usageCount = $question->blindTests()->count();
                                 $isUsed = $usageCount > 0;
                             @endphp
 
                             <div class="flex items-center justify-center gap-1" style="flex-wrap: nowrap;">
-
-                                {{-- VIEW (selalu bisa) --}}
                                 @can('view question')
                                 <flux:tooltip content="View" position="top">
                                     <flux:button wire:click="view({{ $question->id }})" size="sm" icon="eye" variant="primary" color="blue" class="!p-2" />
                                 </flux:tooltip>
                                 @endcan
 
-                                {{-- EDIT (disable kalau sudah dipakai) --}}
                                 @can('edit question')
                                     @if($isUsed)
                                         <flux:tooltip content="Tidak bisa diedit — sudah dipakai di {{ $usageCount }} blind test" position="top">
@@ -147,7 +157,6 @@
                                     @endif
                                 @endcan
 
-                                {{-- DELETE (disable kalau sudah dipakai) --}}
                                 @can('delete question')
                                     @if($isUsed)
                                         <flux:tooltip content="Tidak bisa dihapus — sudah dipakai di {{ $usageCount }} blind test" position="top">
@@ -207,7 +216,7 @@
         <div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40" @click="open = false"></div>
 
         <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden">
+            <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
 
                 {{-- ==================== HEADER ==================== --}}
                 <div class="relative overflow-hidden bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 px-6 py-5 flex items-center justify-between">
@@ -219,7 +228,7 @@
                         </div>
                         <div>
                             <h2 class="text-lg font-bold text-white">{{ $modalTitle }}</h2>
-                            <p class="text-xs text-blue-100">Setup bank soal — defect item &amp; lokasi</p>
+                            <p class="text-xs text-blue-100">Setup bank soal — multi model &amp; defect</p>
                         </div>
                     </div>
                     <button type="button" @click="open = false"
@@ -257,17 +266,6 @@
                                     @error('customer_id') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                                 </div>
 
-                                {{-- Model --}}
-                                <div>
-                                    <flux:label required>Model</flux:label>
-                                    <flux:select wire:model="model_id" placeholder="Select model..." :disabled="!$customer_id">
-                                        @foreach($models as $model)
-                                            <flux:select.option value="{{ $model->id }}">{{ $model->model_name }}</flux:select.option>
-                                        @endforeach
-                                    </flux:select>
-                                    @error('model_id') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                                </div>
-
                                 {{-- Section --}}
                                 <div>
                                     <flux:label required>Section</flux:label>
@@ -282,7 +280,7 @@
                             </div>
                         </div>
 
-                        {{-- ========== CARD 2: DEFECT + LOCATION PAIR ========== --}}
+                        {{-- ========== CARD 2: MODELS + DEFECTS ========== --}}
                         <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
                             <div class="px-5 py-3.5 border-b border-zinc-200 dark:border-zinc-800 bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30 flex items-center justify-between">
                                 <div class="flex items-center gap-3">
@@ -291,21 +289,73 @@
                                             <path fill-rule="evenodd" d="M12 1.5a5.25 5.25 0 0 0-5.25 5.25v3a3 3 0 0 0-3 3v6.75a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3v-6.75a3 3 0 0 0-3-3v-3c0-2.9-2.35-5.25-5.25-5.25Zm3.75 8.25v-3a3.75 3.75 0 1 0-7.5 0v3h7.5Z" clip-rule="evenodd" />
                                         </svg>
                                     </div>
-                                    <h3 class="text-sm font-bold text-zinc-800 dark:text-white">Defect Item &amp; Location</h3>
+                                    <h3 class="text-sm font-bold text-zinc-800 dark:text-white">Models &amp; Defect Items</h3>
                                 </div>
-                                <span class="text-xs px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 font-semibold">
-                                    {{ count($items) }} item(s)
-                                </span>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-xs px-2.5 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold">
+                                        {{ count($modelGroups) }} model(s)
+                                    </span>
+                                    <span class="text-xs px-2.5 py-1 rounded-full font-semibold
+                                        @if($this->totalDefects >= $maxDefects)
+                                            bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300
+                                        @else
+                                            bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300
+                                        @endif">
+                                        {{ $this->totalDefects }} / {{ $maxDefects }} defects
+                                    </span>
+                                </div>
                             </div>
-                            <div class="p-5">
+                            <div class="p-5 space-y-4">
 
-                                {{-- Input Pair Baru --}}
-                                <div class="p-4 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20 border-2 border-amber-200 dark:border-amber-800 mb-4">
-                                    <div class="text-[10px] text-amber-700 dark:text-amber-400 uppercase font-bold tracking-wider mb-3">
-                                        Tambah Item Baru
+                                {{-- ===== STEP 1: Tambah Model ===== --}}
+                                <div class="p-4 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 border-2 border-blue-200 dark:border-blue-800">
+                                    <div class="text-[10px] text-blue-700 dark:text-blue-400 uppercase font-bold tracking-wider mb-3">
+                                        Step 1 — Tambah Model
                                     </div>
                                     <div class="grid grid-cols-12 gap-2 items-start">
-                                        <div class="col-span-5">
+                                        <div class="col-span-10">
+                                            <flux:select wire:model="selectedModelId" placeholder="Select model..." :disabled="!$customer_id">
+                                                @foreach($models as $model)
+                                                    <flux:select.option value="{{ $model->id }}">{{ $model->model_name }}</flux:select.option>
+                                                @endforeach
+                                            </flux:select>
+                                            @error('selectedModelId') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                        </div>
+                                        <div class="col-span-2">
+                                            <flux:button type="button" wire:click="addModel" icon="plus" variant="primary" color="blue" class="w-full">
+                                                Add
+                                            </flux:button>
+                                        </div>
+                                    </div>
+                                    <p class="text-[11px] text-blue-700 dark:text-blue-400 mt-2 italic">
+                                        Pilih model, klik <strong>Add</strong> untuk menambah ke daftar.
+                                    </p>
+                                </div>
+
+                                {{-- ===== STEP 2: Tambah Defect ===== --}}
+                                <div class="p-4 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/20 dark:to-orange-950/20 border-2 border-amber-200 dark:border-amber-800">
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div class="text-[10px] text-amber-700 dark:text-amber-400 uppercase font-bold tracking-wider">
+                                            Step 2 — Tambah Defect Item + Location
+                                        </div>
+                                        @if($this->remainingQuota <= 0)
+                                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-red-100 text-red-700 font-bold">QUOTA FULL</span>
+                                        @else
+                                            <span class="text-[10px] px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-bold">
+                                                Sisa: {{ $this->remainingQuota }}
+                                            </span>
+                                        @endif
+                                    </div>
+                                    <div class="grid grid-cols-12 gap-2 items-start">
+                                        <div class="col-span-3">
+                                            <flux:select wire:model="selectedModelId" placeholder="-- Pilih Model --">
+                                                <flux:select.option value="">-- Pilih Model --</flux:select.option>
+                                                @foreach($modelGroups as $g)
+                                                    <flux:select.option value="{{ $g['model_id'] }}">{{ $g['model_name'] }}</flux:select.option>
+                                                @endforeach
+                                            </flux:select>
+                                        </div>
+                                        <div class="col-span-4">
                                             <flux:select wire:model="tempDeffectId" placeholder="Select defect item...">
                                                 @foreach($deffects as $deffect)
                                                     <flux:select.option value="{{ $deffect->id }}">{{ $deffect->deffect_item_name }}</flux:select.option>
@@ -313,7 +363,7 @@
                                             </flux:select>
                                             @error('tempDeffectId') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                                         </div>
-                                        <div class="col-span-5">
+                                        <div class="col-span-3">
                                             <flux:input
                                                 wire:model="tempLocation"
                                                 wire:keydown.enter.prevent="addItem"
@@ -323,73 +373,109 @@
                                             @error('tempLocation') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                                         </div>
                                         <div class="col-span-2">
-                                            <flux:button type="button" wire:click="addItem" icon="plus" variant="primary" color="blue" class="w-full">
+                                            <flux:button
+                                                type="button"
+                                                wire:click="addItem"
+                                                icon="plus"
+                                                variant="primary"
+                                                color="blue"
+                                                class="w-full"
+                                                :disabled="$this->totalDefects >= $maxDefects">
                                                 Add
                                             </flux:button>
                                         </div>
                                     </div>
                                     <p class="text-[11px] text-amber-700 dark:text-amber-400 mt-2 italic">
-                                        Pilih defect item, ketik lokasi, lalu klik <strong>Add</strong> (atau tekan Enter).
+                                        Pilih model, defect item, dan lokasi. Max <strong>{{ $maxDefects }}</strong> defect per question.
                                     </p>
                                 </div>
 
-                                @error('items') <span class="text-red-500 text-xs block mb-3">{{ $message }}</span> @enderror
+                                @error('modelGroups') <span class="text-red-500 text-xs block">{{ $message }}</span> @enderror
 
-                                {{-- Tabel Item yang Sudah Ditambahkan --}}
-                                <div class="border-2 border-zinc-200 dark:border-zinc-700 rounded-xl overflow-hidden">
-                                    <table class="w-full text-sm">
-                                        <thead class="bg-gradient-to-r from-zinc-100 to-zinc-50 dark:from-zinc-800 dark:to-zinc-800/50 border-b border-zinc-200 dark:border-zinc-700">
-                                            <tr>
-                                                <th class="px-3 py-2.5 text-left text-[11px] font-bold text-zinc-600 dark:text-zinc-300 uppercase tracking-wider w-12">#</th>
-                                                <th class="px-3 py-2.5 text-left text-[11px] font-bold text-zinc-600 dark:text-zinc-300 uppercase tracking-wider">Defect Item</th>
-                                                <th class="px-3 py-2.5 text-left text-[11px] font-bold text-zinc-600 dark:text-zinc-300 uppercase tracking-wider w-32">Location</th>
-                                                <th class="px-3 py-2.5 text-center text-[11px] font-bold text-zinc-600 dark:text-zinc-300 uppercase tracking-wider w-16">Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700 bg-white dark:bg-zinc-900">
-                                            @forelse($items as $i => $item)
-                                            <tr wire:key="item-{{ $i }}" class="hover:bg-amber-50/50 dark:hover:bg-amber-950/10 transition-colors">
-                                                <td class="px-3 py-2.5">
-                                                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 font-bold text-[10px]">
-                                                        {{ $i + 1 }}
-                                                    </span>
-                                                </td>
-                                                <td class="px-3 py-2.5">
-                                                    <div class="font-semibold text-zinc-800 dark:text-white">
-                                                        {{ $item['deffect_name'] ?? '-' }}
-                                                    </div>
-                                                </td>
-                                                <td class="px-3 py-2.5">
-                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-mono text-[11px] font-bold">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3">
-                                                            <path fill-rule="evenodd" d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd" />
-                                                        </svg>
-                                                        {{ $item['location'] ?? '-' }}
-                                                    </span>
-                                                </td>
-                                                <td class="px-3 py-2.5 text-center">
-                                                    <flux:button wire:click="removeItem({{ $i }})" size="sm" icon="trash" variant="primary" color="red" class="!p-2" />
-                                                </td>
-                                            </tr>
-                                            @empty
-                                            <tr>
-                                                <td colspan="4" class="px-3 py-10 text-center">
-                                                    <div class="flex flex-col items-center gap-2">
-                                                        <div class="w-12 h-12 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-zinc-400">
-                                                                <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 9a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25V15a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V9Z" clip-rule="evenodd" />
-                                                            </svg>
-                                                        </div>
-                                                        <div class="text-xs text-zinc-500 dark:text-zinc-400">
-                                                            Belum ada item. Tambahkan defect item + location di atas.
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            @endforelse
-                                        </tbody>
-                                    </table>
-                                </div>
+                                {{-- ===== LIST MODEL + DEFECTS ===== --}}
+                                @forelse($modelGroups as $mi => $group)
+                                    <div wire:key="mg-{{ $mi }}-{{ $group['model_id'] }}"
+                                         class="border-2 border-zinc-200 dark:border-zinc-700 rounded-xl overflow-hidden">
+
+                                        {{-- Header Model --}}
+                                        <div class="px-4 py-2.5 bg-gradient-to-r from-zinc-100 to-zinc-50 dark:from-zinc-800 dark:to-zinc-800/50 border-b border-zinc-200 dark:border-zinc-700 flex items-center justify-between">
+                                            <div class="flex items-center gap-2">
+                                                <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white font-bold text-[10px]">
+                                                    {{ $mi + 1 }}
+                                                </span>
+                                                <span class="text-sm font-bold text-zinc-800 dark:text-white">
+                                                    {{ $group['model_name'] }}
+                                                </span>
+                                                <span class="text-[10px] px-2 py-0.5 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold">
+                                                    {{ count($group['items']) }} defect(s)
+                                                </span>
+                                            </div>
+                                            <flux:button
+                                                wire:click="removeModel({{ $mi }})"
+                                                size="sm"
+                                                icon="trash"
+                                                variant="primary"
+                                                color="red"
+                                                class="!p-2"
+                                                wire:confirm="Hapus model ini beserta semua defect-nya?" />
+                                        </div>
+
+                                        {{-- Tabel Defect --}}
+                                        <table class="w-full text-sm">
+                                            <thead class="bg-zinc-50 dark:bg-zinc-800/30 border-b border-zinc-200 dark:border-zinc-700">
+                                                <tr>
+                                                    <th class="px-3 py-2 text-left text-[10px] font-bold text-zinc-600 dark:text-zinc-300 uppercase w-12">#</th>
+                                                    <th class="px-3 py-2 text-left text-[10px] font-bold text-zinc-600 dark:text-zinc-300 uppercase">Defect Item</th>
+                                                    <th class="px-3 py-2 text-left text-[10px] font-bold text-zinc-600 dark:text-zinc-300 uppercase w-32">Location</th>
+                                                    <th class="px-3 py-2 text-center text-[10px] font-bold text-zinc-600 dark:text-zinc-300 uppercase w-16">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700 bg-white dark:bg-zinc-900">
+                                                @forelse($group['items'] as $ii => $item)
+                                                    <tr wire:key="item-{{ $mi }}-{{ $ii }}" class="hover:bg-amber-50/50 dark:hover:bg-amber-950/10">
+                                                        <td class="px-3 py-2">
+                                                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 font-bold text-[10px]">
+                                                                {{ $ii + 1 }}
+                                                            </span>
+                                                        </td>
+                                                        <td class="px-3 py-2">
+                                                            <div class="font-semibold text-zinc-800 dark:text-white">
+                                                                {{ $item['deffect_name'] ?? '-' }}
+                                                            </div>
+                                                        </td>
+                                                        <td class="px-3 py-2">
+                                                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-mono text-[11px] font-bold">
+                                                                {{ $item['location'] ?? '-' }}
+                                                            </span>
+                                                        </td>
+                                                        <td class="px-3 py-2 text-center">
+                                                            <flux:button wire:click="removeItem({{ $mi }}, {{ $ii }})" size="sm" icon="trash" variant="primary" color="red" class="!p-2" />
+                                                        </td>
+                                                    </tr>
+                                                @empty
+                                                    <tr>
+                                                        <td colspan="4" class="px-3 py-6 text-center text-xs text-zinc-500 dark:text-zinc-400 italic">
+                                                            Belum ada defect. Tambahkan di Step 2 di atas.
+                                                        </td>
+                                                    </tr>
+                                                @endforelse
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                @empty
+                                    <div class="border-2 border-dashed border-zinc-300 dark:border-zinc-700 rounded-xl p-8 text-center">
+                                        <div class="flex flex-col items-center gap-2">
+                                            <div class="w-12 h-12 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-zinc-400">
+                                                    <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 9a.75.75 0 0 0-1.5 0v2.25H9a.75.75 0 0 0 0 1.5h2.25V15a.75.75 0 0 0 1.5 0v-2.25H15a.75.75 0 0 0 0-1.5h-2.25V9Z" clip-rule="evenodd" />
+                                                </svg>
+                                            </div>
+                                            <div class="text-xs text-zinc-500 dark:text-zinc-400">
+                                                Belum ada model. Tambahkan model di Step 1 di atas.
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforelse
 
                             </div>
                         </div>
@@ -455,7 +541,7 @@
         <div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40" @click="open = false"></div>
 
         <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden">
+            <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden">
 
                 {{-- ==================== HEADER ==================== --}}
                 <div class="relative overflow-hidden bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 px-6 py-5 flex items-center justify-between">
@@ -483,12 +569,27 @@
                 <div class="flex-1 overflow-y-auto p-6 bg-zinc-50 dark:bg-zinc-950/30">
                     @if($viewData)
 
-                    {{-- Question ID Badge --}}
-                    <div class="mb-5 flex items-center gap-3">
+                    @php
+                        $rawItems = $viewData->items ?? [];
+                        $isNewFormat = !empty($rawItems) && isset($rawItems[0]['model_id']);
+                        $groups = [];
+
+                        if ($isNewFormat) {
+                            $groups = $rawItems;
+                        } elseif (!empty($rawItems)) {
+                            $groups = [[
+                                'model_id'   => $viewData->model_id,
+                                'model_name' => $viewData->model->model_name ?? '-',
+                                'items'      => $rawItems,
+                            ]];
+                        }
+
+                        $totalDefects = collect($groups)->sum(fn($g) => count($g['items'] ?? []));
+                    @endphp
+
+                    {{-- Header Badge --}}
+                    <div class="mb-5 flex flex-wrap items-center gap-2">
                         <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-xs font-bold shadow-lg shadow-blue-500/30">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5">
-                                <path fill-rule="evenodd" d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625ZM7.5 15a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 7.5 15Zm.75 2.25a.75.75 0 0 0 0 1.5H12a.75.75 0 0 0 0-1.5H8.25Z" clip-rule="evenodd" />
-                            </svg>
                             Question #{{ $viewData->id }}
                         </span>
                         @if($viewData->section)
@@ -497,18 +598,16 @@
                                 @elseif($viewData->section === 'SMT') bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300
                                 @elseif($viewData->section === 'BE') bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300
                                 @else bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300 @endif">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5">
-                                    <path fill-rule="evenodd" d="M3 6a3 3 0 0 1 3-3h2.25a3 3 0 0 1 3 3v2.25a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V6Zm9.75 0a3 3 0 0 1 3-3H18a3 3 0 0 1 3 3v2.25a3 3 0 0 1-3 3h-2.25a3 3 0 0 1-3-3V6ZM3 15.75a3 3 0 0 1 3-3h2.25a3 3 0 0 1 3 3V18a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3v-2.25Zm9.75 0a3 3 0 0 1 3-3H18a3 3 0 0 1 3 3V18a3 3 0 0 1-3 3h-2.25a3 3 0 0 1-3-3v-2.25Z" clip-rule="evenodd" />
-                                </svg>
                                 Section {{ $viewData->section }}
                             </span>
                         @endif
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300 text-xs font-bold">
+                            {{ count($groups) }} model(s) · {{ $totalDefects }} defect(s)
+                        </span>
                     </div>
 
-                    {{-- ========== INFO GRID ========== --}}
+                    {{-- Info Grid --}}
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
-
-                        {{-- Customer --}}
                         <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-4 flex items-center gap-3">
                             <div class="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center flex-shrink-0">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-emerald-600 dark:text-emerald-400">
@@ -521,22 +620,21 @@
                             </div>
                         </div>
 
-                        {{-- Model --}}
                         <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-4 flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-lg bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center flex-shrink-0">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-amber-600 dark:text-amber-400">
+                            <div class="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-blue-600 dark:text-blue-400">
                                     <path d="M3.375 3C2.339 3 1.5 3.84 1.5 4.875v.75c0 1.036.84 1.875 1.875 1.875h17.25c1.035 0 1.875-.84 1.875-1.875v-.75C22.5 3.839 21.66 3 20.625 3H3.375Z" />
                                     <path fill-rule="evenodd" d="m3.087 9 .54 9.176A3 3 0 0 0 6.62 21h10.757a3 3 0 0 0 2.995-2.824L20.913 9H3.087Zm6.163 3.75A.75.75 0 0 1 10 12h4a.75.75 0 0 1 0 1.5h-4a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
                                 </svg>
                             </div>
                             <div class="min-w-0">
-                                <div class="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold">Model</div>
-                                <div class="text-sm font-bold text-zinc-800 dark:text-white truncate">{{ $viewData->model->model_name ?? '-' }}</div>
+                                <div class="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold">Total Models</div>
+                                <div class="text-sm font-bold text-zinc-800 dark:text-white">{{ count($groups) }} model(s)</div>
                             </div>
                         </div>
                     </div>
 
-                    {{-- ========== QUESTION TEXT ========== --}}
+                    {{-- Question Text --}}
                     @if($viewData->question_text)
                     <div class="mb-5 bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-4">
                         <div class="flex items-center gap-2 mb-2">
@@ -550,59 +648,63 @@
                     </div>
                     @endif
 
-                    {{-- ========== DEFECT ITEMS TABLE ========== --}}
-                    <div class="mb-5">
-                        <div class="flex items-center justify-between mb-2">
-                            <div class="flex items-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-zinc-500">
-                                    <path fill-rule="evenodd" d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625ZM7.5 15a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 7.5 15Zm.75 2.25a.75.75 0 0 0 0 1.5H12a.75.75 0 0 0 0-1.5H8.25Z" clip-rule="evenodd" />
-                                </svg>
-                                <span class="text-[10px] text-zinc-500 uppercase tracking-wider font-bold">Defect Items & Locations</span>
+                    {{-- Models & Defects --}}
+                    <div class="space-y-3">
+                        @forelse($groups as $gi => $group)
+                            <div class="border-2 border-blue-200 dark:border-blue-800 rounded-xl overflow-hidden bg-white dark:bg-zinc-900">
+                                <div class="px-4 py-2.5 bg-gradient-to-r from-blue-500 to-indigo-500 text-white flex items-center justify-between">
+                                    <div class="flex items-center gap-2">
+                                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-white/20 font-bold text-[10px]">
+                                            {{ $gi + 1 }}
+                                        </span>
+                                        <span class="text-sm font-bold">
+                                            {{ $group['model_name'] ?? '-' }}
+                                        </span>
+                                    </div>
+                                    <span class="text-[10px] px-2 py-0.5 rounded-full bg-white/20 font-bold">
+                                        {{ count($group['items'] ?? []) }} defect(s)
+                                    </span>
+                                </div>
+                                <table class="w-full text-sm">
+                                    <thead class="bg-zinc-50 dark:bg-zinc-800/30 border-b border-zinc-200 dark:border-zinc-700">
+                                        <tr>
+                                            <th class="px-4 py-2 text-left text-[10px] font-bold text-zinc-600 dark:text-zinc-300 uppercase w-14">#</th>
+                                            <th class="px-4 py-2 text-left text-[10px] font-bold text-zinc-600 dark:text-zinc-300 uppercase">Defect Item</th>
+                                            <th class="px-4 py-2 text-left text-[10px] font-bold text-zinc-600 dark:text-zinc-300 uppercase w-32">Location</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
+                                        @forelse($group['items'] ?? [] as $ii => $item)
+                                            <tr>
+                                                <td class="px-4 py-2">
+                                                    <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-bold text-[10px]">
+                                                        {{ $ii + 1 }}
+                                                    </span>
+                                                </td>
+                                                <td class="px-4 py-2">
+                                                    <div class="font-semibold text-zinc-800 dark:text-white">{{ $item['deffect_name'] ?? '-' }}</div>
+                                                </td>
+                                                <td class="px-4 py-2">
+                                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-mono text-[11px] font-bold">
+                                                        {{ $item['location'] ?? '-' }}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="3" class="px-4 py-4 text-center text-xs text-zinc-400 italic">
+                                                    Tidak ada defect.
+                                                </td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
                             </div>
-                            <span class="text-xs px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold">
-                                {{ count($viewData->items ?? []) }} item(s)
-                            </span>
-                        </div>
-
-                        <div class="border-2 border-blue-200 dark:border-blue-800 rounded-xl overflow-hidden bg-white dark:bg-zinc-900">
-                            <table class="w-full text-sm">
-                                <thead class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white">
-                                    <tr>
-                                        <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider w-14">#</th>
-                                        <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider">Defect Item</th>
-                                        <th class="px-4 py-3 text-left text-[11px] font-bold uppercase tracking-wider w-32">Location</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
-                                    @forelse($viewData->items ?? [] as $i => $item)
-                                    <tr class="hover:bg-blue-50/50 dark:hover:bg-blue-950/10 transition-colors">
-                                        <td class="px-4 py-3">
-                                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-bold text-[10px]">
-                                                {{ $i + 1 }}
-                                            </span>
-                                        </td>
-                                        <td class="px-4 py-3">
-                                            <div class="font-semibold text-zinc-800 dark:text-white">{{ $item['deffect_name'] ?? '-' }}</div>
-                                        </td>
-                                        <td class="px-4 py-3">
-                                            <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-mono text-[11px] font-bold">
-                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3">
-                                                    <path fill-rule="evenodd" d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd" />
-                                                </svg>
-                                                {{ $item['location'] ?? '-' }}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                    @empty
-                                    <tr>
-                                        <td colspan="3" class="px-4 py-8 text-center text-zinc-400 italic">
-                                            Tidak ada item.
-                                        </td>
-                                    </tr>
-                                    @endforelse
-                                </tbody>
-                            </table>
-                        </div>
+                        @empty
+                            <div class="text-center py-8 text-sm text-zinc-400 italic">
+                                Tidak ada model.
+                            </div>
+                        @endforelse
                     </div>
 
                     @endif
@@ -632,8 +734,7 @@
                 <h3 class="text-lg font-bold mb-2 text-center">Delete Question</h3>
                 <p class="text-gray-600 dark:text-gray-400 mb-4 text-center">
                     Are you sure you want to delete this question for customer
-                    <span class="font-semibold">{{ $questionToDelete?->customer->customer_name }}</span>
-                    - model <span class="font-semibold">{{ $questionToDelete?->model->model_name }}</span>?
+                    <span class="font-semibold">{{ $questionToDelete?->customer->customer_name }}</span>?
                 </p>
 
                 <div class="flex justify-center gap-3 mt-4">

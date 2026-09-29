@@ -10,15 +10,233 @@
     <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-2">
         <div>
             <h1 class="text-3xl font-bold text-zinc-800 dark:text-white">Blind Test Management</h1>
-            <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Setup soal blind test untuk employee</p>
+            <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+                Pilih soal dari bank soal untuk membuat blind test
+            </p>
+        </div>
+    </div>
+
+    <!-- ==================== BANK SOAL HEADER + FILTER ==================== -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-1">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/30">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-white">
+                    <path fill-rule="evenodd" d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625Z" clip-rule="evenodd" />
+                </svg>
+            </div>
+            <div>
+                <h2 class="text-lg font-bold text-zinc-800 dark:text-white leading-tight">Bank Soal</h2>
+                <p class="text-xs text-zinc-500 dark:text-zinc-400">
+                    Pilih soal untuk memulai blind test
+                </p>
+            </div>
         </div>
 
-        @can('create blind test')
-            <flux:button variant="primary" icon="plus" class="bg-blue-600 hover:bg-blue-700"
-                wire:click="resetForm" x-on:click="$dispatch('open-modal-blind-test')">
-                Add New Blind Test
-            </flux:button>
-        @endcan
+        {{-- Month Picker --}}
+        <div class="flex items-center gap-2">
+            <div class="relative">
+                <input type="month"
+                    wire:model.live="bankMonth"
+                    class="pl-10 pr-4 py-2 rounded-xl border border-zinc-300 dark:border-zinc-700
+                        bg-white dark:bg-zinc-900 text-sm font-semibold text-zinc-700 dark:text-zinc-200
+                        focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                        hover:border-zinc-400 dark:hover:border-zinc-600
+                        transition-all cursor-pointer"
+                    style="color-scheme: light dark;">
+
+                {{-- Icon Calendar (overlay) --}}
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                    class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-blue-500 pointer-events-none">
+                    <path fill-rule="evenodd" d="M6.75 2.25A.75.75 0 0 1 7.5 3v1.5h9V3A.75.75 0 0 1 18 3v1.5h.75a3 3 0 0 1 3 3v11.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V7.5a3 3 0 0 1 3-3H6V3a.75.75 0 0 1 .75-.75Zm13.5 9a1.5 1.5 0 0 0-1.5-1.5H5.25a1.5 1.5 0 0 0-1.5 1.5v7.5a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5v-7.5Z" clip-rule="evenodd" />
+                </svg>
+            </div>
+
+            {{-- Reset ke Bulan Ini --}}
+            @if($bankMonth)
+                <button type="button"
+                    wire:click="$set('bankMonth', '')"
+                    class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl
+                        bg-red-50 hover:bg-red-100 dark:bg-red-950/30 dark:hover:bg-red-900/40
+                        border border-red-200 dark:border-red-800
+                        text-red-600 dark:text-red-400 text-xs font-semibold
+                        transition-all">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5">
+                        <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z" clip-rule="evenodd" />
+                    </svg>
+                    Reset
+                </button>
+            @else
+                <span class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl
+                            bg-blue-50 dark:bg-blue-950/30
+                            border border-blue-200 dark:border-blue-800
+                            text-blue-600 dark:text-blue-400 text-xs font-semibold">
+                    <span class="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse"></span>
+                    Bulan Ini
+                </span>
+            @endif
+        </div>
+    </div>
+
+    <!-- ==================== BANK SOAL PER SECTION ==================== -->
+    <style>
+        .bank-scroll::-webkit-scrollbar { width: 6px; }
+        .bank-scroll::-webkit-scrollbar-track { background: transparent; }
+        .bank-scroll::-webkit-scrollbar-thumb { background: rgba(161, 161, 170, 0.3); border-radius: 999px; }
+        .bank-scroll::-webkit-scrollbar-thumb:hover { background: rgba(161, 161, 170, 0.5); }
+        .dark .bank-scroll::-webkit-scrollbar-thumb { background: rgba(113, 113, 122, 0.4); }
+        .dark .bank-scroll::-webkit-scrollbar-thumb:hover { background: rgba(113, 113, 122, 0.6); }
+    </style>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+        @foreach($sections as $sec)
+        @php
+            $secMeta = [
+                'QC'  => ['grad' => 'from-blue-500 to-indigo-600',   'soft' => 'bg-blue-50 dark:bg-blue-950/20',      'accent' => 'text-blue-600 dark:text-blue-400',     'border' => 'border-blue-200 dark:border-blue-800',    'badge' => 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'],
+                'SMT' => ['grad' => 'from-green-500 to-emerald-600', 'soft' => 'bg-green-50 dark:bg-green-950/20',    'accent' => 'text-green-600 dark:text-green-400',   'border' => 'border-green-200 dark:border-green-800',  'badge' => 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-300'],
+                'BE'  => ['grad' => 'from-amber-500 to-orange-600',  'soft' => 'bg-amber-50 dark:bg-amber-950/20',    'accent' => 'text-amber-600 dark:text-amber-400',   'border' => 'border-amber-200 dark:border-amber-800',  'badge' => 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300'],
+                'MI'  => ['grad' => 'from-purple-500 to-pink-600',   'soft' => 'bg-purple-50 dark:bg-purple-950/20',  'accent' => 'text-purple-600 dark:text-purple-400', 'border' => 'border-purple-200 dark:border-purple-800','badge' => 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300'],
+            ];
+            $style = $secMeta[$sec] ?? $secMeta['QC'];
+            $list = $questionBank[$sec] ?? collect();
+            $count = $list->count();
+        @endphp
+
+        <div class="group/card bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 overflow-hidden flex flex-col">
+
+            {{-- ========== HEADER ========== --}}
+            <div class="relative px-4 py-3.5 bg-gradient-to-r {{ $style['grad'] }} overflow-hidden">
+                {{-- Dekorasi background --}}
+                <div class="absolute -right-4 -top-4 w-20 h-20 rounded-full bg-white/10"></div>
+                <div class="absolute -right-1 -bottom-6 w-14 h-14 rounded-full bg-white/10"></div>
+
+                <div class="relative flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center flex-shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4.5 h-4.5 text-white">
+                            <path fill-rule="evenodd" d="M3 6a3 3 0 0 1 3-3h2.25a3 3 0 0 1 3 3v2.25a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V6Zm9.75 0a3 3 0 0 1 3-3H18a3 3 0 0 1 3 3v2.25a3 3 0 0 1-3 3h-2.25a3 3 0 0 1-3-3V6ZM3 15.75a3 3 0 0 1 3-3h2.25a3 3 0 0 1 3 3V18a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3v-2.25Zm9.75 0a3 3 0 0 1 3-3H18a3 3 0 0 1 3 3V18a3 3 0 0 1-3 3h-2.25a3 3 0 0 1-3-3v-2.25Z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <div class="text-[10px] text-white/70 uppercase tracking-wider font-semibold leading-none mb-0.5">
+                            Section
+                        </div>
+                        <div class="text-base font-bold text-white leading-none">{{ $sec }}</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-2xl font-bold text-white leading-none">{{ $count }}</div>
+                        <div class="text-[9px] text-white/70 uppercase tracking-wider font-semibold">soal</div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- ========== SUBHEADER ========== --}}
+            <div class="px-4 py-2 bg-zinc-50 dark:bg-zinc-800/40 border-b border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
+                <div class="flex items-center gap-1.5 text-[10px] text-zinc-500 dark:text-zinc-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3">
+                        <path d="M12.75 12.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM7.5 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm7.5-.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12 7.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm2.25 3.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM7.5 9.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM12 18a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" />
+                        <path fill-rule="evenodd" d="M6.75 2.25A.75.75 0 0 1 7.5 3v1.5h9V3A.75.75 0 0 1 18 3v1.5h.75a3 3 0 0 1 3 3v11.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V7.5a3 3 0 0 1 3-3H6V3a.75.75 0 0 1 .75-.75Zm13.5 9a1.5 1.5 0 0 0-1.5-1.5H5.25a1.5 1.5 0 0 0-1.5 1.5v7.5a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5v-7.5Z" clip-rule="evenodd" />
+                    </svg>
+                    <span class="font-semibold uppercase tracking-wide">{{ $bankDate->translatedFormat('F Y') }}</span>
+                </div>
+                @if($count > 0)
+                    <div class="text-[9px] text-zinc-400 dark:text-zinc-500 font-medium">
+                        Terbaru
+                    </div>
+                @endif
+            </div>
+
+            {{-- ========== LIST ========== --}}
+            <div class="bank-scroll flex-1 overflow-y-auto p-2 space-y-1.5" style="max-height: 220px;">
+                @forelse($list as $q)
+                @php $itemCount = $q->totalDefects(); @endphp
+                <button type="button"
+                    wire:click="openCreateModal({{ $q->id }})"
+                    wire:key="bank-q-{{ $q->id }}"
+                    class="group/item w-full text-left p-3 rounded-xl border border-zinc-100 dark:border-zinc-800 bg-white dark:bg-zinc-900 hover:border-zinc-300 dark:hover:border-zinc-600 hover:shadow-md hover:bg-zinc-50/50 dark:hover:bg-zinc-800/50 transition-all duration-200 relative">
+
+                    {{-- Row 1: ID + Defect Count --}}
+                    <div class="flex items-center justify-between gap-2 mb-2">
+                        <span class="inline-flex items-center gap-1 text-[10px] font-mono font-bold text-zinc-400 dark:text-zinc-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3">
+                                <path fill-rule="evenodd" d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625Z" clip-rule="evenodd" />
+                            </svg>
+                            #{{ $q->id }}
+                        </span>
+                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold {{ $style['badge'] }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-2.5 h-2.5">
+                                <path fill-rule="evenodd" d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625Z" clip-rule="evenodd" />
+                            </svg>
+                            {{ $itemCount }}
+                        </span>
+                    </div>
+
+                    {{-- Row 2: Customer --}}
+                    <div class="flex items-center gap-1.5 text-xs text-zinc-700 dark:text-zinc-300 mb-1.5">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5 text-emerald-500 flex-shrink-0">
+                            <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="font-semibold truncate">{{ $q->customer->customer_name ?? '-' }}</span>
+                    </div>
+
+                    {{-- Row 3: Models --}}
+                    @php
+                        $modelNames = $q->models->pluck('model_name')->filter()->values();
+                        if ($modelNames->isEmpty() && $q->model) {
+                            $modelNames = collect([$q->model->model_name]);
+                        }
+                    @endphp
+                    @if($modelNames->isNotEmpty())
+                        <div class="flex items-start gap-1.5 text-[11px]">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5 text-purple-500 flex-shrink-0 mt-0.5">
+                                <path d="M3.375 3C2.339 3 1.5 3.84 1.5 4.875v.75c0 1.036.84 1.875 1.875 1.875h17.25c1.035 0 1.875-.84 1.875-1.875v-.75C22.5 3.839 21.66 3 20.625 3H3.375Z" />
+                                <path fill-rule="evenodd" d="m3.087 9 .54 9.176A3 3 0 0 0 6.62 21h10.757a3 3 0 0 0 2.995-2.824L20.913 9H3.087Zm6.163 3.75A.75.75 0 0 1 10 12h4a.75.75 0 0 1 0 1.5h-4a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
+                            </svg>
+                            <div class="flex flex-wrap items-center gap-1 leading-tight">
+                                @if($modelNames->count() === 1)
+                                    <span class="text-zinc-600 dark:text-zinc-400 font-medium truncate">
+                                        {{ $modelNames->first() }}
+                                    </span>
+                                @else
+                                    @foreach($modelNames as $mName)
+                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-semibold bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300">
+                                            {{ $mName }}
+                                        </span>
+                                    @endforeach
+                                @endif
+                            </div>
+                        </div>
+                    @endif
+
+                    {{-- Hover CTA --}}
+                    <div class="mt-2 flex items-center justify-between">
+                        <span class="text-[10px] text-zinc-400 dark:text-zinc-500 font-medium">
+                            {{ $q->created_at?->diffForHumans() ?? '-' }}
+                        </span>
+                        <span class="inline-flex items-center gap-1 text-[10px] font-bold {{ $style['accent'] }} opacity-0 group-hover/item:opacity-100 group-hover/item:translate-x-0 translate-x-1 transition-all duration-200">
+                            Create
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3">
+                                <path fill-rule="evenodd" d="M12.97 3.97a.75.75 0 0 1 1.06 0l7.5 7.5a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 1 1-1.06-1.06l6.22-6.22H3a.75.75 0 0 1 0-1.5h16.19l-6.22-6.22a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                            </svg>
+                        </span>
+                    </div>
+                </button>
+                @empty
+                <div class="px-4 py-10 text-center">
+                    <div class="w-14 h-14 mx-auto mb-3 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-7 h-7 text-zinc-300 dark:text-zinc-600">
+                            <path fill-rule="evenodd" d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625Z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div class="text-xs font-semibold text-zinc-500 dark:text-zinc-400 mb-0.5">
+                        Belum ada soal
+                    </div>
+                    <div class="text-[10px] text-zinc-400 dark:text-zinc-500">
+                        Bulan {{ $bankDate->translatedFormat('F Y') }}
+                    </div>
+                </div>
+                @endforelse
+            </div>
+        </div>
+        @endforeach
     </div>
 
     <!-- Filter Card -->
@@ -31,7 +249,6 @@
             }
         }">
 
-        {{-- Header Filter (selalu tampil) --}}
         <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
             <div class="flex-1 w-full">
                 <flux:input wire:model.live.debounce.300ms="search"
@@ -39,7 +256,6 @@
             </div>
 
             <div class="flex items-center gap-2 w-full sm:w-auto">
-                {{-- Tombol Toggle Filter --}}
                 <button type="button" @click="toggleFilter()"
                     class="inline-flex items-center gap-2 px-3 py-2 rounded-lg
                            bg-orange-500 hover:bg-orange-600 active:bg-orange-700
@@ -54,7 +270,6 @@
                     </svg>
                     <span x-text="filterOpen ? 'Hide Filter' : 'Unhide Filter'"></span>
 
-                    {{-- Badge jumlah filter aktif --}}
                     @php
                         $activeFilterCount = collect([
                             $filterDepartment, $filterShift, $filterGroup, $filterSection,
@@ -78,11 +293,8 @@
             </div>
         </div>
 
-        {{-- Body Filter (bisa disembunyikan) --}}
         <div x-show="filterOpen" x-collapse class="space-y-3 pt-3">
-            {{-- Row 1: Department, Shift, Group, Section, Customer --}}
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3">
-                {{-- Department --}}
                 <div>
                     <label class="block text-[11px] font-semibold text-zinc-500 uppercase mb-1">Department</label>
                     <select wire:model.live="filterDepartment"
@@ -94,7 +306,6 @@
                     </select>
                 </div>
 
-                {{-- Shift --}}
                 <div>
                     <label class="block text-[11px] font-semibold text-zinc-500 uppercase mb-1">Shift</label>
                     <select wire:model.live="filterShift"
@@ -106,7 +317,6 @@
                     </select>
                 </div>
 
-                {{-- Group --}}
                 <div>
                     <label class="block text-[11px] font-semibold text-zinc-500 uppercase mb-1">Group</label>
                     <select wire:model.live="filterGroup"
@@ -118,7 +328,6 @@
                     </select>
                 </div>
 
-                {{-- Section --}}
                 <div>
                     <label class="block text-[11px] font-semibold text-zinc-500 uppercase mb-1">Section</label>
                     <select wire:model.live="filterSection"
@@ -130,7 +339,6 @@
                     </select>
                 </div>
 
-                {{-- Customer --}}
                 <div>
                     <label class="block text-[11px] font-semibold text-zinc-500 uppercase mb-1">Customer</label>
                     <select wire:model.live="filterCustomer"
@@ -143,9 +351,7 @@
                 </div>
             </div>
 
-            {{-- Row 2: Model, Result, Date From, Date To --}}
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                {{-- Model --}}
                 <div>
                     <label class="block text-[11px] font-semibold text-zinc-500 uppercase mb-1">
                         Model @if(!$filterCustomer) <span class="text-amber-500 normal-case">(pilih customer)</span> @endif
@@ -160,7 +366,6 @@
                     </select>
                 </div>
 
-                {{-- Result --}}
                 <div>
                     <label class="block text-[11px] font-semibold text-zinc-500 uppercase mb-1">Result</label>
                     <select wire:model.live="filterResult"
@@ -171,14 +376,12 @@
                     </select>
                 </div>
 
-                {{-- Date From --}}
                 <div>
                     <label class="block text-[11px] font-semibold text-zinc-500 uppercase mb-1">From Date</label>
                     <input type="date" wire:model.live="filterDateFrom"
                         class="w-full border border-zinc-300 dark:border-zinc-700 rounded-lg px-3 py-2 text-sm dark:bg-zinc-800 dark:text-white focus:ring-2 focus:ring-blue-500">
                 </div>
 
-                {{-- Date To --}}
                 <div>
                     <label class="block text-[11px] font-semibold text-zinc-500 uppercase mb-1">Until Date</label>
                     <input type="date" wire:model.live="filterDateTo"
@@ -222,286 +425,332 @@
         </div>
     </div>
 
-    <!-- Table -->
+    <!-- Table Blind Test -->
     <flux:card class="p-6 h-full shadow-lg flex flex-col">
-        <div class="overflow-x-auto flex-1">
-            <table class="w-full" style="min-width: 1600px; white-space: nowrap;">
-                <thead>
-                    <tr class="bg-zinc-50 dark:bg-zinc-800/50">
-                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase">#</th>
-                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase">NIK</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase">Name</th>
-                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase">Department</th>
-                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase">Shift | Group</th>
-                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase">Section</th>
-                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase">Customer | Model</th>
-                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase">Durasi</th>
-                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase">Status</th>
-                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase">Result</th>
-                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase">Created</th>
-                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
-                    @forelse($blindTests as $index => $bt)
-                    @php $isTrashed = $bt->trashed(); @endphp
-                    <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 {{ $isTrashed ? 'opacity-60' : '' }}" wire:key="bt-{{ $bt->id }}">
-                        <td class="px-4 py-3 text-sm text-center">{{ $blindTests->firstItem() + $index }}</td>
-                        <td class="px-4 py-3 text-sm text-center font-semibold">{{ $bt->employee->nik ?? '-' }}</td>
-                        <td class="px-4 py-3 text-sm ">{{ $bt->employee->name ?? '-' }}</td>
-                        <td class="px-4 py-3 text-sm text-center font-semibold">{{ $bt->employee->department ?? '-' }}</td>
+        <div
+            x-data="{
+                showScroll: false,
+                onEnter() { this.showScroll = true; },
+                onLeave() { this.showScroll = false; }
+            }"
+            @mouseenter="onEnter()"
+            @mouseleave="onLeave()"
+            class="relative flex-1"
+        >
+            {{-- Gradient hint kiri --}}
+            <div
+                x-show="showScroll"
+                x-transition.opacity.duration.300ms
+                class="pointer-events-none absolute left-0 top-0 bottom-0 w-8 z-10
+                    bg-gradient-to-r from-white dark:from-zinc-900 to-transparent"
+            ></div>
 
-                        <td class="px-4 py-3 text-center">
-                            <div class="inline-flex items-center gap-1.5">
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-md bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-semibold">
-                                    {{ $bt->shift ?? '-' }}
-                                </span>
-                                <span class="text-zinc-400 text-xs">|</span>
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-md bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-semibold">
-                                    {{ $bt->group ?? '-' }}
-                                </span>
-                            </div>
-                        </td>
+            {{-- Gradient hint kanan --}}
+            <div
+                x-show="showScroll"
+                x-transition.opacity.duration.300ms
+                class="pointer-events-none absolute right-0 top-0 bottom-0 w-8 z-10
+                    bg-gradient-to-l from-white dark:from-zinc-900 to-transparent"
+            ></div>
 
-                        <td class="px-4 py-3 text-center">
-                            @if($bt->section)
-                                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold
-                                    @if($bt->section === 'QC') bg-blue-100 text-blue-700
-                                    @elseif($bt->section === 'SMT') bg-green-100 text-green-700
-                                    @elseif($bt->section === 'BE') bg-yellow-100 text-yellow-700
-                                    @else bg-purple-100 text-purple-700 @endif">
-                                    {{ $bt->section }}
-                                </span>
-                            @else
-                                <span class="text-xs text-zinc-400">-</span>
-                            @endif
-                        </td>
+            <div
+                class="overflow-x-auto flex-1 transition-all duration-300 custom-scroll-x"
+                :class="showScroll ? 'scrollbar-visible' : 'scrollbar-hidden'"
+            >
+                <table class="w-full" style="min-width: 1600px; white-space: nowrap;">
+                    <thead>
+                        <tr class="bg-zinc-50 dark:bg-zinc-800/50">
+                            <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase">#</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase">NIK</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase">Name</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase">Department</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase">Shift | Group</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase">Section</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase">Customer | Model</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase">Durasi</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase">Status</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase">Result</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase">Created</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
+                        @forelse($blindTests as $index => $bt)
+                        @php $isTrashed = $bt->trashed(); @endphp
+                        <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 {{ $isTrashed ? 'opacity-60' : '' }}" wire:key="bt-{{ $bt->id }}">
+                            <td class="px-4 py-3 text-sm text-center">{{ $blindTests->firstItem() + $index }}</td>
+                            <td class="px-4 py-3 text-sm text-center font-semibold">{{ $bt->employee->nik ?? '-' }}</td>
+                            <td class="px-4 py-3 text-sm ">{{ $bt->employee->name ?? '-' }}</td>
+                            <td class="px-4 py-3 text-sm text-center font-semibold">{{ $bt->employee->department ?? '-' }}</td>
 
-                        <td class="px-4 py-3 text-sm text-center">
-                            <div class="flex flex-col items-center gap-1">
-                                <span class="font-medium text-zinc-800 dark:text-zinc-200">
-                                    {{ $bt->customer->customer_name ?? '-' }}
-                                </span>
+                            <td class="px-4 py-3 text-center">
+                                <div class="inline-flex items-center gap-1.5">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-md bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-semibold">
+                                        {{ $bt->shift ?? '-' }}
+                                    </span>
+                                    <span class="text-zinc-400 text-xs">|</span>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-md bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-xs font-semibold">
+                                        {{ $bt->group ?? '-' }}
+                                    </span>
+                                </div>
+                            </td>
 
-                                @php
-                                    $modelIds = collect($bt->question_snapshot ?? [])
-                                        ->pluck('model_id')
-                                        ->filter()
-                                        ->unique()
-                                        ->values();
-
-                                    if ($modelIds->isEmpty() && $bt->model_id) {
-                                        $modelIds = collect([$bt->model_id]);
-                                    }
-
-                                    $models = $modelIds->isNotEmpty()
-                                        ? \App\Models\QAQC\BlindTest\Model::whereIn('id', $modelIds)->get()
-                                        : collect();
-                                @endphp
-
-                                @if($models->count() > 0)
-                                    <div class="flex flex-wrap items-center justify-center gap-1">
-                                        @foreach($models as $m)
-                                            <span class="inline-flex items-center px-1.5 py-0.5 rounded
-                                                text-[10px] font-semibold
-                                                {{ $models->count() > 1
-                                                    ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300'
-                                                    : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300' }}">
-                                                {{ $m->model_name }}
-                                            </span>
-                                        @endforeach
-                                    </div>
+                            <td class="px-4 py-3 text-center">
+                                @if($bt->section)
+                                    <span class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold
+                                        @if($bt->section === 'QC') bg-blue-100 text-blue-700
+                                        @elseif($bt->section === 'SMT') bg-green-100 text-green-700
+                                        @elseif($bt->section === 'BE') bg-yellow-100 text-yellow-700
+                                        @else bg-purple-100 text-purple-700 @endif">
+                                        {{ $bt->section }}
+                                    </span>
                                 @else
                                     <span class="text-xs text-zinc-400">-</span>
                                 @endif
-                            </div>
-                        </td>
+                            </td>
 
-                        <td class="px-4 py-3 text-center">
-                            @if($bt->duration_minutes)
-                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-300 text-xs font-semibold">
-                                    {{ $bt->duration_minutes }} menit
-                                </span>
-                            @else
-                                <span class="text-xs text-zinc-400">-</span>
-                            @endif
-                        </td>
-
-                        <td class="px-4 py-3 text-center">
-                            @if($isTrashed)
-                                <flux:badge size="sm" color="zinc">Deleted</flux:badge>
-                            @else
-                                @php $sc = ['pending' => 'yellow', 'in_progress' => 'blue', 'completed' => 'green']; @endphp
-                                <flux:badge size="sm" color="{{ $sc[$bt->status] ?? 'gray' }}">
-                                    {{ ucfirst(str_replace('_', ' ', $bt->status)) }}
-                                </flux:badge>
-                                @if($bt->auto_saved)
-                                    <div class="text-[10px] text-orange-500 dark:text-orange-400 font-semibold mt-0.5 uppercase">Auto Saved</div>
-                                @endif
-                            @endif
-                        </td>
-
-                        <td class="px-4 py-3 text-center">
-                            @if($bt->status === 'completed' && !$bt->is_reviewed)
-                                <div class="inline-flex flex-col items-center gap-1">
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 text-xs font-bold border border-amber-300 dark:border-amber-700">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">
-                                            <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z" clip-rule="evenodd" />
-                                        </svg>
-                                        Pending Review
+                            <td class="px-4 py-3 text-sm text-center">
+                                <div class="flex flex-col items-center gap-1">
+                                    <span class="font-medium text-zinc-800 dark:text-zinc-200">
+                                        {{ $bt->customer->customer_name ?? '-' }}
                                     </span>
-                                    <div class="text-[10px] text-amber-600 dark:text-amber-400 font-semibold">
-                                        Menunggu QC
-                                    </div>
-                                </div>
-                            @elseif($bt->overall_result)
-                                <flux:badge size="sm" color="{{ $bt->overall_result === 'PASS' ? 'green' : 'red' }}">
-                                    {{ $bt->overall_result }}
-                                </flux:badge>
-                                <div class="text-xs text-zinc-500 mt-1">{{ $bt->total_correct }}/{{ $bt->total_items }}</div>
+                                    @php
+                                        // Kumpulkan model dari snapshot (support multi-model di nested items)
+                                        $snapshotModels = collect($bt->question_snapshot ?? [])
+                                            ->flatMap(function ($q) {
+                                                $items = $q['items'] ?? [];
+                                                // Format baru: nested group
+                                                if (!empty($items) && isset($items[0]['model_id'])) {
+                                                    return collect($items)->map(fn ($g) => [
+                                                        'model_id'   => $g['model_id'] ?? null,
+                                                        'model_name' => $g['model_name'] ?? null,
+                                                    ])->filter(fn ($m) => $m['model_id']);
+                                                }
+                                                // Format lama
+                                                if (!empty($q['model_id'])) {
+                                                    $m = \App\Models\QAQC\BlindTest\Model::find($q['model_id']);
+                                                    return $m ? [['model_id' => $m->id, 'model_name' => $m->model_name]] : [];
+                                                }
+                                                return [];
+                                            })
+                                            ->unique('model_id')
+                                            ->values();
 
-                                @if($bt->max_attempt > 1)
-                                    <div class="text-[10px] font-semibold mt-0.5
-                                        {{ $bt->attempt > 1
-                                            ? 'text-purple-600 dark:text-purple-400'
-                                            : 'text-zinc-500 dark:text-zinc-400' }}">
-                                        Attempt {{ $bt->attempt }}/{{ $bt->max_attempt }}
-                                    </div>
-                                @endif
-                            @else
-                                <span class="text-xs text-zinc-400">-</span>
-                            @endif
-                        </td>
+                                        // Fallback ke kolom model_id
+                                        if ($snapshotModels->isEmpty() && $bt->model_id) {
+                                            $m = \App\Models\QAQC\BlindTest\Model::find($bt->model_id);
+                                            if ($m) $snapshotModels = collect([['model_id' => $m->id, 'model_name' => $m->model_name]]);
+                                        }
+                                    @endphp
 
-                        {{-- ============ CREATED BY / AT ============ --}}
-                        <td class="px-4 py-3 text-center">
-                            <div class="flex flex-col items-center gap-0.5">
-                                <div class="inline-flex items-center gap-1 text-xs font-semibold text-zinc-700 dark:text-zinc-300">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5 text-zinc-400">
-                                        <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z" clip-rule="evenodd" />
-                                    </svg>
-                                    {{ $bt->creator->name ?? '-' }}
-                                </div>
-                                <div class="text-[10px] text-zinc-500 dark:text-zinc-400 whitespace-nowrap">
-                                    {{ $bt->created_at ? $bt->created_at->format('d/m/Y H:i') : '-' }}
-                                </div>
-                            </div>
-                        </td>
-
-                        {{-- ============ ACTIONS / REASON ============ --}}
-                        <td class="px-4 py-3 text-center">
-                            @if($isTrashed)
-                                <div class="flex flex-col items-center gap-1.5 max-w-[220px] mx-auto">
-                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 text-[10px] font-bold uppercase tracking-wider">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3">
-                                            <path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
-                                        </svg>
-                                        Deleted
-                                    </span>
-                                    @if($bt->deleted_reason)
-                                        <div class="text-xs text-red-600 dark:text-red-400 font-semibold italic text-center leading-tight break-words"
-                                            title="{{ $bt->deleted_reason }}">
-                                            {{ $bt->deleted_reason }}
+                                    @if($snapshotModels->count() > 0)
+                                        <div class="flex flex-wrap items-center justify-center gap-1">
+                                            @foreach($snapshotModels as $sm)
+                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded
+                                                    text-[10px] font-semibold
+                                                    {{ $snapshotModels->count() > 1
+                                                        ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300'
+                                                        : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300' }}">
+                                                    {{ $sm['model_name'] }}
+                                                </span>
+                                            @endforeach
+                                            @if($snapshotModels->count() > 1)
+                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+                                                    {{ $snapshotModels->count() }} models
+                                                </span>
+                                            @endif
                                         </div>
                                     @else
-                                        <div class="text-[10px] text-zinc-400 italic">No reason provided</div>
+                                        <span class="text-xs text-zinc-400">-</span>
                                     @endif
                                 </div>
-                            @else
-                                <div class="flex items-center justify-center gap-1 flex-wrap">
-                                    @can('review blind test location')
-                                        @if($bt->status === 'completed' && !$bt->is_reviewed)
-                                            <flux:tooltip content="Review Location" position="top">
-                                                <a href="{{ route('qaqc.blind-test.review', $bt->id) }}">
-                                                    <flux:button size="sm" icon="clipboard-document-check" variant="primary" color="purple" class="!p-2" />
-                                                </a>
-                                            </flux:tooltip>
-                                        @endif
-                                    @endcan
-                                    @can('execute blind test')
-                                        @if($bt->status === 'completed')
-                                            <flux:tooltip content="View Result" position="top">
-                                                <a href="{{ route('qaqc.blind-test.execute', $bt->id) }}">
-                                                    <flux:button size="sm" icon="eye" variant="primary" color="black" class="!p-2" />
-                                                </a>
-                                            </flux:tooltip>
+                            </td>
+
+                            <td class="px-4 py-3 text-center">
+                                @if($bt->duration_minutes)
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-300 text-xs font-semibold">
+                                        {{ $bt->duration_minutes }} menit
+                                    </span>
+                                @else
+                                    <span class="text-xs text-zinc-400">-</span>
+                                @endif
+                            </td>
+
+                            <td class="px-4 py-3 text-center">
+                                @if($isTrashed)
+                                    <flux:badge size="sm" color="zinc">Deleted</flux:badge>
+                                @else
+                                    @php $sc = ['pending' => 'yellow', 'in_progress' => 'blue', 'completed' => 'green']; @endphp
+                                    <flux:badge size="sm" color="{{ $sc[$bt->status] ?? 'gray' }}">
+                                        {{ ucfirst(str_replace('_', ' ', $bt->status)) }}
+                                    </flux:badge>
+                                    @if($bt->auto_saved)
+                                        <div class="text-[10px] text-orange-500 dark:text-orange-400 font-semibold mt-0.5 uppercase">Auto Saved</div>
+                                    @endif
+                                @endif
+                            </td>
+
+                            <td class="px-4 py-3 text-center">
+                                @if($bt->status === 'completed' && !$bt->is_reviewed)
+                                    <div class="inline-flex flex-col items-center gap-1">
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 text-xs font-bold border border-amber-300 dark:border-amber-700">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">
+                                                <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z" clip-rule="evenodd" />
+                                            </svg>
+                                            Pending Review
+                                        </span>
+                                        <div class="text-[10px] text-amber-600 dark:text-amber-400 font-semibold">
+                                            Menunggu QC
+                                        </div>
+                                    </div>
+                                @elseif($bt->overall_result)
+                                    <flux:badge size="sm" color="{{ $bt->overall_result === 'PASS' ? 'green' : 'red' }}">
+                                        {{ $bt->overall_result }}
+                                    </flux:badge>
+                                    <div class="text-xs text-zinc-500 mt-1">{{ $bt->total_correct }}/{{ $bt->total_items }}</div>
+
+                                    @if($bt->max_attempt > 1)
+                                        <div class="text-[10px] font-semibold mt-0.5
+                                            {{ $bt->attempt > 1
+                                                ? 'text-purple-600 dark:text-purple-400'
+                                                : 'text-zinc-500 dark:text-zinc-400' }}">
+                                            Attempt {{ $bt->attempt }}/{{ $bt->max_attempt }}
+                                        </div>
+                                    @endif
+                                @else
+                                    <span class="text-xs text-zinc-400">-</span>
+                                @endif
+                            </td>
+
+                            <td class="px-4 py-3 text-center">
+                                <div class="flex flex-col items-center gap-0.5">
+                                    <div class="inline-flex items-center gap-1 text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5 text-zinc-400">
+                                            <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z" clip-rule="evenodd" />
+                                        </svg>
+                                        {{ $bt->creator->name ?? '-' }}
+                                    </div>
+                                    <div class="text-[10px] text-zinc-500 dark:text-zinc-400 whitespace-nowrap">
+                                        {{ $bt->created_at ? $bt->created_at->format('d/m/Y H:i') : '-' }}
+                                    </div>
+                                </div>
+                            </td>
+
+                            <td class="px-4 py-3 text-center">
+                                @if($isTrashed)
+                                    <div class="flex flex-col items-center gap-1.5 max-w-[220px] mx-auto">
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 text-[10px] font-bold uppercase tracking-wider">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3">
+                                                <path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
+                                            </svg>
+                                            Deleted
+                                        </span>
+                                        @if($bt->deleted_reason)
+                                            <div class="text-xs text-red-600 dark:text-red-400 font-semibold italic text-center leading-tight break-words"
+                                                title="{{ $bt->deleted_reason }}">
+                                                {{ $bt->deleted_reason }}
+                                            </div>
                                         @else
-                                            <flux:tooltip content="Start Test" position="top">
-                                                <a href="{{ route('qaqc.blind-test.execute', $bt->id) }}">
-                                                    <flux:button size="sm" icon="play" variant="primary" color="green" class="!p-2" />
-                                                </a>
-                                            </flux:tooltip>
+                                            <div class="text-[10px] text-zinc-400 italic">No reason provided</div>
                                         @endif
-                                    @endcan
+                                    </div>
+                                @else
+                                    <div class="flex items-center justify-center gap-1 flex-wrap">
+                                        @can('review blind test location')
+                                            @if($bt->status === 'completed' && !$bt->is_reviewed)
+                                                <flux:tooltip content="Review Location" position="top">
+                                                    <a href="{{ route('qaqc.blind-test.review', $bt->id) }}">
+                                                        <flux:button size="sm" icon="clipboard-document-check" variant="primary" color="purple" class="!p-2" />
+                                                    </a>
+                                                </flux:tooltip>
+                                            @endif
+                                        @endcan
+                                        @can('execute blind test')
+                                            @if($bt->status === 'completed')
+                                                <flux:tooltip content="View Result" position="top">
+                                                    <a href="{{ route('qaqc.blind-test.execute', $bt->id) }}">
+                                                        <flux:button size="sm" icon="eye" variant="primary" color="black" class="!p-2" />
+                                                    </a>
+                                                </flux:tooltip>
+                                            @else
+                                                <flux:tooltip content="Start Test" position="top">
+                                                    <a href="{{ route('qaqc.blind-test.execute', $bt->id) }}">
+                                                        <flux:button size="sm" icon="play" variant="primary" color="green" class="!p-2" />
+                                                    </a>
+                                                </flux:tooltip>
+                                            @endif
+                                        @endcan
 
-                                    @can('check blind test qc')
-                                        @if(!$bt->check_by_qc)
-                                            <flux:tooltip content="Approve as Check By QC" position="top">
-                                                <flux:button size="sm" icon="check-circle" variant="primary" color="blue" class="!p-2"
-                                                    wire:click="openApprovalModal({{ $bt->id }}, 'qc')" />
-                                            </flux:tooltip>
-                                        @endif
-                                    @endcan
+                                        @can('check blind test qc')
+                                            @if(!$bt->check_by_qc)
+                                                <flux:tooltip content="Approve as Check By QC" position="top">
+                                                    <flux:button size="sm" icon="check-circle" variant="primary" color="blue" class="!p-2"
+                                                        wire:click="openApprovalModal({{ $bt->id }}, 'qc')" />
+                                                </flux:tooltip>
+                                            @endif
+                                        @endcan
 
-                                    @can('check blind test prod')
-                                        @if(!$bt->check_by_prod)
-                                            <flux:tooltip content="Approve as Check By Production" position="top">
-                                                <flux:button size="sm" icon="check-circle" variant="primary" color="blue" class="!p-2"
-                                                    wire:click="openApprovalModal({{ $bt->id }}, 'prod')" />
-                                            </flux:tooltip>
-                                        @endif
-                                    @endcan
+                                        @can('check blind test prod')
+                                            @if(!$bt->check_by_prod)
+                                                <flux:tooltip content="Approve as Check By Production" position="top">
+                                                    <flux:button size="sm" icon="check-circle" variant="primary" color="blue" class="!p-2"
+                                                        wire:click="openApprovalModal({{ $bt->id }}, 'prod')" />
+                                                </flux:tooltip>
+                                            @endif
+                                        @endcan
 
-                                    @can('acknowledge blind test spv')
-                                        @if(!$bt->acknowledge_by_spv)
-                                            <flux:tooltip content="Acknowledge as SPV" position="top">
-                                                <flux:button size="sm" icon="check-circle" variant="primary" color="blue" class="!p-2"
-                                                    wire:click="openApprovalModal({{ $bt->id }}, 'spv')" />
-                                            </flux:tooltip>
-                                        @endif
-                                    @endcan
+                                        @can('acknowledge blind test spv')
+                                            @if(!$bt->acknowledge_by_spv)
+                                                <flux:tooltip content="Acknowledge as SPV" position="top">
+                                                    <flux:button size="sm" icon="check-circle" variant="primary" color="blue" class="!p-2"
+                                                        wire:click="openApprovalModal({{ $bt->id }}, 'spv')" />
+                                                </flux:tooltip>
+                                            @endif
+                                        @endcan
 
-                                    @can('acknowledge blind test qc spv')
-                                        @if(!$bt->acknowledge_qc_spv)
-                                            <flux:tooltip content="Acknowledge as QC SPV" position="top">
-                                                <flux:button size="sm" icon="check-circle" variant="primary" color="blue" class="!p-2"
-                                                    wire:click="openApprovalModal({{ $bt->id }}, 'qc_spv')" />
-                                            </flux:tooltip>
-                                        @endif
-                                    @endcan
+                                        @can('acknowledge blind test qc spv')
+                                            @if(!$bt->acknowledge_qc_spv)
+                                                <flux:tooltip content="Acknowledge as QC SPV" position="top">
+                                                    <flux:button size="sm" icon="check-circle" variant="primary" color="blue" class="!p-2"
+                                                        wire:click="openApprovalModal({{ $bt->id }}, 'qc_spv')" />
+                                                </flux:tooltip>
+                                            @endif
+                                        @endcan
 
-                                    @can('delete blind test')
-                                        @if($bt->status === 'pending')
-                                            <flux:tooltip content="Delete" position="top">
-                                                <flux:button size="sm" icon="trash" variant="danger" color="red" class="!p-2"
-                                                    wire:click="confirmDelete({{ $bt->id }})" />
-                                            </flux:tooltip>
+                                        @can('delete blind test')
+                                            @if($bt->status === 'pending')
+                                                <flux:tooltip content="Delete" position="top">
+                                                    <flux:button size="sm" icon="trash" variant="danger" color="red" class="!p-2"
+                                                        wire:click="confirmDelete({{ $bt->id }})" />
+                                                </flux:tooltip>
+                                            @endif
+                                        @endcan
+                                    </div>
+                                @endif
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="12" class="px-4 py-8 text-center">
+                                <div class="flex flex-col items-center gap-2 py-6">
+                                    <flux:icon name="clipboard-document-check" class="w-10 h-10 text-zinc-400" />
+                                    <h3 class="text-base font-medium text-zinc-900 dark:text-white">No blind test records found</h3>
+                                    <p class="text-sm text-zinc-500">
+                                        @if($search || $filterDepartment || $filterShift || $filterGroup || $filterSection || $filterCustomer || $filterModel || $filterResult || $filterDateFrom || $filterDateTo)
+                                            Try adjusting your search or filters
+                                        @else
+                                            Klik salah satu soal di bank soal di atas untuk memulai
                                         @endif
-                                    @endcan
+                                    </p>
                                 </div>
-                            @endif
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="12" class="px-4 py-8 text-center">
-                            <div class="flex flex-col items-center gap-2 py-6">
-                                <flux:icon name="clipboard-document-check" class="w-10 h-10 text-zinc-400" />
-                                <h3 class="text-base font-medium text-zinc-900 dark:text-white">No blind test records found</h3>
-                                <p class="text-sm text-zinc-500">
-                                    @if($search || $filterDepartment || $filterShift || $filterGroup || $filterSection || $filterCustomer || $filterModel || $filterResult || $filterDateFrom || $filterDateTo)
-                                        Try adjusting your search or filters
-                                    @else
-                                        Get started by creating a new blind test
-                                    @endif
-                                </p>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
+
         @if($blindTests->hasPages())
         <div class="p-4 border-t border-zinc-200 dark:border-zinc-700 mt-auto">
             {{ $blindTests->links() }}
@@ -563,7 +812,7 @@
         <div class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40" @click="open = false"></div>
 
         <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-5xl max-h-[90vh] flex flex-col overflow-hidden">
+            <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden">
 
                 <!-- Modal Header -->
                 <div class="relative overflow-hidden bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 px-6 py-5 flex items-center justify-between">
@@ -575,7 +824,7 @@
                         </div>
                         <div>
                             <h2 class="text-lg font-bold text-white">{{ $modalTitle }}</h2>
-                            <p class="text-xs text-blue-100">Setup soal dan employee untuk blind test</p>
+                            <p class="text-xs text-blue-100">Pilih employee & buat test (durasi otomatis 5 menit)</p>
                         </div>
                     </div>
                     <button type="button" @click="open = false"
@@ -590,26 +839,99 @@
                 <div class="flex-1 overflow-y-auto p-6 bg-zinc-50 dark:bg-zinc-950/30">
                     <form wire:submit="save" id="blind-test-form" class="space-y-4">
 
-                        {{-- ================= STEP 1: SECTION ================= --}}
+                        {{-- ========== INFO SOAL TERPILIH ========== --}}
+                        @if($selectedQuestion)
+                        @php
+                            $secColors = [
+                                'QC'  => 'from-blue-500 to-indigo-600',
+                                'SMT' => 'from-green-500 to-emerald-600',
+                                'BE'  => 'from-yellow-500 to-orange-600',
+                                'MI'  => 'from-purple-500 to-pink-600',
+                            ];
+                            $gradient = $secColors[$selectedQuestion->section] ?? $secColors['QC'];
+                        @endphp
+                        <div class="bg-gradient-to-r {{ $gradient }} rounded-xl p-4 shadow-lg">
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="w-10 h-10 rounded-lg bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-white">
+                                        <path fill-rule="evenodd" d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625ZM7.5 15a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 7.5 15Zm.75 2.25a.75.75 0 0 0 0 1.5H12a.75.75 0 0 0 0-1.5H8.25Z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="text-[10px] text-white/80 uppercase font-bold tracking-wider">Soal Terpilih</div>
+                                    <div class="text-sm font-bold text-white">#{{ $selectedQuestion->id }} — Section {{ $selectedQuestion->section }}</div>
+                                </div>
+                                <span class="text-xs px-2 py-1 rounded-full bg-white/20 backdrop-blur-sm text-white font-bold">
+                                    {{ $selectedQuestion->totalDefects() }} defect
+                                </span>
+                            </div>
+                            @php
+                                // Kumpulkan model dari relasi many-to-many, fallback ke model utama
+                                $sqModelNames = $selectedQuestion->models->pluck('model_name')->filter()->values();
+
+                                if ($sqModelNames->isEmpty() && $selectedQuestion->model) {
+                                    $sqModelNames = collect([$selectedQuestion->model->model_name]);
+                                }
+                            @endphp
+
+                            <div class="text-xs text-white/90 mt-2 flex flex-wrap items-center gap-x-2 gap-y-1">
+                                <span>
+                                    <strong>Customer:</strong> {{ $selectedQuestion->customer->customer_name ?? '-' }}
+                                </span>
+
+                                @if($sqModelNames->isNotEmpty())
+                                    <span class="text-white/60">·</span>
+                                    <span class="inline-flex items-center gap-1 flex-wrap">
+                                        <strong>Model:</strong>
+                                        @if($sqModelNames->count() === 1)
+                                            <span>{{ $sqModelNames->first() }}</span>
+                                        @else
+                                            @foreach($sqModelNames as $mName)
+                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-white/20 backdrop-blur-sm text-white border border-white/30">
+                                                    {{ $mName }}
+                                                </span>
+                                            @endforeach
+                                            <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-bold bg-amber-400/30 text-amber-50 border border-amber-200/40">
+                                                {{ $sqModelNames->count() }} models
+                                            </span>
+                                        @endif
+                                    </span>
+                                @endif
+                            </div>
+                            @if($selectedQuestion->question_text)
+                                <div class="text-[11px] text-white/80 mt-1 italic">
+                                    "{{ $selectedQuestion->question_text }}"
+                                </div>
+                            @endif
+                        </div>
+                        @endif
+
+                        {{-- ========== STEP 1: SECTION (readonly) ========== --}}
                         <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
                             <div class="px-5 py-3.5 border-b border-zinc-200 dark:border-zinc-800 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow-sm shadow-blue-500/30">
+                                <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center">
                                     <span class="text-xs font-bold text-white">1</span>
                                 </div>
-                                <h3 class="text-sm font-bold text-zinc-800 dark:text-white">Pilih Section</h3>
+                                <h3 class="text-sm font-bold text-zinc-800 dark:text-white">Section</h3>
+                                <span class="ml-auto text-[10px] px-2 py-0.5 rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 font-bold uppercase">
+                                    Auto-set
+                                </span>
                             </div>
                             <div class="p-5">
-                                <flux:label required>Section</flux:label>
-                                <flux:select wire:model.live="section" placeholder="Select section...">
-                                    @foreach($sections as $sec)
-                                        <flux:select.option value="{{ $sec }}">{{ $sec }}</flux:select.option>
-                                    @endforeach
-                                </flux:select>
-                                @error('section') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                <div class="flex items-center gap-3 p-3 rounded-lg bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700">
+                                    <div class="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center">
+                                        <span class="text-xs font-bold text-white">{{ $section }}</span>
+                                    </div>
+                                    <div>
+                                        <div class="text-sm font-bold text-zinc-800 dark:text-white">{{ $section }}</div>
+                                        <div class="text-[11px] text-zinc-500 dark:text-zinc-400">Section sudah otomatis dari soal yang dipilih</div>
+                                    </div>
+                                </div>
+                                @error('section') <span class="text-red-500 text-xs block mt-2">{{ $message }}</span> @enderror
                             </div>
                         </div>
 
-                        {{-- ================= STEP 2: EMPLOYEE ================= --}}
+                        {{-- ========== STEP 2: EMPLOYEE PICKER ========== --}}
                         <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden"
                             x-data="{
                                 pickedId: null,
@@ -677,10 +999,6 @@
                                             <p class="text-[10px] text-blue-600 dark:text-blue-400">
                                                 Department: <strong>{{ $allowedDepts }}</strong>
                                             </p>
-                                        @else
-                                            <p class="text-[10px] text-amber-600 dark:text-amber-400 italic">
-                                                Pilih Section dulu
-                                            </p>
                                         @endif
                                     </div>
                                 </div>
@@ -690,7 +1008,7 @@
                             </div>
                             <div class="p-5 space-y-4">
 
-                                {{-- STEP 2A: SEARCH & PICK EMPLOYEE --}}
+                                {{-- STEP 2A: SEARCH --}}
                                 <div>
                                     <flux:label required>1. Cari & Pilih Employee</flux:label>
                                     <div class="relative">
@@ -702,7 +1020,6 @@
                                         </svg>
                                     </div>
 
-                                    <!-- Loading -->
                                     <div x-show="loading" class="mt-2 p-3 text-center text-sm bg-zinc-50 dark:bg-zinc-800 rounded-lg">
                                         <svg class="animate-spin h-4 w-4 mx-auto text-blue-500" fill="none" viewBox="0 0 24 24">
                                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -710,7 +1027,6 @@
                                         </svg>
                                     </div>
 
-                                    <!-- Search Result -->
                                     <div x-show="!loading && employees.length > 0" class="mt-2 border border-zinc-200 dark:border-zinc-700 rounded-lg max-h-60 overflow-y-auto">
                                         <table class="w-full text-sm">
                                             <thead class="bg-zinc-50 dark:bg-zinc-800 sticky top-0">
@@ -760,7 +1076,7 @@
                                     </div>
                                 </div>
 
-                                {{-- STEP 2B: PREVIEW EMPLOYEE TERPILIH + SHIFT/GROUP --}}
+                                {{-- STEP 2B: PREVIEW + SHIFT/GROUP --}}
                                 <div x-show="pickedId" x-cloak class="p-4 rounded-xl bg-blue-50 dark:bg-blue-950/20 border-2 border-blue-200 dark:border-blue-800">
                                     <div class="flex items-center justify-between mb-3">
                                         <div class="flex items-center gap-3">
@@ -793,7 +1109,6 @@
                                                 <option value="2">2</option>
                                                 <option value="3">3</option>
                                             </select>
-                                            @error('tempShift') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
                                         </div>
                                         <div>
                                             <label class="block text-[11px] font-semibold text-blue-700 dark:text-blue-300 uppercase mb-1">
@@ -810,12 +1125,6 @@
                                         </div>
                                     </div>
 
-                                    {{-- Info wajib --}}
-                                    <p class="text-[11px] text-blue-600 dark:text-blue-400 italic mb-2">
-                                        <strong>Shift</strong> dan <strong>Group</strong> wajib dipilih sebelum tambah employee.
-                                    </p>
-
-                                    {{-- Tombol Add: disabled kalau salah satu kosong --}}
                                     <button type="button" @click="addNow()"
                                         class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg text-sm font-semibold shadow-lg shadow-blue-500/30"
                                         x-bind:disabled="!$wire.tempShift || !$wire.tempGroup">
@@ -828,7 +1137,7 @@
 
                                 @error('selectedEmployees') <span class="text-red-500 text-xs block">{{ $message }}</span> @enderror
 
-                                {{-- STEP 2C: SELECTED EMPLOYEE LIST --}}
+                                {{-- STEP 2C: SELECTED LIST --}}
                                 <div>
                                     <div class="text-[11px] font-semibold text-zinc-500 uppercase mb-2">Daftar Employee ({{ count($selectedEmployees) }})</div>
                                     <div class="border rounded-lg overflow-hidden dark:border-zinc-700">
@@ -869,7 +1178,7 @@
                                                 @empty
                                                 <tr>
                                                     <td colspan="7" class="px-3 py-6 text-center text-xs text-zinc-400 italic">
-                                                        Belum ada employee dipilih. Cari employee di atas lalu klik Pilih.
+                                                        Belum ada employee dipilih.
                                                     </td>
                                                 </tr>
                                                 @endforelse
@@ -880,351 +1189,26 @@
                             </div>
                         </div>
 
-                        {{-- ================= STEP 3: PILIH SOAL ================= --}}
+                        {{-- ========== STEP 3: DURASI (FIXED 5 MENIT) ========== --}}
                         <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
-                            <div class="px-5 py-3.5 border-b border-zinc-200 dark:border-zinc-800 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow-sm shadow-blue-500/30">
+                            <div class="px-5 py-3.5 border-b border-zinc-200 dark:border-zinc-800 bg-gradient-to-r from-cyan-50 to-blue-50 dark:from-cyan-950/30 dark:to-blue-950/30 flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-lg bg-cyan-600 flex items-center justify-center shadow-sm shadow-cyan-500/30">
                                     <span class="text-xs font-bold text-white">3</span>
                                 </div>
-                                <h3 class="text-sm font-bold text-zinc-800 dark:text-white">Pilih Soal dari Bank Soal</h3>
-
-                                {{-- Total Defect Badge --}}
-                                <div class="ml-auto flex items-center gap-2">
-                                    <span class="text-[11px] text-zinc-500 dark:text-zinc-400">Total Defect:</span>
-                                    <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-bold
-                                        {{ $totalSelectedItems === 5
-                                            ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border border-green-300 dark:border-green-700'
-                                            : ($totalSelectedItems > 5
-                                                ? 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 border border-red-300 dark:border-red-700'
-                                                : 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 border border-amber-300 dark:border-amber-700') }}">
-                                        {{ $totalSelectedItems }} / 5
-                                    </span>
-                                </div>
-                            </div>
-
-                            <div class="p-5">
-
-                                {{-- Customer & Model --}}
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                    <div>
-                                        <flux:label required>Customer</flux:label>
-                                        <flux:select wire:model.live="customer_id" placeholder="Select customer..."
-                                            :disabled="!$section">
-                                            @foreach($customers as $customer)
-                                                <flux:select.option value="{{ $customer->id }}">{{ $customer->customer_name }}</flux:select.option>
-                                            @endforeach
-                                        </flux:select>
-                                        @error('customer_id') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                                    </div>
-                                    <div>
-                                        <flux:label>Model (opsional)</flux:label>
-                                        <flux:select wire:model.live="model_id" placeholder="Semua Model..."
-                                            :disabled="!$customer_id">
-                                            <flux:select.option value="">-- Semua Model --</flux:select.option>
-                                            @foreach($formModels as $model)
-                                                <flux:select.option value="{{ $model->id }}">{{ $model->model_name }}</flux:select.option>
-                                            @endforeach
-                                        </flux:select>
-                                    </div>
-                                </div>
-
-                                {{-- Bank Soal Table --}}
-                                @if(!$section || !$customer_id)
-                                    <div class="p-4 bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-                                        <div class="flex items-start gap-3">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5">
-                                                <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 0 1 .67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 1 1-.671-1.34l.041-.022ZM12 9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
-                                            </svg>
-                                            <p class="text-sm text-blue-800 dark:text-blue-300">
-                                                Pilih <strong>Customer</strong> terlebih dahulu untuk menampilkan daftar soal. Model bersifat opsional.
-                                            </p>
-                                        </div>
-                                    </div>
-                                @elseif($questions->isEmpty())
-                                    <div class="p-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg">
-                                        <div class="flex items-start gap-3">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5">
-                                                <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z" clip-rule="evenodd" />
-                                            </svg>
-                                            <p class="text-sm text-red-800 dark:text-red-300">
-                                                Tidak ada soal untuk kombinasi Section/Customer ini. Silakan buat soal di <strong>Master Question</strong> dulu.
-                                            </p>
-                                        </div>
-                                    </div>
-                                @else
-                                    @php
-                                        $qPerPage = $this->questionPerPage;
-
-                                        $qFiltered = $questions;
-                                        if ($this->searchQuestion) {
-                                            $needle = strtolower($this->searchQuestion);
-                                            $qFiltered = $questions->filter(function ($q) use ($needle) {
-                                                return str_contains((string) $q->id, $needle)
-                                                    || str_contains(strtolower($q->question_text ?? ''), $needle);
-                                            })->values();
-                                        }
-                                        $qTotal = $qFiltered->count();
-                                        $qLastPage = max(1, (int) ceil($qTotal / $qPerPage));
-                                        $qCurrentPage = min($this->questionPage, $qLastPage);
-                                        $qOffset = ($qCurrentPage - 1) * $qPerPage;
-                                        $qPageItems = $qFiltered->slice($qOffset, $qPerPage)->values();
-                                    @endphp
-
-                                    {{-- Search --}}
-                                    <div class="mb-3 flex items-center gap-2">
-                                        <div class="flex-1">
-                                            <flux:input
-                                                wire:model.live.debounce.300ms="searchQuestion"
-                                                placeholder="Cari soal (ID atau deskripsi)..."
-                                                icon="magnifying-glass"
-                                                clearable
-                                                size="sm"
-                                            />
-                                        </div>
-                                        <span class="text-xs text-zinc-500 dark:text-zinc-400 whitespace-nowrap">
-                                            {{ $qTotal }} soal
-                                        </span>
-                                    </div>
-
-                                    @error('question_ids') <span class="text-red-500 text-xs block mb-2">{{ $message }}</span> @enderror
-
-                                    {{-- Info Total --}}
-                                    <div class="mb-3 p-3 rounded-lg border-2
-                                        {{ $totalSelectedItems === 5
-                                            ? 'bg-green-50 border-green-300 dark:bg-green-950/20 dark:border-green-800'
-                                            : ($totalSelectedItems > 5
-                                                ? 'bg-red-50 border-red-300 dark:bg-red-950/20 dark:border-red-800'
-                                                : 'bg-amber-50 border-amber-300 dark:bg-amber-950/20 dark:border-amber-800') }}">
-                                        <div class="flex items-center justify-between">
-                                            <div class="flex items-center gap-2">
-                                                @if($totalSelectedItems === 5)
-                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-green-600">
-                                                        <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
-                                                    </svg>
-                                                    <span class="text-sm font-bold text-green-700 dark:text-green-300">
-                                                        Total Defect: 5 — Siap disimpan!
-                                                    </span>
-                                                @else
-                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-amber-600">
-                                                        <path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
-                                                    </svg>
-                                                    <span class="text-sm font-bold text-amber-700 dark:text-amber-300">
-                                                        Total Defect: {{ $totalSelectedItems }} / 5 — Pilih soal lain biar pas 5
-                                                    </span>
-                                                @endif
-                                            </div>
-                                            <span class="text-xs text-zinc-600 dark:text-zinc-400">
-                                                {{ count($question_ids) }} soal dipilih
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    {{-- Table --}}
-                                    <div class="border rounded-lg overflow-hidden dark:border-zinc-700">
-                                        <table class="w-full text-sm">
-                                            <thead class="bg-zinc-50 dark:bg-zinc-800/50">
-                                                <tr>
-                                                    <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 uppercase w-12">Pilih</th>
-                                                    <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 uppercase w-16">ID</th>
-                                                    <th class="px-3 py-2 text-left text-xs font-medium text-zinc-500 uppercase">Deskripsi</th>
-                                                    <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 uppercase w-40">Model</th>
-                                                    <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 uppercase w-24">Items</th>
-                                                    <th class="px-3 py-2 text-center text-xs font-medium text-zinc-500 uppercase w-40">Created At</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
-                                                @forelse($qPageItems as $q)
-                                                @php
-                                                    $itemCount = count($q->items ?? []);
-                                                    $isSelected = in_array($q->id, $question_ids);
-                                                    $currentTotal = $totalSelectedItems;
-                                                    $wouldBeTotal = $isSelected ? $currentTotal : $currentTotal + $itemCount;
-                                                    $canSelect = $isSelected || $wouldBeTotal <= 5;
-
-                                                    $qModel = \App\Models\QAQC\BlindTest\Model::find($q->model_id);
-                                                @endphp
-                                                <tr wire:key="q-{{ $q->id }}"
-                                                    class="transition-colors
-                                                        {{ !$canSelect
-                                                            ? 'bg-red-50 dark:bg-red-950/20 opacity-60 cursor-not-allowed'
-                                                            : ($isSelected
-                                                                ? 'bg-blue-50 dark:bg-blue-950/30 cursor-pointer'
-                                                                : 'hover:bg-zinc-50 dark:hover:bg-zinc-800/50 cursor-pointer') }}"
-                                                    @if($canSelect) wire:click="toggleQuestion({{ $q->id }})" @endif>
-
-                                                    {{-- Checkbox --}}
-                                                    <td class="px-3 py-2 text-center">
-                                                        <div class="flex items-center justify-center">
-                                                            <div class="w-5 h-5 rounded border-2 flex items-center justify-center
-                                                                {{ $isSelected
-                                                                    ? 'border-blue-600 bg-blue-600'
-                                                                    : ($canSelect ? 'border-zinc-300 dark:border-zinc-600' : 'border-red-300 dark:border-red-700 bg-red-100 dark:bg-red-900/30') }}">
-                                                                @if($isSelected)
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3 text-white">
-                                                                        <path fill-rule="evenodd" d="M19.916 4.626a.75.75 0 0 1 .208 1.04l-9 13.5a.75.75 0 0 1-1.154.114l-6-6a.75.75 0 0 1 1.06-1.06l5.353 5.353 8.493-12.74a.75.75 0 0 1 1.04-.207Z" clip-rule="evenodd" />
-                                                                    </svg>
-                                                                @elseif(!$canSelect)
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3 text-red-500">
-                                                                        <path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                                                                    </svg>
-                                                                @endif
-                                                            </div>
-                                                        </div>
-                                                    </td>
-
-                                                    <td class="px-3 py-2 text-center font-mono text-xs font-semibold text-zinc-700 dark:text-zinc-300">
-                                                        #{{ $q->id }}
-                                                    </td>
-
-                                                    <td class="px-3 py-2 text-zinc-800 dark:text-zinc-200">
-                                                        {{ $q->question_text ?: 'Tanpa deskripsi' }}
-                                                    </td>
-
-                                                    {{-- Model --}}
-                                                    <td class="px-3 py-2 text-center">
-                                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300">
-                                                            {{ $qModel->model_name ?? 'Model #' . $q->model_id }}
-                                                        </span>
-                                                    </td>
-
-                                                    <td class="px-3 py-2 text-center">
-                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold
-                                                            {{ $isSelected
-                                                                ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'
-                                                                : ($canSelect ? 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300' : 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300') }}">
-                                                            {{ $itemCount }} item
-                                                        </span>
-                                                    </td>
-
-                                                    <td class="px-3 py-2 text-center text-xs text-zinc-600 dark:text-zinc-400 whitespace-nowrap">
-                                                        {{ $q->created_at ? $q->created_at->format('d/m/Y H:i') : '-' }}
-                                                    </td>
-                                                </tr>
-                                                @empty
-                                                <tr>
-                                                    <td colspan="6" class="px-3 py-6 text-center text-xs text-zinc-400 italic">
-                                                        Tidak ada soal yang cocok dengan pencarian.
-                                                    </td>
-                                                </tr>
-                                                @endforelse
-                                            </tbody>
-                                        </table>
-                                    </div>
-
-                                    {{-- Pagination --}}
-                                    @if($qLastPage > 1)
-                                    <div class="mt-3 flex items-center justify-between">
-                                        <div class="text-xs text-zinc-500 dark:text-zinc-400">
-                                            Menampilkan {{ $qOffset + 1 }}–{{ min($qOffset + $qPerPage, $qTotal) }} dari {{ $qTotal }}
-                                        </div>
-                                        <div class="flex items-center gap-1">
-                                            <button type="button"
-                                                wire:click="setQuestionPage({{ max(1, $qCurrentPage - 1) }})"
-                                                @if($qCurrentPage <= 1) disabled @endif
-                                                class="px-2 py-1 rounded border border-zinc-300 dark:border-zinc-700 text-xs font-medium
-                                                    disabled:opacity-40 disabled:cursor-not-allowed
-                                                    hover:bg-zinc-50 dark:hover:bg-zinc-800">
-                                                Prev
-                                            </button>
-
-                                            @for($p = 1; $p <= $qLastPage; $p++)
-                                                <button type="button"
-                                                    wire:click="setQuestionPage({{ $p }})"
-                                                    class="px-2.5 py-1 rounded border text-xs font-semibold
-                                                        {{ $p === $qCurrentPage
-                                                            ? 'bg-blue-600 border-blue-600 text-white'
-                                                            : 'border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800' }}">
-                                                    {{ $p }}
-                                                </button>
-                                            @endfor
-
-                                            <button type="button"
-                                                wire:click="setQuestionPage({{ min($qLastPage, $qCurrentPage + 1) }})"
-                                                @if($qCurrentPage >= $qLastPage) disabled @endif
-                                                class="px-2 py-1 rounded border border-zinc-300 dark:border-zinc-700 text-xs font-medium
-                                                    disabled:opacity-40 disabled:cursor-not-allowed
-                                                    hover:bg-zinc-50 dark:hover:bg-zinc-800">
-                                                Next
-                                            </button>
-                                        </div>
-                                    </div>
-                                    @endif
-
-                                    {{-- Preview Soal Terpilih --}}
-                                    @if($selectedQuestions->count() > 0)
-                                    <div class="mt-4 space-y-3">
-                                        <div class="text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase">
-                                            Soal Terpilih ({{ $selectedQuestions->count() }}) — Total {{ $totalSelectedItems }} Item
-                                        </div>
-
-                                        @foreach($selectedQuestions as $sq)
-                                        <div class="border-2 border-blue-200 dark:border-blue-800 rounded-lg overflow-hidden">
-                                            <div class="px-3 py-2 bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800 flex items-center justify-between">
-                                                <div class="flex items-center gap-2">
-                                                    <span class="text-xs font-semibold text-blue-700 dark:text-blue-300">
-                                                        Soal #{{ $sq->id }} ({{ count($sq->items ?? []) }} item)
-                                                    </span>
-                                                    @php $sqModel = \App\Models\QAQC\BlindTest\Model::find($sq->model_id); @endphp
-                                                    <span class="text-[10px] px-2 py-0.5 rounded bg-purple-100 text-purple-700 font-semibold">
-                                                        {{ $sqModel->model_name ?? '-' }}
-                                                    </span>
-                                                    <button type="button"
-                                                        wire:click="toggleQuestion({{ $sq->id }})"
-                                                        class="text-[10px] px-2 py-0.5 rounded bg-red-100 text-red-700 hover:bg-red-200 font-semibold">
-                                                        ✕ Hapus
-                                                    </button>
-                                                </div>
-                                                <span class="text-[10px] text-blue-600 dark:text-blue-400 truncate max-w-md">
-                                                    {{ $sq->question_text }}
-                                                </span>
-                                            </div>
-                                            <table class="w-full text-sm bg-white dark:bg-zinc-900">
-                                                <thead class="bg-zinc-50 dark:bg-zinc-800/50">
-                                                    <tr>
-                                                        <th class="px-3 py-2 text-left text-xs font-medium text-zinc-500 uppercase w-10">#</th>
-                                                        <th class="px-3 py-2 text-left text-xs font-medium text-zinc-500 uppercase">Defect Item</th>
-                                                        <th class="px-3 py-2 text-left text-xs font-medium text-zinc-500 uppercase">Location</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
-                                                    @foreach($sq->items ?? [] as $i => $it)
-                                                    <tr>
-                                                        <td class="px-3 py-2 text-zinc-500">{{ $i + 1 }}</td>
-                                                        <td class="px-3 py-2 font-medium">{{ $it['deffect_name'] ?? '-' }}</td>
-                                                        <td class="px-3 py-2">
-                                                            <span class="inline-flex items-center px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs font-semibold">
-                                                                {{ $it['location'] ?? '-' }}
-                                                            </span>
-                                                        </td>
-                                                    </tr>
-                                                    @endforeach
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        @endforeach
-                                    </div>
-                                    @endif
-                                @endif
-                            </div>
-                        </div>
-
-                        {{-- ================= STEP 4: DURASI ================= --}}
-                        <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden">
-                            <div class="px-5 py-3.5 border-b border-zinc-200 dark:border-zinc-800 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 flex items-center gap-3">
-                                <div class="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center shadow-sm shadow-blue-500/30">
-                                    <span class="text-xs font-bold text-white">4</span>
-                                </div>
                                 <h3 class="text-sm font-bold text-zinc-800 dark:text-white">Durasi Pengerjaan</h3>
+                                <span class="ml-auto text-[10px] px-2 py-0.5 rounded-full bg-cyan-100 dark:bg-cyan-900/30 text-cyan-700 dark:text-cyan-400 font-bold uppercase">
+                                    Fixed
+                                </span>
                             </div>
                             <div class="p-5">
-                                <flux:label required>Duration (Menit)</flux:label>
-                                <flux:input wire:model.live="duration_minutes" type="number" min="1" max="600"
-                                    placeholder="e.g. 30" class="w-full" />
-                                @error('duration_minutes') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
-                                <p class="text-[11px] text-zinc-500 dark:text-zinc-400 mt-1">
-                                    Batas lama pengerjaan setelah <strong>Start</strong>. Waktu dihitung per employee.
-                                    Kalau habis, jawaban akan <strong>auto-save</strong> dan test otomatis close.
-                                </p>
+                                <div class="flex items-center gap-4 p-4 rounded-xl bg-cyan-50 dark:bg-cyan-950/20 border-2 border-cyan-200 dark:border-cyan-800">
+                                    <div>
+                                        <div class="text-sm font-bold text-cyan-800 dark:text-cyan-300">5 Menit</div>
+                                        <div class="text-xs text-cyan-600 dark:text-cyan-400">
+                                            Durasi otomatis 5 menit. Test akan close sendiri saat waktu habis.
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
 
@@ -1239,8 +1223,7 @@
                     </button>
                     <button type="submit" form="blind-test-form"
                         class="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium shadow-lg shadow-blue-500/30"
-                        wire:loading.attr="disabled" wire:target="save"
-                        @if($totalSelectedItems !== 5) disabled @endif>
+                        wire:loading.attr="disabled" wire:target="save">
                         <span wire:loading.remove wire:target="save">
                             {{ $blind_test_id ? 'Update' : 'Create ' . count($selectedEmployees) . ' Test' }}
                         </span>
@@ -1326,9 +1309,45 @@
                             <div class="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold">Customer</div>
                             <div class="text-sm font-semibold text-zinc-800 dark:text-white mt-1">{{ $viewData->customer->customer_name ?? '-' }}</div>
                         </div>
+                        @php
+                            $viewModelNames = collect($viewData->question_snapshot ?? [])
+                                ->flatMap(function ($q) {
+                                    $items = $q['items'] ?? [];
+                                    // Format baru: nested group
+                                    if (!empty($items) && isset($items[0]['model_id'])) {
+                                        return collect($items)->pluck('model_name')->filter();
+                                    }
+                                    // Format lama
+                                    if (!empty($q['model_id'])) {
+                                        $m = \App\Models\QAQC\BlindTest\Model::find($q['model_id']);
+                                        return $m ? [$m->model_name] : [];
+                                    }
+                                    return [];
+                                })
+                                ->unique()
+                                ->values();
+
+                            if ($viewModelNames->isEmpty() && $viewData->model) {
+                                $viewModelNames = collect([$viewData->model->model_name]);
+                            }
+                        @endphp
+
                         <div class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 p-3">
-                            <div class="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold">Model</div>
-                            <div class="text-sm font-semibold text-zinc-800 dark:text-white mt-1">{{ $viewData->model->model_name ?? '-' }}</div>
+                            <div class="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold">
+                                Model @if($viewModelNames->count() > 1) ({{ $viewModelNames->count() }}) @endif
+                            </div>
+                            <div class="mt-1 flex flex-wrap gap-1">
+                                @forelse($viewModelNames as $mName)
+                                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold
+                                        {{ $viewModelNames->count() > 1
+                                            ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300'
+                                            : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300' }}">
+                                        {{ $mName }}
+                                    </span>
+                                @empty
+                                    <span class="text-xs text-zinc-400">-</span>
+                                @endforelse
+                            </div>
                         </div>
                         <div class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-800 p-3">
                             <div class="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold">Section</div>
@@ -1556,5 +1575,63 @@
         </div>
     </div>
 
-    <style>[x-cloak] { display: none !important; }</style>
+    <style>
+        [x-cloak] { display: none !important; }
+
+        /* ===== Scrollbar horizontal auto-hide ===== */
+        .custom-scroll-x {
+            scroll-behavior: smooth;
+        }
+
+        .custom-scroll-x::-webkit-scrollbar {
+            height: 10px;
+            transition: opacity 0.3s ease;
+        }
+
+        .custom-scroll-x::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .custom-scroll-x::-webkit-scrollbar-thumb {
+            border-radius: 999px;
+            transition: background 0.3s ease;
+        }
+
+        /* Hidden state */
+        .scrollbar-hidden::-webkit-scrollbar-thumb {
+            background: transparent;
+        }
+
+        /* Visible state */
+        .scrollbar-visible::-webkit-scrollbar-thumb {
+            background: rgba(161, 161, 170, 0.5);
+            border: 2px solid transparent;
+            background-clip: padding-box;
+        }
+
+        .scrollbar-visible::-webkit-scrollbar-thumb:hover {
+            background: rgba(113, 113, 122, 0.8);
+            background-clip: padding-box;
+        }
+
+        .dark .scrollbar-visible::-webkit-scrollbar-thumb {
+            background: rgba(113, 113, 122, 0.6);
+            background-clip: padding-box;
+        }
+
+        .dark .scrollbar-visible::-webkit-scrollbar-thumb:hover {
+            background: rgba(161, 161, 170, 0.8);
+            background-clip: padding-box;
+        }
+
+        /* Firefox fallback */
+        .scrollbar-hidden {
+            scrollbar-width: none;
+        }
+
+        .scrollbar-visible {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(161, 161, 170, 0.5) transparent;
+        }
+    </style>
 </div>

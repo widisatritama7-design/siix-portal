@@ -7,6 +7,7 @@ use App\Models\QAQC\BlindTest\Model as BlindTestModel;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Question extends Model
@@ -39,10 +40,21 @@ class Question extends Model
         return $this->belongsTo(Customer::class, 'customer_id');
     }
 
-    // 👇 Pakai alias
+    // Model utama (legacy, tetap dipakai untuk backward-compat)
     public function model(): BelongsTo
     {
         return $this->belongsTo(BlindTestModel::class, 'model_id');
+    }
+
+    // 👇 BARU: relasi many-to-many ke model
+    public function models(): BelongsToMany
+    {
+        return $this->belongsToMany(
+            BlindTestModel::class,
+            'tb_qaqc_question_model',
+            'question_id',
+            'model_id'
+        )->withTimestamps();
     }
 
     public function creator(): BelongsTo
@@ -69,5 +81,22 @@ class Question extends Model
     public function usageCount(): int
     {
         return $this->blindTests()->count();
+    }
+
+    /**
+     * Total defect overall (semua model digabung).
+     * Support format lama (flat) & format baru (group per model).
+     */
+    public function totalDefects(): int
+    {
+        $items = $this->items ?? [];
+
+        // Format baru (per-model group)
+        if (!empty($items) && isset($items[0]['model_id'])) {
+            return collect($items)->sum(fn($g) => count($g['items'] ?? []));
+        }
+
+        // Format lama (flat array)
+        return count($items);
     }
 }

@@ -13,16 +13,31 @@ class QuestionManagement extends Component
 {
     use WithPagination;
 
+    public const MAX_DEFECTS = 5;
+
     public $question_id;
     public $customer_id = '';
-    public $model_id = '';
     public $section = '';
     public $question_text = '';
 
-    // Array pasangan: [ ['deffect_id' => 1, 'deffect_name' => 'X', 'location' => 'A1'], ... ]
-    public $items = [];
+    /**
+     * Struktur:
+     * [
+     *   [
+     *     'model_id'   => 1,
+     *     'model_name' => 'X100',
+     *     'items'      => [
+     *         ['deffect_id' => 1, 'deffect_name' => 'Baret', 'location' => 'A1'],
+     *         ...
+     *     ]
+     *   ],
+     *   ...
+     * ]
+     */
+    public $modelGroups = [];
 
-    // Temp input untuk menambah pair baru
+    // Temp input
+    public $selectedModelId = '';   // model yg dipilih untuk tambah defect
     public $tempDeffectId = '';
     public $tempLocation = '';
 
@@ -31,10 +46,7 @@ class QuestionManagement extends Component
     public $modalTitle = 'Add New Question';
     public $questionToDelete = null;
 
-    // View
     public $viewData = null;
-
-    // Tab
     public $activeTab = 'all';
 
     public const SECTIONS = ['QC', 'SMT', 'BE', 'MI'];
@@ -42,38 +54,34 @@ class QuestionManagement extends Component
     protected function rules()
     {
         return [
-            'customer_id'   => 'required|exists:tb_qaqc_customer,id',
-            'model_id'      => 'required|exists:tb_qaqc_model,id',
-            'section'       => 'required|in:QC,SMT,BE,MI',
-            'items'         => 'required|array|min:1',
-            'items.*.deffect_id' => 'required|exists:tb_qaqc_deffect,id',
-            'items.*.location'   => 'required|string|max:255',
+            'customer_id' => 'required|exists:tb_qaqc_customer,id',
+            'section'     => 'required|in:QC,SMT,BE,MI',
+            'modelGroups' => 'required|array|min:1',
+            'modelGroups.*.model_id' => 'required|exists:tb_qaqc_model,id',
+            'modelGroups.*.items'    => 'required|array|min:1',
+            'modelGroups.*.items.*.deffect_id' => 'required|exists:tb_qaqc_deffect,id',
+            'modelGroups.*.items.*.location'   => 'required|string|max:255',
             'question_text' => 'nullable|string|max:1000',
         ];
     }
 
     protected $messages = [
-        'customer_id.required'  => 'Customer is required.',
-        'model_id.required'     => 'Model is required.',
-        'section.required'      => 'Section is required.',
-        'items.required'        => 'Please add at least 1 defect item with location.',
-        'items.min'             => 'Please add at least 1 defect item with location.',
+        'customer_id.required'            => 'Customer is required.',
+        'section.required'                => 'Section is required.',
+        'modelGroups.required'            => 'Please add at least 1 model.',
+        'modelGroups.min'                 => 'Please add at least 1 model.',
+        'modelGroups.*.model_id.required' => 'Model is required.',
+        'modelGroups.*.items.required'    => 'Each model must have at least 1 defect item.',
+        'modelGroups.*.items.min'         => 'Each model must have at least 1 defect item.',
     ];
 
-    public function updatedSearch()
-    {
-        $this->resetPage();
-    }
-
-    public function updatedFilterSection()
-    {
-        $this->resetPage();
-    }
+    public function updatedSearch() { $this->resetPage(); }
+    public function updatedFilterSection() { $this->resetPage(); }
 
     public function updatedCustomerId()
     {
-        $this->model_id = '';
-        $this->items = [];
+        $this->modelGroups = [];
+        $this->selectedModelId = '';
         $this->resetTemp();
     }
 
@@ -88,10 +96,10 @@ class QuestionManagement extends Component
         $this->reset([
             'question_id',
             'customer_id',
-            'model_id',
             'section',
             'question_text',
-            'items',
+            'modelGroups',
+            'selectedModelId',
             'tempDeffectId',
             'tempLocation',
         ]);
@@ -105,45 +113,128 @@ class QuestionManagement extends Component
         $this->tempLocation = '';
     }
 
-    /* ================= ITEM (PAIR) HANDLERS ================= */
+    /* ================= HELPERS ================= */
+
+    public function getTotalDefectsProperty(): int
+    {
+        return collect($this->modelGroups)
+            ->sum(fn($g) => count($g['items'] ?? []));
+    }
+
+    public function getRemainingQuotaProperty(): int
+    {
+        return max(0, self::MAX_DEFECTS - $this->totalDefects);
+    }
+
+    private function findGroupIndex($modelId): ?int
+    {
+        foreach ($this->modelGroups as $i => $g) {
+            if ((int) $g['model_id'] === (int) $modelId) return $i;
+        }
+        return null;
+    }
+
+    /* ================= MODEL ================= */
+
+    public function addModel()
+    {
+        $this->validate([
+            'selectedModelId' => 'required|exists:tb_qaqc_model,id',
+        ], [
+            'selectedModelId.required' => 'Please select a model.',
+        ]);
+
+        $model = Model::find($this->selectedModelId);
+
+        if (!$model || $model->customer_id != $this->customer_id) {
+            $this->dispatch('notify', message: 'Selected model does not belong to selected customer!', type: 'error');
+            return;
+        }
+
+        if ($this->findGroupIndex($this->selectedModelId) !== null) {
+            $this->dispatch('notify', message: 'Model already added!', type: 'warning');
+            $this->selectedModelId = '';
+            return;
+        }
+
+        $this->modelGroups[] = [
+            'model_id'   => $model->id,
+            'model_name' => $model->model_name,
+            'items'      => [],
+        ];
+
+        $this->selectedModelId = '';
+        $this->dispatch('notify', message: 'Model added. Now add defect items.', type: 'success');
+    }
+
+    public function removeModel($index)
+    {
+        unset($this->modelGroups[$index]);
+        $this->modelGroups = array_values($this->modelGroups);
+    }
+
+    /* ================= DEFECT ITEM ================= */
 
     public function addItem()
     {
+        if ($this->totalDefects >= self::MAX_DEFECTS) {
+            $this->dispatch('notify',
+                message: 'Maximum ' . self::MAX_DEFECTS . ' defects per question already reached!',
+                type: 'error');
+            return;
+        }
+
         $this->validate([
-            'tempDeffectId' => 'required|exists:tb_qaqc_deffect,id',
-            'tempLocation'  => 'required|string|max:255',
+            'selectedModelId' => 'required|exists:tb_qaqc_model,id',
+            'tempDeffectId'   => 'required|exists:tb_qaqc_deffect,id',
+            'tempLocation'    => 'required|string|max:255',
         ], [
-            'tempDeffectId.required' => 'Please select a defect item.',
-            'tempDeffectId.exists'   => 'Selected defect item is invalid.',
-            'tempLocation.required'  => 'Please enter a location.',
+            'selectedModelId.required' => 'Please select a model first.',
+            'tempDeffectId.required'   => 'Please select a defect item.',
+            'tempLocation.required'    => 'Please enter a location.',
         ]);
 
-        $deffect = Deffect::find($this->tempDeffectId);
+        $idx = $this->findGroupIndex($this->selectedModelId);
+        if ($idx === null) {
+            $this->dispatch('notify', message: 'Model not found in list!', type: 'error');
+            return;
+        }
+
+        $deffect  = Deffect::find($this->tempDeffectId);
         $location = strtoupper(trim($this->tempLocation));
 
-        // Cegah duplikat pair (deffect + location sama)
-        foreach ($this->items as $item) {
+        // Cek duplikat pair dalam model yang sama
+        foreach ($this->modelGroups[$idx]['items'] as $item) {
             if ($item['deffect_id'] == $this->tempDeffectId && $item['location'] === $location) {
-                $this->dispatch('notify', message: 'This defect item and location pair already exists!', type: 'warning');
+                $this->dispatch('notify',
+                    message: 'This defect item + location already exists for this model!',
+                    type: 'warning');
                 $this->resetTemp();
                 return;
             }
         }
 
-        $this->items[] = [
+        $this->modelGroups[$idx]['items'][] = [
             'deffect_id'   => $deffect->id,
             'deffect_name' => $deffect->deffect_item_name,
             'location'     => $location,
         ];
 
         $this->resetTemp();
-        $this->resetValidation(['tempDeffectId', 'tempLocation']);
+        $this->resetValidation(['tempDeffectId', 'tempLocation', 'selectedModelId']);
+
+        if ($this->totalDefects >= self::MAX_DEFECTS) {
+            $this->dispatch('notify',
+                message: 'Maximum ' . self::MAX_DEFECTS . ' defects reached.',
+                type: 'warning');
+        }
     }
 
-    public function removeItem($index)
+    public function removeItem($modelIndex, $itemIndex)
     {
-        unset($this->items[$index]);
-        $this->items = array_values($this->items);
+        if (!isset($this->modelGroups[$modelIndex]['items'][$itemIndex])) return;
+        unset($this->modelGroups[$modelIndex]['items'][$itemIndex]);
+        $this->modelGroups[$modelIndex]['items'] = array_values($this->modelGroups[$modelIndex]['items']);
     }
 
     /* ================= SAVE ================= */
@@ -162,23 +253,44 @@ class QuestionManagement extends Component
             }
         }
 
-        $this->validate();
-
-        // Validasi: model harus milik customer terpilih
-        $model = Model::find($this->model_id);
-        if (!$model || $model->customer_id != $this->customer_id) {
-            $this->dispatch('notify', message: 'Selected model does not belong to selected customer!', type: 'error');
+        if ($this->totalDefects > self::MAX_DEFECTS) {
+            $this->dispatch('notify',
+                message: 'Total defects cannot exceed ' . self::MAX_DEFECTS . ' pcs!',
+                type: 'error');
             return;
         }
 
+        $this->validate();
+
+        // Pastikan semua model milik customer terpilih
+        foreach ($this->modelGroups as $g) {
+            $model = Model::find($g['model_id']);
+            if (!$model || $model->customer_id != $this->customer_id) {
+                $this->dispatch('notify',
+                    message: 'One of selected models does not belong to selected customer!',
+                    type: 'error');
+                return;
+            }
+        }
+
+        $primaryModelId = $this->modelGroups[0]['model_id'] ?? null;
+
+        $items = collect($this->modelGroups)->map(fn($g) => [
+            'model_id'   => $g['model_id'],
+            'model_name' => $g['model_name'],
+            'items'      => array_values($g['items']),
+        ])->values()->all();
+
         $payload = [
             'customer_id'   => $this->customer_id,
-            'model_id'      => $this->model_id,
+            'model_id'      => $primaryModelId,
             'section'       => $this->section,
-            'items'         => array_values($this->items),
+            'items'         => $items,
             'question_text' => $this->question_text,
             'updated_by'    => auth()->id(),
         ];
+
+        $modelIds = collect($this->modelGroups)->pluck('model_id')->all();
 
         if ($this->question_id) {
             $question = Question::find($this->question_id);
@@ -187,10 +299,12 @@ class QuestionManagement extends Component
                 return;
             }
             $question->update($payload);
+            $question->models()->sync($modelIds);
             $message = 'Question updated successfully!';
         } else {
             $payload['created_by'] = auth()->id();
-            Question::create($payload);
+            $question = Question::create($payload);
+            $question->models()->sync($modelIds);
             $message = 'Question created successfully!';
         }
 
@@ -208,13 +322,12 @@ class QuestionManagement extends Component
             return;
         }
 
-        $question = Question::with('blindTests')->find($id);
+        $question = Question::with(['models', 'blindTests'])->find($id);
         if (!$question) {
             $this->dispatch('notify', message: 'Question not found!', type: 'error');
             return;
         }
 
-        // 🚫 Block kalau sudah dipakai
         if ($question->isUsed()) {
             $count = $question->usageCount();
             $this->dispatch('notify',
@@ -225,11 +338,38 @@ class QuestionManagement extends Component
 
         $this->question_id   = $question->id;
         $this->customer_id   = $question->customer_id;
-        $this->model_id      = $question->model_id;
         $this->section       = $question->section;
-        $this->items         = $question->items ?? [];
         $this->question_text = $question->question_text;
-        $this->modalTitle    = 'Edit Question';
+
+        $rawItems = $question->items ?? [];
+        $groups = [];
+
+        // Deteksi format baru (tiap group punya model_id)
+        $isNewFormat = !empty($rawItems) && isset($rawItems[0]['model_id']);
+
+        if ($isNewFormat) {
+            foreach ($rawItems as $g) {
+                $groups[] = [
+                    'model_id'   => $g['model_id'],
+                    'model_name' => $g['model_name']
+                        ?? (Model::find($g['model_id'])->model_name ?? '-'),
+                    'items'      => array_values($g['items'] ?? []),
+                ];
+            }
+        } else {
+            // Format lama: items = [ ['deffect_id','deffect_name','location'], ... ]
+            if (!empty($rawItems)) {
+                $groups[] = [
+                    'model_id'   => $question->model_id,
+                    'model_name' => $question->model->model_name ?? '-',
+                    'items'      => array_values($rawItems),
+                ];
+            }
+        }
+
+        $this->modelGroups     = $groups;
+        $this->modalTitle      = 'Edit Question';
+        $this->selectedModelId = '';
         $this->resetTemp();
         $this->dispatch('open-modal-question');
     }
@@ -238,12 +378,11 @@ class QuestionManagement extends Component
 
     public function view($id)
     {
-        $question = Question::with(['customer', 'model', 'creator', 'updater'])->find($id);
+        $question = Question::with(['customer', 'model', 'models', 'creator', 'updater'])->find($id);
         if (!$question) {
             $this->dispatch('notify', message: 'Question not found!', type: 'error');
             return;
         }
-
         $this->viewData = $question;
         $this->dispatch('open-modal-view');
     }
@@ -263,7 +402,6 @@ class QuestionManagement extends Component
             return;
         }
 
-        // 🚫 Block kalau sudah dipakai
         if ($question->isUsed()) {
             $count = $question->usageCount();
             $this->dispatch('notify',
@@ -290,7 +428,6 @@ class QuestionManagement extends Component
             return;
         }
 
-        // 🚫 Double guard (safety net)
         if ($question->isUsed()) {
             $count = $question->usageCount();
             $this->dispatch('notify',
@@ -301,11 +438,13 @@ class QuestionManagement extends Component
             return;
         }
 
+        $question->models()->detach();
         $question->delete();
         $this->questionToDelete = null;
         $this->dispatch('notify', message: 'Question deleted successfully!');
         $this->dispatch('close-modal-delete');
     }
+
     public function cancelDelete()
     {
         $this->questionToDelete = null;
@@ -320,15 +459,16 @@ class QuestionManagement extends Component
             abort(403, 'Unauthorized access.');
         }
 
-        $query = Question::with(['customer', 'model', 'creator', 'updater']);
+        $query = Question::with(['customer', 'model', 'models', 'creator', 'updater']);
 
         if ($this->search) {
             $query->where(function ($q) {
-                $q->whereHas('customer', function ($cq) {
-                    $cq->where('customer_name', 'like', '%' . $this->search . '%');
-                })->orWhereHas('model', function ($mq) {
-                    $mq->where('model_name', 'like', '%' . $this->search . '%');
-                });
+                $q->whereHas('customer', fn($cq) =>
+                        $cq->where('customer_name', 'like', '%' . $this->search . '%'))
+                  ->orWhereHas('model', fn($mq) =>
+                        $mq->where('model_name', 'like', '%' . $this->search . '%'))
+                  ->orWhereHas('models', fn($mq) =>
+                        $mq->where('model_name', 'like', '%' . $this->search . '%'));
             });
         }
 
@@ -343,11 +483,12 @@ class QuestionManagement extends Component
             : collect();
 
         return view('livewire.qaqc.blind-test.question-management', [
-            'questions' => $questions,
-            'customers' => Customer::orderBy('customer_name')->get(),
-            'models'    => $models,
-            'deffects'  => Deffect::orderBy('deffect_item_name')->get(),
-            'sections'  => self::SECTIONS,
+            'questions'  => $questions,
+            'customers'  => Customer::orderBy('customer_name')->get(),
+            'models'     => $models,
+            'deffects'   => Deffect::orderBy('deffect_item_name')->get(),
+            'sections'   => self::SECTIONS,
+            'maxDefects' => self::MAX_DEFECTS,
         ]);
     }
 }
