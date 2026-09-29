@@ -667,11 +667,21 @@
                                         @endcan
                                         @can('execute blind test')
                                             @if($bt->status === 'completed')
+                                                {{-- View Result --}}
                                                 <flux:tooltip content="View Result" position="top">
                                                     <a href="{{ route('qaqc.blind-test.execute', $bt->id) }}">
                                                         <flux:button size="sm" icon="eye" variant="primary" color="black" class="!p-2" />
                                                     </a>
                                                 </flux:tooltip>
+
+                                                {{-- ✅ Retry: muncul kalau FAIL & masih bisa retry --}}
+                                                @if($bt->overall_result === 'FAIL' && $bt->canRetry())
+                                                    <flux:tooltip content="Retry Test (Attempt {{ $bt->attempt + 1 }}/{{ $bt->max_attempt }})" position="top">
+                                                        <a href="{{ route('qaqc.blind-test.execute', ['id' => $bt->id, 'retry' => 1]) }}">
+                                                            <flux:button size="sm" icon="arrow-path" variant="primary" color="orange" class="!p-2" />
+                                                        </a>
+                                                    </flux:tooltip>
+                                                @endif
                                             @else
                                                 <flux:tooltip content="Start Test" position="top">
                                                     <a href="{{ route('qaqc.blind-test.execute', $bt->id) }}">

@@ -1414,7 +1414,12 @@
                             this.previewStream = null;
                         } else {
                             this.recordStream = await navigator.mediaDevices.getUserMedia({
-                                video: { facingMode: 'user', width: { ideal: 320 }, height: { ideal: 240 } },
+                                video: {
+                                    facingMode: 'user',
+                                    width:     { ideal: 320, max: 480 },
+                                    height:    { ideal: 240, max: 360 },
+                                    frameRate: { ideal: 10,  max: 15 }   // ⬅️ tambah ini
+                                },
                                 audio: false
                             });
                         }
@@ -1443,7 +1448,12 @@
                             this.previewStream = null;
                         } else {
                             this.recordStream = await navigator.mediaDevices.getUserMedia({
-                                video: { facingMode: 'user', width: { ideal: 320 }, height: { ideal: 240 } },
+                                video: {
+                                    facingMode: 'user',
+                                    width:     { ideal: 320, max: 480 },
+                                    height:    { ideal: 240, max: 360 },
+                                    frameRate: { ideal: 10,  max: 15 }   // ⬅️ tambah ini
+                                },
                                 audio: false
                             });
                         }
@@ -1467,7 +1477,8 @@
 
                     this.mediaRecorder = new MediaRecorder(this.recordStream, {
                         mimeType: this.mimeType || undefined,
-                        videoBitsPerSecond: 250000,
+                        videoBitsPerSecond: 120000,   // ⬅️ 250k → 120k
+                        audioBitsPerSecond: 0,
                     });
 
                     this.chunks = [];
@@ -1482,7 +1493,7 @@
                         this.uploadCameraBlob(blob);
                     };
 
-                    this.mediaRecorder.start(5000);
+                    this.mediaRecorder.start(10000);   // ⬅️ 5s → 10s
 
                     this.recordingActive = true;
                     this.recordingSeconds = 0;

@@ -44,6 +44,40 @@ class BlindTestExecution extends Component
 
         $this->isExpired = $this->blindTest->isExpired();
 
+        // ✅ Auto-retry kalau ada query param ?retry=1
+        if (request()->boolean('retry')
+            && $this->blindTest->status === 'completed'
+            && $this->blindTest->overall_result === 'FAIL'
+            && $this->blindTest->canRetry()
+        ) {
+            $this->retryTest(fromMount: true);
+
+            // Setelah retry dari mount, langsung set state "belum mulai"
+            // supaya user tinggal klik Start tanpa reload halaman.
+            $this->isFinished       = false;
+            $this->evaluationResult = null;
+            $this->overallResult    = null;
+            $this->isPendingReview  = false;
+            $this->isStarted        = false;
+            $this->remainingSeconds = null;
+
+            // Reset user answers ke baris kosong
+            $this->userAnswers = [
+                ['deffect_item_id' => '', 'component_location' => ''],
+            ];
+
+            // Set ulang modal browser check (karena attempt baru = wajib verifikasi ulang)
+            if (!$this->blindTest->browser_verified) {
+                $this->showBrowserCheckModal = true;
+                $this->browserCheckPassed    = false;
+            } else {
+                $this->showBrowserCheckModal = false;
+                $this->browserCheckPassed    = true;
+            }
+
+            return;
+        }
+
         if ($this->blindTest->status === 'completed') {
             $this->isFinished       = true;
             $this->evaluationResult = $this->blindTest->user_answers;
@@ -419,7 +453,7 @@ class BlindTestExecution extends Component
         }
     }
 
-    public function retryTest()
+    public function retryTest($fromMount = false)
     {
         if ($this->isUploadingRecording) {
             $this->dispatch('notify', message: 'Tunggu rekaman selesai diupload dulu.', type: 'warning');
@@ -438,6 +472,7 @@ class BlindTestExecution extends Component
 
         $bt = $this->blindTest;
 
+        // Backup data attempt pertama (kalau belum tersimpan)
         $update = [
             'first_attempt_camera_path' => $bt->first_attempt_camera_path ?: $bt->camera_recording_path,
             'first_attempt_camera_size' => $bt->first_attempt_camera_size ?: $bt->camera_recording_size,
@@ -454,6 +489,7 @@ class BlindTestExecution extends Component
         $bt->update($update);
         $bt->refresh();
 
+        // Reset ke state "pending" untuk attempt baru
         $bt->update([
             'attempt'          => $bt->attempt + 1,
             'status'           => 'pending',
@@ -483,6 +519,27 @@ class BlindTestExecution extends Component
             'browser_info'     => null,
         ]);
 
+        $bt->refresh();
+
+        // ✅ Kalau dipanggil dari mount() → jangan redirect, cukup refresh state komponen
+        if ($fromMount) {
+            // Refresh blindTest di komponen supaya data terbaru
+            $this->blindTest = $bt;
+
+            // Reset semua property komponen ke state awal
+            $this->isStarted        = false;
+            $this->isFinished       = false;
+            $this->isExpired        = $bt->isExpired();
+            $this->evaluationResult = null;
+            $this->overallResult    = null;
+            $this->isPendingReview  = false;
+            $this->remainingSeconds = null;
+            $this->startedAt        = null;
+
+            return;
+        }
+
+        // Kalau dipanggil dari tombol "Kerjakan Ulang Test" di UI → redirect biasa
         return redirect()->route('qaqc.blind-test.execute', $bt->id);
     }
 
