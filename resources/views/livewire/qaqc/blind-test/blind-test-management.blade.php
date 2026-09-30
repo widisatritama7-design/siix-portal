@@ -77,17 +77,45 @@
         </div>
     </div>
 
-    <!-- ==================== BANK SOAL PER SECTION ==================== -->
     <style>
-        .bank-scroll::-webkit-scrollbar { width: 6px; }
-        .bank-scroll::-webkit-scrollbar-track { background: transparent; }
-        .bank-scroll::-webkit-scrollbar-thumb { background: rgba(161, 161, 170, 0.3); border-radius: 999px; }
-        .bank-scroll::-webkit-scrollbar-thumb:hover { background: rgba(161, 161, 170, 0.5); }
-        .dark .bank-scroll::-webkit-scrollbar-thumb { background: rgba(113, 113, 122, 0.4); }
-        .dark .bank-scroll::-webkit-scrollbar-thumb:hover { background: rgba(113, 113, 122, 0.6); }
+        .bank-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .bank-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .bank-scroll::-webkit-scrollbar-thumb {
+            border-radius: 999px;
+            transition: background 0.3s ease;
+            background: transparent;
+        }
+
+        /* Munculkan scrollbar saat hover */
+        .bank-scroll.bank-hover::-webkit-scrollbar-thumb {
+            background: rgba(161, 161, 170, 0.5);
+        }
+        .bank-scroll.bank-hover::-webkit-scrollbar-thumb:hover {
+            background: rgba(113, 113, 122, 0.7);
+        }
+        .dark .bank-scroll.bank-hover::-webkit-scrollbar-thumb {
+            background: rgba(113, 113, 122, 0.6);
+        }
+        .dark .bank-scroll.bank-hover::-webkit-scrollbar-thumb:hover {
+            background: rgba(161, 161, 170, 0.8);
+        }
+
+        /* Firefox fallback */
+        .bank-scroll {
+            scrollbar-width: thin;
+            scrollbar-color: transparent transparent;
+            transition: scrollbar-color 0.3s ease;
+        }
+        .bank-scroll.bank-hover {
+            scrollbar-color: rgba(161, 161, 170, 0.5) transparent;
+        }
     </style>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 mt-4">
         @foreach($sections as $sec)
         @php
             $secMeta = [
@@ -145,7 +173,13 @@
             </div>
 
             {{-- ========== LIST ========== --}}
-            <div class="bank-scroll flex-1 overflow-y-auto p-2 space-y-1.5" style="max-height: 220px;">
+            <div
+                x-data="{ bankHover: false }"
+                @mouseenter="bankHover = true; $el.classList.add('bank-hover')"
+                @mouseleave="bankHover = false; $el.classList.remove('bank-hover')"
+                class="bank-scroll flex-1 overflow-y-auto p-2 space-y-1.5"
+                style="max-height: 220px;"
+            >
                 @forelse($list as $q)
                 @php $itemCount = $q->totalDefects(); @endphp
                 <button type="button"
