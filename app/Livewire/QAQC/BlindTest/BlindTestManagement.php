@@ -51,6 +51,10 @@ class BlindTestManagement extends Component
     public $filterDateFrom = '';
     public $filterDateTo   = '';
 
+    // ==================== CALENDAR (by date) ====================
+    public $calendarMonth = '';      // 'YYYY-MM', default = bulan ini
+    public $selectedDate = '';       // 'YYYY-MM-DD', default = hari ini
+
     // ==================== TABS ====================
     public $activeTab = 'all';
     public $tabCounts = [
@@ -104,6 +108,76 @@ class BlindTestManagement extends Component
     public function updatedBankMonth()
     {
         // Tidak perlu resetPage karena bank soal tidak paginated
+    }
+
+    public function mount()
+    {
+        $this->calendarMonth = now()->format('Y-m');
+        $this->selectedDate  = now()->format('Y-m-d');   // default = hari ini
+    }
+
+    public function updatedCalendarMonth()
+    {
+        // Kalau ganti bulan, reset pilihan tanggal ke tanggal 1 bulan itu
+        if ($this->calendarMonth) {
+            $this->selectedDate = \Carbon\Carbon::createFromFormat('Y-m', $this->calendarMonth)
+                ->startOfMonth()->format('Y-m-d');
+        }
+        $this->resetPage();
+    }
+
+    public function selectDate($date)
+    {
+        // Klik tanggal → filter tabel, klik ulang → clear
+        if ($this->selectedDate === $date) {
+            $this->selectedDate = '';
+        } else {
+            $this->selectedDate = $date;
+        }
+        $this->resetPage();
+    }
+
+    public function goToToday()
+    {
+        $this->calendarMonth = now()->format('Y-m');
+        $this->selectedDate  = now()->format('Y-m-d');
+        $this->resetPage();
+    }
+
+    public function clearDate()
+    {
+        $this->selectedDate = '';
+        $this->resetPage();
+    }
+
+    public function prevMonth()
+    {
+        $d = $this->calendarMonth
+            ? \Carbon\Carbon::createFromFormat('Y-m', $this->calendarMonth)
+            : now();
+
+        $this->calendarMonth = $d->copy()->subMonth()->format('Y-m');
+
+        if ($this->selectedDate) {
+            $this->selectedDate = \Carbon\Carbon::createFromFormat('Y-m', $this->calendarMonth)
+                ->startOfMonth()->format('Y-m-d');
+        }
+        $this->resetPage();
+    }
+
+    public function nextMonth()
+    {
+        $d = $this->calendarMonth
+            ? \Carbon\Carbon::createFromFormat('Y-m', $this->calendarMonth)
+            : now();
+
+        $this->calendarMonth = $d->copy()->addMonth()->format('Y-m');
+
+        if ($this->selectedDate) {
+            $this->selectedDate = \Carbon\Carbon::createFromFormat('Y-m', $this->calendarMonth)
+                ->startOfMonth()->format('Y-m-d');
+        }
+        $this->resetPage();
     }
 
     // ==================== TAB & FILTER ====================
@@ -707,6 +781,11 @@ class BlindTestManagement extends Component
         if ($this->filterDateFrom) $query->whereDate('created_at', '>=', $this->filterDateFrom);
         if ($this->filterDateTo)   $query->whereDate('created_at', '<=', $this->filterDateTo);
 
+        // Filter by selectedDate dari calendar
+        if ($this->selectedDate) {
+            $query->whereDate('created_at', $this->selectedDate);
+        }
+
         $blindTests = $query->orderByDesc('id')->paginate(10);
 
         $departments = Employee::query()
@@ -743,6 +822,21 @@ class BlindTestManagement extends Component
             ? Question::with(['customer', 'model'])->find($this->question_ids[0])
             : null;
 
+        // ============ CALENDAR DATA ============
+        $calMonth = $this->calendarMonth
+            ? \Carbon\Carbon::createFromFormat('Y-m', $this->calendarMonth)
+            : now();
+
+        $calStart = $calMonth->copy()->startOfMonth()->startOfDay();
+        $calEnd   = $calMonth->copy()->endOfMonth()->endOfDay();
+
+        // Hitung jumlah blind test per tanggal
+        $dailyCounts = BlindTest::whereBetween('created_at', [$calStart, $calEnd])
+            ->selectRaw('DATE(created_at) as d, COUNT(*) as total')
+            ->groupBy('d')
+            ->pluck('total', 'd')
+            ->toArray();
+
         return view('livewire.qaqc.blind-test.blind-test-management', [
             'blindTests'        => $blindTests,
             'customers'         => Customer::orderBy('customer_name')->get(),
@@ -756,6 +850,8 @@ class BlindTestManagement extends Component
             'questionBank'      => $questionBank,
             'selectedQuestion'  => $selectedQuestion,
             'bankDate'          => $bankDate,   // ← TAMBAH INI
+            'calMonth'     => $calMonth,
+            'dailyCounts'  => $dailyCounts,
         ]);
     }
 }
