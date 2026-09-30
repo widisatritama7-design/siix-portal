@@ -34,19 +34,18 @@
 
         {{-- Month Picker --}}
         <div class="flex items-center gap-2">
-            <div class="relative">
+            <div class="relative bank-month-picker">
                 <input type="month"
                     wire:model.live="bankMonth"
                     class="pl-10 pr-4 py-2 rounded-xl border border-zinc-300 dark:border-zinc-700
                         bg-white dark:bg-zinc-900 text-sm font-semibold text-zinc-700 dark:text-zinc-200
                         focus:ring-2 focus:ring-blue-500 focus:border-blue-500
                         hover:border-zinc-400 dark:hover:border-zinc-600
-                        transition-all cursor-pointer"
-                    style="color-scheme: light dark;">
+                        transition-all cursor-pointer w-full">
 
                 {{-- Icon Calendar (overlay) --}}
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-                    class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-blue-500 pointer-events-none">
+                    class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-blue-500 pointer-events-none z-10">
                     <path fill-rule="evenodd" d="M6.75 2.25A.75.75 0 0 1 7.5 3v1.5h9V3A.75.75 0 0 1 18 3v1.5h.75a3 3 0 0 1 3 3v11.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V7.5a3 3 0 0 1 3-3H6V3a.75.75 0 0 1 .75-.75Zm13.5 9a1.5 1.5 0 0 0-1.5-1.5H5.25a1.5 1.5 0 0 0-1.5 1.5v7.5a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5v-7.5Z" clip-rule="evenodd" />
                 </svg>
             </div>
