@@ -52,158 +52,206 @@
         </div>
     </div>
 
-    <!-- Table -->
-    <flux:card class="p-6 h-full shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col">
-        <div class="overflow-x-auto flex-1">
-            <table class="w-full" style="min-width: 1000px; white-space: nowrap;">
-                <thead>
-                    <tr class="bg-zinc-50 dark:bg-zinc-800/50">
-                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase" style="min-width: 50px;">#</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase" style="min-width: 180px;">Customer</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase" style="min-width: 220px;">Model</th>
-                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase" style="min-width: 90px;">Section</th>
-                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase" style="min-width: 100px;">Items</th>
-                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase" style="min-width: 150px;">Created By</th>
-                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase" style="min-width: 150px;">Date</th>
-                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase" style="min-width: 200px;">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
-                    @forelse($questions as $index => $question)
-                    <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors" wire:key="q-{{ $question->id }}">
-                        <td class="px-4 py-3 text-sm text-zinc-500 text-center">
-                            {{ $questions->firstItem() + $index }}
-                        </td>
-                        <td class="px-4 py-3 text-left">
-                            <span class="text-sm font-semibold text-zinc-800 dark:text-white">
-                                {{ $question->customer->customer_name ?? '-' }}
-                            </span>
-                        </td>
-                        <td class="px-4 py-3 text-left">
-                            @php
-                                $modelList = $question->models->pluck('model_name')->all();
-                                if (empty($modelList) && $question->model) {
-                                    $modelList = [$question->model->model_name];
-                                }
-                            @endphp
-                            @if(!empty($modelList))
-                                <div class="flex flex-wrap gap-1">
-                                    @foreach($modelList as $mName)
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
-                                            {{ $mName }}
-                                        </span>
-                                    @endforeach
-                                </div>
-                            @else
-                                <span class="text-sm text-zinc-400 italic">-</span>
-                            @endif
-                        </td>
-                        <td class="px-4 py-3 text-center">
-                            <span class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold
-                                @if($question->section === 'QC') bg-blue-100 text-blue-700
-                                @elseif($question->section === 'SMT') bg-green-100 text-green-700
-                                @elseif($question->section === 'BE') bg-yellow-100 text-yellow-700
-                                @else bg-purple-100 text-purple-700 @endif">
-                                {{ $question->section }}
-                            </span>
-                        </td>
-                        <td class="px-4 py-3 text-center text-sm text-zinc-600 dark:text-zinc-400">
-                            <div class="font-semibold">
-                                {{ $question->totalDefects() }} defect(s)
-                            </div>
+    <!-- ==================== TABLE ==================== -->
+    <flux:card class="p-0 shadow-lg flex flex-col overflow-hidden">
 
-                            @php $usageCount = $question->blindTests()->count(); @endphp
-                            @if($usageCount > 0)
-                                <div class="mt-1 text-[10px] text-amber-600 dark:text-amber-400 font-semibold inline-flex items-center gap-0.5">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3">
-                                        <path fill-rule="evenodd" d="M12 1.5a5.25 5.25 0 0 0-5.25 5.25v3a3 3 0 0 0-3 3v6.75a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3v-6.75a3 3 0 0 0-3-3v-3c0-2.9-2.35-5.25-5.25-5.25Zm3.75 8.25v-3a3.75 3.75 0 1 0-7.5 0v3h7.5Z" clip-rule="evenodd" />
-                                    </svg>
-                                    Used ({{ $usageCount }})
-                                </div>
-                            @endif
-                        </td>
-                        <td class="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400 text-center">
-                            {{ $question->creator->name ?? '-' }}
-                        </td>
-                        <td class="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400 text-center">
-                            {{ $question->created_at ? $question->created_at->format('d/m/Y H:i') : '-' }}
-                        </td>
-                        <td class="px-4 py-3 text-center">
-                            @php
-                                $usageCount = $question->blindTests()->count();
-                                $isUsed = $usageCount > 0;
-                            @endphp
+        {{-- ===== HEADER ===== --}}
+        <div class="relative px-6 py-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 overflow-hidden">
+            <div class="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-white/10"></div>
+            <div class="absolute -right-2 -bottom-8 w-16 h-16 rounded-full bg-white/10"></div>
 
-                            <div class="flex items-center justify-center gap-1" style="flex-wrap: nowrap;">
-                                @can('view question')
-                                <flux:tooltip content="View" position="top">
-                                    <flux:button wire:click="view({{ $question->id }})" size="sm" icon="eye" variant="primary" color="blue" class="!p-2" />
-                                </flux:tooltip>
-                                @endcan
+            <div class="relative flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-white">
+                            <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm11.378-3.917c-.89-.777-2.366-.777-3.255 0a.75.75 0 0 1-.988-1.129c1.454-1.272 3.776-1.272 5.23 0 1.513 1.324 1.513 3.518 0 4.842a3.75 3.75 0 0 1-.837.552c-.676.328-1.028.774-1.028 1.152v.75a.75.75 0 0 1-1.5 0v-.75c0-1.279 1.06-2.107 1.875-2.502.182-.088.351-.199.503-.331.83-.727.83-1.857 0-2.584ZM12 18a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="text-[10px] text-white/70 uppercase tracking-wider font-semibold">Management</div>
+                        <div class="text-base font-bold text-white leading-tight">Question List</div>
+                    </div>
+                </div>
 
-                                @can('edit question')
-                                    @if($isUsed)
-                                        <flux:tooltip content="Tidak bisa diedit — sudah dipakai di {{ $usageCount }} blind test" position="top">
-                                            <div class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-400 cursor-not-allowed">
-                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
-                                                    <path fill-rule="evenodd" d="M12 1.5a5.25 5.25 0 0 0-5.25 5.25v3a3 3 0 0 0-3 3v6.75a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3v-6.75a3 3 0 0 0-3-3v-3c0-2.9-2.35-5.25-5.25-5.25Zm3.75 8.25v-3a3.75 3.75 0 1 0-7.5 0v3h7.5Z" clip-rule="evenodd" />
-                                                </svg>
-                                            </div>
-                                        </flux:tooltip>
-                                    @else
-                                        <flux:tooltip content="Edit" position="top">
-                                            <flux:button wire:click="edit({{ $question->id }})" size="sm" icon="pencil-square" variant="primary" color="yellow" class="!p-2" />
-                                        </flux:tooltip>
-                                    @endif
-                                @endcan
+                <div class="flex items-center gap-2">
+                    @if($search || $filterSection)
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 text-white text-xs font-semibold">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5">
+                                <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd" />
+                            </svg>
+                            @if($filterSection){{ $filterSection }} · @endif
+                            {{ $search ?: 'Filtered' }}
+                        </span>
+                    @else
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 text-white text-xs font-semibold">
+                            <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+                            All Questions
+                        </span>
+                    @endif
 
-                                @can('delete question')
-                                    @if($isUsed)
-                                        <flux:tooltip content="Tidak bisa dihapus — sudah dipakai di {{ $usageCount }} blind test" position="top">
-                                            <div class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-400 cursor-not-allowed">
-                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
-                                                    <path fill-rule="evenodd" d="M12 1.5a5.25 5.25 0 0 0-5.25 5.25v3a3 3 0 0 0-3 3v6.75a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3v-6.75a3 3 0 0 0-3-3v-3c0-2.9-2.35-5.25-5.25-5.25Zm3.75 8.25v-3a3.75 3.75 0 1 0-7.5 0v3h7.5Z" clip-rule="evenodd" />
-                                                </svg>
-                                            </div>
-                                        </flux:tooltip>
-                                    @else
-                                        <flux:tooltip content="Delete" position="top">
-                                            <flux:button wire:click="confirmDelete({{ $question->id }})" size="sm" icon="trash" variant="primary" color="red" class="!p-2" />
-                                        </flux:tooltip>
-                                    @endif
-                                @endcan
-                            </div>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="8" class="px-4 py-8 text-center">
-                            <div class="flex flex-col items-center justify-center gap-2 py-6">
-                                <div class="w-16 h-16 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-                                    <flux:icon name="question-mark-circle" class="w-8 h-8 text-zinc-400" />
-                                </div>
-                                <h3 class="text-base font-medium text-zinc-900 dark:text-white">No question records found</h3>
-                                <p class="text-sm text-zinc-500">
-                                    {{ $search || $filterSection ? 'Try adjusting your filter' : 'Get started by creating a new question' }}
-                                </p>
-                                @if($search || $filterSection)
-                                    <flux:button wire:click="$set('search', ''); $set('filterSection', '')" size="sm" class="mt-1">
-                                        Clear Filter
-                                    </flux:button>
+                    <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 text-white text-xs font-semibold">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5">
+                            <path fill-rule="evenodd" d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625Z" clip-rule="evenodd" />
+                        </svg>
+                        {{ $questions->total() }} total
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        {{-- ===== BODY ===== --}}
+        <div class="p-6 flex flex-col flex-1">
+            <div class="overflow-x-auto flex-1">
+                <table class="w-full" style="min-width: 1000px; white-space: nowrap;">
+                    <thead>
+                        <tr class="bg-zinc-50 dark:bg-zinc-800/50">
+                            <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase" style="min-width: 50px;">#</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase" style="min-width: 180px;">Customer</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 uppercase" style="min-width: 220px;">Model</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase" style="min-width: 90px;">Section</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase" style="min-width: 100px;">Items</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase" style="min-width: 150px;">Created By</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase" style="min-width: 150px;">Date</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 uppercase" style="min-width: 200px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
+                        @forelse($questions as $index => $question)
+                        <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors" wire:key="q-{{ $question->id }}">
+                            <td class="px-4 py-3 text-sm text-zinc-500 text-center">
+                                {{ $questions->firstItem() + $index }}
+                            </td>
+                            <td class="px-4 py-3 text-left">
+                                <span class="text-sm font-semibold text-zinc-800 dark:text-white">
+                                    {{ $question->customer->customer_name ?? '-' }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-left">
+                                @php
+                                    $modelList = $question->models->pluck('model_name')->all();
+                                    if (empty($modelList) && $question->model) {
+                                        $modelList = [$question->model->model_name];
+                                    }
+                                @endphp
+                                @if(!empty($modelList))
+                                    <div class="flex flex-wrap gap-1">
+                                        @foreach($modelList as $mName)
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300">
+                                                {{ $mName }}
+                                            </span>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <span class="text-sm text-zinc-400 italic">-</span>
                                 @endif
-                            </div>
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+                            </td>
+                            <td class="px-4 py-3 text-center">
+                                <span class="inline-flex items-center px-2 py-1 rounded text-xs font-semibold
+                                    @if($question->section === 'QC') bg-blue-100 text-blue-700
+                                    @elseif($question->section === 'SMT') bg-green-100 text-green-700
+                                    @elseif($question->section === 'BE') bg-yellow-100 text-yellow-700
+                                    @else bg-purple-100 text-purple-700 @endif">
+                                    {{ $question->section }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-center text-sm text-zinc-600 dark:text-zinc-400">
+                                <div class="font-semibold">
+                                    {{ $question->totalDefects() }} defect(s)
+                                </div>
 
-        @if($questions->hasPages())
-        <div class="p-4 border-t border-zinc-200 dark:border-zinc-700 mt-auto">
-            {{ $questions->links() }}
+                                @php $usageCount = $question->blindTests()->count(); @endphp
+                                @if($usageCount > 0)
+                                    <div class="mt-1 text-[10px] text-amber-600 dark:text-amber-400 font-semibold inline-flex items-center gap-0.5">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3">
+                                            <path fill-rule="evenodd" d="M12 1.5a5.25 5.25 0 0 0-5.25 5.25v3a3 3 0 0 0-3 3v6.75a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3v-6.75a3 3 0 0 0-3-3v-3c0-2.9-2.35-5.25-5.25-5.25Zm3.75 8.25v-3a3.75 3.75 0 1 0-7.5 0v3h7.5Z" clip-rule="evenodd" />
+                                        </svg>
+                                        Used ({{ $usageCount }})
+                                    </div>
+                                @endif
+                            </td>
+                            <td class="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400 text-center">
+                                {{ $question->creator->name ?? '-' }}
+                            </td>
+                            <td class="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400 text-center">
+                                {{ $question->created_at ? $question->created_at->format('d/m/Y H:i') : '-' }}
+                            </td>
+                            <td class="px-4 py-3 text-center">
+                                @php
+                                    $usageCount = $question->blindTests()->count();
+                                    $isUsed = $usageCount > 0;
+                                @endphp
+
+                                <div class="flex items-center justify-center gap-1" style="flex-wrap: nowrap;">
+                                    @can('view question')
+                                    <flux:tooltip content="View" position="top">
+                                        <flux:button wire:click="view({{ $question->id }})" size="sm" icon="eye" variant="primary" color="blue" class="!p-2" />
+                                    </flux:tooltip>
+                                    @endcan
+
+                                    @can('edit question')
+                                        @if($isUsed)
+                                            <flux:tooltip content="Tidak bisa diedit — sudah dipakai di {{ $usageCount }} blind test" position="top">
+                                                <div class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-400 cursor-not-allowed">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                                                        <path fill-rule="evenodd" d="M12 1.5a5.25 5.25 0 0 0-5.25 5.25v3a3 3 0 0 0-3 3v6.75a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3v-6.75a3 3 0 0 0-3-3v-3c0-2.9-2.35-5.25-5.25-5.25Zm3.75 8.25v-3a3.75 3.75 0 1 0-7.5 0v3h7.5Z" clip-rule="evenodd" />
+                                                    </svg>
+                                                </div>
+                                            </flux:tooltip>
+                                        @else
+                                            <flux:tooltip content="Edit" position="top">
+                                                <flux:button wire:click="edit({{ $question->id }})" size="sm" icon="pencil-square" variant="primary" color="yellow" class="!p-2" />
+                                            </flux:tooltip>
+                                        @endif
+                                    @endcan
+
+                                    @can('delete question')
+                                        @if($isUsed)
+                                            <flux:tooltip content="Tidak bisa dihapus — sudah dipakai di {{ $usageCount }} blind test" position="top">
+                                                <div class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-zinc-100 dark:bg-zinc-800 text-zinc-400 cursor-not-allowed">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                                                        <path fill-rule="evenodd" d="M12 1.5a5.25 5.25 0 0 0-5.25 5.25v3a3 3 0 0 0-3 3v6.75a3 3 0 0 0 3 3h10.5a3 3 0 0 0 3-3v-6.75a3 3 0 0 0-3-3v-3c0-2.9-2.35-5.25-5.25-5.25Zm3.75 8.25v-3a3.75 3.75 0 1 0-7.5 0v3h7.5Z" clip-rule="evenodd" />
+                                                    </svg>
+                                                </div>
+                                            </flux:tooltip>
+                                        @else
+                                            <flux:tooltip content="Delete" position="top">
+                                                <flux:button wire:click="confirmDelete({{ $question->id }})" size="sm" icon="trash" variant="primary" color="red" class="!p-2" />
+                                            </flux:tooltip>
+                                        @endif
+                                    @endcan
+                                </div>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="8" class="px-4 py-8 text-center">
+                                <div class="flex flex-col items-center justify-center gap-2 py-6">
+                                    <div class="w-16 h-16 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                                        <flux:icon name="question-mark-circle" class="w-8 h-8 text-zinc-400" />
+                                    </div>
+                                    <h3 class="text-base font-medium text-zinc-900 dark:text-white">No question records found</h3>
+                                    <p class="text-sm text-zinc-500">
+                                        {{ $search || $filterSection ? 'Try adjusting your filter' : 'Get started by creating a new question' }}
+                                    </p>
+                                    @if($search || $filterSection)
+                                        <flux:button wire:click="$set('search', ''); $set('filterSection', '')" size="sm" class="mt-1">
+                                            Clear Filter
+                                        </flux:button>
+                                    @endif
+                                </div>
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            @if($questions->hasPages())
+            <div class="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-700">
+                {{ $questions->links() }}
+            </div>
+            @endif
         </div>
-        @endif
     </flux:card>
 
     <!-- ================= MODAL FORM (CREATE / EDIT) ================= -->

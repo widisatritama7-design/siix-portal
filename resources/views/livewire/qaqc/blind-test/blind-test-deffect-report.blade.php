@@ -24,91 +24,154 @@
         </div>
     </div>
 
-    <!-- Filter Card -->
-    <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-lg border border-zinc-200 dark:border-zinc-800 p-4 sm:p-6">
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+    <!-- ==================== FILTER CARD ==================== -->
+    <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-lg border border-zinc-200 dark:border-zinc-800 overflow-hidden">
 
-            <!-- Year -->
-            <div>
-                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Year</label>
-                <select wire:model="yearFilter"
-                        class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:border-zinc-600 dark:text-white">
-                    <option value="">All Years</option>
-                    @foreach($years as $year)
-                        <option value="{{ $year }}">{{ $year }}</option>
-                    @endforeach
-                </select>
-            </div>
+        {{-- ===== HEADER ===== --}}
+        <div class="relative px-6 py-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 overflow-hidden">
+            <div class="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-white/10"></div>
+            <div class="absolute -right-2 -bottom-8 w-16 h-16 rounded-full bg-white/10"></div>
 
-            <!-- Month -->
-            <div>
-                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Month</label>
-                <select wire:model="monthFilter"
-                        class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:border-zinc-600 dark:text-white">
-                    <option value="">All Months</option>
-                    @foreach($months as $key => $month)
-                        <option value="{{ $key }}">{{ $month }}</option>
-                    @endforeach
-                </select>
-            </div>
+            <div class="relative flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-white">
+                            <path fill-rule="evenodd" d="M3.792 2.938A49.069 49.069 0 0 1 12 2.25c2.797 0 5.54.236 8.209.688a1.857 1.857 0 0 1 1.541 1.836v1.044a3 3 0 0 1-.879 2.121l-6.182 6.182a1.5 1.5 0 0 0-.439 1.061v2.927a3 3 0 0 1-1.658 2.684l-1.757.878A.75.75 0 0 1 9.75 21v-5.818a1.5 1.5 0 0 0-.44-1.06L3.13 7.938a3 3 0 0 1-.879-2.121V4.774c0-.897.64-1.683 1.542-1.836Z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="text-[10px] text-white/70 uppercase tracking-wider font-semibold">Report</div>
+                        <div class="text-base font-bold text-white leading-tight">Filter Data</div>
+                    </div>
+                </div>
 
-            <!-- Department -->
-            <div>
-                <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Department</label>
-                <select wire:model="departmentFilter"
-                        class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:border-zinc-600 dark:text-white">
-                    <option value="">All Departments</option>
-                    @foreach($departments as $dept)
-                        <option value="{{ $dept }}">{{ $dept }}</option>
-                    @endforeach
-                </select>
+                <div class="flex items-center gap-2">
+                    @if($hasFiltered)
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-500/30 backdrop-blur-sm border border-green-300/40 text-white text-xs font-semibold">
+                            <span class="w-1.5 h-1.5 rounded-full bg-green-300 animate-pulse"></span>
+                            Filter Applied
+                        </span>
+                    @else
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 text-white text-xs font-semibold">
+                            <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+                            Ready
+                        </span>
+                    @endif
+                </div>
             </div>
         </div>
 
-        <!-- Buttons -->
-        <div class="flex flex-wrap justify-end gap-2 mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-700">
-            @if($hasFiltered)
-            <button wire:click="resetFilters"
-                class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                </svg>
-                Reset Filters
-            </button>
-            @endif
+        {{-- ===== BODY ===== --}}
+        <div class="p-4 sm:p-6">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
 
-            <button wire:click="applyFilter"
-                class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-                Apply Filter
-            </button>
+                <!-- Year -->
+                <div>
+                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Year</label>
+                    <select wire:model="yearFilter"
+                            class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:border-zinc-600 dark:text-white">
+                        <option value="">All Years</option>
+                        @foreach($years as $year)
+                            <option value="{{ $year }}">{{ $year }}</option>
+                        @endforeach
+                    </select>
+                </div>
 
-            @if($hasFiltered)
-            <button wire:click="export"
-                class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-                </svg>
-                Export to Excel
-            </button>
-            @endif
+                <!-- Month -->
+                <div>
+                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Month</label>
+                    <select wire:model="monthFilter"
+                            class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:border-zinc-600 dark:text-white">
+                        <option value="">All Months</option>
+                        @foreach($months as $key => $month)
+                            <option value="{{ $key }}">{{ $month }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Department -->
+                <div>
+                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Department</label>
+                    <select wire:model="departmentFilter"
+                            class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:border-zinc-600 dark:text-white">
+                        <option value="">All Departments</option>
+                        @foreach($departments as $dept)
+                            <option value="{{ $dept }}">{{ $dept }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+
+            <!-- Buttons -->
+            <div class="flex flex-wrap justify-end gap-2 mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-700">
+                @if($hasFiltered)
+                <button wire:click="resetFilters"
+                    class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                    </svg>
+                    Reset Filters
+                </button>
+                @endif
+
+                <button wire:click="applyFilter"
+                    class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    Apply Filter
+                </button>
+
+                @if($hasFiltered)
+                <button wire:click="export"
+                    class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg transition flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                    </svg>
+                    Export to Excel
+                </button>
+                @endif
+            </div>
         </div>
     </div>
 
     <!-- Preview Table -->
     @if($hasFiltered)
-        <flux:card class="p-6 h-full shadow-lg flex flex-col">
-            <div class="flex flex-wrap justify-between items-center mb-4 gap-2">
-                <h2 class="text-lg font-semibold text-zinc-800 dark:text-white">Filter Results</h2>
-                <span class="px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 rounded-full text-xs font-medium">
-                    Total: {{ number_format($totalRecords) }} Defect items
-                </span>
-            </div>
+    <flux:card class="p-0 shadow-lg flex flex-col overflow-hidden">
 
+        {{-- ===== HEADER ===== --}}
+        <div class="relative px-6 py-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 overflow-hidden">
+            <div class="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-white/10"></div>
+            <div class="absolute -right-2 -bottom-8 w-16 h-16 rounded-full bg-white/10"></div>
+
+            <div class="relative flex items-center justify-between flex-wrap gap-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-white">
+                            <path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="text-[10px] text-white/70 uppercase tracking-wider font-semibold">Report</div>
+                        <div class="text-base font-bold text-white leading-tight">By Defect Item</div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 text-white text-xs font-semibold">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5">
+                            <path fill-rule="evenodd" d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625Z" clip-rule="evenodd" />
+                        </svg>
+                        {{ number_format($totalRecords) }} Defect items
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        {{-- ===== BODY ===== --}}
+        <div class="p-6 flex flex-col flex-1">
             @if($previewData->isEmpty())
-                <div class="flex flex-col items-center justify-center gap-3 min-h-[400px]">
+                <div class="flex flex-col items-center justify-center gap-3 w-full min-h-[400px] text-center">
                     <div class="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
                         <flux:icon name="document-text" class="w-10 h-10 text-zinc-400 dark:text-zinc-500" />
                     </div>
@@ -178,12 +241,13 @@
                 </div>
 
                 @if($previewData->hasPages())
-                <div class="p-4 border-t border-zinc-200 dark:border-zinc-700 mt-auto">
+                <div class="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-700">
                     {{ $previewData->links() }}
                 </div>
                 @endif
             @endif
-        </flux:card>
+        </div>
+    </flux:card>
     @else
         <div class="flex flex-col items-center justify-center gap-3 min-h-[400px] bg-white dark:bg-zinc-900 rounded-xl shadow-lg border border-zinc-200 dark:border-zinc-800 p-12">
             <div class="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">

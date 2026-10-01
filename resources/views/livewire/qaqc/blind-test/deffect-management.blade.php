@@ -48,128 +48,175 @@
         </div>
     </div>
 
-    <!-- Table -->
-    <flux:card class="p-6 h-full shadow-lg hover:shadow-xl transition-shadow duration-300 flex flex-col">
-        <div class="overflow-x-auto flex-1">
-            <table class="w-full" style="min-width: 800px; white-space: nowrap;">
-                <thead>
-                    <tr class="bg-zinc-50 dark:bg-zinc-800/50">
-                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 50px;">#</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 250px;">Deffect Item Name</th>
-                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 150px;">Created By</th>
-                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 150px;">Date Create</th>
-                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 150px;">Date Update</th>
-                        <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 200px;">Actions</th>
-                    </tr>
-                </thead>
-                <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
-                    @forelse($deffects as $index => $deffect)
-                    @php $isUsed = in_array((int) $deffect->id, $usedIds, true); @endphp
-                    <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors" wire:key="deffect-{{ $deffect->id }}">
-                        <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400 text-center">
-                            {{ $deffects->firstItem() + $index }}
-                        </td>
-                        <td class="px-4 py-3 text-left">
-                            <div class="flex items-center gap-2">
-                                <span class="text-sm font-semibold {{ $isUsed ? 'text-zinc-500 dark:text-zinc-400' : 'text-zinc-800 dark:text-white' }}">
-                                    {{ $deffect->deffect_item_name }}
-                                </span>
-                                @if($isUsed)
-                                    <flux:badge size="sm" color="amber" title="Sudah dipakai di Blind Test">
-                                        Used
-                                    </flux:badge>
-                                @endif
-                            </div>
-                        </td>
-                        <td class="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400 text-center">
-                            {{ $deffect->creator->name ?? '-' }}
-                        </td>
-                        <td class="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400 text-center">
-                            {{ $deffect->created_at ? $deffect->created_at->format('d/m/Y H:i') : '-' }}
-                        </td>
-                        <td class="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400 text-center">
-                            {{ $deffect->updated_at ? $deffect->updated_at->format('d/m/Y H:i') : '-' }}
-                        </td>
-                        <td class="px-4 py-3 text-center">
-                            <div class="flex items-center justify-center gap-1" style="flex-wrap: nowrap;">
-                                @can('view deffect')
-                                <flux:tooltip content="View" position="top">
-                                    <flux:button 
-                                        wire:click="view({{ $deffect->id }})" 
-                                        size="sm"
-                                        icon="eye"
-                                        variant="primary"
-                                        color="blue"
-                                        class="!p-2 flex-shrink-0"
-                                    />
-                                </flux:tooltip>
-                                @endcan
+    <!-- ==================== TABLE ==================== -->
+    <flux:card class="p-0 shadow-lg flex flex-col overflow-hidden">
 
-                                @can('edit deffect')
-                                    @if(!$isUsed)
-                                    <flux:tooltip content="Edit" position="top">
+        {{-- ===== HEADER ===== --}}
+        <div class="relative px-6 py-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 overflow-hidden">
+            <div class="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-white/10"></div>
+            <div class="absolute -right-2 -bottom-8 w-16 h-16 rounded-full bg-white/10"></div>
+
+            <div class="relative flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-white">
+                            <path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="text-[10px] text-white/70 uppercase tracking-wider font-semibold">Management</div>
+                        <div class="text-base font-bold text-white leading-tight">Defect Item List</div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    @if($search)
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 text-white text-xs font-semibold">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5">
+                                <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd" />
+                            </svg>
+                            {{ $search }}
+                        </span>
+                    @else
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 text-white text-xs font-semibold">
+                            <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
+                            All Defects
+                        </span>
+                    @endif
+
+                    <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 text-white text-xs font-semibold">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5">
+                            <path fill-rule="evenodd" d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0 0 16.5 9h-1.875a1.875 1.875 0 0 1-1.875-1.875V5.25A3.75 3.75 0 0 0 9 1.5H5.625Z" clip-rule="evenodd" />
+                        </svg>
+                        {{ $deffects->total() }} total
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        {{-- ===== BODY ===== --}}
+        <div class="p-6 flex flex-col flex-1">
+            <div class="overflow-x-auto flex-1">
+                <table class="w-full" style="min-width: 800px; white-space: nowrap;">
+                    <thead>
+                        <tr class="bg-zinc-50 dark:bg-zinc-800/50">
+                            <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 50px;">#</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 250px;">Deffect Item Name</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 150px;">Created By</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 150px;">Date Create</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 150px;">Date Update</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 200px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
+                        @forelse($deffects as $index => $deffect)
+                        @php $isUsed = in_array((int) $deffect->id, $usedIds, true); @endphp
+                        <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors" wire:key="deffect-{{ $deffect->id }}">
+                            <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400 text-center">
+                                {{ $deffects->firstItem() + $index }}
+                            </td>
+                            <td class="px-4 py-3 text-left">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm font-semibold {{ $isUsed ? 'text-zinc-500 dark:text-zinc-400' : 'text-zinc-800 dark:text-white' }}">
+                                        {{ $deffect->deffect_item_name }}
+                                    </span>
+                                    @if($isUsed)
+                                        <flux:badge size="sm" color="amber" title="Sudah dipakai di Blind Test">
+                                            Used
+                                        </flux:badge>
+                                    @endif
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400 text-center">
+                                {{ $deffect->creator->name ?? '-' }}
+                            </td>
+                            <td class="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400 text-center">
+                                {{ $deffect->created_at ? $deffect->created_at->format('d/m/Y H:i') : '-' }}
+                            </td>
+                            <td class="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400 text-center">
+                                {{ $deffect->updated_at ? $deffect->updated_at->format('d/m/Y H:i') : '-' }}
+                            </td>
+                            <td class="px-4 py-3 text-center">
+                                <div class="flex items-center justify-center gap-1" style="flex-wrap: nowrap;">
+                                    @can('view deffect')
+                                    <flux:tooltip content="View" position="top">
                                         <flux:button 
-                                            wire:click="edit({{ $deffect->id }})" 
+                                            wire:click="view({{ $deffect->id }})" 
                                             size="sm"
-                                            icon="pencil-square"
+                                            icon="eye"
                                             variant="primary"
-                                            color="yellow"
+                                            color="blue"
                                             class="!p-2 flex-shrink-0"
                                         />
                                     </flux:tooltip>
-                                    @endif
-                                @endcan
+                                    @endcan
 
-                                @can('delete deffect')
-                                    @if(!$isUsed)
-                                    <flux:tooltip content="Delete" position="top">
-                                        <flux:button 
-                                            wire:click="confirmDelete({{ $deffect->id }})" 
-                                            size="sm"
-                                            icon="trash"
-                                            variant="primary"
-                                            color="red"
-                                            class="!p-2 flex-shrink-0"
-                                        />
-                                    </flux:tooltip>
-                                    @endif
-                                @endcan
-                            </div>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="6" class="px-4 py-8 text-center">
-                            <div class="flex flex-col items-center justify-center gap-2 py-6">
-                                <div class="w-16 h-16 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-                                    <flux:icon name="exclamation-triangle" class="w-8 h-8 text-zinc-400 dark:text-zinc-500" />
-                                </div>
-                                <div>
-                                    <h3 class="text-base font-medium text-zinc-900 dark:text-white mb-0.5">
-                                        No Defect item records found
-                                    </h3>
-                                    <p class="text-sm text-zinc-500 dark:text-zinc-400">
-                                        {{ $search ? 'Try adjusting your search query' : 'Get started by creating a new Defect item' }}
-                                    </p>
-                                </div>
-                                @if($search)
-                                    <flux:button wire:click="$set('search', '')" size="sm" class="mt-1">
-                                        Clear Search
-                                    </flux:button>
-                                @endif
-                            </div>
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+                                    @can('edit deffect')
+                                        @if(!$isUsed)
+                                        <flux:tooltip content="Edit" position="top">
+                                            <flux:button 
+                                                wire:click="edit({{ $deffect->id }})" 
+                                                size="sm"
+                                                icon="pencil-square"
+                                                variant="primary"
+                                                color="yellow"
+                                                class="!p-2 flex-shrink-0"
+                                            />
+                                        </flux:tooltip>
+                                        @endif
+                                    @endcan
 
-        @if($deffects->hasPages())
-        <div class="p-4 border-t border-zinc-200 dark:border-zinc-700 mt-auto">
-            {{ $deffects->links() }}
+                                    @can('delete deffect')
+                                        @if(!$isUsed)
+                                        <flux:tooltip content="Delete" position="top">
+                                            <flux:button 
+                                                wire:click="confirmDelete({{ $deffect->id }})" 
+                                                size="sm"
+                                                icon="trash"
+                                                variant="primary"
+                                                color="red"
+                                                class="!p-2 flex-shrink-0"
+                                            />
+                                        </flux:tooltip>
+                                        @endif
+                                    @endcan
+                                </div>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="6" class="px-4 py-8 text-center">
+                                <div class="flex flex-col items-center justify-center gap-2 py-6">
+                                    <div class="w-16 h-16 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                                        <flux:icon name="exclamation-triangle" class="w-8 h-8 text-zinc-400 dark:text-zinc-500" />
+                                    </div>
+                                    <div>
+                                        <h3 class="text-base font-medium text-zinc-900 dark:text-white mb-0.5">
+                                            No Defect item records found
+                                        </h3>
+                                        <p class="text-sm text-zinc-500 dark:text-zinc-400">
+                                            {{ $search ? 'Try adjusting your search query' : 'Get started by creating a new Defect item' }}
+                                        </p>
+                                    </div>
+                                    @if($search)
+                                        <flux:button wire:click="$set('search', '')" size="sm" class="mt-1">
+                                            Clear Search
+                                        </flux:button>
+                                    @endif
+                                </div>
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            @if($deffects->hasPages())
+            <div class="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-700">
+                {{ $deffects->links() }}
+            </div>
+            @endif
         </div>
-        @endif
     </flux:card>
 
     <!-- ==================== MODAL FORM ==================== -->
