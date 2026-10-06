@@ -14,11 +14,11 @@ Schedule::command('submission:send-pending-alert')->dailyAt('08:30');
 Schedule::command('kaizen:send-updates-email')->fridays()->at('10:00');
 
 // ESD
-Schedule::command('equipment:duplicate-today')->dailyAt('07:30');
+Schedule::command('equipment:duplicate-today')->dailyAt('08:40');
 Schedule::command('flooring:duplicate-today')->dailyAt('07:30');
 Schedule::command('garment:duplicate-today')->dailyAt('07:30');
 Schedule::command('groundmonitorbox:duplicate-today')->dailyAt('07:30');
-Schedule::command('ionizer:duplicate-today')->dailyAt('07:30');
+Schedule::command('ionizer:duplicate-today')->dailyAt('08:40');
 Schedule::command('jig:duplicate-today')->dailyAt('07:30');
 Schedule::command('magazine:duplicate-today')->dailyAt('07:30');
 Schedule::command('packaging:duplicate-today')->dailyAt('07:30');

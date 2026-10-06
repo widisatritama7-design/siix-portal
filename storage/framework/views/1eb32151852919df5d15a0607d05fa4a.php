@@ -25,6 +25,11 @@
 <?php # [BlazeFolded]:{flux::icon}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::icon}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::icon}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::icon}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::card}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/card/index.blade.php}:{1776985208} ?>
 <div class="p-1 space-y-3"
      <?php if($isStarted && !$isFinished): ?> wire:poll.3s="syncTimer" <?php endif; ?>
@@ -872,7 +877,8 @@
     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($isFinished): ?>
         <?php
             $showFullResult  = $blindTest->shouldShowFullResult();
-            $isSecondAttempt = $blindTest->attempt > 1;
+            $isFirstPass     = $blindTest->isFirstAttemptPass();
+            $isMultiReviewed = $blindTest->isMultiAttemptReviewed();
             $hasPending      = $blindTest->hasPendingReview();
 
             $currentVisible = $blindTest->filterVisibleAnswers($evaluationResult ?? []);
@@ -1227,41 +1233,197 @@
 
         <?php else: ?>
         
-        <?php ob_start(); ?><div class="[:where(&amp;)]:bg-white dark:[:where(&amp;)]:bg-white/10 border border-zinc-200 dark:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl p-6 shadow-lg" data-flux-card>
-    <?php ob_start(); ?>
 
-            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!empty($firstAttemptAnswers)): ?>
-            <div class="mb-4 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-600 shadow-lg p-4">
-                <div class="flex items-center gap-3 flex-wrap">
-                    <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center border-2 border-white/40 flex-shrink-0">
-                        <?php ob_start(); ?><svg class="shrink-0 [:where(&amp;)]:size-6 w-5 h-5 text-white" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+        
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($isMultiReviewed && !empty($firstAttemptAnswers)): ?>
+        <div class="mb-4 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-600 shadow-lg p-4">
+            <div class="flex items-center gap-3 flex-wrap">
+                <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center border-2 border-white/40 flex-shrink-0">
+                    <?php ob_start(); ?><svg class="shrink-0 [:where(&amp;)]:size-6 w-5 h-5 text-white" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
   <path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"/>
 </svg>
 
         <?php echo ltrim(ob_get_clean()); ?>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="text-sm font-bold text-white">Perbandingan Hasil Percobaan</div>
+                    <div class="text-xs text-purple-100 mt-0.5">
+                        Attempt 1 (<?php echo e($firstAttemptAt?->format('d M Y H:i') ?? '-'); ?>)
+                        vs
+                        Attempt <?php echo e($blindTest->attempt); ?> (<?php echo e($blindTest->finished_at?->format('d M Y H:i') ?? '-'); ?>)
                     </div>
-                    <div class="flex-1 min-w-0">
-                        <div class="text-sm font-bold text-white">Perbandingan Hasil Percobaan</div>
-                        <div class="text-xs text-purple-100 mt-0.5">
-                            Attempt 1 (<?php echo e($firstAttemptAt?->format('d M Y H:i') ?? '-'); ?>)
-                            vs
-                            Attempt <?php echo e($blindTest->attempt); ?> (<?php echo e($blindTest->finished_at?->format('d M Y H:i') ?? '-'); ?>)
-                        </div>
+                </div>
+                <div class="flex items-center gap-2 flex-wrap">
+                    <div class="px-3 py-1.5 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 text-white text-xs font-bold whitespace-nowrap">
+                        Attempt 1: <?php echo e($firstAttemptResult ?? '-'); ?>
+
                     </div>
-                    <div class="flex items-center gap-2 flex-wrap">
-                        <div class="px-3 py-1.5 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 text-white text-xs font-bold whitespace-nowrap">
-                            Attempt 1: <?php echo e($firstAttemptResult ?? '-'); ?>
+                    <div class="px-3 py-1.5 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 text-white text-xs font-bold whitespace-nowrap">
+                        Attempt <?php echo e($blindTest->attempt); ?>: <?php echo e($blindTest->overall_result ?? '-'); ?>
 
-                        </div>
-                        <div class="px-3 py-1.5 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 text-white text-xs font-bold whitespace-nowrap">
-                            Attempt <?php echo e($blindTest->attempt); ?>: <?php echo e($blindTest->overall_result ?? '-'); ?>
-
-                        </div>
                     </div>
                 </div>
             </div>
-            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+        </div>
+        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
+        <?php ob_start(); ?><div class="[:where(&amp;)]:bg-white dark:[:where(&amp;)]:bg-white/10 border border-zinc-200 dark:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl p-6 shadow-lg" data-flux-card>
+    <?php ob_start(); ?>
+
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($isFirstPass): ?>
+            
+            
+            
+            <div class="overflow-x-auto -mx-1 px-1 pb-2">
+                <div class="grid grid-cols-2 gap-4" style="min-width: 900px;">
+
+                    
+                    <div class="rounded-xl border-2 border-blue-200 dark:border-blue-800 overflow-hidden shadow-sm flex flex-col">
+                        <div class="px-4 py-3 bg-gradient-to-r from-blue-500 to-indigo-500 text-white flex items-center gap-2 flex-shrink-0 whitespace-nowrap">
+                            <?php ob_start(); ?><svg class="shrink-0 [:where(&amp;)]:size-6 w-4 h-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z"/>
+</svg>
+
+        <?php echo ltrim(ob_get_clean()); ?>
+                            <div>
+                                <div class="text-xs font-semibold">Kunci Jawaban</div>
+                                <div class="text-[10px] text-blue-100"><?php echo e(count($blindTest->blind_test_items ?? [])); ?> soal</div>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto bg-white dark:bg-zinc-900 flex-1">
+                            <table class="w-full" style="min-width: 380px;">
+                                <thead class="bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800">
+                                    <tr>
+                                        <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-blue-700 dark:text-blue-300 uppercase w-12">#</th>
+                                        <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-blue-700 dark:text-blue-300 uppercase" style="min-width: 180px;">Defect Item</th>
+                                        <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-blue-700 dark:text-blue-300 uppercase" style="min-width: 120px;">Location</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $blindTest->blind_test_items ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                                    <?php
+                                        $deffect = \App\Models\QAQC\BlindTest\Deffect::find($item['deffect_item_id'] ?? null);
+                                    ?>
+                                    <tr class="hover:bg-blue-50/50 dark:hover:bg-blue-950/10 whitespace-nowrap">
+                                        <td class="px-3 py-2 text-[11px]">
+                                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 font-semibold text-[10px]">
+                                                <?php echo e($i + 1); ?>
+
+                                            </span>
+                                        </td>
+                                        <td class="px-3 py-2 text-[11px] font-semibold text-zinc-800 dark:text-white whitespace-nowrap">
+                                            <?php echo e($deffect->deffect_item_name ?? '-'); ?>
+
+                                        </td>
+                                        <td class="px-3 py-2 text-[11px] whitespace-nowrap">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-mono font-semibold whitespace-nowrap">
+                                                <?php echo e($item['component_location'] ?? '-'); ?>
+
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    
+                    <div class="rounded-xl border-2 border-green-200 dark:border-green-800 overflow-hidden shadow-sm flex flex-col">
+                        <div class="px-4 py-3 bg-gradient-to-r from-green-500 to-emerald-500 text-white flex items-center gap-2 flex-shrink-0 whitespace-nowrap">
+                            <?php ob_start(); ?><svg class="shrink-0 [:where(&amp;)]:size-6 w-4 h-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true" data-slot="icon">
+  <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/>
+</svg>
+
+        <?php echo ltrim(ob_get_clean()); ?>
+                            <div class="flex-1 min-w-0">
+                                <div class="text-xs font-semibold">Attempt 1</div>
+                                <div class="text-[10px] text-white/80">Result: PASS</div>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto bg-white dark:bg-zinc-900 flex-1">
+                            <table class="w-full" style="min-width: 440px;">
+                                <thead class="bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-200 dark:border-zinc-700">
+                                    <tr>
+                                        <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase w-12">#</th>
+                                        <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase" style="min-width: 180px;">Defect Item</th>
+                                        <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase" style="min-width: 120px;">Location</th>
+                                        <th class="px-3 py-2.5 text-center text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase" style="min-width: 130px;">Hasil</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $evaluationResult ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                                    <?php
+                                        $deffect     = $row['deffect_item_id'] ? \App\Models\QAQC\BlindTest\Deffect::find($row['deffect_item_id']) : null;
+                                        $userAnswer  = $row['user_answer'] ?? '';
+                                        $isCorrect   = $row['is_correct'] ?? false;
+                                        $isMissing   = $userAnswer === 'MISSING';
+                                    ?>
+                                    <tr class="whitespace-nowrap <?php if($isCorrect): ?> bg-green-50/40 dark:bg-green-950/10 <?php elseif($isMissing): ?> bg-yellow-50/40 dark:bg-yellow-950/10 <?php else: ?> bg-red-50/40 dark:bg-red-950/10 <?php endif; ?>">
+                                        <td class="px-3 py-2 text-[11px]">
+                                            <span class="inline-flex items-center justify-center w-6 h-6 rounded-full font-semibold text-[10px]
+                                                <?php if($isCorrect): ?> bg-green-100 text-green-700
+                                                <?php elseif($isMissing): ?> bg-yellow-100 text-yellow-700
+                                                <?php else: ?> bg-red-100 text-red-700 <?php endif; ?>">
+                                                <?php echo e($i + 1); ?>
+
+                                            </span>
+                                        </td>
+                                        <td class="px-3 py-2 text-[11px] font-semibold text-zinc-800 dark:text-white whitespace-nowrap">
+                                            <?php echo e($deffect->deffect_item_name ?? '-'); ?>
+
+                                        </td>
+                                        <td class="px-3 py-2 text-[11px] whitespace-nowrap">
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 font-mono font-semibold whitespace-nowrap">
+                                                <?php echo e($row['component_location'] ?? '-'); ?>
+
+                                            </span>
+                                        </td>
+                                        <td class="px-3 py-2 text-center whitespace-nowrap">
+                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($isCorrect): ?>
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-[10px] font-semibold border border-green-300 dark:border-green-700 whitespace-nowrap">
+                                                    <?php ob_start(); ?><svg class="shrink-0 [:where(&amp;)]:size-5 w-3 h-3" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm3.857-9.809a.75.75 0 0 0-1.214-.882l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd"/>
+</svg>
+
+        <?php echo ltrim(ob_get_clean()); ?>
+                                                    Cocok
+                                                </span>
+                                            <?php elseif($isMissing): ?>
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300 text-[10px] font-semibold border border-yellow-300 dark:border-yellow-700 whitespace-nowrap">
+                                                    <?php ob_start(); ?><svg class="shrink-0 [:where(&amp;)]:size-5 w-3 h-3" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495ZM10 5a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 10 5Zm0 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd"/>
+</svg>
+
+        <?php echo ltrim(ob_get_clean()); ?>
+                                                    Tidak Dijawab
+                                                </span>
+                                            <?php else: ?>
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 text-[10px] font-semibold border border-red-300 dark:border-red-700 whitespace-nowrap">
+                                                    <?php ob_start(); ?><svg class="shrink-0 [:where(&amp;)]:size-5 w-3 h-3" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16ZM8.28 7.22a.75.75 0 0 0-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 1 0 1.06 1.06L10 11.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L11.06 10l1.72-1.72a.75.75 0 0 0-1.06-1.06L10 8.94 8.28 7.22Z" clip-rule="evenodd"/>
+</svg>
+
+        <?php echo ltrim(ob_get_clean()); ?>
+                                                    Tidak Cocok
+                                                </span>
+                                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                        </td>
+                                    </tr>
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <?php elseif($isMultiReviewed): ?>
+            
+            
+            
+            
             <div class="overflow-x-auto -mx-1 px-1 pb-2">
                 <div class="grid grid-cols-3 gap-4" style="min-width: 1280px;">
 
@@ -1340,7 +1502,7 @@
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
-                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $firstAttemptAnswers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__empty_2 = true; $__currentLoopData = $firstAttemptAnswers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_2 = false; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                                     <?php
                                         $deffect     = $row['deffect_item_id'] ? \App\Models\QAQC\BlindTest\Deffect::find($row['deffect_item_id']) : null;
                                         $userAnswer  = $row['user_answer'] ?? '';
@@ -1398,7 +1560,7 @@
                                             <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                         </td>
                                     </tr>
-                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_2): ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
                                     <tr>
                                         <td colspan="4" class="px-3 py-8 text-center text-[11px] text-zinc-400 italic whitespace-nowrap">
                                             Tidak ada data attempt 1
@@ -1434,7 +1596,7 @@
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
-                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $evaluationResult ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__empty_2 = true; $__currentLoopData = $evaluationResult ?? []; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $i => $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_2 = false; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                                     <?php
                                         $deffect     = $row['deffect_item_id'] ? \App\Models\QAQC\BlindTest\Deffect::find($row['deffect_item_id']) : null;
                                         $userAnswer  = $row['user_answer'] ?? '';
@@ -1497,8 +1659,11 @@
                             </table>
                         </div>
                     </div>
+
                 </div>
             </div>
+            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+
         <?php echo trim(ob_get_clean()); ?>
 
 </div>

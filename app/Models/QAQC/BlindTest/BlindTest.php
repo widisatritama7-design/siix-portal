@@ -218,9 +218,48 @@ class BlindTest extends EloquentModel
      * - Sudah attempt terakhir, DAN
      * - Tidak ada pending review
      */
+    /**
+     * Tampilkan hasil LENGKAP (kunci + semua attempt):
+     *
+     * - Attempt 1 + PASS + reviewed  → TRUE  (tampil: kunci + attempt 1)
+     * - Attempt 1 + FAIL             → FALSE (hanya jawaban salah)
+     * - Attempt 2+ + reviewed        → TRUE  (tampil: kunci + attempt 1 + attempt N)
+     * - Belum reviewed               → FALSE (menunggu review QC)
+     */
     public function shouldShowFullResult(): bool
     {
-        return $this->isLastAttempt() && !$this->hasPendingReview();
+        // Belum selesai / belum direview → jangan tampilkan full
+        if ($this->status !== 'completed' || !$this->is_reviewed) {
+            return false;
+        }
+
+        // Attempt 1: hanya PASS yang tampil full
+        if ($this->attempt === 1) {
+            return $this->overall_result === 'PASS';
+        }
+
+        // Attempt 2 ke atas: selalu tampil full (PASS maupun FAIL)
+        return true;
+    }
+
+    /**
+     * Apakah ini attempt 1 yang PASS (dan sudah direview)?
+     * → untuk memilih tampilan 2 kolom (Kunci + Attempt 1).
+     */
+    public function isFirstAttemptPass(): bool
+    {
+        return $this->attempt === 1
+            && $this->overall_result === 'PASS'
+            && $this->is_reviewed;
+    }
+
+    /**
+     * Apakah ini attempt 2+ yang sudah direview?
+     * → untuk memilih tampilan 3 kolom (Kunci + Attempt 1 + Attempt N).
+     */
+    public function isMultiAttemptReviewed(): bool
+    {
+        return $this->attempt > 1 && $this->is_reviewed;
     }
 
     // ==================== CAMERA RECORDING HELPERS ====================
