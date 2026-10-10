@@ -22,7 +22,7 @@ class BlindTestManagement extends Component
     public $section = '';
     public $customer_id = '';
     public $model_id = '';
-    public $question_ids = [];      // array soal (biasanya cuma 1 dari bank soal)
+    public $question_ids = [];
 
     // Multi employee picker
     public $selectedEmployees = [];
@@ -40,7 +40,7 @@ class BlindTestManagement extends Component
 
     // ==================== SEARCH & FILTER ====================
     public $search = '';
-    public $bankMonth = '';   // '' = bulan ini, format 'YYYY-MM'
+    public $bankMonth = '';
     public $filterDepartment = '';
     public $filterShift = '';
     public $filterGroup = '';
@@ -52,8 +52,14 @@ class BlindTestManagement extends Component
     public $filterDateTo   = '';
 
     // ==================== CALENDAR (by date) ====================
-    public $calendarMonth = '';      // 'YYYY-MM', default = bulan ini
-    public $selectedDate = '';       // 'YYYY-MM-DD', default = hari ini
+    public $calendarMonth = '';
+    public $selectedDate = '';
+
+    // ==================== VIEW MODE (FULL / NORMAL) ====================
+    public $viewMode = 'normal';
+
+    // ==================== WEEK CALENDAR ====================
+    public $weekStart = '';
 
     // ==================== TABS ====================
     public $activeTab = 'all';
@@ -105,20 +111,17 @@ class BlindTestManagement extends Component
     public function updatedFilterResult()     { $this->resetPage(); }
     public function updatedFilterDateFrom()   { $this->resetPage(); }
     public function updatedFilterDateTo()     { $this->resetPage(); }
-    public function updatedBankMonth()
-    {
-        // Tidak perlu resetPage karena bank soal tidak paginated
-    }
+    public function updatedBankMonth()        { /* tidak perlu resetPage */ }
 
     public function mount()
     {
         $this->calendarMonth = now()->format('Y-m');
-        $this->selectedDate  = now()->format('Y-m-d');   // default = hari ini
+        $this->selectedDate  = now()->format('Y-m-d');
+        $this->weekStart     = now()->startOfWeek(\Carbon\Carbon::MONDAY)->format('Y-m-d');
     }
 
     public function updatedCalendarMonth()
     {
-        // Kalau ganti bulan, reset pilihan tanggal ke tanggal 1 bulan itu
         if ($this->calendarMonth) {
             $this->selectedDate = \Carbon\Carbon::createFromFormat('Y-m', $this->calendarMonth)
                 ->startOfMonth()->format('Y-m-d');
@@ -128,7 +131,6 @@ class BlindTestManagement extends Component
 
     public function selectDate($date)
     {
-        // Klik tanggal → filter tabel, klik ulang → clear
         if ($this->selectedDate === $date) {
             $this->selectedDate = '';
         } else {
@@ -180,6 +182,60 @@ class BlindTestManagement extends Component
         $this->resetPage();
     }
 
+    // ==================== VIEW MODE ====================
+    public function toggleViewMode()
+    {
+        $this->viewMode = $this->viewMode === 'full' ? 'normal' : 'full';
+    }
+
+    public function setViewMode($mode)
+    {
+        if (in_array($mode, ['normal', 'full'])) {
+            $this->viewMode = $mode;
+        }
+    }
+
+    // ==================== WEEK CALENDAR ====================
+    public function mountWeekCalendar()
+    {
+        if (empty($this->weekStart)) {
+            $this->weekStart = now()->startOfWeek(\Carbon\Carbon::MONDAY)->format('Y-m-d');
+        }
+    }
+
+    public function prevWeek()
+    {
+        $this->mountWeekCalendar();
+        $this->weekStart = \Carbon\Carbon::parse($this->weekStart)
+            ->subWeek()->format('Y-m-d');
+        $this->resetPage();
+    }
+
+    public function nextWeek()
+    {
+        $this->mountWeekCalendar();
+        $this->weekStart = \Carbon\Carbon::parse($this->weekStart)
+            ->addWeek()->format('Y-m-d');
+        $this->resetPage();
+    }
+
+    public function goToThisWeek()
+    {
+        $this->weekStart    = now()->startOfWeek(\Carbon\Carbon::MONDAY)->format('Y-m-d');
+        $this->selectedDate = now()->format('Y-m-d');
+        $this->resetPage();
+    }
+
+    public function selectWeekDate($date)
+    {
+        if ($this->selectedDate === $date) {
+            $this->selectedDate = '';
+        } else {
+            $this->selectedDate = $date;
+        }
+        $this->resetPage();
+    }
+
     // ==================== TAB & FILTER ====================
     public function setTab($tab)
     {
@@ -209,10 +265,6 @@ class BlindTestManagement extends Component
         $this->resetValidation();
     }
 
-    /**
-     * Dipanggil dari halaman utama saat user klik 1 soal di bank soal.
-     * Auto-set section, customer, model dari soal, durasi fixed 5 menit.
-     */
     public function openCreateModal($questionId)
     {
         $this->resetForm();
@@ -234,7 +286,6 @@ class BlindTestManagement extends Component
     }
 
     // ==================== EMPLOYEE MULTI PICKER ====================
-
     public function getSelectedEmployeeIds(): array
     {
         return collect($this->selectedEmployees)
@@ -306,12 +357,6 @@ class BlindTestManagement extends Component
     }
 
     /* ================= HELPER: MODEL ID ================= */
-
-    /**
-     * Resolve model_id untuk kolom `model_id` di blind_test.
-     * - Kalau cuma 1 model → pakai model itu
-     * - Kalau lebih dari 1 model → return null (multi-model disimpan di snapshot)
-     */
     protected function resolveModelId($questions): ?int
     {
         $modelIds = collect();
@@ -319,7 +364,6 @@ class BlindTestManagement extends Component
         foreach ($questions as $q) {
             $items = $q->items ?? [];
 
-            // Format baru: group per model
             if (!empty($items) && isset($items[0]['model_id'])) {
                 foreach ($items as $group) {
                     if (!empty($group['model_id'])) {
@@ -327,7 +371,6 @@ class BlindTestManagement extends Component
                     }
                 }
             } else {
-                // Format lama: flat, model dari kolom model_id
                 if ($q->model_id) {
                     $modelIds->push((int) $q->model_id);
                 }
@@ -336,32 +379,25 @@ class BlindTestManagement extends Component
 
         $unique = $modelIds->unique()->values();
 
-        // Cuma 1 model → simpan
         if ($unique->count() === 1) {
             return $unique->first();
         }
 
-        // Multi model → null
         return null;
     }
 
-    /**
-     * Ambil semua defect dari question (support format lama & baru).
-     */
     protected function extractDefects($question): array
     {
         $raw = $question->items ?? [];
         $all = [];
 
         if (!empty($raw) && isset($raw[0]['model_id'])) {
-            // Format baru: group per model
             foreach ($raw as $group) {
                 foreach ($group['items'] ?? [] as $it) {
                     $all[] = $it;
                 }
             }
         } else {
-            // Format lama: flat
             foreach ($raw as $it) {
                 $all[] = $it;
             }
@@ -371,7 +407,6 @@ class BlindTestManagement extends Component
     }
 
     /* ================= SAVE ================= */
-
     public function save()
     {
         $isEdit = (bool) $this->blind_test_id;
@@ -388,9 +423,7 @@ class BlindTestManagement extends Component
             }
         }
 
-        // Paksa durasi 5 menit
         $this->duration_minutes = self::DEFAULT_DURATION_MINUTES;
-
         $this->validate();
 
         if (empty($this->question_ids)) {
@@ -408,7 +441,6 @@ class BlindTestManagement extends Component
             return;
         }
 
-        // Kumpulkan defect
         $allItems = collect();
         foreach ($questions as $q) {
             foreach ($this->extractDefects($q) as $item) {
@@ -500,7 +532,6 @@ class BlindTestManagement extends Component
     }
 
     /* ================= EDIT ================= */
-
     public function edit($id)
     {
         if (!auth()->user()->can('edit blind test')) {
@@ -537,7 +568,6 @@ class BlindTestManagement extends Component
     }
 
     /* ================= VIEW ================= */
-
     public function view($id)
     {
         $bt = BlindTest::withTrashed()->with([
@@ -555,7 +585,6 @@ class BlindTestManagement extends Component
     }
 
     /* ================= DELETE ================= */
-
     public function confirmDelete($id)
     {
         if (!auth()->user()->can('delete blind test')) {
@@ -614,7 +643,6 @@ class BlindTestManagement extends Component
     }
 
     /* ================= APPROVAL ================= */
-
     public function openApprovalModal($id, $type)
     {
         $this->approvalBlindTestId = $id;
@@ -694,7 +722,6 @@ class BlindTestManagement extends Component
     }
 
     /* ================= EMPLOYEE SEARCH ================= */
-
     public function searchEmployees($search)
     {
         if (strlen($search) < 2) return [];
@@ -730,7 +757,6 @@ class BlindTestManagement extends Component
     }
 
     /* ================= RENDER ================= */
-
     public function render()
     {
         if (!auth()->user()->can('view blind test')) {
@@ -781,7 +807,6 @@ class BlindTestManagement extends Component
         if ($this->filterDateFrom) $query->whereDate('created_at', '>=', $this->filterDateFrom);
         if ($this->filterDateTo)   $query->whereDate('created_at', '<=', $this->filterDateTo);
 
-        // Filter by selectedDate dari calendar
         if ($this->selectedDate) {
             $query->whereDate('created_at', $this->selectedDate);
         }
@@ -817,12 +842,11 @@ class BlindTestManagement extends Component
                 ->get();
         }
 
-        // Soal terpilih (untuk ditampilkan di modal)
         $selectedQuestion = !empty($this->question_ids)
             ? Question::with(['customer', 'model'])->find($this->question_ids[0])
             : null;
 
-        // ============ CALENDAR DATA ============
+        // ============ CALENDAR DATA (bulan / minggu) ============
         $calMonth = $this->calendarMonth
             ? \Carbon\Carbon::createFromFormat('Y-m', $this->calendarMonth)
             : now();
@@ -830,12 +854,37 @@ class BlindTestManagement extends Component
         $calStart = $calMonth->copy()->startOfMonth()->startOfDay();
         $calEnd   = $calMonth->copy()->endOfMonth()->endOfDay();
 
-        // Hitung jumlah blind test per tanggal
+        // Kalau mode full → hitung per range minggu
+        if ($this->viewMode === 'full') {
+            $this->mountWeekCalendar();
+            $weekStartDate = \Carbon\Carbon::parse($this->weekStart);
+            $calStart = $weekStartDate->copy()->startOfDay();
+            $calEnd   = $weekStartDate->copy()->addDays(6)->endOfDay();
+        }
+
         $dailyCounts = BlindTest::whereBetween('created_at', [$calStart, $calEnd])
             ->selectRaw('DATE(created_at) as d, COUNT(*) as total')
             ->groupBy('d')
             ->pluck('total', 'd')
             ->toArray();
+
+        // ============ WEEK CALENDAR DATA ============
+        $this->mountWeekCalendar();
+        $weekStartCarbon = \Carbon\Carbon::parse($this->weekStart);
+        $weekEndCarbon   = $weekStartCarbon->copy()->endOfWeek(\Carbon\Carbon::SUNDAY);
+
+        $weekDays = [];
+        for ($i = 0; $i < 7; $i++) {
+            $date = $weekStartCarbon->copy()->addDays($i);
+            $weekDays[] = [
+                'date'        => $date->format('Y-m-d'),
+                'day'         => $date->translatedFormat('D'),
+                'day_num'     => $date->format('d'),
+                'is_today'    => $date->isToday(),
+                'is_selected' => $this->selectedDate === $date->format('Y-m-d'),
+                'count'       => $dailyCounts[$date->format('Y-m-d')] ?? 0,
+            ];
+        }
 
         return view('livewire.qaqc.blind-test.blind-test-management', [
             'blindTests'        => $blindTests,
@@ -849,9 +898,12 @@ class BlindTestManagement extends Component
             'sections'          => self::SECTIONS,
             'questionBank'      => $questionBank,
             'selectedQuestion'  => $selectedQuestion,
-            'bankDate'          => $bankDate,   // ← TAMBAH INI
-            'calMonth'     => $calMonth,
-            'dailyCounts'  => $dailyCounts,
+            'bankDate'          => $bankDate,
+            'calMonth'          => $calMonth,
+            'dailyCounts'       => $dailyCounts,
+            'weekStart'         => $weekStartCarbon,
+            'weekEnd'           => $weekEndCarbon,
+            'weekDays'          => $weekDays,
         ]);
     }
 }

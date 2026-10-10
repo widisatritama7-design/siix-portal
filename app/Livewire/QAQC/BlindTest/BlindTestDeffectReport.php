@@ -22,7 +22,7 @@ class BlindTestDeffectReport extends Component
     // ==================== FILTERS ====================
     public $yearFilter = '';
     public $monthFilter = '';
-    public $departmentFilter = '';
+    public $sectionFilter = '';
 
     // ==================== STATE ====================
     public $hasFiltered = false;
@@ -34,15 +34,15 @@ class BlindTestDeffectReport extends Component
     public $totalAll = 0;
 
     protected $rules = [
-        'yearFilter'       => 'nullable|string',
-        'monthFilter'      => 'nullable|string',
-        'departmentFilter' => 'nullable|string',
+        'yearFilter'    => 'nullable|string',
+        'monthFilter'   => 'nullable|string',
+        'sectionFilter' => 'nullable|string',
     ];
 
     // Reset page saat filter berubah
-    public function updatedYearFilter()       { $this->resetPage(); }
-    public function updatedMonthFilter()      { $this->resetPage(); }
-    public function updatedDepartmentFilter() { $this->resetPage(); }
+    public function updatedYearFilter()    { $this->resetPage(); }
+    public function updatedMonthFilter()   { $this->resetPage(); }
+    public function updatedSectionFilter() { $this->resetPage(); }
 
     // ==================== DROPDOWN DATA ====================
     public function getYearsProperty()
@@ -73,40 +73,37 @@ class BlindTestDeffectReport extends Component
         ];
     }
 
-    public function getDepartmentsProperty()
+    public function getSectionsProperty()
     {
-        return Employee::query()
-            ->whereIn('status', [1, 2, 3])
-            ->whereNotNull('department')
-            ->where('department', '!=', '')
+        return BlindTest::query()
+            ->where('status', 'completed')
+            ->whereNotNull('section')
+            ->where('section', '!=', '')
             ->distinct()
-            ->orderBy('department')
-            ->pluck('department');
+            ->orderBy('section')
+            ->pluck('section');
     }
 
     protected function getFilteredQuery()
     {
         return BlindTest::query()
-            ->with(['employee'])          // ← user_answers DIHAPUS dari with()
+            ->with(['employee'])
             ->where('status', 'completed')
             ->when($this->yearFilter, fn ($q) => $q->whereYear('created_at', $this->yearFilter))
             ->when($this->monthFilter, fn ($q) => $q->whereMonth('created_at', $this->monthFilter))
-            ->when($this->departmentFilter, function ($q) {
-                $q->whereHas('employee', fn ($eq) => $eq->where('department', $this->departmentFilter));
-            });
+            ->when($this->sectionFilter, fn ($q) => $q->where('section', $this->sectionFilter));
     }
 
     /**
-     * Aggregate per-deffect item.
+     * Aggregate per-deffect item berdasarkan JUMLAH ORANG yang menjawab.
      *
      * Logika:
-     * - Ambil semua blind test yang match filter.
-     * - Setiap test punya blind_test_items (kunci) dan user_answers (jawaban).
-     * - Untuk setiap pasangan (deffect_item_id + component_location) di KUNCI,
-     *   cek apakah ada di user_answers dengan is_correct = true.
-     * - Total = berapa kali deffect ini muncul sebagai soal di kunci.
-     *   PASS = berapa kali dijawab benar.
-     *   FAIL = Total - PASS.
+     * - Setiap BlindTest (status completed) = 1 orang peserta.
+     * - Setiap test punya blind_test_items (kunci soal) dan user_answers (jawaban orang tsb).
+     * - Untuk setiap defect di KUNCI:
+     *     TOTAL = jumlah orang yang mendapat defect tsb sebagai soal
+     *     PASS  = jumlah orang yang menjawab benar defect tsb
+     *     FAIL  = TOTAL - PASS
      */
     protected function getAggregatedData()
     {
@@ -119,37 +116,48 @@ class BlindTestDeffectReport extends Component
             $keys = collect($bt->blind_test_items ?? []);
             $userAnswers = collect($bt->user_answers ?? []);
 
-            // Map user answers by "deffect_id|location"
+            // Map user answers by "deffect_id|location" => is_correct
             $userMap = $userAnswers->mapWithKeys(function ($ua) {
                 $key = (int) ($ua['deffect_item_id'] ?? 0) . '|' . strtoupper(trim((string) ($ua['component_location'] ?? '')));
-                return [$key => ($ua['is_correct'] ?? false)];
+                return [$key => (bool) ($ua['is_correct'] ?? false)];
             })->toArray();
+
+            // Kumpulkan defect unik per orang (hindari double count)
+            $seenInThisTest = [];
 
             foreach ($keys as $keyItem) {
                 $deffectId = (int) ($keyItem['deffect_item_id'] ?? 0);
                 $location  = strtoupper(trim((string) ($keyItem['component_location'] ?? '')));
                 $lookupKey = $deffectId . '|' . $location;
 
+                // Skip kalau defect ini sudah dihitung untuk orang ini
+                if (isset($seenInThisTest[$lookupKey])) {
+                    continue;
+                }
+                $seenInThisTest[$lookupKey] = true;
+
                 if (!isset($bucket[$deffectId])) {
                     $bucket[$deffectId] = ['total' => 0, 'pass' => 0];
                 }
 
+                // TOTAL = +1 orang
                 $bucket[$deffectId]['total']++;
 
+                // PASS = +1 orang kalau jawabannya benar
                 if (!empty($userMap[$lookupKey])) {
                     $bucket[$deffectId]['pass']++;
                 }
             }
         }
 
-        // Ambil nama deffect
+        // Ambil nama defect
         $deffectIds = array_keys($bucket);
         $deffects = Deffect::whereIn('id', $deffectIds)->get()->keyBy('id');
 
         $result = collect($bucket)->map(function ($v, $deffectId) use ($deffects) {
-            $total = $v['total'];
-            $pass  = $v['pass'];
-            $fail  = $total - $pass;
+            $total = $v['total'];   // jumlah orang
+            $pass  = $v['pass'];    // jumlah orang jawab BENAR
+            $fail  = $total - $pass; // jumlah orang jawab SALAH
 
             return [
                 'deffect_id'   => $deffectId,
@@ -177,14 +185,14 @@ class BlindTestDeffectReport extends Component
         $this->totalAll  = $data->sum('total');
 
         $this->dispatch('notify',
-            message: 'Data found: ' . $this->totalRecords . ' deffect items',
+            message: 'Data found: ' . $this->totalRecords . ' defect items',
             type: 'success'
         );
     }
 
     public function resetFilters()
     {
-        $this->reset(['yearFilter', 'monthFilter', 'departmentFilter']);
+        $this->reset(['yearFilter', 'monthFilter', 'sectionFilter']);
         $this->hasFiltered = false;
         $this->totalRecords = 0;
         $this->totalFail = 0;
@@ -322,7 +330,7 @@ class BlindTestDeffectReport extends Component
             'previewData' => $paginated,
             'years'       => $this->years,
             'months'      => $this->months,
-            'departments' => $this->departments,
+            'sections'    => $this->sections,
         ])->layout('layouts.app');
     }
 }

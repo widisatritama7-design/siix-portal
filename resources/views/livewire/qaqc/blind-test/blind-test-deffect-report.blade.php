@@ -89,14 +89,14 @@
                     </select>
                 </div>
 
-                <!-- Department -->
+                <!-- Section -->
                 <div>
-                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Department</label>
-                    <select wire:model="departmentFilter"
+                    <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Section</label>
+                    <select wire:model="sectionFilter"
                             class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-zinc-800 dark:border-zinc-600 dark:text-white">
-                        <option value="">All Departments</option>
-                        @foreach($departments as $dept)
-                            <option value="{{ $dept }}">{{ $dept }}</option>
+                        <option value="">All Sections</option>
+                        @foreach($sections as $sec)
+                            <option value="{{ $sec }}">{{ $sec }}</option>
                         @endforeach
                     </select>
                 </div>

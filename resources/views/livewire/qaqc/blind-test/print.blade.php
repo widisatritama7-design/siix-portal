@@ -29,12 +29,6 @@
             border-bottom: 3px solid #1e3a8a;
         }
 
-        .report-header .company {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
         .report-header .company-text h1 {
             font-size: 16px;
             color: #1e3a8a;
@@ -63,8 +57,12 @@
 
         /* ==================== TITLE ==================== */
         .report-title {
-            text-align: center;
+            text-align: left;
             margin: 16px 0 12px;
+        }
+
+        .report-title.center {
+            text-align: center;
         }
 
         .report-title h2 {
@@ -75,6 +73,9 @@
             padding-bottom: 6px;
             border-bottom: 1px solid #ddd;
             display: inline-block;
+        }
+
+        .report-title.center h2 {
             min-width: 60%;
         }
 
@@ -170,6 +171,8 @@
             padding: 8px 6px;
         }
 
+        thead.defect-head th { background: #be185d; }
+
         tbody tr:nth-child(even) { background: #f9fafb; }
         tbody tr:hover { background: #eff6ff; }
 
@@ -210,24 +213,14 @@
         .badge-blue    { background: #3b82f6; }
         .badge-purple  { background: #8b5cf6; }
 
-        /* ==================== SECTION BOX ==================== */
-        .section-box {
-            border: 1px solid #d1d5db;
-            border-radius: 6px;
-            padding: 14px 18px;
-            background: #fff;
-            margin-top: 20px;
+        /* ==================== SECTION BLOCK (tanpa box) ==================== */
+        .section-block {
+            margin-top: 30px;
             page-break-inside: avoid;
         }
 
-        .section-box h3 {
-            font-size: 12px;
-            margin-bottom: 12px;
-            padding-bottom: 6px;
-            border-bottom: 2px solid #4472C4;
-            color: #1e3a8a;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        .section-block .report-title {
+            margin: 0 0 12px 0;
         }
 
         /* ==================== DISTRIBUTION TABLE ==================== */
@@ -254,7 +247,7 @@
         .distribution-table th:nth-child(3),
         .distribution-table td:nth-child(3) { width: 25%; text-align: center; }
 
-        .distribution-table th:nth-child(4),
+        .distribution-table th:nth-child(4) { width: 30%; text-align: center; }
         .distribution-table td:nth-child(4) { width: 30%; text-align: left; }
 
         /* ==================== BAR VISUAL ==================== */
@@ -309,7 +302,6 @@
             margin: 0 auto;
         }
 
-        /* Custom Legend */
         .custom-legend {
             display: grid;
             grid-template-columns: 1fr;
@@ -349,20 +341,9 @@
         .legend-color.color-green   { background: #22c55e; }
         .legend-color.color-emerald { background: #10b981; }
 
-        .legend-range {
-            font-weight: bold;
-            color: #1a1a1a;
-        }
-
-        .legend-count {
-            color: #374151;
-        }
-
-        .legend-pct {
-            text-align: right;
-            font-weight: bold;
-            color: #1e3a8a;
-        }
+        .legend-range { font-weight: bold; color: #1a1a1a; }
+        .legend-count { color: #374151; }
+        .legend-pct   { text-align: right; font-weight: bold; color: #1e3a8a; }
 
         /* ==================== FOOTER ==================== */
         .report-footer {
@@ -377,7 +358,7 @@
 
         /* ==================== SIGNATURE ==================== */
         .signature-section {
-            margin-top: 40px;
+            margin-top: 20px;
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 20px;
@@ -403,43 +384,18 @@
 
         /* ==================== PRINT ==================== */
         @media print {
-            body {
-                padding: 0;
-                font-size: 10px;
-            }
+            body { padding: 0; font-size: 10px; }
             .no-print { display: none !important; }
 
-            thead th {
-                background: #4472C4 !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-            tfoot tr {
-                background: #fef3c7 !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-            .badge,
-            .legend-color,
-            .bar-fill,
-            .stat-box {
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
-            .legend-item {
-                background: #f9fafb !important;
+            thead th, thead.defect-head th, tfoot tr, .badge,
+            .legend-color, .bar-fill, .stat-box, .legend-item {
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
             }
 
-            .section-box {
-                page-break-inside: avoid;
-            }
+            .section-block { page-break-inside: avoid; }
 
-            @page {
-                margin: 12mm 10mm;
-                size: A4;
-            }
+            @page { margin: 12mm 10mm; size: A4; }
         }
 
         /* ==================== PRINT BUTTON ==================== */
@@ -495,38 +451,54 @@
         </div>
     </div>
 
-    {{-- ==================== TITLE ==================== --}}
-    <div class="report-title">
+    {{-- ==================== TITLE (CENTER) ==================== --}}
+    <div class="report-title center">
         <h2>Blind Test Result Report</h2>
-        <p>Per-employee aggregated performance</p>
+        <p>Employee Performance & Defect Analysis</p>
     </div>
 
     {{-- ==================== FILTER INFO ==================== --}}
     @if(array_filter($filterInfo))
     <div class="filter-info">
         <span><span class="label">Filter Applied:</span></span>
-        @if($filterInfo['dateFrom'])
-            <span class="label">From:</span> <span class="value">{{ \Carbon\Carbon::parse($filterInfo['dateFrom'])->format('d M Y') }}</span>
-        @endif
-        @if($filterInfo['dateUntil'])
-            <span class="label">Until:</span> <span class="value">{{ \Carbon\Carbon::parse($filterInfo['dateUntil'])->format('d M Y') }}</span>
-        @endif
         @if($filterInfo['year'])
             <span class="label">Year:</span> <span class="value">{{ $filterInfo['year'] }}</span>
         @endif
         @if($filterInfo['month'])
             <span class="label">Month:</span> <span class="value">{{ \Carbon\Carbon::create()->month((int)$filterInfo['month'])->format('F') }}</span>
         @endif
-        @if($filterInfo['department'])
-            <span class="label">Department:</span> <span class="value">{{ $filterInfo['department'] }}</span>
-        @endif
-        @if(!empty($filterInfo['section']))
+        @if($filterInfo['section'])
             <span class="label">Section:</span> <span class="value">{{ $filterInfo['section'] }}</span>
         @endif
     </div>
     @endif
 
-    {{-- ==================== MAIN TABLE ==================== --}}
+    {{-- ==================== SUMMARY STATS ==================== --}}
+    @if($data->isNotEmpty())
+    <div class="summary-stats">
+        <div class="stat-box stat-total">
+            <div class="stat-label">Total Employees</div>
+            <div class="stat-value">{{ $totalRecords }}</div>
+            <div class="stat-sub">{{ $totalSoal }} soal dijawab</div>
+        </div>
+        <div class="stat-box stat-avg">
+            <div class="stat-label">Average Percentage</div>
+            <div class="stat-value">{{ $averagePercentage }}%</div>
+            <div class="stat-sub">rata-rata per karyawan</div>
+        </div>
+        <div class="stat-box stat-overall">
+            <div class="stat-label">Overall Percentage</div>
+            <div class="stat-value">{{ $overallPercentage }}%</div>
+            <div class="stat-sub">{{ $totalPass }} pass / {{ $totalSoal }} soal</div>
+        </div>
+    </div>
+    @endif
+
+    {{-- ==================== A. BY EMPLOYEE ==================== --}}
+    <div class="report-title" style="margin-top: 24px;">
+        <h2 style="font-size: 14px;">A. Employee Performance</h2>
+    </div>
+
     <table>
         <thead>
             <tr>
@@ -534,7 +506,7 @@
                 <th style="width: 80px;">NIK</th>
                 <th>Name</th>
                 <th style="width: 120px;">Department</th>
-                <th style="width: 70px;">Section</th>
+                <th style="width: 90px;">Section</th>
                 <th style="width: 70px;">Percobaan</th>
                 <th style="width: 50px;">Fail</th>
                 <th style="width: 50px;">Pass</th>
@@ -592,7 +564,7 @@
             @empty
             <tr>
                 <td colspan="10" class="center muted" style="padding: 30px;">
-                    No data available for the selected filters
+                    No employee data available
                 </td>
             </tr>
             @endforelse
@@ -610,13 +582,62 @@
         @endif
     </table>
 
-    {{-- ==================== PERCENTAGE DISTRIBUTION TABLE ==================== --}}
+    {{-- ==================== B. BY DEFECT ==================== --}}
+    <div class="report-title" style="margin-top: 30px;">
+        <h2 style="font-size: 14px;">B. Defect Analysis</h2>
+        <p>Jumlah orang yang menjawab tiap defect</p>
+    </div>
+
+    <table>
+        <thead class="defect-head">
+            <tr>
+                <th style="width: 40px;">No</th>
+                <th>Defect Name</th>
+                <th style="width: 120px;">Total Employee</th>
+                <th style="width: 80px;">FAIL</th>
+                <th style="width: 80px;">PASS</th>
+            </tr>
+        </thead>
+        <tbody>
+            @forelse($defectData as $index => $item)
+            <tr>
+                <td class="center muted">{{ $index + 1 }}</td>
+                <td class="bold">{{ $item['deffect_name'] }}</td>
+                <td class="center bold">{{ $item['total_employee'] }}</td>
+                <td class="center">
+                    @if($item['fail'] > 0)
+                        <span style="color: #dc2626; font-weight: bold;">{{ $item['fail'] }}</span>
+                    @else
+                        <span class="muted">0</span>
+                    @endif
+                </td>
+                <td class="center">
+                    @if($item['pass'] > 0)
+                        <span style="color: #16a34a; font-weight: bold;">{{ $item['pass'] }}</span>
+                    @else
+                        <span class="muted">0</span>
+                    @endif
+                </td>
+            </tr>
+            @empty
+            <tr>
+                <td colspan="5" class="center muted" style="padding: 30px;">
+                    No defect data available
+                </td>
+            </tr>
+            @endforelse
+        </tbody>
+        {{-- ⚠️ TIDAK ADA tfoot TOTAL di sini --}}
+    </table>
+
     @if($data->isNotEmpty())
-    <div class="section-box">
-        <h3>Percentage Distribution</h3>
-        @php
-            $badges = [0=>'red', 20=>'orange', 40=>'yellow', 60=>'lime', 80=>'green', 100=>'emerald'];
-        @endphp
+    @php $badges = [0=>'red', 20=>'orange', 40=>'yellow', 60=>'lime', 80=>'green', 100=>'emerald']; @endphp
+
+    {{-- ==================== C. PERCENTAGE DISTRIBUTION ==================== --}}
+    <div class="section-block">
+        <div class="report-title">
+            <h2 style="font-size: 14px;">C. Percentage Distribution (By Employee)</h2>
+        </div>
         <table class="distribution-table">
             <thead>
                 <tr>
@@ -628,13 +649,9 @@
             </thead>
             <tbody>
                 @foreach($distribution as $pct => $count)
-                @php
-                    $pctOfTotal = $totalRecords > 0 ? round(($count / $totalRecords) * 100, 1) : 0;
-                @endphp
+                @php $pctOfTotal = $totalRecords > 0 ? round(($count / $totalRecords) * 100, 1) : 0; @endphp
                 <tr>
-                    <td>
-                        <span class="badge badge-{{ $badges[$pct] ?? 'gray' }}">{{ $pct }}%</span>
-                    </td>
+                    <td><span class="badge badge-{{ $badges[$pct] ?? 'gray' }}">{{ $pct }}%</span></td>
                     <td class="bold">{{ $count }} orang</td>
                     <td class="bold">{{ $pctOfTotal }}%</td>
                     <td>
@@ -658,19 +675,16 @@
             </tfoot>
         </table>
     </div>
-    @endif
 
-    {{-- ==================== CHART SECTION ==================== --}}
-    @if($data->isNotEmpty())
-    <div class="section-box">
-        <h3>Distribution Chart</h3>
+    {{-- ==================== D. DISTRIBUTION CHART ==================== --}}
+    <div class="section-block">
+        <div class="report-title">
+            <h2 style="font-size: 14px;">D. Distribution Chart</h2>
+        </div>
         <div class="chart-layout">
-            {{-- Chart --}}
             <div class="chart-wrapper">
                 <canvas id="printChart"></canvas>
             </div>
-
-            {{-- Custom Legend --}}
             <div class="custom-legend">
                 @foreach($distribution as $pct => $count)
                 @php
@@ -689,20 +703,25 @@
     </div>
     @endif
 
-    {{-- ==================== SIGNATURE ==================== --}}
+    {{-- ==================== E. SIGNATURE ==================== --}}
     @if($data->isNotEmpty())
-    <div class="signature-section">
-        <div class="signature-box">
-            <div class="role">Prepared by,</div>
-            <div class="name">{{ auth()->user()?->name ?? '_______________' }}</div>
+    <div class="section-block">
+        <div class="report-title">
+            <h2 style="font-size: 14px;">E. Signature</h2>
         </div>
-        <div class="signature-box">
-            <div class="role">Checked by,</div>
-            <div class="name">_______________</div>
-        </div>
-        <div class="signature-box">
-            <div class="role">Approved by,</div>
-            <div class="name">_______________</div>
+        <div class="signature-section">
+            <div class="signature-box">
+                <div class="role">Prepared by,</div>
+                <div class="name">{{ auth()->user()?->name ?? '_______________' }}</div>
+            </div>
+            <div class="signature-box">
+                <div class="role">Checked by,</div>
+                <div class="name">_______________</div>
+            </div>
+            <div class="signature-box">
+                <div class="role">Approved by,</div>
+                <div class="name">_______________</div>
+            </div>
         </div>
     </div>
     @endif
