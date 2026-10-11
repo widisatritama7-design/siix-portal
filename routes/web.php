@@ -81,6 +81,11 @@ use App\Models\ESD\Locker\UniformTransaction;
 use App\Services\MicrosoftGraphService;
 use App\Services\WhatsAppService;
 use Illuminate\Support\Facades\Route;
+use App\Livewire\QAQC\ScanXray\ScanXrayManagement;
+use App\Livewire\QAQC\ScanXray\ScanXrayIndex;
+use App\Livewire\QAQC\ScanXray\ScanXrayCreate;
+use App\Livewire\QAQC\ScanXray\ScanXrayEdit;
+use App\Livewire\QAQC\ScanXray\ScanXrayView;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -189,6 +194,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/qaqc/blind-test/deffect-report', BlindTestDeffectReport::class)->name('qaqc.blind-test.deffect-report');
     Route::get('/qaqc/blind-test/{id}/review', BlindTestReview::class)->name('qaqc.blind-test.review');
     Route::get('/qaqc/blind-test/print', [BlindTestPrintController::class, 'print'])->name('qaqc.blind-test.print');
+    Route::get('/qaqc/scan-xray', ScanXrayIndex::class)->name('qaqc.scan-xray.index');
+    Route::get('/qaqc/scan-xray/create', ScanXrayCreate::class)->name('qaqc.scan-xray.create');
+    Route::get('/qaqc/scan-xray/{id}/edit', ScanXrayEdit::class)->name('qaqc.scan-xray.edit');
+    Route::get('/qaqc/scan-xray/{id}', ScanXrayView::class)->name('qaqc.scan-xray.view');
 
     // Doorlock
     Route::get('/doorlock/test-pin/{deviceId}', [DoorLockController::class, 'generatePin']);
