@@ -191,14 +191,24 @@
                                                     wire:model="{{ $key }}.{{ $side }}.{{ $col }}.{{ $i }}"
                                                     x-on:keydown.enter.prevent="
                                                         $el.blur();
-                                                        $wire.addRow('{{ $key }}', '{{ $side }}').then(() => {
-                                                            setTimeout(() => {
-                                                                const next = document.querySelector(
-                                                                    `input[data-group='{{ $key }}'][data-side='{{ $side }}'][data-row='{{ $i + 1 }}'][data-col='{{ $pcbCols[0] }}']`
-                                                                );
-                                                                if (next) next.focus();
-                                                            }, 80);
-                                                        });
+                                                        
+                                                        @if($i < $rows - 1)
+                                                            {{-- Masih ada baris di bawah → pindah ke bawah (baris berikutnya, KOLOM YANG SAMA) --}}
+                                                            const next = document.querySelector(
+                                                                `input[data-group='{{ $key }}'][data-side='{{ $side }}'][data-row='{{ $i + 1 }}'][data-col='{{ $col }}']`
+                                                            );
+                                                            if (next) next.focus();
+                                                        @else
+                                                            {{-- Sudah di baris terakhir → TAMBAH ROW BARU, lalu pindah ke row baru kolom yang sama --}}
+                                                            $wire.addRow('{{ $key }}', '{{ $side }}').then(() => {
+                                                                setTimeout(() => {
+                                                                    const next = document.querySelector(
+                                                                        `input[data-group='{{ $key }}'][data-side='{{ $side }}'][data-row='{{ $i + 1 }}'][data-col='{{ $col }}']`
+                                                                    );
+                                                                    if (next) next.focus();
+                                                                }, 100);
+                                                            });
+                                                        @endif
                                                     "
                                                     x-on:keydown.tab="
                                                         if ({{ $isLastCol ? 'true' : 'false' }}) {

@@ -184,7 +184,7 @@
             @if($scans->count() > 0)
                 {{-- TABLE --}}
                 <div class="overflow-x-auto">
-                    <table class="w-full" style="min-width: 1800px; white-space: nowrap; border-collapse: separate; border-spacing: 0;">
+                    <table class="w-full" style="min-width: 2000px; white-space: nowrap; border-collapse: separate; border-spacing: 0;">
                         <thead>
                             {{-- BARIS HEADER 1 --}}
                             <tr class="bg-zinc-50 dark:bg-zinc-800/50">
@@ -217,6 +217,11 @@
                                     Total
                                 </th>
 
+                                {{-- CREATED INFO --}}
+                                <th colspan="2" class="px-3 py-2 text-center text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase bg-zinc-100 dark:bg-zinc-800/60">
+                                    PIC INFO
+                                </th>
+
                                 <th rowspan="2" class="px-4 py-2 text-center text-xs font-medium text-zinc-500 uppercase sticky right-0 z-20 bg-zinc-50 dark:bg-zinc-800" style="min-width: 150px; box-shadow: inset 2px 0 0 0 rgb(212 212 216);">Actions</th>
                             </tr>
 
@@ -244,6 +249,10 @@
                                 <th class="px-3 py-2 text-center text-[10px] font-bold text-emerald-700 dark:text-emerald-300 uppercase bg-emerald-100/50 dark:bg-emerald-900/20">OK</th>
                                 <th class="px-3 py-2 text-center text-[10px] font-bold text-red-700 dark:text-red-300 uppercase bg-red-100/50 dark:bg-red-900/20">NG</th>
                                 <th class="px-3 py-2 text-center text-[10px] font-bold text-amber-700 dark:text-amber-300 uppercase bg-amber-100/50 dark:bg-amber-900/20">Reject Rate %</th>
+
+                                {{-- CREATED INFO --}}
+                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase bg-zinc-100/50 dark:bg-zinc-800/30">DATE</th>
+                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase bg-zinc-100/50 dark:bg-zinc-800/30">PIC</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
@@ -384,6 +393,30 @@
                                             {{ $rr >= 5 ? 'bg-red-500 text-white shadow-red-500/30' : ($rr > 0 ? 'bg-amber-500 text-white shadow-amber-500/30' : 'bg-emerald-500 text-white shadow-emerald-500/30') }}">
                                             {{ $rr }}%
                                         </span>
+                                    </td>
+
+                                    {{-- ============ CREATED INFO ============ --}}
+                                    <td class="px-3 py-3 text-center bg-zinc-50/50 dark:bg-zinc-800/20">
+                                        <div class="flex flex-col items-center gap-0.5">
+                                            <span class="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
+                                                {{ $scan->created_at?->format('d M Y') ?? '-' }}
+                                            </span>
+                                            <span class="text-[10px] text-zinc-500 dark:text-zinc-400 font-mono">
+                                                {{ $scan->created_at?->format('H:i') ?? '' }}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td class="px-3 py-3 text-center bg-zinc-50/50 dark:bg-zinc-800/20">
+                                        @if($scan->creator)
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300 text-[10px] font-semibold">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3">
+                                                    <path d="M10 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.465 14.493a1.23 1.23 0 0 0 .41 1.412A9.957 9.957 0 0 0 10 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 0 0-13.074.003Z" />
+                                                </svg>
+                                                {{ $scan->creator->name ?? $scan->creator->username ?? '-' }}
+                                            </span>
+                                        @else
+                                            <span class="text-zinc-400 italic text-[10px]">-</span>
+                                        @endif
                                     </td>
 
                                     {{-- STICKY RIGHT: ACTIONS --}}
