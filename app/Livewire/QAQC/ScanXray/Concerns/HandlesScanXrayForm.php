@@ -14,6 +14,8 @@ trait HandlesScanXrayForm
     // ============ HEADER FIELDS ============
     public $customer_id;
     public $model_id;
+    public $pcb_type = '';
+    public $phase = 'first';
     public $shift = '';
     public $group = '';
     public $master_line_id;
@@ -23,6 +25,31 @@ trait HandlesScanXrayForm
     public $first_piece_items  = [];
     public $middle_piece_items = [];
     public $last_piece_items   = [];
+
+    // ============ SECOND PIECE ============
+    public $second_first_items  = [];
+    public $second_middle_items = [];
+    public $second_last_items   = [];
+
+    // ============ JUDGEMENTS (PER CELL / PCB x ROW) ============
+    // Value: null | 'ng'  → null = OK, 'ng' = NG
+    public $judgements = [
+        'first_piece_items'  => [
+            'side_single' => ['pcb_a' => [], 'pcb_b' => [], 'pcb_c' => [], 'pcb_circuit' => []],
+            'side_lh'     => ['pcb_a' => [], 'pcb_b' => [], 'pcb_c' => [], 'pcb_circuit' => []],
+            'side_rh'     => ['pcb_a' => [], 'pcb_b' => [], 'pcb_c' => [], 'pcb_circuit' => []],
+        ],
+        'middle_piece_items' => [
+            'side_single' => ['pcb_a' => [], 'pcb_b' => [], 'pcb_c' => [], 'pcb_circuit' => []],
+            'side_lh'     => ['pcb_a' => [], 'pcb_b' => [], 'pcb_c' => [], 'pcb_circuit' => []],
+            'side_rh'     => ['pcb_a' => [], 'pcb_b' => [], 'pcb_c' => [], 'pcb_circuit' => []],
+        ],
+        'last_piece_items'   => [
+            'side_single' => ['pcb_a' => [], 'pcb_b' => [], 'pcb_c' => [], 'pcb_circuit' => []],
+            'side_lh'     => ['pcb_a' => [], 'pcb_b' => [], 'pcb_c' => [], 'pcb_circuit' => []],
+            'side_rh'     => ['pcb_a' => [], 'pcb_b' => [], 'pcb_c' => [], 'pcb_circuit' => []],
+        ],
+    ];
 
     // ============ SHIFT & GROUP OPTIONS ============
     public array $shiftOptions = ['NS', '1', '2', '3'];
@@ -50,13 +77,15 @@ trait HandlesScanXrayForm
     public $masterLinePage = 1;
     public $openMasterLinePanel = false;
 
-    // ============ FORM RULES ============
+    public $validationErrors = [];
 
+    // ============ FORM RULES ============
     protected function formRules(): array
     {
         $rules = [
             'customer_id'    => 'required|exists:tb_qaqc_customer,id',
             'model_id'       => 'required|exists:tb_qaqc_model,id',
+            'pcb_type'       => 'required|in:SINGLE,LH,RH',
             'shift'          => 'required|in:NS,1,2,3',
             'group'          => 'required|in:NS,A,B,C',
             'master_line_id' => 'required|exists:tb_mtc_master_lines,id',
@@ -73,25 +102,22 @@ trait HandlesScanXrayForm
             $rules["$grp.remarks"]                = 'nullable|string';
             $rules["$grp.pictures"]               = 'nullable|array';
 
-            // Custom rule: skip string path dari DB, validasi file upload baru
             $rules["$grp.pictures.*"] = [
                 function ($attribute, $value, $fail) {
                     if (is_string($value)) return;
-
                     if ($value instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile) {
                         $mime = $value->getMimeType();
-                        if (!str_starts_with($mime, 'image/')) {
-                            $fail('File harus berupa gambar.');
-                        }
-                        if ($value->getSize() > 5 * 1024 * 1024) {
-                            $fail('Ukuran gambar maksimal 5MB.');
-                        }
+                        if (!str_starts_with($mime, 'image/')) $fail('File harus berupa gambar.');
+                        if ($value->getSize() > 5 * 1024 * 1024) $fail('Ukuran gambar maksimal 5MB.');
                         return;
                     }
-
                     $fail('Format file tidak dikenali.');
                 },
             ];
+        }
+
+        foreach (['second_first_items', 'second_middle_items', 'second_last_items'] as $grp) {
+            $rules["$grp.status_running"] = 'nullable|string|max:50';
         }
 
         return $rules;
@@ -102,6 +128,7 @@ trait HandlesScanXrayForm
         $messages = [
             'customer_id.required'    => 'Customer is required.',
             'model_id.required'       => 'Model is required.',
+            'pcb_type.required'       => 'PCB Type wajib dipilih.',
             'shift.required'          => 'Shift is required.',
             'shift.in'                => 'Shift harus salah satu dari: NS, 1, 2, 3.',
             'group.required'          => 'Group is required.',
@@ -118,42 +145,232 @@ trait HandlesScanXrayForm
     }
 
     // ============ INIT ============
-
     protected function initDetailStructures(): void
     {
-        $this->first_piece_items  = ScanXray::defaultItemStructure();
-        $this->middle_piece_items = ScanXray::defaultItemStructure();
-        $this->last_piece_items   = ScanXray::defaultItemStructure();
+        $this->first_piece_items  = $this->buildDefaultRows('first_piece_items');
+        $this->middle_piece_items = $this->buildDefaultRows('middle_piece_items');
+        $this->last_piece_items   = $this->buildDefaultRows('last_piece_items');
+
+        $this->second_first_items  = $this->buildDefaultSecondRows('second_first_items');
+        $this->second_middle_items = $this->buildDefaultSecondRows('second_middle_items');
+        $this->second_last_items   = $this->buildDefaultSecondRows('second_last_items');
+
+        $this->initJudgements();
     }
 
+    protected function buildDefaultRows(string $groupKey): array
+    {
+        $item    = ScanXray::defaultItemStructure();
+        $stdRows = ScanXray::standardRows($groupKey);
+
+        foreach (['side_single', 'side_lh', 'side_rh'] as $side) {
+            foreach (['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'] as $col) {
+                $item[$side][$col] = array_fill(0, $stdRows, '');
+            }
+        }
+
+        return $item;
+    }
+
+    protected function buildDefaultSecondRows(string $groupKey): array
+    {
+        $item    = ScanXray::defaultSecondPieceStructure();
+        $stdRows = ScanXray::standardRows($groupKey);
+
+        foreach (['side_single', 'side_lh', 'side_rh'] as $side) {
+            foreach (['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'] as $col) {
+                $item[$side][$col] = array_fill(0, $stdRows, '');
+            }
+        }
+
+        return $item;
+    }
+
+    protected function initJudgements(): void
+    {
+        foreach (['first_piece_items', 'middle_piece_items', 'last_piece_items'] as $groupKey) {
+            $stdRows = ScanXray::standardRows($groupKey);
+            foreach (['side_single', 'side_lh', 'side_rh'] as $side) {
+                foreach (['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'] as $col) {
+                    $this->judgements[$groupKey][$side][$col] = array_fill(0, $stdRows, null);
+                }
+            }
+        }
+    }
+
+    // ============ PHASE HELPERS ============
+    protected function phaseOrder(): array
+    {
+        return [
+            'first'         => 1,
+            'second_first'  => 2,
+            'middle'        => 3,
+            'second_middle' => 4,
+            'last'          => 5,
+            'second_last'   => 6,
+            'completed'     => 7,
+        ];
+    }
+
+    protected function groupToPhase(string $groupKey): ?string
+    {
+        return match ($groupKey) {
+            'first_piece_items'   => 'first',
+            'second_first_items'  => 'second_first',
+            'middle_piece_items'  => 'middle',
+            'second_middle_items' => 'second_middle',
+            'last_piece_items'    => 'last',
+            'second_last_items'   => 'second_last',
+            default               => null,
+        };
+    }
+
+    public function canEditGroup(string $groupKey): bool
+    {
+        return match ($this->phase) {
+            'first'         => $groupKey === 'first_piece_items',
+            'second_first'  => $groupKey === 'second_first_items',
+            'middle'        => $groupKey === 'middle_piece_items',
+            'second_middle' => $groupKey === 'second_middle_items',
+            'last'          => $groupKey === 'last_piece_items',
+            'second_last'   => $groupKey === 'second_last_items',
+            'completed'     => false,
+            default         => false,
+        };
+    }
+
+    public function isGroupLocked(string $groupKey): bool
+    {
+        $order       = $this->phaseOrder();
+        $groupPhase  = $this->groupToPhase($groupKey);
+        if (!$groupPhase) return true;
+
+        $currentOrder = $order[$this->phase] ?? 99;
+        return $order[$groupPhase] > $currentOrder;
+    }
+
+    public function isGroupCompleted(string $groupKey): bool
+    {
+        $order       = $this->phaseOrder();
+        $groupPhase  = $this->groupToPhase($groupKey);
+        if (!$groupPhase) return false;
+
+        $currentOrder = $order[$this->phase] ?? 99;
+        return $order[$groupPhase] < $currentOrder;
+    }
+
+    // ============ UPDATED HOOKS ============
     public function updatedCustomerId(): void
     {
         $this->model_id = null;
+        $this->pcb_type = '';
+        $this->normalizeSidesForPcbType();
     }
 
-    // ============ LIVE SYNC LOGIC ============
+    public function updatedModelId(): void
+    {
+        if (!$this->model_id) {
+            $this->pcb_type = '';
+            $this->normalizeSidesForPcbType();
+            return;
+        }
 
+        $model   = BlindTestModel::find($this->model_id);
+        $options = $model->pcb_type ?? [];
+
+        if (count($options) === 1) {
+            $this->pcb_type = $options[0];
+        } else {
+            $this->pcb_type = '';
+        }
+
+        $this->normalizeSidesForPcbType();
+    }
+
+    public function updatedPcbType($value): void
+    {
+        if (!in_array($value, ['SINGLE', 'LH', 'RH'], true)) {
+            $this->pcb_type = '';
+            $this->normalizeSidesForPcbType();
+            return;
+        }
+
+        $options = $this->getPcbTypeOptionsProperty();
+        if (!empty($options) && !in_array($this->pcb_type, $options, true)) {
+            $this->pcb_type = '';
+        }
+
+        $this->normalizeSidesForPcbType();
+    }
+
+    protected function normalizeSidesForPcbType(): void
+    {
+        $allGroups = [
+            'first_piece_items', 'middle_piece_items', 'last_piece_items',
+            'second_first_items', 'second_middle_items', 'second_last_items',
+        ];
+
+        foreach ($allGroups as $groupKey) {
+            $stdRows = ScanXray::standardRows($groupKey);
+
+            foreach (['side_single', 'side_lh', 'side_rh'] as $side) {
+                if ($this->isSideActive($side)) continue;
+
+                foreach (['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'] as $col) {
+                    $this->{$groupKey}[$side][$col] = array_fill(0, $stdRows, '');
+
+                    if (in_array($groupKey, ['first_piece_items', 'middle_piece_items', 'last_piece_items'], true)) {
+                        $this->judgements[$groupKey][$side][$col] = array_fill(0, $stdRows, null);
+                    }
+                }
+            }
+        }
+    }
+
+    public function getPcbTypeOptionsProperty(): array
+    {
+        if (!$this->model_id) return [];
+        $model   = BlindTestModel::find($this->model_id);
+        $options = $model->pcb_type ?? [];
+        $order   = ['SINGLE', 'LH', 'RH'];
+        return array_values(array_intersect($order, $options));
+    }
+
+    public function isSideActive(string $side): bool
+    {
+        return match ($side) {
+            'side_single' => $this->pcb_type === 'SINGLE',
+            'side_lh'     => $this->pcb_type === 'LH',
+            'side_rh'     => $this->pcb_type === 'RH',
+            default       => false,
+        };
+    }
+
+    public function activeSide(): ?string
+    {
+        return match ($this->pcb_type) {
+            'SINGLE' => 'side_single',
+            'LH'     => 'side_lh',
+            'RH'     => 'side_rh',
+            default  => null,
+        };
+    }
+
+    // ============ LIVE SYNC ============
     public function updated($property, $value): void
     {
         $parts = explode('.', $property);
-        if (count($parts) < 2) {
-            return;
-        }
+        if (count($parts) < 2) return;
 
         $groupKey = $parts[0];
-        if (!in_array($groupKey, ['first_piece_items', 'middle_piece_items', 'last_piece_items'], true)) {
-            return;
-        }
+        $allGroups = [
+            'first_piece_items', 'middle_piece_items', 'last_piece_items',
+            'second_first_items', 'second_middle_items', 'second_last_items',
+        ];
+        if (!in_array($groupKey, $allGroups, true)) return;
 
         $field = $parts[1] ?? null;
 
-        // 1) ok_qty / ng_qty berubah → recalculate reject_rate
-        if (in_array($field, ['ok_qty', 'ng_qty'], true)) {
-            $this->recalcRejectRate($groupKey);
-            return;
-        }
-
-        // 2) qty_hold berubah → ok = qty_hold, ng = 0
         if ($field === 'qty_hold') {
             $hold = (int) $value;
             $this->{$groupKey}['status_after_check']['ok'] = $hold;
@@ -161,120 +378,354 @@ trait HandlesScanXrayForm
             return;
         }
 
-        // 3) status_after_check.ok berubah → ng = qty_hold - ok
         if ($field === 'status_after_check' && isset($parts[2]) && $parts[2] === 'ok') {
             $hold = (int) ($this->{$groupKey}['qty_hold'] ?? 0);
-            $ok = (int) $value;
+            $ok   = (int) $value;
             $this->{$groupKey}['status_after_check']['ng'] = max(0, $hold - $ok);
             return;
         }
 
-        // 4) status_after_check.ng berubah → ok = qty_hold - ng
         if ($field === 'status_after_check' && isset($parts[2]) && $parts[2] === 'ng') {
             $hold = (int) ($this->{$groupKey}['qty_hold'] ?? 0);
-            $ng = (int) $value;
+            $ng   = (int) $value;
             $this->{$groupKey}['status_after_check']['ok'] = max(0, $hold - $ng);
             return;
         }
 
-        // 5) pictures_new → pindahkan ke pictures
         if ($field === 'pictures_new') {
             $newFiles = is_array($value) ? $value : [$value];
             if (!isset($this->{$groupKey}['pictures']) || !is_array($this->{$groupKey}['pictures'])) {
                 $this->{$groupKey}['pictures'] = [];
             }
             foreach ($newFiles as $file) {
-                if ($file) {
-                    $this->{$groupKey}['pictures'][] = $file;
-                }
+                if ($file) $this->{$groupKey}['pictures'][] = $file;
             }
             $this->{$groupKey}['pictures_new'] = [];
             return;
         }
+    }
 
-        // 6) side_lh / side_rh berubah → recalculate ok_qty + reject_rate
-        if (in_array($field, ['side_lh', 'side_rh'], true)) {
-            $this->{$groupKey}['ok_qty'] = $this->calculateOkQtyFromRows($this->{$groupKey});
-            $this->recalcRejectRate($groupKey);
-            return;
-        }
+    // ============ JUDGEMENT (PER CELL - NG ONLY) ============
+    public function toggleNg(string $groupKey, string $side, string $col, int $row): void
+    {
+        if (!in_array($col, ['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'], true)) return;
+        if (!in_array($groupKey, ['first_piece_items', 'middle_piece_items', 'last_piece_items'], true)) return;
+
+        // Cell kosong → tidak bisa di-ceklis
+        $cellValue = $this->{$groupKey}[$side][$col][$row] ?? '';
+        if (empty($cellValue)) return;
+
+        $current = $this->judgements[$groupKey][$side][$col][$row] ?? null;
+        $this->judgements[$groupKey][$side][$col][$row] = ($current === 'ng') ? null : 'ng';
+
+        $this->recalcQtyFromJudgements($groupKey);
     }
 
     /**
-     * Hitung ok_qty = max(row terisi LH, row terisi RH).
-     * 1 row LH + 1 row RH dianggap 1 pasang.
+     * Hitung OK/NG per ROW:
+     * - NG kalau minimal 1 cell di row di-ceklis NG
+     * - OK kalau ada isi tapi tidak ada yang NG
+     * - Row kosong → skip
      */
-    protected function calculateOkQtyFromRows(array $item): int
+    protected function recalcQtyFromJudgements(string $groupKey): void
     {
-        $countFilled = function (array $sideData) {
-            $maxRows = 0;
-            foreach (['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'] as $col) {
-                $maxRows = max($maxRows, count($sideData[$col] ?? []));
+        $side = $this->activeSide();
+        if (!$side) {
+            $this->{$groupKey}['ok_qty'] = 0;
+            $this->{$groupKey}['ng_qty'] = 0;
+            $this->{$groupKey}['reject_rate'] = 0;
+            return;
+        }
+
+        $sideData = $this->{$groupKey}[$side] ?? [];
+        $pcbCols  = ['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'];
+
+        $maxRows = 0;
+        foreach ($pcbCols as $col) {
+            $maxRows = max($maxRows, count($sideData[$col] ?? []));
+        }
+
+        $ok = 0;
+        $ng = 0;
+
+        for ($i = 0; $i < $maxRows; $i++) {
+            $hasAnyValue = false;
+            $hasNg       = false;
+
+            foreach ($pcbCols as $col) {
+                $val   = $sideData[$col][$i] ?? null;
+                $judge = $this->judgements[$groupKey][$side][$col][$i] ?? null;
+
+                if (empty($val)) continue;
+
+                $hasAnyValue = true;
+                if ($judge === 'ng') {
+                    $hasNg = true;
+                }
             }
 
-            $filled = 0;
-            for ($i = 0; $i < $maxRows; $i++) {
+            if (!$hasAnyValue) continue;
+
+            if ($hasNg) $ng++;
+            else        $ok++;
+        }
+
+        $this->{$groupKey}['ok_qty'] = $ok;
+        $this->{$groupKey}['ng_qty'] = $ng;
+        $this->recalcRejectRate($groupKey);
+    }
+
+    // ============ VALIDASI ============
+    protected function validateGroupRows($validator = null): void
+    {
+        if (empty($this->pcb_type)) {
+            $this->addError('pcb_type', 'PCB Type wajib dipilih.');
+        } else {
+            $options = $this->getPcbTypeOptionsProperty();
+            if (!empty($options) && !in_array($this->pcb_type, $options, true)) {
+                $this->addError('pcb_type', 'PCB Type tidak sesuai dengan Model yang dipilih.');
+            }
+        }
+
+        // ============ VALIDASI GRUP AKTIF (First / Middle / Last) ============
+        foreach (['first_piece_items', 'middle_piece_items', 'last_piece_items'] as $grp) {
+            if (!$this->canEditGroup($grp)) continue;
+
+            $item    = $this->{$grp} ?? [];
+            $minRows = ScanXray::standardRows($grp);
+            $activeSide = $this->activeSide();
+
+            // Minimal row
+            foreach (['side_single', 'side_lh', 'side_rh'] as $side) {
+                if (!$this->isSideActive($side)) continue;
                 foreach (['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'] as $col) {
-                    if (!empty($sideData[$col][$i] ?? null)) {
-                        $filled++;
-                        break;
+                    $count = count($item[$side][$col] ?? []);
+                    if ($count < $minRows) {
+                        $this->addError("{$grp}_{$side}_{$col}", "Minimal {$minRows} baris untuk kolom ini.");
                     }
                 }
             }
-            return $filled;
-        };
 
-        $lhFilled = $countFilled($item['side_lh'] ?? []);
-        $rhFilled = $countFilled($item['side_rh'] ?? []);
+            // Validasi per-cell
+            if ($activeSide && isset($item[$activeSide])) {
+                $sideData = $item[$activeSide];
 
-        return max($lhFilled, $rhFilled);
+                foreach (['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'] as $col) {
+                    $colValues = $sideData[$col] ?? [];
+                    $colJudges = $this->judgements[$grp][$activeSide][$col] ?? [];
+
+                    for ($i = 0; $i < count($colValues); $i++) {
+                        $val   = $colValues[$i] ?? '';
+                        $judge = $colJudges[$i] ?? null;
+
+                        if (empty($val) && $judge === 'ng') {
+                            $this->addError(
+                                "{$grp}_{$col}_value_{$i}",
+                                "Row " . ($i + 1) . " — " . strtoupper(str_replace('_', ' ', $col)) . ": isi PCB dulu sebelum ceklis NG."
+                            );
+                        }
+                    }
+                }
+
+                // Minimal 1 PCB per row
+                $maxRows = 0;
+                foreach (['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'] as $col) {
+                    $maxRows = max($maxRows, count($sideData[$col] ?? []));
+                }
+                for ($i = 0; $i < $maxRows; $i++) {
+                    $hasAny = false;
+                    foreach (['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'] as $col) {
+                        if (!empty($sideData[$col][$i] ?? null)) { $hasAny = true; break; }
+                    }
+                    if (!$hasAny) {
+                        $this->addError(
+                            "{$grp}_row_{$i}",
+                            "Row " . ($i + 1) . ": minimal salah satu dari PCB A / B / C / Circuit wajib diisi."
+                        );
+                    }
+                }
+            }
+
+            // Status Running
+            if ($this->groupHasContent($item) && empty($item['status_running'])) {
+                $this->addError("{$grp}.status_running", 'Status Running wajib diisi.');
+            }
+        }
+
+        // ============ VALIDASI SECOND PIECE (kalau phase = second_*) ============
+        $secondGroupMap = [
+            'second_first'  => 'second_first_items',
+            'second_middle' => 'second_middle_items',
+            'second_last'   => 'second_last_items',
+        ];
+
+        if (isset($secondGroupMap[$this->phase])) {
+            $secondGrp = $secondGroupMap[$this->phase];
+            $item      = $this->{$secondGrp} ?? [];
+            $minRows   = ScanXray::standardRows($secondGrp);
+            $activeSide = $this->activeSide();
+
+            // Minimal row
+            if ($activeSide) {
+                foreach (['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'] as $col) {
+                    $count = count($item[$activeSide][$col] ?? []);
+                    if ($count < $minRows) {
+                        $this->addError("{$secondGrp}_{$activeSide}_{$col}", "Minimal {$minRows} baris untuk kolom ini.");
+                    }
+                }
+
+                // Minimal 1 PCB per row
+                $sideData = $item[$activeSide] ?? [];
+                $maxRows  = 0;
+                foreach (['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'] as $col) {
+                    $maxRows = max($maxRows, count($sideData[$col] ?? []));
+                }
+                for ($i = 0; $i < $maxRows; $i++) {
+                    $hasAny = false;
+                    foreach (['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'] as $col) {
+                        if (!empty($sideData[$col][$i] ?? null)) { $hasAny = true; break; }
+                    }
+                    if (!$hasAny) {
+                        $this->addError(
+                            "{$secondGrp}_row_{$i}",
+                            "Second Piece — Row " . ($i + 1) . ": minimal 1 PCB wajib diisi."
+                        );
+                    }
+                }
+            }
+
+            // Status Running Second Piece
+            if ($this->secondGroupHasContent($item) && empty($item['status_running'])) {
+                $this->addError("{$secondGrp}.status_running", 'Second Piece — Status Running wajib diisi.');
+            }
+
+            // ============ NG DETAIL (grup asli) WAJIB diisi ============
+            $originalGroupMap = [
+                'second_first'  => 'first_piece_items',
+                'second_middle' => 'middle_piece_items',
+                'second_last'   => 'last_piece_items',
+            ];
+            $originalGrp = $originalGroupMap[$this->phase];
+            $original    = $this->{$originalGrp} ?? [];
+
+            $ngQty = (int) ($original['ng_qty'] ?? 0);
+            if ($ngQty > 0) {
+                if (empty($original['filling_ratio']) && $original['filling_ratio'] !== 0) {
+                    $this->addError("{$originalGrp}.filling_ratio", 'NG Detail — Filling Ratio wajib diisi sebelum lanjut Second Piece.');
+                }
+                if (empty($original['qty_hold']) && $original['qty_hold'] !== 0) {
+                    $this->addError("{$originalGrp}.qty_hold", 'NG Detail — Qty Hold wajib diisi sebelum lanjut Second Piece.');
+                }
+                if (empty($original['ncp_id'])) {
+                    $this->addError("{$originalGrp}.ncp_id", 'NG Detail — NCP wajib dipilih sebelum lanjut Second Piece.');
+                }
+                if (empty($original['remarks'])) {
+                    $this->addError("{$originalGrp}.remarks", 'NG Detail — Remarks wajib diisi sebelum lanjut Second Piece.');
+                }
+                if (empty($original['pictures']) || !is_array($original['pictures']) || count($original['pictures']) === 0) {
+                    $this->addError("{$originalGrp}.pictures", 'NG Detail — Pictures wajib diupload sebelum lanjut Second Piece.');
+                }
+
+                $ok   = (int) ($original['status_after_check']['ok'] ?? 0);
+                $ng   = (int) ($original['status_after_check']['ng'] ?? 0);
+                $hold = (int) ($original['qty_hold'] ?? 0);
+                if (($ok + $ng) !== $hold && $hold > 0) {
+                    $this->addError("{$originalGrp}.qty_hold", 'NG Detail — OK + NG harus sama dengan Qty Hold.');
+                }
+            }
+        }
     }
 
-    /**
-     * Recalculate reject_rate dari ok_qty + ng_qty.
-     */
+    public function getGroupRowErrors(string $groupKey): array
+    {
+        $errors = $this->getErrorBag();
+        $activeSide = $this->activeSide();
+        if (!$activeSide) return [];
+
+        $messages = [];
+        $isSecond = in_array($groupKey, ['second_first_items', 'second_middle_items', 'second_last_items'], true);
+
+        if (!$isSecond) {
+            foreach (['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'] as $col) {
+                $maxRows = count($this->{$groupKey}[$activeSide][$col] ?? []);
+                for ($i = 0; $i < $maxRows; $i++) {
+                    $key = "{$groupKey}_{$col}_value_{$i}";
+                    if ($errors->has($key)) $messages[] = $errors->first($key);
+                }
+            }
+        }
+
+        $maxRows = 0;
+        foreach (['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'] as $col) {
+            $maxRows = max($maxRows, count($this->{$groupKey}[$activeSide][$col] ?? []));
+        }
+        for ($i = 0; $i < $maxRows; $i++) {
+            $key = "{$groupKey}_row_{$i}";
+            if ($errors->has($key)) $messages[] = $errors->first($key);
+        }
+
+        return array_values(array_unique($messages));
+    }
+
     protected function recalcRejectRate(string $groupKey): void
     {
-        $ok = (int) ($this->{$groupKey}['ok_qty'] ?? 0);
-        $ng = (int) ($this->{$groupKey}['ng_qty'] ?? 0);
+        $ok    = (int) ($this->{$groupKey}['ok_qty'] ?? 0);
+        $ng    = (int) ($this->{$groupKey}['ng_qty'] ?? 0);
         $total = $ok + $ng;
         $this->{$groupKey}['reject_rate'] = $total > 0 ? round(($ng / $total) * 100, 2) : 0;
     }
 
     // ============ ROW MANAGEMENT ============
-
     public function addRow(string $groupKey, string $side): void
     {
         foreach (['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'] as $col) {
             $this->{$groupKey}[$side][$col][] = '';
         }
 
-        // Recalculate ok_qty
-        $this->{$groupKey}['ok_qty'] = $this->calculateOkQtyFromRows($this->{$groupKey});
-        $this->recalcRejectRate($groupKey);
+        if (in_array($groupKey, ['first_piece_items', 'middle_piece_items', 'last_piece_items'], true)) {
+            foreach (['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'] as $col) {
+                $this->judgements[$groupKey][$side][$col][] = null;
+            }
+            $this->recalcQtyFromJudgements($groupKey);
+        }
     }
 
     public function removeRow(string $groupKey, string $side, int $index): void
     {
+        $minRows = ScanXray::standardRows($groupKey);
+        $currentCount = 0;
+        foreach (['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'] as $col) {
+            $currentCount = max($currentCount, count($this->{$groupKey}[$side][$col] ?? []));
+        }
+        if ($currentCount <= $minRows) {
+            $this->dispatch('notify', message: "Minimal {$minRows} baris untuk grup ini.", type: 'warning');
+            return;
+        }
+
+        $isSecond = in_array($groupKey, ['second_first_items', 'second_middle_items', 'second_last_items'], true);
+
         foreach (['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'] as $col) {
             if (isset($this->{$groupKey}[$side][$col][$index])) {
                 unset($this->{$groupKey}[$side][$col][$index]);
                 $this->{$groupKey}[$side][$col] = array_values($this->{$groupKey}[$side][$col]);
             }
+
+            if (!$isSecond && isset($this->judgements[$groupKey][$side][$col][$index])) {
+                unset($this->judgements[$groupKey][$side][$col][$index]);
+                $this->judgements[$groupKey][$side][$col] = array_values($this->judgements[$groupKey][$side][$col]);
+            }
         }
 
-        // Recalculate ok_qty
-        $this->{$groupKey}['ok_qty'] = $this->calculateOkQtyFromRows($this->{$groupKey});
-        $this->recalcRejectRate($groupKey);
+        if (!$isSecond) {
+            $this->recalcQtyFromJudgements($groupKey);
+        }
     }
 
-    // ============ NCP INLINE PICKER ============
-
+    // ============ NCP PICKER ============
     public function toggleNcpPanel(string $groupKey): void
     {
         $isOpen = $this->openNcpPanels[$groupKey] ?? false;
         $this->openNcpPanels[$groupKey] = !$isOpen;
-
         if ($this->openNcpPanels[$groupKey]) {
             $this->ncpSearches[$groupKey] = '';
             $this->ncpPages[$groupKey] = 1;
@@ -283,9 +734,7 @@ trait HandlesScanXrayForm
 
     public function updatedNcpSearches($value, $key): void
     {
-        if (isset($this->ncpPages[$key])) {
-            $this->ncpPages[$key] = 1;
-        }
+        if (isset($this->ncpPages[$key])) $this->ncpPages[$key] = 1;
     }
 
     public function setNcpPage(string $groupKey, int $page): void
@@ -295,9 +744,7 @@ trait HandlesScanXrayForm
 
     public function selectNcp(string $groupKey, int $ncpId): void
     {
-        if (isset($this->{$groupKey})) {
-            $this->{$groupKey}['ncp_id'] = $ncpId;
-        }
+        if (isset($this->{$groupKey})) $this->{$groupKey}['ncp_id'] = $ncpId;
         $this->openNcpPanels[$groupKey] = false;
         $this->ncpSearches[$groupKey] = '';
         $this->ncpPages[$groupKey] = 1;
@@ -305,52 +752,34 @@ trait HandlesScanXrayForm
 
     public function clearNcp(string $groupKey): void
     {
-        if (isset($this->{$groupKey})) {
-            $this->{$groupKey}['ncp_id'] = null;
-        }
+        if (isset($this->{$groupKey})) $this->{$groupKey}['ncp_id'] = null;
     }
 
     public function getNcpListFor(string $groupKey)
     {
         $search = $this->ncpSearches[$groupKey] ?? '';
-
         $q = NCP::query()->orderByDesc('id');
-
         if (!empty($search)) {
             $term = '%' . $search . '%';
             $q->where(function ($qq) use ($term) {
-                $qq->where('ncp_number', 'like', $term)
-                   ->orWhere('part_number', 'like', $term)
-                   ->orWhere('part_description', 'like', $term)
-                   ->orWhere('customer', 'like', $term)
-                   ->orWhere('model_affected', 'like', $term);
+                $qq->where('ncp_number', 'like', $term);
             });
         }
-
         return $q->paginate(5, ['*'], 'ncpPage_' . $groupKey, $this->ncpPages[$groupKey] ?? 1);
     }
 
-    // ============ MASTER LINE INLINE PICKER ============
-
+    // ============ MASTER LINE ============
     public function toggleMasterLinePanel(): void
     {
         $this->openMasterLinePanel = !$this->openMasterLinePanel;
-
         if ($this->openMasterLinePanel) {
             $this->masterLineSearch = '';
             $this->masterLinePage = 1;
         }
     }
 
-    public function updatedMasterLineSearch(): void
-    {
-        $this->masterLinePage = 1;
-    }
-
-    public function setMasterLinePage(int $page): void
-    {
-        $this->masterLinePage = $page;
-    }
+    public function updatedMasterLineSearch(): void { $this->masterLinePage = 1; }
+    public function setMasterLinePage(int $page): void { $this->masterLinePage = $page; }
 
     public function selectMasterLine(int $id): void
     {
@@ -360,15 +789,11 @@ trait HandlesScanXrayForm
         $this->masterLinePage = 1;
     }
 
-    public function clearMasterLine(): void
-    {
-        $this->master_line_id = null;
-    }
+    public function clearMasterLine(): void { $this->master_line_id = null; }
 
     public function getMasterLineList()
     {
         $search = $this->masterLineSearch ?? '';
-
         $q = MasterLine::query()
             ->with('location')
             ->join('tb_mtc_master_locations as loc', 'loc.id', '=', 'tb_mtc_master_lines.location_id')
@@ -383,12 +808,10 @@ trait HandlesScanXrayForm
                    ->orWhere('loc.location_name', 'like', $term);
             });
         }
-
         return $q->paginate(5, ['*'], 'masterLinePage', $this->masterLinePage ?? 1);
     }
 
-    // ============ FILE UPLOAD HANDLERS ============
-
+    // ============ FILE UPLOAD ============
     public function removePicture(string $groupKey, int $index): void
     {
         if (isset($this->{$groupKey}['pictures'][$index])) {
@@ -402,43 +825,127 @@ trait HandlesScanXrayForm
     }
 
     // ============ BUILD PAYLOAD ============
-
-    protected function buildPayload(array $existingPictures = []): array
+    protected function buildPayload(array $existingPictures = [], bool $isCreate = false): array
     {
-        return [
-            'customer_id'        => $this->customer_id,
-            'model_id'           => $this->model_id,
-            'shift'              => $this->shift,
-            'group'              => $this->group,
-            'master_line_id'     => $this->master_line_id,
-            'lot_qty'            => $this->lot_qty,
-            'first_piece_items'  => $this->prepareGroupPayload('first_piece_items', $existingPictures),
-            'middle_piece_items' => $this->prepareGroupPayload('middle_piece_items', $existingPictures),
-            'last_piece_items'   => $this->prepareGroupPayload('last_piece_items', $existingPictures),
+        // Cek ada NG atau tidak di grup yang sedang diisi
+        $hasNg = false;
+        $currentPhase = $isCreate ? 'first' : $this->phase;
+
+        if ($currentPhase === 'first') {
+            $hasNg = ((int) ($this->first_piece_items['ng_qty'] ?? 0)) > 0;
+        } elseif ($currentPhase === 'middle') {
+            $hasNg = ((int) ($this->middle_piece_items['ng_qty'] ?? 0)) > 0;
+        } elseif ($currentPhase === 'last') {
+            $hasNg = ((int) ($this->last_piece_items['ng_qty'] ?? 0)) > 0;
+        }
+
+        $payload = [
+            'customer_id'         => $this->customer_id,
+            'model_id'            => $this->model_id,
+            'pcb_type'            => $this->pcb_type,
+            'phase'               => ScanXray::nextPhase($currentPhase, $hasNg),
+            'shift'               => $this->shift,
+            'group'               => $this->group,
+            'master_line_id'      => $this->master_line_id,
+            'lot_qty'             => $this->lot_qty,
+            'first_piece_items'   => $this->prepareGroupPayload('first_piece_items', $existingPictures),
+            'middle_piece_items'  => $this->prepareGroupPayload('middle_piece_items', $existingPictures),
+            'last_piece_items'    => $this->prepareGroupPayload('last_piece_items', $existingPictures),
+            'second_first_items'  => $this->prepareSecondGroupPayload('second_first_items'),
+            'second_middle_items' => $this->prepareSecondGroupPayload('second_middle_items'),
+            'second_last_items'   => $this->prepareSecondGroupPayload('second_last_items'),
+            'updated_by'          => auth()->id(),
         ];
+
+        if ($isCreate) {
+            $payload['created_by'] = auth()->id();
+        }
+
+        return $payload;
     }
 
     protected function prepareGroupPayload(string $groupKey, array $existingPictures = []): array
     {
-        $item = $this->{$groupKey};
+        $item    = $this->{$groupKey};
+        $side    = $this->activeSide();
+        $stdRows = ScanXray::standardRows($groupKey);
 
-        // Recalculate ok_qty dari row (pastikan konsisten)
-        $item['ok_qty'] = $this->calculateOkQtyFromRows($item);
+        // Paksa jumlah row
+        foreach (['side_single', 'side_lh', 'side_rh'] as $s) {
+            foreach (['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'] as $col) {
+                $arr = $item[$s][$col] ?? [];
+                $arr = array_slice(array_values($arr), 0, $stdRows);
+                while (count($arr) < $stdRows) $arr[] = '';
+                $item[$s][$col] = $arr;
+            }
+        }
 
-        // Recalculate reject_rate
-        $ok = (int) ($item['ok_qty'] ?? 0);
-        $ng = (int) ($item['ng_qty'] ?? 0);
+        // Paksa judgements per kolom
+        $judgementData = [];
+        if ($side) {
+            foreach (['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'] as $col) {
+                $arr = $this->judgements[$groupKey][$side][$col] ?? [];
+                $arr = array_slice(array_values($arr), 0, $stdRows);
+                while (count($arr) < $stdRows) $arr[] = null;
+                $judgementData[$col] = $arr;
+            }
+        }
+        $item['judgements'] = $judgementData;
+
+        // Kosongkan side non-aktif
+        foreach (['side_single', 'side_lh', 'side_rh'] as $s) {
+            if (!$this->isSideActive($s)) {
+                foreach (['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'] as $col) {
+                    $item[$s][$col] = array_fill(0, $stdRows, '');
+                }
+            }
+        }
+
+        // Hitung OK/NG per ROW
+        $ok = 0; $ng = 0;
+        $pcbCols  = ['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'];
+        $sideData = $side ? ($item[$side] ?? []) : [];
+        $judgeData = $item['judgements'] ?? [];
+
+        $maxRows = 0;
+        foreach ($pcbCols as $col) {
+            $maxRows = max($maxRows, count($sideData[$col] ?? []));
+        }
+
+        for ($i = 0; $i < $maxRows; $i++) {
+            $hasAnyValue = false;
+            $hasNg       = false;
+
+            foreach ($pcbCols as $col) {
+                $val   = $sideData[$col][$i] ?? null;
+                $judge = $judgeData[$col][$i] ?? null;
+
+                if (empty($val)) continue;
+
+                $hasAnyValue = true;
+                if ($judge === 'ng') {
+                    $hasNg = true;
+                }
+            }
+
+            if (!$hasAnyValue) continue;
+
+            if ($hasNg) $ng++;
+            else        $ok++;
+        }
+
+        $item['ok_qty'] = $ok;
+        $item['ng_qty'] = $ng;
         $total = $ok + $ng;
         $item['reject_rate'] = $total > 0 ? round(($ng / $total) * 100, 2) : 0;
 
-        // Set time_scan hanya kalau grup ada isi
+        // time_scan
         $hasContent = $this->groupHasContent($item);
         $item['time_scan'] = $hasContent ? now()->format('Y-m-d H:i:s') : null;
 
-        // Handle pictures
+        // Pictures
         $existing = $existingPictures[$groupKey] ?? [];
         $uploaded = [];
-
         if (isset($item['pictures']) && is_array($item['pictures'])) {
             foreach ($item['pictures'] as $pic) {
                 if ($pic instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile) {
@@ -448,19 +955,54 @@ trait HandlesScanXrayForm
                 }
             }
         }
-
         $item['pictures'] = array_values(array_unique(array_merge($existing, $uploaded)));
 
-        // Sync status_after_check kalau belum konsisten
-        $hold = (int) ($item['qty_hold'] ?? 0);
+        // Sync status_after_check
+        $hold    = (int) ($item['qty_hold'] ?? 0);
         $okCheck = (int) ($item['status_after_check']['ok'] ?? 0);
         $ngCheck = (int) ($item['status_after_check']['ng'] ?? 0);
         if (($okCheck + $ngCheck) !== $hold && $hold > 0) {
             $item['status_after_check']['ng'] = max(0, $hold - $okCheck);
         }
 
-        // Bersihkan property sementara
         unset($item['pictures_new']);
+
+        return $item;
+    }
+
+    protected function prepareSecondGroupPayload(string $groupKey): array
+    {
+        $item = $this->{$groupKey};
+
+        if (empty($item)) {
+            return [];
+        }
+
+        $side    = $this->activeSide();
+        $stdRows = ScanXray::standardRows($groupKey);
+
+        // Paksa jumlah row
+        foreach (['side_single', 'side_lh', 'side_rh'] as $s) {
+            foreach (['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'] as $col) {
+                $arr = $item[$s][$col] ?? [];
+                $arr = array_slice(array_values($arr), 0, $stdRows);
+                while (count($arr) < $stdRows) $arr[] = '';
+                $item[$s][$col] = $arr;
+            }
+        }
+
+        // Kosongkan side non-aktif
+        foreach (['side_single', 'side_lh', 'side_rh'] as $s) {
+            if (!$this->isSideActive($s)) {
+                foreach (['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'] as $col) {
+                    $item[$s][$col] = array_fill(0, $stdRows, '');
+                }
+            }
+        }
+
+        // time_scan
+        $hasContent = $this->secondGroupHasContent($item);
+        $item['time_scan'] = $hasContent ? now()->format('Y-m-d H:i:s') : null;
 
         return $item;
     }
@@ -469,13 +1011,11 @@ trait HandlesScanXrayForm
     {
         if (!empty($item['ok_qty']) || !empty($item['ng_qty'])) return true;
 
-        foreach (['side_lh', 'side_rh'] as $side) {
+        foreach (['side_single', 'side_lh', 'side_rh'] as $side) {
             foreach (['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'] as $col) {
                 $vals = $item[$side][$col] ?? [];
                 if (is_array($vals)) {
-                    foreach ($vals as $v) {
-                        if (!empty($v)) return true;
-                    }
+                    foreach ($vals as $v) if (!empty($v)) return true;
                 } elseif (!empty($vals)) {
                     return true;
                 }
@@ -491,30 +1031,71 @@ trait HandlesScanXrayForm
         return false;
     }
 
-    protected function mergeStructure($data): array
+    protected function secondGroupHasContent(array $item): bool
     {
-        $default = ScanXray::defaultItemStructure();
-        if (!is_array($data)) {
-            return $default;
+        if (!empty($item['status_running'])) return true;
+
+        foreach (['side_single', 'side_lh', 'side_rh'] as $side) {
+            foreach (['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'] as $col) {
+                $vals = $item[$side][$col] ?? [];
+                if (is_array($vals)) {
+                    foreach ($vals as $v) if (!empty($v)) return true;
+                } elseif (!empty($vals)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    protected function mergeStructure($data, string $groupKey = 'first_piece_items'): array
+    {
+        $isSecond = in_array($groupKey, ['second_first_items', 'second_middle_items', 'second_last_items'], true);
+
+        $default = $isSecond
+            ? ScanXray::defaultSecondPieceStructure()
+            : ScanXray::defaultItemStructure();
+
+        $item    = is_array($data) ? array_replace_recursive($default, $data) : $default;
+        $minRows = ScanXray::standardRows($groupKey);
+
+        foreach (['side_single', 'side_lh', 'side_rh'] as $side) {
+            foreach (['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'] as $col) {
+                $arr = $item[$side][$col] ?? [];
+                $arr = is_array($arr) ? array_values($arr) : [''];
+                while (count($arr) < $minRows) $arr[] = '';
+                $item[$side][$col] = $arr;
+            }
         }
 
-        $merged = array_replace_recursive($default, $data);
+        if (!$isSecond) {
+            $saved = $data['judgements'] ?? [];
+            if (!is_array($saved)) $saved = [];
 
-        if (!isset($merged['pictures']) || !is_array($merged['pictures'])) {
-            $merged['pictures'] = [];
+            $judgementData = [];
+            foreach (['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'] as $col) {
+                $arr = is_array($saved[$col] ?? null) ? $saved[$col] : [];
+                $arr = array_values($arr);
+                while (count($arr) < $minRows) $arr[] = null;
+                $judgementData[$col] = array_slice($arr, 0, $minRows);
+            }
+            $item['judgements'] = $judgementData;
         }
 
-        return $merged;
+        if (!isset($item['pictures']) || !is_array($item['pictures'])) {
+            $item['pictures'] = [];
+        }
+
+        return $item;
     }
 
     protected function getDropdownData(): array
     {
         return [
-            'customers'   => Customer::orderBy('customer_name')->get(),
-            'models'      => $this->customer_id
-                                ? BlindTestModel::where('customer_id', $this->customer_id)
-                                    ->orderBy('model_name')->get()
-                                : collect(),
+            'customers' => Customer::orderBy('customer_name')->get(),
+            'models'    => $this->customer_id
+                ? BlindTestModel::where('customer_id', $this->customer_id)->orderBy('model_name')->get()
+                : collect(),
         ];
     }
 }

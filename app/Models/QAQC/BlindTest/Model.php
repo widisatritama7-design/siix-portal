@@ -13,36 +13,50 @@ class Model extends EloquentModel
     protected $fillable = [
         'customer_id',
         'model_name',
+        'pcb_type',
         'created_by',
         'updated_by',
     ];
 
     protected $casts = [
+        'pcb_type'   => 'array', // auto encode/decode JSON
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
 
     /**
-     * Relasi ke Customer
+     * Opsi PCB Type yang tersedia
      */
+    public const PCB_TYPES = [
+        'SINGLE' => 'Single',
+        'LH'     => 'LH',
+        'RH'     => 'RH',
+    ];
+
     public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class, 'customer_id');
     }
 
-    /**
-     * Relasi ke User pembuat
-     */
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    /**
-     * Relasi ke User yang update
-     */
     public function updater()
     {
         return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    /**
+     * Accessor label untuk ditampilkan (mis. "LH, RH")
+     */
+    public function getPcbTypeLabelAttribute(): string
+    {
+        $types = $this->pcb_type ?? [];
+        if (empty($types)) {
+            return '-';
+        }
+        return implode(', ', $types);
     }
 }

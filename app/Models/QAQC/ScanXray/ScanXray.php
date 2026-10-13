@@ -2,129 +2,188 @@
 
 namespace App\Models\QAQC\ScanXray;
 
+use Illuminate\Database\Eloquent\Model as EloquentModel;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\MTC\Master\MasterLine;
 use App\Models\QAQC\BlindTest\Customer;
 use App\Models\QAQC\BlindTest\Model as BlindTestModel;
-use App\Models\QAQC\NCP;
 use App\Models\User;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class ScanXray extends Model
+class ScanXray extends EloquentModel
 {
-    use HasFactory;
-
     protected $table = 'tb_qaqc_scan_xray';
 
     protected $fillable = [
         'customer_id',
         'model_id',
+        'pcb_type',
+        'phase',
         'shift',
         'group',
         'master_line_id',
         'lot_qty',
         'first_piece_items',
+        'second_first_items',      // ⬅️ BARU
         'middle_piece_items',
+        'second_middle_items',     // ⬅️ BARU
         'last_piece_items',
+        'second_last_items',       // ⬅️ BARU
         'created_by',
         'updated_by',
     ];
 
     protected $casts = [
-        'first_piece_items'  => 'array',
-        'middle_piece_items' => 'array',
-        'last_piece_items'   => 'array',
-        'lot_qty'            => 'integer',
-        'created_at'         => 'datetime',
-        'updated_at'         => 'datetime',
+        'first_piece_items'   => 'array',
+        'second_first_items'  => 'array',      // ⬅️ BARU
+        'middle_piece_items'  => 'array',
+        'second_middle_items' => 'array',      // ⬅️ BARU
+        'last_piece_items'    => 'array',
+        'second_last_items'   => 'array',      // ⬅️ BARU
+        'created_at'          => 'datetime',
+        'updated_at'          => 'datetime',
     ];
 
-    // ============ RELATIONSHIPS ============
+    public const PCB_TYPE_OPTIONS = ['SINGLE', 'LH', 'RH'];
 
-    public function customer()
+    public const PHASES = 
+    [
+        'first',
+        'second_first',      // ⬅️ BARU
+        'middle',
+        'second_middle',     // ⬅️ BARU
+        'last',
+        'second_last',       // ⬅️ BARU
+        'completed',
+    ];
+
+    // ==================== RELASI ====================
+
+    public function customer(): BelongsTo
     {
         return $this->belongsTo(Customer::class, 'customer_id');
     }
 
-    public function model()
+    public function model(): BelongsTo
     {
         return $this->belongsTo(BlindTestModel::class, 'model_id');
     }
 
-    public function masterLine()
+    public function masterLine(): BelongsTo
     {
         return $this->belongsTo(MasterLine::class, 'master_line_id');
     }
 
-    public function ncp()
-    {
-        return $this->belongsTo(NCP::class, 'ncp_id');
-    }
-
-    public function creator()
+    public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function updater()
+    public function updater(): BelongsTo
     {
         return $this->belongsTo(User::class, 'updated_by');
     }
 
-    // ============ HELPERS ============
+    // ==================== DEFAULT STRUCTURE ====================
 
-    /**
-     * Default struktur 1 grup piece item.
-     */
     public static function defaultItemStructure(): array
     {
         return [
-            'side_lh' => [
-                'pcb_a'       => [],
-                'pcb_b'       => [],
-                'pcb_c'       => [],
-                'pcb_circuit' => [],
-            ],
-            'side_rh' => [
-                'pcb_a'       => [],
-                'pcb_b'       => [],
-                'pcb_c'       => [],
-                'pcb_circuit' => [],
-            ],
             'time_scan'          => null,
             'ok_qty'             => 0,
             'ng_qty'             => 0,
             'reject_rate'        => 0,
-            'status_running'     => null,
+            'status_running'     => '',
             'filling_ratio'      => null,
-            'pictures'           => null,
             'qty_hold'           => 0,
-            'status_after_check' => [
-                'ok' => null,
-                'ng' => null,
-            ],
+            'status_after_check' => ['ok' => 0, 'ng' => 0],
             'ncp_id'             => null,
-            'remarks'            => null,
+            'remarks'            => '',
+            'pictures'           => [],
+            'pictures_new'       => [],
+            'judgements'         => [],
+            'side_single'        => ['pcb_a' => [''], 'pcb_b' => [''], 'pcb_c' => [''], 'pcb_circuit' => ['']],
+            'side_lh'            => ['pcb_a' => [''], 'pcb_b' => [''], 'pcb_c' => [''], 'pcb_circuit' => ['']],
+            'side_rh'            => ['pcb_a' => [''], 'pcb_b' => [''], 'pcb_c' => [''], 'pcb_circuit' => ['']],
         ];
     }
 
-    // ============ BOOT ============
-
-    protected static function boot()
+    public static function standardRows(string $groupKey): int
     {
-        parent::boot();
+        return match ($groupKey) {
+            'first_piece_items', 'last_piece_items'   => 3,
+            'middle_piece_items'                       => 4,
+            'second_first_items', 'second_last_items' => 3,
+            'second_middle_items'                      => 4,
+            default                                    => 3,
+        };
+    }
 
-        static::creating(function ($model) {
-            if (auth()->check()) {
-                $model->created_by = auth()->id();
-                $model->updated_by = auth()->id();
-            }
-        });
+    // ==================== HELPERS ====================
 
-        static::updating(function ($model) {
-            if (auth()->check()) {
-                $model->updated_by = auth()->id();
-            }
-        });
+    public function getActiveSideAttribute(): ?string
+    {
+        return match ($this->pcb_type) {
+            'SINGLE' => 'side_single',
+            'LH'     => 'side_lh',
+            'RH'     => 'side_rh',
+            default  => null,
+        };
+    }
+
+    public function isLocked(): bool
+    {
+        return $this->created_at && $this->created_at->diffInHours(now()) >= 24;
+    }
+
+    public function canEditGroup(string $groupKey): bool
+    {
+        return match ($this->phase) {
+            'first'         => $groupKey === 'first_piece_items',
+            'second_first'  => $groupKey === 'second_first_items',
+            'middle'        => $groupKey === 'middle_piece_items',
+            'second_middle' => $groupKey === 'second_middle_items',
+            'last'          => $groupKey === 'last_piece_items',
+            'second_last'   => $groupKey === 'second_last_items',
+            'completed'     => false,
+            default         => false,
+        };
+    }
+
+    public static function defaultSecondPieceStructure(): array
+    {
+        return [
+            'time_scan'      => null,
+            'status_running' => '',
+            'side_single'    => ['pcb_a' => [''], 'pcb_b' => [''], 'pcb_c' => [''], 'pcb_circuit' => ['']],
+            'side_lh'        => ['pcb_a' => [''], 'pcb_b' => [''], 'pcb_c' => [''], 'pcb_circuit' => ['']],
+            'side_rh'        => ['pcb_a' => [''], 'pcb_b' => [''], 'pcb_c' => [''], 'pcb_circuit' => ['']],
+        ];
+    }
+
+    public function getPhaseLabelAttribute(): string
+    {
+        return match ($this->phase) {
+            'first'         => 'First Piece',
+            'second_first'  => 'Second Piece (First)',
+            'middle'        => 'Middle Piece',
+            'second_middle' => 'Second Piece (Middle)',
+            'last'          => 'Last Piece',
+            'second_last'   => 'Second Piece (Last)',
+            'completed'     => 'Completed',
+            default         => '-',
+        };
+    }
+
+    public static function nextPhase(string $current, bool $hasNg = false): string
+    {
+        return match ($current) {
+            'first'         => $hasNg ? 'second_first' : 'middle',
+            'second_first'  => 'middle',
+            'middle'        => $hasNg ? 'second_middle' : 'last',
+            'second_middle' => 'last',
+            'last'          => $hasNg ? 'second_last' : 'completed',
+            'second_last'   => 'completed',
+            default         => 'completed',
+        };
     }
 }
