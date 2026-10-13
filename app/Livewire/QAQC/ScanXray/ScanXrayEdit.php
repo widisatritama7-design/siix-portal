@@ -68,6 +68,9 @@ class ScanXrayEdit extends Component
                 }
             }
         }
+
+        // ============ TAMBAHKAN INI ============
+        $this->syncOpenGroupsWithPhase();
     }
 
     protected function rules(): array { return $this->formRules(); }

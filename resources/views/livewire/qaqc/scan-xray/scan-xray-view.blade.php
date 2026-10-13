@@ -113,21 +113,18 @@
         </div>
 
         <div class="p-5 bg-gradient-to-b from-white to-zinc-50/50 dark:from-zinc-900 dark:to-zinc-900/50">
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3">
 
-                {{-- CUSTOMER --}}
                 <div class="rounded-lg bg-gradient-to-br from-blue-50 to-blue-100/50 dark:from-blue-900/20 dark:to-blue-900/10 p-3 border border-blue-200 dark:border-blue-800">
                     <div class="text-[10px] text-blue-700 dark:text-blue-400 uppercase tracking-wider font-semibold mb-1">Customer</div>
                     <div class="text-sm font-bold text-zinc-800 dark:text-white truncate">{{ $scan->customer->customer_name ?? '-' }}</div>
                 </div>
 
-                {{-- MODEL --}}
                 <div class="rounded-lg bg-gradient-to-br from-indigo-50 to-indigo-100/50 dark:from-indigo-900/20 dark:to-indigo-900/10 p-3 border border-indigo-200 dark:border-indigo-800">
                     <div class="text-[10px] text-indigo-700 dark:text-indigo-400 uppercase tracking-wider font-semibold mb-1">Model</div>
                     <div class="text-sm font-bold text-zinc-800 dark:text-white truncate">{{ $scan->model->model_name ?? '-' }}</div>
                 </div>
 
-                {{-- PCB TYPE --}}
                 <div class="rounded-lg bg-gradient-to-br from-violet-50 to-purple-100/50 dark:from-violet-900/20 dark:to-purple-900/10 p-3 border border-violet-200 dark:border-violet-800">
                     <div class="text-[10px] text-violet-700 dark:text-violet-400 uppercase tracking-wider font-semibold mb-1">PCB Type</div>
                     <div class="text-sm font-bold">
@@ -143,7 +140,6 @@
                     </div>
                 </div>
 
-                {{-- PHASE --}}
                 <div class="rounded-lg bg-gradient-to-br from-fuchsia-50 to-pink-100/50 dark:from-fuchsia-900/20 dark:to-pink-900/10 p-3 border border-fuchsia-200 dark:border-fuchsia-800">
                     <div class="text-[10px] text-fuchsia-700 dark:text-fuchsia-400 uppercase tracking-wider font-semibold mb-1">Phase</div>
                     <div class="text-sm font-bold">
@@ -153,7 +149,6 @@
                     </div>
                 </div>
 
-                {{-- SHIFT --}}
                 <div class="rounded-lg bg-gradient-to-br from-cyan-50 to-cyan-100/50 dark:from-cyan-900/20 dark:to-cyan-900/10 p-3 border border-cyan-200 dark:border-cyan-800">
                     <div class="text-[10px] text-cyan-700 dark:text-cyan-400 uppercase tracking-wider font-semibold mb-1">Shift</div>
                     <div class="text-sm font-bold">
@@ -163,7 +158,6 @@
                     </div>
                 </div>
 
-                {{-- GROUP --}}
                 <div class="rounded-lg bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-900/20 dark:to-purple-900/10 p-3 border border-purple-200 dark:border-purple-800">
                     <div class="text-[10px] text-purple-700 dark:text-purple-400 uppercase tracking-wider font-semibold mb-1">Group</div>
                     <div class="text-sm font-bold">
@@ -173,7 +167,6 @@
                     </div>
                 </div>
 
-                {{-- MASTER LINE --}}
                 <div class="rounded-lg bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-emerald-900/20 dark:to-emerald-900/10 p-3 border border-emerald-200 dark:border-emerald-800">
                     <div class="text-[10px] text-emerald-700 dark:text-emerald-400 uppercase tracking-wider font-semibold mb-1">Master Line</div>
                     <div class="text-sm font-bold text-zinc-800 dark:text-white truncate">
@@ -181,19 +174,16 @@
                     </div>
                 </div>
 
-                {{-- LOT QTY --}}
                 <div class="rounded-lg bg-gradient-to-br from-amber-50 to-amber-100/50 dark:from-amber-900/20 dark:to-amber-900/10 p-3 border border-amber-200 dark:border-amber-800">
                     <div class="text-[10px] text-amber-700 dark:text-amber-400 uppercase tracking-wider font-semibold mb-1">Lot Qty</div>
                     <div class="text-sm font-bold font-mono text-zinc-800 dark:text-white">{{ number_format($scan->lot_qty) }}</div>
                 </div>
 
-                {{-- CREATED BY --}}
                 <div class="rounded-lg bg-gradient-to-br from-zinc-50 to-zinc-100/50 dark:from-zinc-800/50 dark:to-zinc-800/20 p-3 border border-zinc-200 dark:border-zinc-700">
                     <div class="text-[10px] text-zinc-600 dark:text-zinc-400 uppercase tracking-wider font-semibold mb-1">PIC X-RAY</div>
                     <div class="text-sm font-semibold text-zinc-800 dark:text-white truncate">{{ $scan->creator->name ?? '-' }}</div>
                 </div>
 
-                {{-- CREATED AT --}}
                 <div class="rounded-lg bg-gradient-to-br from-zinc-50 to-zinc-100/50 dark:from-zinc-800/50 dark:to-zinc-800/20 p-3 border border-zinc-200 dark:border-zinc-700">
                     <div class="text-[10px] text-zinc-600 dark:text-zinc-400 uppercase tracking-wider font-semibold mb-1">DATE</div>
                     <div class="text-sm font-semibold text-zinc-800 dark:text-white">{{ $scan->created_at?->format('d M Y, H:i') }}</div>
@@ -204,7 +194,6 @@
 
     {{-- ==================== PIECE ITEMS ==================== --}}
     @if($hasAnyGroup)
-        {{-- FIRST PIECE --}}
         @if($firstFilled)
             @include('livewire.qaqc.scan-xray.partials.piece-items-form', [
                 'key' => 'first_piece_items', 'label' => 'First Piece Items',
@@ -214,7 +203,6 @@
             ])
         @endif
 
-        {{-- SECOND FIRST --}}
         @if($secondFirstFilled)
             @include('livewire.qaqc.scan-xray.partials.second-piece-form', [
                 'key' => 'second_first_items', 'label' => 'Second Piece — First (Verification)',
@@ -224,7 +212,6 @@
             ])
         @endif
 
-        {{-- MIDDLE PIECE --}}
         @if($middleFilled)
             @include('livewire.qaqc.scan-xray.partials.piece-items-form', [
                 'key' => 'middle_piece_items', 'label' => 'Middle Piece Items',
@@ -234,7 +221,6 @@
             ])
         @endif
 
-        {{-- SECOND MIDDLE --}}
         @if($secondMiddleFilled)
             @include('livewire.qaqc.scan-xray.partials.second-piece-form', [
                 'key' => 'second_middle_items', 'label' => 'Second Piece — Middle (Verification)',
@@ -244,7 +230,6 @@
             ])
         @endif
 
-        {{-- LAST PIECE --}}
         @if($lastFilled)
             @include('livewire.qaqc.scan-xray.partials.piece-items-form', [
                 'key' => 'last_piece_items', 'label' => 'Last Piece Items',
@@ -254,7 +239,6 @@
             ])
         @endif
 
-        {{-- SECOND LAST --}}
         @if($secondLastFilled)
             @include('livewire.qaqc.scan-xray.partials.second-piece-form', [
                 'key' => 'second_last_items', 'label' => 'Second Piece — Last (Verification)',

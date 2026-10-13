@@ -155,6 +155,13 @@
       0 => 'Spatie\\Activitylog\\ActivitylogServiceProvider',
     ),
   ),
+  'spatie/laravel-passkeys' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Spatie\\LaravelPasskeys\\LaravelPasskeysServiceProvider',
+    ),
+  ),
   'spatie/laravel-permission' => 
   array (
     'providers' => 

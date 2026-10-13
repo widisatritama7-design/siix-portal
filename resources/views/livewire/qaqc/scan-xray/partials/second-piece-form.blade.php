@@ -48,16 +48,28 @@
             if (!$hasAnyInRow) $emptyRowsCount++;
         }
     }
+
+    // ============ COLLAPSE STATE ============
+    $isOpen      = $openGroups[$key] ?? false;
+    $canOpen     = $this->canOpenGroup($key);
+    $isCompleted = $this->isGroupCompleted($key);
+    $isLocked    = $this->isGroupLocked($key);
 @endphp
 
 <div class="relative rounded-2xl overflow-hidden shadow-lg ring-1 ring-emerald-200/50 dark:ring-emerald-800/50 bg-white dark:bg-zinc-900">
 
-    {{-- HEADER --}}
-    <div class="relative px-6 py-4 bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 overflow-hidden">
+    {{-- HEADER (clickable) --}}
+    <button
+        type="button"
+        wire:click="toggleGroup('{{ $key }}')"
+        @if(!$canOpen) disabled @endif
+        class="w-full relative px-6 py-4 bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 overflow-hidden text-left transition
+            {{ $canOpen ? 'cursor-pointer hover:brightness-110' : 'cursor-not-allowed opacity-75' }}">
+
         <div class="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-white/10"></div>
         <div class="absolute -right-4 -bottom-10 w-20 h-20 rounded-full bg-white/10"></div>
 
-        @if(!$readonly && $emptyRowsCount > 0)
+        @if(!$readonly && $emptyRowsCount > 0 && $isOpen)
             <div class="relative mb-3 px-3 py-2 rounded-lg bg-red-500/95 backdrop-blur border border-red-300 shadow-lg flex items-start gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-white flex-shrink-0 mt-0.5">
                     <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-8-5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5A.75.75 0 0 1 10 5Zm0 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd" />
@@ -81,21 +93,43 @@
                     </svg>
                 </div>
                 <div>
-                    <div class="text-[10px] text-white/70 uppercase tracking-wider font-semibold">Verification</div>
+                    <div class="text-[10px] text-white/70 uppercase tracking-wider font-semibold flex items-center gap-2">
+                        Verification
+                        @if($isCompleted)
+                            <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-500/40 border border-emerald-300/60 text-[9px] font-bold">
+                                ✓ COMPLETED
+                            </span>
+                        @endif
+                        @if($isLocked)
+                            <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-zinc-800/50 border border-zinc-300/40 text-[9px] font-bold">
+                                🔒 LOCKED
+                            </span>
+                        @endif
+                    </div>
                     <div class="text-base font-bold text-white leading-tight">{{ $label }}</div>
                 </div>
             </div>
 
-            @if($statusRunning)
-                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 text-white text-xs font-semibold">
-                    {{ $statusRunning }}
-                </span>
-            @endif
-        </div>
-    </div>
+            <div class="flex items-center gap-2">
+                @if($statusRunning && !$isOpen)
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 text-white text-xs font-semibold">
+                        {{ $statusRunning }}
+                    </span>
+                @endif
 
-    {{-- BODY --}}
-    <div class="p-5 space-y-5 bg-gradient-to-b from-white to-zinc-50/50 dark:from-zinc-900 dark:to-zinc-900/50">
+                <div class="w-8 h-8 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center transition-transform duration-300
+                    {{ $isOpen ? 'rotate-180' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-white">
+                        <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </button>
+
+    {{-- BODY (collapsible) --}}
+    <div x-show="$wire.openGroups['{{ $key }}']" x-collapse
+        class="p-5 space-y-5 bg-gradient-to-b from-white to-zinc-50/50 dark:from-zinc-900 dark:to-zinc-900/50">
 
         @if(!$side || !$meta)
             <div class="rounded-xl border-2 border-dashed border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-6 text-center">
@@ -115,7 +149,6 @@
 
             <div class="rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-700 shadow-sm bg-white dark:bg-zinc-900">
 
-                {{-- HEADER SIDE --}}
                 <div class="px-4 py-2.5 bg-gradient-to-r {{ $meta['class'] }} flex items-center justify-between">
                     <span class="text-sm font-bold text-white tracking-wide">{{ $meta['label'] }} — Verification</span>
                     <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/20 backdrop-blur-sm border border-white/30 text-white text-[10px] font-semibold">
@@ -123,7 +156,6 @@
                     </span>
                 </div>
 
-                {{-- TABLE --}}
                 <div class="overflow-x-auto">
                     <table class="w-full text-xs">
                         <thead>
@@ -200,7 +232,6 @@
                     </table>
                 </div>
 
-                {{-- ERROR ROW --}}
                 @if(!$readonly && !empty($rowErrors))
                     <div class="p-3 bg-red-50 dark:bg-red-950/30 border-t-2 border-red-300 dark:border-red-700">
                         <div class="flex items-start gap-2 mb-2">
@@ -237,7 +268,6 @@
                     </div>
                 @endif
 
-                {{-- STATUS RUNNING --}}
                 <div class="rounded-lg bg-gradient-to-br from-cyan-50 to-cyan-100/50 dark:from-cyan-900/20 dark:to-cyan-900/10 p-3 border border-cyan-200 dark:border-cyan-800 text-center">
                     <div class="text-[10px] text-cyan-700 dark:text-cyan-400 uppercase tracking-wider font-semibold mb-1">
                         Status Running <span class="text-red-500">*</span>

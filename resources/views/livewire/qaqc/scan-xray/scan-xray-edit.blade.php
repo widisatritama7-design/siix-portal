@@ -29,45 +29,54 @@
         </span>
     </div>
 
-    {{-- INFO BANNER --}}
-    <div class="rounded-xl border border-indigo-300 dark:border-indigo-700 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-950/40 dark:to-purple-950/40 p-4 flex items-start gap-3">
-        <div class="w-9 h-9 rounded-full bg-indigo-500 flex items-center justify-center flex-shrink-0">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-        </div>
-        <div>
-            @if($phase === 'middle')
-                <p class="text-sm font-bold text-indigo-900 dark:text-indigo-100">Isi Middle Piece Items sekarang</p>
-                <p class="text-xs text-indigo-800 dark:text-indigo-200 mt-0.5">
-                    Setelah save, Anda bisa lanjut isi Last Piece Items via Edit kembali.
-                </p>
-            @elseif($phase === 'second_first')
-                <p class="text-sm font-bold text-emerald-900 dark:text-emerald-100">Second Piece (First) — Verifikasi ulang</p>
-                <p class="text-xs text-emerald-800 dark:text-emerald-200 mt-0.5">
-                    Isi NG Detail First Piece terlebih dahulu (wajib), lalu isi Second Piece. Setelah save, lanjut ke Middle Piece.
-                </p>
-            @elseif($phase === 'last')
-                <p class="text-sm font-bold text-indigo-900 dark:text-indigo-100">Isi Last Piece Items — phase terakhir</p>
-                <p class="text-xs text-indigo-800 dark:text-indigo-200 mt-0.5">
-                    Setelah save, data akan ditandai Completed (kalau tidak ada NG) atau lanjut Second Piece.
-                </p>
-            @elseif($phase === 'second_middle')
-                <p class="text-sm font-bold text-emerald-900 dark:text-emerald-100">Second Piece (Middle) — Verifikasi ulang</p>
-                <p class="text-xs text-emerald-800 dark:text-emerald-200 mt-0.5">
-                    Isi NG Detail Middle Piece terlebih dahulu (wajib), lalu isi Second Piece. Setelah save, lanjut ke Last Piece.
-                </p>
-            @elseif($phase === 'second_last')
-                <p class="text-sm font-bold text-emerald-900 dark:text-emerald-100">Second Piece (Last) — Verifikasi ulang</p>
-                <p class="text-xs text-emerald-800 dark:text-emerald-200 mt-0.5">
-                    Isi NG Detail Last Piece terlebih dahulu (wajib), lalu isi Second Piece. Setelah save, selesai (Completed).
-                </p>
-            @else
-                <p class="text-sm font-bold text-indigo-900 dark:text-indigo-100">Lanjutkan phase selanjutnya</p>
-                <p class="text-xs text-indigo-800 dark:text-indigo-200 mt-0.5">
-                    Isi grup yang aktif dan klik Save untuk melanjutkan.
-                </p>
-            @endif
+    {{-- INFO BANNER — STICKY (iOS Glass Effect) --}}
+    <div class="sticky top-25 z-30 relative rounded-xl overflow-hidden border border-white/40 dark:border-white/10 shadow-lg shadow-black/5">
+        {{-- Layer 1: Gradient transparan (untuk warna) --}}
+        <div class="absolute inset-0 bg-gradient-to-r from-indigo-100/70 via-purple-100/60 to-indigo-100/70 dark:from-indigo-900/40 dark:via-purple-900/30 dark:to-indigo-900/40"></div>
+
+        {{-- Layer 2: Blur + frosted glass --}}
+        <div class="absolute inset-0 backdrop-blur-2xl backdrop-saturate-150 bg-white/40 dark:bg-zinc-900/30"></div>
+
+        {{-- Layer 3: Konten --}}
+        <div class="relative p-4 flex items-start gap-3">
+            <div class="w-9 h-9 rounded-full bg-indigo-500 flex items-center justify-center flex-shrink-0 shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <div>
+                @if($phase === 'middle')
+                    <p class="text-sm font-bold text-indigo-900 dark:text-indigo-100">Isi Middle Piece Items sekarang</p>
+                    <p class="text-xs text-indigo-800 dark:text-indigo-200 mt-0.5">
+                        Setelah save, Anda bisa lanjut isi Last Piece Items via Edit kembali.
+                    </p>
+                @elseif($phase === 'second_first')
+                    <p class="text-sm font-bold text-emerald-900 dark:text-emerald-100">Second Piece (First) — Verifikasi ulang</p>
+                    <p class="text-xs text-emerald-800 dark:text-emerald-200 mt-0.5">
+                        Isi NG Detail First Piece terlebih dahulu (wajib), lalu isi Second Piece. Setelah save, lanjut ke Middle Piece.
+                    </p>
+                @elseif($phase === 'last')
+                    <p class="text-sm font-bold text-indigo-900 dark:text-indigo-100">Isi Last Piece Items — phase terakhir</p>
+                    <p class="text-xs text-indigo-800 dark:text-indigo-200 mt-0.5">
+                        Setelah save, data akan ditandai Completed (kalau tidak ada NG) atau lanjut Second Piece.
+                    </p>
+                @elseif($phase === 'second_middle')
+                    <p class="text-sm font-bold text-emerald-900 dark:text-emerald-100">Second Piece (Middle) — Verifikasi ulang</p>
+                    <p class="text-xs text-emerald-800 dark:text-emerald-200 mt-0.5">
+                        Isi NG Detail Middle Piece terlebih dahulu (wajib), lalu isi Second Piece. Setelah save, lanjut ke Last Piece.
+                    </p>
+                @elseif($phase === 'second_last')
+                    <p class="text-sm font-bold text-emerald-900 dark:text-emerald-100">Second Piece (Last) — Verifikasi ulang</p>
+                    <p class="text-xs text-emerald-800 dark:text-emerald-200 mt-0.5">
+                        Isi NG Detail Last Piece terlebih dahulu (wajib), lalu isi Second Piece. Setelah save, selesai (Completed).
+                    </p>
+                @else
+                    <p class="text-sm font-bold text-indigo-900 dark:text-indigo-100">Lanjutkan phase selanjutnya</p>
+                    <p class="text-xs text-indigo-800 dark:text-indigo-200 mt-0.5">
+                        Isi grup yang aktif dan klik Save untuk melanjutkan.
+                    </p>
+                @endif
+            </div>
         </div>
     </div>
 

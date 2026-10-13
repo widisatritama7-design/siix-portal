@@ -70,16 +70,28 @@
             if (!$hasAnyInRow) $emptyRowsCount++;
         }
     }
+
+    // ============ COLLAPSE STATE ============
+    $isOpen      = $openGroups[$key] ?? false;
+    $canOpen     = $this->canOpenGroup($key);
+    $isCompleted = $this->isGroupCompleted($key);
+    $isLocked    = $this->isGroupLocked($key);
 @endphp
 
 <div class="relative rounded-2xl overflow-hidden shadow-lg ring-1 ring-blue-200/50 dark:ring-blue-800/50 bg-white dark:bg-zinc-900">
 
-    {{-- HEADER --}}
-    <div class="relative px-6 py-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 overflow-hidden">
+    {{-- HEADER (clickable) --}}
+    <button
+        type="button"
+        wire:click="toggleGroup('{{ $key }}')"
+        @if(!$canOpen) disabled @endif
+        class="w-full relative px-6 py-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 overflow-hidden text-left transition
+            {{ $canOpen ? 'cursor-pointer hover:brightness-110' : 'cursor-not-allowed opacity-75' }}">
+
         <div class="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-white/10"></div>
         <div class="absolute -right-4 -bottom-10 w-20 h-20 rounded-full bg-white/10"></div>
 
-        @if(!$readonly && $emptyRowsCount > 0)
+        @if(!$readonly && $emptyRowsCount > 0 && $isOpen)
             <div class="relative mb-3 px-3 py-2 rounded-lg bg-red-500/95 backdrop-blur border border-red-300 shadow-lg flex items-start gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-white flex-shrink-0 mt-0.5">
                     <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-8-5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5A.75.75 0 0 1 10 5Zm0 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd" />
@@ -103,35 +115,54 @@
                     </svg>
                 </div>
                 <div>
-                    <div class="text-[10px] text-white/70 uppercase tracking-wider font-semibold">Inspection Group</div>
+                    <div class="text-[10px] text-white/70 uppercase tracking-wider font-semibold flex items-center gap-2">
+                        Inspection Group
+                        @if($isCompleted)
+                            <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-500/40 border border-emerald-300/60 text-[9px] font-bold">
+                                ✓ COMPLETED
+                            </span>
+                        @endif
+                        @if($isLocked)
+                            <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-zinc-800/50 border border-zinc-300/40 text-[9px] font-bold">
+                                🔒 LOCKED
+                            </span>
+                        @endif
+                    </div>
                     <div class="text-base font-bold text-white leading-tight">{{ $label }}</div>
                 </div>
             </div>
 
-            @if($totalQty > 0 || $statusRunning)
-                <div class="flex items-center gap-2">
-                    @if($statusRunning)
+            <div class="flex items-center gap-2">
+                @if($statusRunning && !$isOpen)
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 text-white text-xs font-semibold">
+                        {{ $statusRunning }}
+                    </span>
+                @endif
+                @if($totalQty > 0 && !$isOpen)
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 text-white text-xs font-semibold">
+                        OK: {{ $okQty }}
+                    </span>
+                    @if($ngQty > 0)
                         <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 text-white text-xs font-semibold">
-                            {{ $statusRunning }}
+                            NG: {{ $ngQty }}
                         </span>
                     @endif
-                    @if($totalQty > 0)
-                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 text-white text-xs font-semibold">
-                            OK: {{ $okQty }}
-                        </span>
-                        @if($ngQty > 0)
-                            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 text-white text-xs font-semibold">
-                                NG: {{ $ngQty }}
-                            </span>
-                        @endif
-                    @endif
-                </div>
-            @endif
-        </div>
-    </div>
+                @endif
 
-    {{-- BODY --}}
-    <div class="p-5 space-y-5 bg-gradient-to-b from-white to-zinc-50/50 dark:from-zinc-900 dark:to-zinc-900/50">
+                {{-- CHEVRON --}}
+                <div class="w-8 h-8 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center transition-transform duration-300
+                    {{ $isOpen ? 'rotate-180' : '' }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-white">
+                        <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </button>
+
+    {{-- BODY (collapsible) --}}
+    <div x-show="$wire.openGroups['{{ $key }}']" x-collapse
+        class="p-5 space-y-5 bg-gradient-to-b from-white to-zinc-50/50 dark:from-zinc-900 dark:to-zinc-900/50">
 
         @if(!$side || !$meta)
             <div class="rounded-xl border-2 border-dashed border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-6 text-center">
@@ -151,7 +182,6 @@
 
             <div class="rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-700 shadow-sm bg-white dark:bg-zinc-900">
 
-                {{-- HEADER SIDE --}}
                 <div class="px-4 py-2.5 bg-gradient-to-r {{ $meta['class'] }} flex items-center justify-between">
                     <span class="text-sm font-bold text-white tracking-wide">{{ $meta['label'] }}</span>
                     <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/20 backdrop-blur-sm border border-white/30 text-white text-[10px] font-semibold">
@@ -159,7 +189,6 @@
                     </span>
                 </div>
 
-                {{-- TABLE --}}
                 <div class="overflow-x-auto">
                     <table class="w-full text-xs">
                         <thead>
@@ -252,7 +281,6 @@
                                                             transition-all placeholder:text-zinc-300 dark:placeholder:text-zinc-500"
                                                         placeholder="—" />
 
-                                                    {{-- NG toggle button (icon bulat) --}}
                                                     <button
                                                         type="button"
                                                         wire:click="toggleNg('{{ $key }}', '{{ $side }}', '{{ $col }}', {{ $i }})"
@@ -278,7 +306,6 @@
                     </table>
                 </div>
 
-                {{-- ERROR ROW --}}
                 @if(!$readonly && !empty($rowErrors))
                     <div class="p-3 bg-red-50 dark:bg-red-950/30 border-t-2 border-red-300 dark:border-red-700">
                         <div class="flex items-start gap-2 mb-2">
@@ -319,7 +346,6 @@
                     </div>
                 @endif
 
-                {{-- OK QTY --}}
                 <div class="rounded-lg bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-emerald-900/20 dark:to-emerald-900/10 p-3 border border-emerald-200 dark:border-emerald-800 text-center">
                     <div class="text-[10px] text-emerald-700 dark:text-emerald-400 uppercase tracking-wider font-semibold mb-1">OK Qty</div>
                     <div class="text-2xl font-bold text-emerald-700 dark:text-emerald-300">{{ $okQty }}</div>
@@ -328,7 +354,6 @@
                     @endif
                 </div>
 
-                {{-- NG QTY --}}
                 <div class="rounded-lg bg-gradient-to-br from-red-50 to-red-100/50 dark:from-red-900/20 dark:to-red-900/10 p-3 border border-red-200 dark:border-red-800 text-center">
                     <div class="text-[10px] text-red-700 dark:text-red-400 uppercase tracking-wider font-semibold mb-1">NG Qty</div>
                     <div class="text-2xl font-bold text-red-700 dark:text-red-300">{{ $ngQty }}</div>
@@ -337,7 +362,6 @@
                     @endif
                 </div>
 
-                {{-- REJECT RATE --}}
                 <div class="rounded-lg bg-gradient-to-br from-zinc-50 to-zinc-100/50 dark:from-zinc-800/50 dark:to-zinc-800/20 p-3 border border-zinc-200 dark:border-zinc-700 text-center">
                     <div class="text-[10px] text-zinc-600 dark:text-zinc-400 uppercase tracking-wider font-semibold mb-1">Reject Rate</div>
                     @php $rr = (float) ($items['reject_rate'] ?? 0); @endphp
@@ -346,7 +370,6 @@
                     </div>
                 </div>
 
-                {{-- STATUS RUNNING --}}
                 <div class="rounded-lg bg-gradient-to-br from-cyan-50 to-cyan-100/50 dark:from-cyan-900/20 dark:to-cyan-900/10 p-3 border border-cyan-200 dark:border-cyan-800 text-center">
                     <div class="text-[10px] text-cyan-700 dark:text-cyan-400 uppercase tracking-wider font-semibold mb-1">
                         Status Running <span class="text-red-500">*</span>
@@ -376,9 +399,13 @@
                 if (!empty($items['status_after_check']['ng'])) $ngFieldFilled++;
                 if (!empty($items['ncp_id'])) $ngFieldFilled++;
                 if (!empty($items['remarks'])) $ngFieldFilled++;
+
+                $autoOpenNgDetail = $this->shouldAutoOpenNgDetail($key);
             @endphp
 
-            <div x-data="{ open: false }"
+            <div
+                wire:key="ng-detail-{{ $key }}-{{ $ngQty }}"
+                x-data="{ open: {{ $autoOpenNgDetail ? 'true' : 'false' }} }"
                 class="relative rounded-2xl overflow-hidden shadow-lg ring-1 ring-red-200/50 dark:ring-red-800/50 bg-white dark:bg-zinc-900">
 
                 <button type="button"
@@ -406,7 +433,6 @@
                                 {{ $ngFieldFilled }}/6 filled
                             </span>
 
-                            {{-- ⬇️ ICON CHEVRON --}}
                             <div class="w-8 h-8 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center transition-transform duration-300"
                                 :class="open ? 'rotate-180' : ''">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-white">
@@ -420,7 +446,6 @@
                 <div x-show="open" x-collapse class="p-5 bg-white dark:bg-zinc-900">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 
-                        {{-- FILLING RATIO --}}
                         <div class="rounded-xl border border-orange-200 dark:border-orange-800 bg-gradient-to-br from-orange-50 to-orange-100/50 dark:from-orange-900/20 dark:to-orange-900/10 overflow-hidden shadow-sm">
                             <div class="px-3 py-2 bg-gradient-to-r from-orange-500 to-amber-500 text-center">
                                 <span class="text-xs font-bold text-white uppercase tracking-wide">Filling Ratio</span>
@@ -442,7 +467,6 @@
                             </div>
                         </div>
 
-                        {{-- QTY HOLD --}}
                         <div class="rounded-xl border border-amber-200 dark:border-amber-800 bg-gradient-to-br from-amber-50 to-amber-100/50 dark:from-amber-900/20 dark:to-amber-900/10 overflow-hidden shadow-sm">
                             <div class="px-3 py-2 bg-gradient-to-r from-amber-500 to-yellow-500 text-center">
                                 <span class="text-xs font-bold text-white uppercase tracking-wide">Qty Hold</span>
@@ -458,7 +482,6 @@
                             </div>
                         </div>
 
-                        {{-- STATUS OK --}}
                         <div class="rounded-xl border border-emerald-200 dark:border-emerald-800 bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-emerald-900/20 dark:to-emerald-900/10 overflow-hidden shadow-sm">
                             <div class="px-3 py-2 bg-gradient-to-r from-emerald-500 to-green-500 text-center">
                                 <span class="text-xs font-bold text-white uppercase tracking-wide">Status OK</span>
@@ -474,7 +497,6 @@
                             </div>
                         </div>
 
-                        {{-- STATUS NG --}}
                         <div class="rounded-xl border border-red-200 dark:border-red-800 bg-gradient-to-br from-red-50 to-red-100/50 dark:from-red-900/20 dark:to-red-900/10 overflow-hidden shadow-sm">
                             <div class="px-3 py-2 bg-gradient-to-r from-red-500 to-rose-500 text-center">
                                 <span class="text-xs font-bold text-white uppercase tracking-wide">Status NG</span>
@@ -490,7 +512,6 @@
                             </div>
                         </div>
 
-                        {{-- NCP --}}
                         <div class="md:col-span-2 lg:col-span-4 rounded-xl border border-indigo-200 dark:border-indigo-800 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/10 overflow-hidden shadow-sm">
                             <div class="px-4 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 flex items-center justify-between">
                                 <span class="text-xs font-bold text-white uppercase tracking-wide">NCP</span>
@@ -603,7 +624,6 @@
                             </div>
                         </div>
 
-                        {{-- PICTURES --}}
                         <div class="md:col-span-2 lg:col-span-2 rounded-xl border border-sky-200 dark:border-sky-800 bg-gradient-to-br from-sky-50 to-cyan-50 dark:from-sky-900/20 dark:to-cyan-900/10 overflow-hidden shadow-sm">
                             <div class="px-4 py-2.5 bg-gradient-to-r from-sky-500 to-cyan-500 flex items-center justify-between">
                                 <span class="text-xs font-bold text-white uppercase tracking-wide">Pictures</span>
@@ -670,7 +690,6 @@
                             </div>
                         </div>
 
-                        {{-- REMARKS --}}
                         <div class="md:col-span-2 lg:col-span-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-gradient-to-br from-zinc-50 to-slate-50 dark:from-zinc-900/50 dark:to-slate-900/30 overflow-hidden shadow-sm">
                             <div class="px-4 py-2.5 bg-gradient-to-r from-zinc-600 to-slate-600 flex items-center justify-between">
                                 <span class="text-xs font-bold text-white uppercase tracking-wide">Remarks</span>

@@ -2,11 +2,14 @@
 
 namespace App\Livewire\QAQC\ScanXray;
 
+use App\Livewire\QAQC\ScanXray\Concerns\HandlesScanXrayForm;
 use App\Models\QAQC\ScanXray\ScanXray;
 use Livewire\Component;
 
 class ScanXrayView extends Component
 {
+    use HandlesScanXrayForm;
+
     public $scan;
 
     public function mount($id): void
@@ -20,6 +23,41 @@ class ScanXrayView extends Component
 
         if (!$this->scan) {
             abort(404, 'Scan X-Ray not found.');
+        }
+
+        // ============ SET PROPERTY DARI TRAIT ============
+        $this->phase    = $this->scan->phase ?? 'first';
+        $this->pcb_type = $this->scan->pcb_type ?? '';
+
+        // ============ LOAD GROUP DATA KE PROPERTY TRAIT ============
+        $this->first_piece_items  = $this->scan->first_piece_items  ?? [];
+        $this->middle_piece_items = $this->scan->middle_piece_items ?? [];
+        $this->last_piece_items   = $this->scan->last_piece_items   ?? [];
+
+        $this->second_first_items  = $this->scan->second_first_items  ?? [];
+        $this->second_middle_items = $this->scan->second_middle_items ?? [];
+        $this->second_last_items   = $this->scan->second_last_items   ?? [];
+
+        // ============ LOAD JUDGEMENTS ============
+        $side = $this->activeSide();
+        if ($side) {
+            foreach (['first_piece_items', 'middle_piece_items', 'last_piece_items'] as $grp) {
+                $saved = $this->scan->{$grp}['judgements'] ?? null;
+                if (!is_array($saved)) continue;
+
+                foreach (['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'] as $col) {
+                    $judges = $saved[$col] ?? null;
+                    if (!is_array($judges)) continue;
+
+                    $this->judgements[$grp][$side][$col] = array_values($judges);
+                }
+            }
+        }
+
+        // ============ VIEW MODE: SEMUA GRUP DEFAULT TERBUKA ============
+        // (view tidak perlu collapse, semua grup yang terisi langsung tampil)
+        foreach (array_keys($this->openGroups) as $groupKey) {
+            $this->openGroups[$groupKey] = true;
         }
     }
 

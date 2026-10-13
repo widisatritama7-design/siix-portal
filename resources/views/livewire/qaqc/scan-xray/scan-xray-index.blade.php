@@ -37,25 +37,27 @@
 
     {{-- ==================== FILTER BAR ==================== --}}
     <div x-data="{ open: true }"
-        class="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 shadow-sm overflow-hidden">
+        class="rounded-xl border border-orange-300 dark:border-orange-700 bg-white dark:bg-zinc-900 shadow-sm overflow-hidden">
 
+        {{-- HEADER BUTTON — ORANGE FULL WIDTH --}}
         <button type="button"
             x-on:click="open = !open"
-            class="w-full px-4 py-3 flex items-center justify-between cursor-pointer hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-all">
+            class="w-full px-4 py-3 flex items-center justify-between cursor-pointer bg-gradient-to-r from-orange-400 to-orange-600 hover:from-orange-500 hover:to-orange-700 dark:from-orange-500 dark:to-orange-700 dark:hover:from-orange-600 dark:hover:to-orange-800 transition-all">
             <div class="flex items-center gap-2">
-                <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-orange-400 to-orange-600 flex items-center justify-center">
+                {{-- ICON — background putih transparan biar kontras di atas orange --}}
+                <div class="w-7 h-7 rounded-lg bg-white/20 backdrop-blur flex items-center justify-center ring-1 ring-white/30">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-white">
                         <path fill-rule="evenodd" d="M2.628 1.601C5.028 1.206 7.49 1 10 1s4.973.206 7.372.601a.75.75 0 0 1 .628.74v2.288a2.25 2.25 0 0 1-.659 1.59l-4.682 4.683a2.25 2.25 0 0 0-.659 1.59v3.037c0 .684-.31 1.33-.844 1.757l-1.937 1.55A.75.75 0 0 1 8 18.25v-5.757a2.25 2.25 0 0 0-.659-1.591L2.659 6.22A2.25 2.25 0 0 1 2 4.629V2.34a.75.75 0 0 1 .628-.74Z" clip-rule="evenodd" />
                     </svg>
                 </div>
                 <div class="text-left">
-                    <div class="text-[10px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-semibold">Filter</div>
-                    <div class="text-sm font-bold text-zinc-800 dark:text-white leading-tight">Search & Filter</div>
+                    <div class="text-[10px] text-white/80 uppercase tracking-wider font-semibold">Filter</div>
+                    <div class="text-sm font-bold text-white leading-tight">Search & Filter</div>
                 </div>
 
                 @if($this->hasActiveFilter())
-                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300 text-[10px] font-semibold ml-2">
-                        <span class="w-1.5 h-1.5 rounded-full bg-orange-500 animate-pulse"></span>
+                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/20 text-white text-[10px] font-semibold ml-2 ring-1 ring-white/30">
+                        <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse"></span>
                         Active
                     </span>
                 @endif
@@ -64,7 +66,7 @@
             <div class="flex items-center gap-2">
                 @if($this->hasActiveFilter())
                     <span wire:click.stop="resetFilters"
-                        class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-red-600 hover:text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition cursor-pointer">
+                        class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-white hover:bg-white/20 rounded-lg transition cursor-pointer">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">
                             <path fill-rule="evenodd" d="M15.312 11.424a5.5 5.5 0 0 1-9.201 2.466l-.312-.311h2.433a.75.75 0 0 0 0-1.5H3.989a.75.75 0 0 0-.75.75v4.242a.75.75 0 0 0 1.5 0v-2.43l.31.31a7 7 0 0 0 11.712-3.138.75.75 0 0 0-1.449-.39Zm1.23-3.723a.75.75 0 0 0 .219-.53V2.929a.75.75 0 0 0-1.5 0V5.36l-.31-.31A7 7 0 0 0 3.239 8.188a.75.75 0 1 0 1.448.389A5.5 5.5 0 0 1 13.89 6.11l.311.31h-2.432a.75.75 0 0 0 0 1.5h4.243a.75.75 0 0 0 .53-.219Z" clip-rule="evenodd" />
                         </svg>
@@ -72,16 +74,16 @@
                     </span>
                 @endif
 
-                <div class="w-7 h-7 rounded-lg bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center transition-transform duration-300"
+                <div class="w-7 h-7 rounded-lg bg-white/20 backdrop-blur flex items-center justify-center transition-transform duration-300 ring-1 ring-white/30"
                     :class="open ? 'rotate-180' : ''">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-zinc-600 dark:text-zinc-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-white">
                         <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
                     </svg>
                 </div>
             </div>
         </button>
 
-        <div x-show="open" x-collapse x-cloak class="px-4 pb-4">
+        <div x-show="open" x-collapse x-cloak class="px-4 pb-4 pt-4">
             <div class="space-y-3">
 
                 {{-- SEARCH --}}
