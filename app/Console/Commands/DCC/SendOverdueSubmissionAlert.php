@@ -21,39 +21,6 @@ class SendOverdueSubmissionAlert extends Command
     /**
      * Handle command
      */
-    // public function handle()
-    // {
-    //     // Ambil SEMUA submission yang masih Waiting Distribute
-    //     $submissions = Submission::where('status', 'Received')
-    //         ->where('status_distribute', 'Waiting Distribute')
-    //         ->orderBy('due_date', 'asc')
-    //         ->get();
-
-    //     if ($submissions->count() > 0) {
-
-    //         $to = 'SEK.DCC@siix-global.com';
-    //         $cc = 'wuwuh.sp@siix-global.com';
-
-    //         Mail::send(
-    //             'emails.DCC.overdue-submission-alert',
-    //             ['submissions' => $submissions],
-    //             function ($message) use ($to, $cc) {
-    //                 $message->to($to)
-    //                     ->cc($cc)
-    //                     ->subject('📌 PENDING SUBMISSION REPORT - ' . now()->format('d M Y'));
-    //             }
-    //         );
-
-    //         $this->info(
-    //             'Pending submission alert sent. Total: ' . $submissions->count()
-    //         );
-    //     } else {
-    //         $this->info('No pending submissions found.');
-    //     }
-
-    //     return Command::SUCCESS;
-    // }
-
     public function handle()
     {
         // Ambil SEMUA submission yang masih Waiting Distribute
@@ -64,8 +31,8 @@ class SendOverdueSubmissionAlert extends Command
 
         if ($submissions->count() > 0) {
 
-            $to = 'sek.esd@siix-global.com';
-            $cc = 'widifajarsatritama@gmail.com';
+            $to = 'SEK.DCC@siix-global.com';
+            $cc = 'wuwuh.sp@siix-global.com';
 
             Mail::send(
                 'emails.DCC.overdue-submission-alert',
@@ -86,4 +53,37 @@ class SendOverdueSubmissionAlert extends Command
 
         return Command::SUCCESS;
     }
+
+    // public function handle()
+    // {
+    //     // Ambil SEMUA submission yang masih Waiting Distribute
+    //     $submissions = Submission::where('status', 'Received')
+    //         ->where('status_distribute', 'Waiting Distribute')
+    //         ->orderBy('due_date', 'asc')
+    //         ->get();
+
+    //     if ($submissions->count() > 0) {
+
+    //         $to = 'sek.esd@siix-global.com';
+    //         $cc = 'widifajarsatritama@gmail.com';
+
+    //         Mail::send(
+    //             'emails.DCC.overdue-submission-alert',
+    //             ['submissions' => $submissions],
+    //             function ($message) use ($to, $cc) {
+    //                 $message->to($to)
+    //                     ->cc($cc)
+    //                     ->subject('📌 PENDING SUBMISSION REPORT - ' . now()->format('d M Y'));
+    //             }
+    //         );
+
+    //         $this->info(
+    //             'Pending submission alert sent. Total: ' . $submissions->count()
+    //         );
+    //     } else {
+    //         $this->info('No pending submissions found.');
+    //     }
+
+    //     return Command::SUCCESS;
+    // }
 }
