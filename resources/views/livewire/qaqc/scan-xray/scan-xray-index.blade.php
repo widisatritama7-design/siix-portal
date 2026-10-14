@@ -13,38 +13,36 @@
             <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Manage Scan X-Ray data</p>
         </div>
 
-    <div class="flex flex-wrap gap-2">
-        @can('view scan xray')
-            <flux:button wire:click="exportExcel"
-                wire:loading.attr="disabled"
-                wire:target="exportExcel"
-                variant="primary"
-                icon="arrow-down-tray"
-                class="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60">
-                <span wire:loading.remove wire:target="exportExcel">Export Excel</span>
-                <span wire:loading wire:target="exportExcel">Exporting...</span>
-            </flux:button>
-        @endcan
+        <div class="flex flex-wrap gap-2">
+            @can('view scan xray')
+                <flux:button wire:click="exportExcel"
+                    wire:loading.attr="disabled"
+                    wire:target="exportExcel"
+                    variant="primary"
+                    icon="arrow-down-tray"
+                    class="bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60">
+                    <span wire:loading.remove wire:target="exportExcel">Export Excel</span>
+                    <span wire:loading wire:target="exportExcel">Exporting...</span>
+                </flux:button>
+            @endcan
 
-        @can('create scan xray')
-            <flux:button variant="primary" icon="plus" class="bg-blue-600 hover:bg-blue-700"
-                href="{{ route('qaqc.scan-xray.create') }}" wire:navigate>
-                Add New Scan
-            </flux:button>
-        @endcan
-    </div>
+            @can('create scan xray')
+                <flux:button variant="primary" icon="plus" class="bg-blue-600 hover:bg-blue-700"
+                    href="{{ route('qaqc.scan-xray.create') }}" wire:navigate>
+                    Add New Scan
+                </flux:button>
+            @endcan
+        </div>
     </div>
 
-    {{-- ==================== FILTER BAR ==================== --}}
+    {{-- FILTER BAR --}}
     <div x-data="{ open: true }"
         class="rounded-xl border border-orange-300 dark:border-orange-700 bg-white dark:bg-zinc-900 shadow-sm overflow-hidden">
 
-        {{-- HEADER BUTTON — ORANGE FULL WIDTH --}}
         <button type="button"
             x-on:click="open = !open"
             class="w-full px-4 py-3 flex items-center justify-between cursor-pointer bg-gradient-to-r from-orange-400 to-orange-600 hover:from-orange-500 hover:to-orange-700 dark:from-orange-500 dark:to-orange-700 dark:hover:from-orange-600 dark:hover:to-orange-800 transition-all">
             <div class="flex items-center gap-2">
-                {{-- ICON — background putih transparan biar kontras di atas orange --}}
                 <div class="w-7 h-7 rounded-lg bg-white/20 backdrop-blur flex items-center justify-center ring-1 ring-white/30">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-white">
                         <path fill-rule="evenodd" d="M2.628 1.601C5.028 1.206 7.49 1 10 1s4.973.206 7.372.601a.75.75 0 0 1 .628.74v2.288a2.25 2.25 0 0 1-.659 1.59l-4.682 4.683a2.25 2.25 0 0 0-.659 1.59v3.037c0 .684-.31 1.33-.844 1.757l-1.937 1.55A.75.75 0 0 1 8 18.25v-5.757a2.25 2.25 0 0 0-.659-1.591L2.659 6.22A2.25 2.25 0 0 1 2 4.629V2.34a.75.75 0 0 1 .628-.74Z" clip-rule="evenodd" />
@@ -85,18 +83,13 @@
 
         <div x-show="open" x-collapse x-cloak class="px-4 pb-4 pt-4">
             <div class="space-y-3">
-
-                {{-- SEARCH --}}
                 <div>
-                    <label class="text-[10px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-semibold mb-1 block">
-                        Search
-                    </label>
+                    <label class="text-[10px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-semibold mb-1 block">Search</label>
                     <flux:input wire:model.live.debounce.300ms="search"
                         placeholder="Search customer / model / shift / group / PCB type..."
                         icon="magnifying-glass" clearable />
                 </div>
 
-                {{-- CUSTOMER, MODEL, LINE --}}
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     <div>
                         <label class="text-[10px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-semibold mb-1 block">Customer</label>
@@ -131,7 +124,6 @@
                     </div>
                 </div>
 
-                {{-- YEAR, MONTH, DATE FROM, DATE UNTIL --}}
                 <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                     <div>
                         <label class="text-[10px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-semibold mb-1 block">Year</label>
@@ -167,15 +159,13 @@
         </div>
     </div>
 
-    {{-- ==================== TABLE ==================== --}}
+    {{-- TABLE --}}
     <flux:card class="p-0 shadow-lg flex flex-col overflow-hidden">
-        {{-- HEADER TABLE + TOGGLE STACK --}}
         <div class="relative px-6 py-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600">
             <div class="flex items-center justify-between flex-wrap gap-3">
                 <div class="text-base font-bold text-white">Scan X-Ray List</div>
 
                 <div class="flex items-center gap-2">
-                    {{-- TOGGLE STACK / UNSTACK --}}
                     <flux:tooltip content="{{ $isStacked ? 'Unstack kolom (scroll bebas)' : 'Stack kolom (sticky)' }}" position="top">
                         <button type="button"
                             wire:click="toggleStack"
@@ -187,13 +177,11 @@
                                     : 'bg-white text-blue-700 hover:bg-blue-50 border border-white/40' }}">
 
                             @if($isStacked)
-                                {{-- Icon: Unstack (arrow expand) --}}
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
                                     <path fill-rule="evenodd" d="M15 3.75a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0V5.56l-3.97 3.97a.75.75 0 1 1-1.06-1.06l3.97-3.97h-2.69a.75.75 0 0 1-.75-.75Zm-12 0A.75.75 0 0 1 3.75 3h4.5a.75.75 0 0 1 0 1.5H5.56l3.97 3.97a.75.75 0 0 1-1.06 1.06L4.5 5.56v2.69a.75.75 0 0 1-1.5 0v-4.5Zm11.47 11.78a.75.75 0 1 1 1.06-1.06l3.97 3.97v-2.69a.75.75 0 0 1 1.5 0v4.5a.75.75 0 0 1-.75.75h-4.5a.75.75 0 0 1 0-1.5h2.69l-3.97-3.97Zm-4.94-1.06a.75.75 0 0 1 0 1.06L5.56 19.5h2.69a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75v-4.5a.75.75 0 0 1 1.5 0v2.69l3.97-3.97a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" />
                                 </svg>
                                 <span>Unstack</span>
                             @else
-                                {{-- Icon: Stack (arrow collapse) --}}
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
                                     <path fill-rule="evenodd" d="M3.22 3.22a.75.75 0 0 1 1.06 0l3.97 3.97V4.5a.75.75 0 0 1 1.5 0V9a.75.75 0 0 1-.75.75H4.5a.75.75 0 0 1 0-1.5h2.69L3.22 4.28a.75.75 0 0 1 0-1.06Zm17.56 0a.75.75 0 0 1 0 1.06l-3.97 3.97h2.69a.75.75 0 0 1 0 1.5H15a.75.75 0 0 1-.75-.75V4.5a.75.75 0 0 1 1.5 0v2.69l3.97-3.97a.75.75 0 0 1 1.06 0ZM3.75 15a.75.75 0 0 1 .75-.75H9a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-2.69l-3.97 3.97a.75.75 0 0 1-1.06-1.06l3.97-3.97H4.5a.75.75 0 0 1-.75-.75Zm10.5 0a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-2.69l3.97 3.97a.75.75 0 1 1-1.06 1.06l-3.97-3.97v2.69a.75.75 0 0 1-1.5 0V15Z" clip-rule="evenodd" />
                                 </svg>
@@ -211,9 +199,8 @@
 
         <div class="p-6">
             @if($scans->count() > 0)
-                {{-- Wrapper tabel — unstacked-mode aktif kalau $isStacked = false --}}
                 <div class="overflow-x-auto {{ $isStacked ? '' : 'unstacked-mode' }}">
-                    <table class="w-full" style="min-width: 2100px; white-space: nowrap; border-collapse: separate; border-spacing: 0;">
+                    <table class="w-full" style="min-width: 2700px; white-space: nowrap; border-collapse: separate; border-spacing: 0;">
                         <thead>
                             {{-- BARIS HEADER 1 --}}
                             <tr class="bg-zinc-50 dark:bg-zinc-800/50">
@@ -231,19 +218,31 @@
                                 <th colspan="4" class="px-3 py-2 text-center text-xs font-bold text-blue-700 dark:text-blue-300 uppercase bg-blue-50 dark:bg-blue-900/30">
                                     First Piece Items
                                 </th>
+                                {{-- SECOND FIRST --}}
+                                <th colspan="2" class="px-3 py-2 text-center text-xs font-bold text-cyan-700 dark:text-cyan-300 uppercase bg-cyan-50 dark:bg-cyan-900/30">
+                                    Second First
+                                </th>
                                 {{-- MIDDLE --}}
                                 <th colspan="4" class="px-3 py-2 text-center text-xs font-bold text-indigo-700 dark:text-indigo-300 uppercase bg-indigo-50 dark:bg-indigo-900/30">
                                     Middle Piece Items
+                                </th>
+                                {{-- SECOND MIDDLE --}}
+                                <th colspan="2" class="px-3 py-2 text-center text-xs font-bold text-cyan-700 dark:text-cyan-300 uppercase bg-cyan-50 dark:bg-cyan-900/30">
+                                    Second Middle
                                 </th>
                                 {{-- LAST --}}
                                 <th colspan="4" class="px-3 py-2 text-center text-xs font-bold text-purple-700 dark:text-purple-300 uppercase bg-purple-50 dark:bg-purple-900/30">
                                     Last Piece Items
                                 </th>
+                                {{-- SECOND LAST --}}
+                                <th colspan="2" class="px-3 py-2 text-center text-xs font-bold text-cyan-700 dark:text-cyan-300 uppercase bg-cyan-50 dark:bg-cyan-900/30">
+                                    Second Last
+                                </th>
                                 {{-- TOTAL --}}
                                 <th colspan="3" class="px-3 py-2 text-center text-xs font-bold text-emerald-700 dark:text-emerald-300 uppercase bg-emerald-50 dark:bg-emerald-900/30">
                                     Total
                                 </th>
-                                {{-- PIC INFO --}}
+                                {{-- PIC --}}
                                 <th colspan="2" class="px-3 py-2 text-center text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase bg-zinc-100 dark:bg-zinc-800/60">
                                     PIC INFO
                                 </th>
@@ -258,21 +257,30 @@
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-red-600 uppercase bg-red-50/50 dark:bg-red-900/10">NG</th>
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-amber-600 uppercase bg-amber-50/50 dark:bg-amber-900/10">Reject Rate %</th>
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-600 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">Status</th>
+                                {{-- SECOND FIRST --}}
+                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-700 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">QTY</th>
+                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-700 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">Status</th>
                                 {{-- MIDDLE --}}
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-emerald-600 uppercase bg-emerald-50/50 dark:bg-emerald-900/10">OK</th>
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-red-600 uppercase bg-red-50/50 dark:bg-red-900/10">NG</th>
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-amber-600 uppercase bg-amber-50/50 dark:bg-amber-900/10">Reject Rate %</th>
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-600 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">Status</th>
+                                {{-- SECOND MIDDLE --}}
+                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-700 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">QTY</th>
+                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-700 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">Status</th>
                                 {{-- LAST --}}
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-emerald-600 uppercase bg-emerald-50/50 dark:bg-emerald-900/10">OK</th>
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-red-600 uppercase bg-red-50/50 dark:bg-red-900/10">NG</th>
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-amber-600 uppercase bg-amber-50/50 dark:bg-amber-900/10">Reject Rate %</th>
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-600 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">Status</th>
+                                {{-- SECOND LAST --}}
+                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-700 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">QTY</th>
+                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-700 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">Status</th>
                                 {{-- TOTAL --}}
                                 <th class="px-3 py-2 text-center text-[10px] font-bold text-emerald-700 uppercase bg-emerald-100/50 dark:bg-emerald-900/20">OK</th>
                                 <th class="px-3 py-2 text-center text-[10px] font-bold text-red-700 uppercase bg-red-100/50 dark:bg-red-900/20">NG</th>
                                 <th class="px-3 py-2 text-center text-[10px] font-bold text-amber-700 uppercase bg-amber-100/50 dark:bg-amber-900/20">Reject Rate %</th>
-                                {{-- PIC INFO --}}
+                                {{-- PIC --}}
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-zinc-600 uppercase bg-zinc-100/50 dark:bg-zinc-800/30">DATE</th>
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-zinc-600 uppercase bg-zinc-100/50 dark:bg-zinc-800/30">PIC</th>
                             </tr>
@@ -329,7 +337,7 @@
                                     {{-- LOT QTY --}}
                                     <td class="px-3 py-3 text-sm text-zinc-600 text-center font-mono font-semibold">{{ $scan->lot_qty }}</td>
 
-                                    {{-- FIRST PIECE --}}
+                                    {{-- FIRST --}}
                                     <td class="px-3 py-3 text-center bg-blue-50/20 dark:bg-blue-900/5">
                                         <span class="inline-flex items-center justify-center min-w-[36px] px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 font-bold text-xs">
                                             {{ $summary['first']['ok_qty'] }}
@@ -359,7 +367,25 @@
                                         @endif
                                     </td>
 
-                                    {{-- MIDDLE PIECE --}}
+                                    {{-- SECOND FIRST --}}
+                                    <td class="px-3 py-3 text-center bg-cyan-50/20 dark:bg-cyan-900/5">
+                                        <span class="inline-flex items-center justify-center min-w-[36px] px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 font-bold text-xs">
+                                            {{ $summary['second_first']['qty'] }}
+                                        </span>
+                                    </td>
+                                    <td class="px-3 py-3 text-center bg-cyan-50/20 dark:bg-cyan-900/5">
+                                        @if($summary['second_first']['status_running'])
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold
+                                                {{ strtolower($summary['second_first']['status_running']) === 'running' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300' }}">
+                                                <span class="w-1.5 h-1.5 rounded-full {{ strtolower($summary['second_first']['status_running']) === 'running' ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-400' }}"></span>
+                                                {{ $summary['second_first']['status_running'] }}
+                                            </span>
+                                        @else
+                                            <span class="text-zinc-400 italic text-[10px]">-</span>
+                                        @endif
+                                    </td>
+
+                                    {{-- MIDDLE --}}
                                     <td class="px-3 py-3 text-center bg-indigo-50/20 dark:bg-indigo-900/5">
                                         <span class="inline-flex items-center justify-center min-w-[36px] px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 font-bold text-xs">
                                             {{ $summary['middle']['ok_qty'] }}
@@ -389,7 +415,25 @@
                                         @endif
                                     </td>
 
-                                    {{-- LAST PIECE --}}
+                                    {{-- SECOND MIDDLE --}}
+                                    <td class="px-3 py-3 text-center bg-cyan-50/20 dark:bg-cyan-900/5">
+                                        <span class="inline-flex items-center justify-center min-w-[36px] px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 font-bold text-xs">
+                                            {{ $summary['second_middle']['qty'] }}
+                                        </span>
+                                    </td>
+                                    <td class="px-3 py-3 text-center bg-cyan-50/20 dark:bg-cyan-900/5">
+                                        @if($summary['second_middle']['status_running'])
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold
+                                                {{ strtolower($summary['second_middle']['status_running']) === 'running' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300' }}">
+                                                <span class="w-1.5 h-1.5 rounded-full {{ strtolower($summary['second_middle']['status_running']) === 'running' ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-400' }}"></span>
+                                                {{ $summary['second_middle']['status_running'] }}
+                                            </span>
+                                        @else
+                                            <span class="text-zinc-400 italic text-[10px]">-</span>
+                                        @endif
+                                    </td>
+
+                                    {{-- LAST --}}
                                     <td class="px-3 py-3 text-center bg-purple-50/20 dark:bg-purple-900/5">
                                         <span class="inline-flex items-center justify-center min-w-[36px] px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 font-bold text-xs">
                                             {{ $summary['last']['ok_qty'] }}
@@ -419,6 +463,24 @@
                                         @endif
                                     </td>
 
+                                    {{-- SECOND LAST --}}
+                                    <td class="px-3 py-3 text-center bg-cyan-50/20 dark:bg-cyan-900/5">
+                                        <span class="inline-flex items-center justify-center min-w-[36px] px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 font-bold text-xs">
+                                            {{ $summary['second_last']['qty'] }}
+                                        </span>
+                                    </td>
+                                    <td class="px-3 py-3 text-center bg-cyan-50/20 dark:bg-cyan-900/5">
+                                        @if($summary['second_last']['status_running'])
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold
+                                                {{ strtolower($summary['second_last']['status_running']) === 'running' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300' }}">
+                                                <span class="w-1.5 h-1.5 rounded-full {{ strtolower($summary['second_last']['status_running']) === 'running' ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-400' }}"></span>
+                                                {{ $summary['second_last']['status_running'] }}
+                                            </span>
+                                        @else
+                                            <span class="text-zinc-400 italic text-[10px]">-</span>
+                                        @endif
+                                    </td>
+
                                     {{-- TOTAL --}}
                                     <td class="px-3 py-3 text-center bg-emerald-50/50 dark:bg-emerald-900/10">
                                         <span class="inline-flex items-center justify-center min-w-[44px] px-2.5 py-1 rounded-md bg-emerald-500 text-white font-bold text-sm shadow-sm shadow-emerald-500/30">
@@ -438,7 +500,7 @@
                                         </span>
                                     </td>
 
-                                    {{-- PIC INFO --}}
+                                    {{-- PIC --}}
                                     <td class="px-3 py-3 text-center bg-zinc-50/50 dark:bg-zinc-800/20">
                                         <div class="flex flex-col items-center gap-0.5">
                                             <span class="text-xs font-semibold text-zinc-700 dark:text-zinc-300">
@@ -513,7 +575,6 @@
                     </table>
                 </div>
 
-                {{-- PAGINATION --}}
                 @if($scans->hasPages())
                     <div class="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-700 flex justify-center">
                         {{ $scans->links() }}
@@ -602,7 +663,6 @@
     <style>
         [x-cloak]{display:none !important;}
 
-        /* ===== UNSTACKED MODE — matikan semua sticky ===== */
         .unstacked-mode th.sticky,
         .unstacked-mode td.sticky {
             position: static !important;
@@ -612,7 +672,6 @@
             z-index: auto !important;
         }
 
-        /* Hilangkan efek shadow pemisah di mode unstacked */
         .unstacked-mode thead th[style*="box-shadow"],
         .unstacked-mode tbody td[style*="box-shadow"] {
             box-shadow: none !important;

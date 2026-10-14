@@ -1281,7 +1281,7 @@
                             <?php endif; ?>
                             
                             <!-- ========== SUB GROUP: FORM ========== -->
-                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->any(['view ncp', 'view blind test'])): ?>
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->any(['view ncp', 'view blind test', 'view scan xray'])): ?>
                             <div class="relative w-full">
                                 <button @click="toggleGroup('qaqcForm')" 
                                         class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">

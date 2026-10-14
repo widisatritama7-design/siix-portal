@@ -1277,7 +1277,7 @@
                             @endcanany
                             
                             <!-- ========== SUB GROUP: FORM ========== -->
-                            @canany(['view ncp', 'view blind test'])
+                            @canany(['view ncp', 'view blind test', 'view scan xray'])
                             <div class="relative w-full">
                                 <button @click="toggleGroup('qaqcForm')" 
                                         class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">

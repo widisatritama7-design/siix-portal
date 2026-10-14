@@ -72,9 +72,11 @@
                                 <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-4.28 9.22a.75.75 0 0 0 0 1.06l3 3a.75.75 0 1 0 1.06-1.06l-1.72-1.72h5.69a.75.75 0 0 0 0-1.5h-5.69l1.72-1.72a.75.75 0 0 0-1.06-1.06l-3 3Z" clip-rule="evenodd" />
                             </svg>
                         </button>
+
                         <span class="font-semibold text-gray-800 dark:text-white text-xs sm:text-sm text-center truncate mx-1">
                             {{ $this->getMonthName($type) }}
                         </span>
+
                         <button wire:click="goToNextMonth('{{ $type }}')" 
                                 class="bg-blue-600 hover:bg-blue-700 text-white p-1.5 rounded-full transition-all duration-200 hover:scale-105">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
@@ -89,17 +91,38 @@
                             <div class="bg-gradient-to-r from-purple-600 to-purple-800 text-white py-1.5 px-3 rounded-full text-[11px] sm:text-xs font-bold text-center truncate shadow-sm">
                                 {{ $typeCodes[$type] }}
                             </div>
-                            <div class="bg-gradient-to-r from-orange-500 to-orange-600 text-white py-1 px-3 rounded-full text-[10px] sm:text-[11px] font-bold text-center mt-1.5 truncate shadow-sm">
-                                {{ $displayNames[$type] }}
-                            </div>
                         @else
                             <div class="bg-gray-500 text-white py-1.5 px-3 rounded-full text-[11px] sm:text-xs font-bold text-center shadow-sm">
                                 -
                             </div>
-                            <div class="bg-gradient-to-r from-orange-500 to-orange-600 text-white py-1 px-3 rounded-full text-[10px] sm:text-[11px] font-bold text-center mt-1.5 truncate shadow-sm">
-                                {{ $displayNames[$type] }}
-                            </div>
                         @endif
+
+                        {{-- Section name (90%) + Refresh button (10%) --}}
+                        <div class="flex items-center mt-1.5 gap-1">
+                            {{-- Nama section - 90%, text center --}}
+                            <div class="relative bg-gradient-to-r from-orange-500 to-orange-600 text-white py-1 px-3 rounded-full text-[10px] sm:text-[11px] font-bold shadow-sm flex items-center justify-center"
+                                style="width: 90%;">
+                                <span class="truncate text-center w-full">{{ $displayNames[$type] }}</span>
+                            </div>
+
+                            {{-- Tombol Refresh per-section - 10% (BIRU) --}}
+                            <div style="width: 10%;">
+                                <button wire:click="refreshCardMonthOnly('{{ $type }}')"
+                                        wire:loading.attr="disabled"
+                                        wire:target="refreshCardMonthOnly('{{ $type }}')"
+                                        title="Refresh {{ $displayNames[$type] }}"
+                                        class="w-full bg-blue-600 hover:bg-blue-700 text-white py-1 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-105 shadow-sm">
+                                    <svg wire:loading.remove wire:target="refreshCardMonthOnly('{{ $type }}')"
+                                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3">
+                                        <path fill-rule="evenodd" d="M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z" clip-rule="evenodd" />
+                                    </svg>
+                                    <svg wire:loading wire:target="refreshCardMonthOnly('{{ $type }}')"
+                                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3 animate-spin">
+                                        <path fill-rule="evenodd" d="M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z" clip-rule="evenodd" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- Calendar Table -->
@@ -320,4 +343,4 @@
     }
 
 </style>
-@endpush
+@endpush    

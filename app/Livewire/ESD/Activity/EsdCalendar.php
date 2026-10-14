@@ -215,6 +215,20 @@ class EsdCalendar extends Component
                     ->get(['id', $foreignKey, 'created_at', 'next_date', 'remarks']);
             }
 
+            // ============================================================
+            // DEDUPLIKASI KHUSUS WORKsurface
+            // Jika ada duplikat (worksurface_id + date sama), ambil satu saja
+            // ============================================================
+            if ($type === 'worksurface') {
+                $items = $items->unique(function ($item) use ($foreignKey) {
+                    $date = $item->next_date instanceof \Illuminate\Support\Carbon
+                        ? $item->next_date->format('Y-m-d')
+                        : date('Y-m-d', strtotime($item->next_date));
+
+                    return $item->{$foreignKey} . '|' . $date;
+                })->values();
+            }
+
             $events = $items->map(function ($item) use ($relation, $field, $modelClass, $foreignKey, $type) {
                 $date = $item->next_date instanceof \Illuminate\Support\Carbon
                     ? $item->next_date->format('Y-m-d')
@@ -252,6 +266,25 @@ class EsdCalendar extends Component
             Log::error("Error loading events for {$type}: " . $e->getMessage());
             return [];
         }
+    }
+
+    // Refresh satu section/card saja (bulan aktifnya)
+    public function refreshCardMonthOnly($type)
+    {
+        $year = $this->currentYear[$type];
+        $month = $this->currentMonth[$type];
+        $monthKey = "{$year}-{$month}";
+
+        // Hapus cache bulan ini biar reload dari DB
+        unset($this->loadedMonths[$type][$monthKey]);
+
+        $startDate = Carbon::create($year, $month, 1)->startOfMonth();
+        $endDate = Carbon::create($year, $month, 1)->endOfMonth();
+
+        $events = $this->getEventsForMonth($type, $startDate, $endDate);
+
+        $this->events[$type][$monthKey] = $events;
+        $this->loadedMonths[$type][$monthKey] = true;
     }
 
     // Navigasi Prev untuk satu card

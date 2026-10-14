@@ -86,9 +86,9 @@
             <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">Manage Scan X-Ray data</p>
         </div>
 
-    <div class="flex flex-wrap gap-2">
-        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view scan xray')): ?>
-            <?php ob_start(); ?><button type="button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-10 text-sm rounded-lg ps-3 pe-4 inline-flex  bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 dark:border-0 shadow-[inset_0px_1px_--theme(--color-white/.2)] [[data-flux-button-group]_&amp;]:border-e-0 [:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-[1px] dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-0 dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-s-[1px] [:is([data-flux-button-group]&gt;&amp;:not(:first-child),_[data-flux-button-group]_:not(:first-child)&gt;&amp;)]:border-s-[color-mix(in_srgb,var(--color-accent-foreground),transparent_85%)] *:transition-opacity [&amp;[data-loading]&gt;:not([data-flux-loading-indicator])]:opacity-0 [&amp;[data-flux-loading]&gt;:not([data-flux-loading-indicator])]:opacity-0 [&amp;[data-loading]&gt;[data-flux-loading-indicator]]:opacity-100 [&amp;[data-flux-loading]&gt;[data-flux-loading-indicator]]:opacity-100 data-loading:pointer-events-none data-flux-loading:pointer-events-none  bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target" wire:loading.attr="disabled" wire:click="exportExcel" wire:target="exportExcel">
+        <div class="flex flex-wrap gap-2">
+            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view scan xray')): ?>
+                <?php ob_start(); ?><button type="button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-10 text-sm rounded-lg ps-3 pe-4 inline-flex  bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 dark:border-0 shadow-[inset_0px_1px_--theme(--color-white/.2)] [[data-flux-button-group]_&amp;]:border-e-0 [:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-[1px] dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-0 dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-s-[1px] [:is([data-flux-button-group]&gt;&amp;:not(:first-child),_[data-flux-button-group]_:not(:first-child)&gt;&amp;)]:border-s-[color-mix(in_srgb,var(--color-accent-foreground),transparent_85%)] *:transition-opacity [&amp;[data-loading]&gt;:not([data-flux-loading-indicator])]:opacity-0 [&amp;[data-flux-loading]&gt;:not([data-flux-loading-indicator])]:opacity-0 [&amp;[data-loading]&gt;[data-flux-loading-indicator]]:opacity-100 [&amp;[data-flux-loading]&gt;[data-flux-loading-indicator]]:opacity-100 data-loading:pointer-events-none data-flux-loading:pointer-events-none  bg-emerald-600 hover:bg-emerald-700 disabled:opacity-60" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target" wire:loading.attr="disabled" wire:click="exportExcel" wire:target="exportExcel">
         <div class="absolute inset-0 flex items-center justify-center opacity-0" data-flux-loading-indicator>
                 <svg class="shrink-0 [:where(&amp;)]:size-4 animate-spin" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true" data-slot="icon">
     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -105,15 +105,15 @@
                     
             
             <span><?php ob_start(); ?>
-                <span wire:loading.remove wire:target="exportExcel">Export Excel</span>
-                <span wire:loading wire:target="exportExcel">Exporting...</span>
-            <?php echo trim(ob_get_clean()); ?></span>
+                    <span wire:loading.remove wire:target="exportExcel">Export Excel</span>
+                    <span wire:loading wire:target="exportExcel">Exporting...</span>
+                <?php echo trim(ob_get_clean()); ?></span>
     </button>
 <?php echo ltrim(ob_get_clean()); ?>
-        <?php endif; ?>
+            <?php endif; ?>
 
-        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('create scan xray')): ?>
-            <?php ob_start(); ?><a href="<?php echo e(route('qaqc.scan-xray.create')); ?>" data-flux-button="data-flux-button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-10 text-sm rounded-lg ps-3 pe-4 inline-flex  bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 dark:border-0 shadow-[inset_0px_1px_--theme(--color-white/.2)] [[data-flux-button-group]_&amp;]:border-e-0 [:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-[1px] dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-0 dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-s-[1px] [:is([data-flux-button-group]&gt;&amp;:not(:first-child),_[data-flux-button-group]_:not(:first-child)&gt;&amp;)]:border-s-[color-mix(in_srgb,var(--color-accent-foreground),transparent_85%)]   bg-blue-600 hover:bg-blue-700" data-flux-group-target="data-flux-group-target" wire:navigate="">
+            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('create scan xray')): ?>
+                <?php ob_start(); ?><a href="<?php echo e(route('qaqc.scan-xray.create')); ?>" data-flux-button="data-flux-button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-10 text-sm rounded-lg ps-3 pe-4 inline-flex  bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 dark:border-0 shadow-[inset_0px_1px_--theme(--color-white/.2)] [[data-flux-button-group]_&amp;]:border-e-0 [:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-[1px] dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-0 dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-s-[1px] [:is([data-flux-button-group]&gt;&amp;:not(:first-child),_[data-flux-button-group]_:not(:first-child)&gt;&amp;)]:border-s-[color-mix(in_srgb,var(--color-accent-foreground),transparent_85%)]   bg-blue-600 hover:bg-blue-700" data-flux-group-target="data-flux-group-target" wire:navigate="">
         <svg class="shrink-0 [:where(&amp;)]:size-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
   <path d="M8.75 3.75a.75.75 0 0 0-1.5 0v3.5h-3.5a.75.75 0 0 0 0 1.5h3.5v3.5a.75.75 0 0 0 1.5 0v-3.5h3.5a.75.75 0 0 0 0-1.5h-3.5v-3.5Z"/>
 </svg>
@@ -122,24 +122,22 @@
                     
             
             <span><?php ob_start(); ?>
-                Add New Scan
-            <?php echo trim(ob_get_clean()); ?></span>
+                    Add New Scan
+                <?php echo trim(ob_get_clean()); ?></span>
     </a>
 <?php echo ltrim(ob_get_clean()); ?>
-        <?php endif; ?>
-    </div>
+            <?php endif; ?>
+        </div>
     </div>
 
     
     <div x-data="{ open: true }"
         class="rounded-xl border border-orange-300 dark:border-orange-700 bg-white dark:bg-zinc-900 shadow-sm overflow-hidden">
 
-        
         <button type="button"
             x-on:click="open = !open"
             class="w-full px-4 py-3 flex items-center justify-between cursor-pointer bg-gradient-to-r from-orange-400 to-orange-600 hover:from-orange-500 hover:to-orange-700 dark:from-orange-500 dark:to-orange-700 dark:hover:from-orange-600 dark:hover:to-orange-800 transition-all">
             <div class="flex items-center gap-2">
-                
                 <div class="w-7 h-7 rounded-lg bg-white/20 backdrop-blur flex items-center justify-center ring-1 ring-white/30">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-white">
                         <path fill-rule="evenodd" d="M2.628 1.601C5.028 1.206 7.49 1 10 1s4.973.206 7.372.601a.75.75 0 0 1 .628.74v2.288a2.25 2.25 0 0 1-.659 1.59l-4.682 4.683a2.25 2.25 0 0 0-.659 1.59v3.037c0 .684-.31 1.33-.844 1.757l-1.937 1.55A.75.75 0 0 1 8 18.25v-5.757a2.25 2.25 0 0 0-.659-1.591L2.659 6.22A2.25 2.25 0 0 1 2 4.629V2.34a.75.75 0 0 1 .628-.74Z" clip-rule="evenodd" />
@@ -180,19 +178,14 @@
 
         <div x-show="open" x-collapse x-cloak class="px-4 pb-4 pt-4">
             <div class="space-y-3">
-
-                
                 <div>
-                    <label class="text-[10px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-semibold mb-1 block">
-                        Search
-                    </label>
+                    <label class="text-[10px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-semibold mb-1 block">Search</label>
                     <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/input/index.blade.php', $__blaze->compiledPath.'/5ae551d98c08f0bc67bd05455e08306c.php'); ?>
 <?php $__blaze->pushData(['wire:model.live.debounce.300ms' => 'search','placeholder' => 'Search customer / model / shift / group / PCB type...','icon' => 'magnifying-glass','clearable' => true]); ?>
 <?php _5ae551d98c08f0bc67bd05455e08306c($__blaze, ['wire:model.live.debounce.300ms' => 'search','placeholder' => 'Search customer / model / shift / group / PCB type...','icon' => 'magnifying-glass','clearable' => true], [], ['clearable'], [], $__this ?? (isset($this) ? $this : null)); ?>
 <?php $__blaze->popData(); ?>
                 </div>
 
-                
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     <div>
                         <label class="text-[10px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-semibold mb-1 block">Customer</label>
@@ -274,7 +267,6 @@
                     </div>
                 </div>
 
-                
                 <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                     <div>
                         <label class="text-[10px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-semibold mb-1 block">Year</label>
@@ -349,13 +341,11 @@
     
     <?php ob_start(); ?><div class="[:where(&amp;)]:bg-white dark:[:where(&amp;)]:bg-white/10 border border-zinc-200 dark:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl p-0 shadow-lg flex flex-col overflow-hidden" data-flux-card>
     <?php ob_start(); ?>
-        
         <div class="relative px-6 py-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600">
             <div class="flex items-center justify-between flex-wrap gap-3">
                 <div class="text-base font-bold text-white">Scan X-Ray List</div>
 
                 <div class="flex items-center gap-2">
-                    
                     <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/tooltip/index.blade.php', $__blaze->compiledPath.'/1e349890a464f9948f6af12013af6f7e.php'); ?>
 <?php if (isset($__slots1e349890a464f9948f6af12013af6f7e)) { $__slotsStack1e349890a464f9948f6af12013af6f7e[] = $__slots1e349890a464f9948f6af12013af6f7e; } ?>
 <?php if (isset($__attrs1e349890a464f9948f6af12013af6f7e)) { $__attrsStack1e349890a464f9948f6af12013af6f7e[] = $__attrs1e349890a464f9948f6af12013af6f7e; } ?>
@@ -373,13 +363,11 @@
                                     : 'bg-white text-blue-700 hover:bg-blue-50 border border-white/40'); ?>">
 
                             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($isStacked): ?>
-                                
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
                                     <path fill-rule="evenodd" d="M15 3.75a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0V5.56l-3.97 3.97a.75.75 0 1 1-1.06-1.06l3.97-3.97h-2.69a.75.75 0 0 1-.75-.75Zm-12 0A.75.75 0 0 1 3.75 3h4.5a.75.75 0 0 1 0 1.5H5.56l3.97 3.97a.75.75 0 0 1-1.06 1.06L4.5 5.56v2.69a.75.75 0 0 1-1.5 0v-4.5Zm11.47 11.78a.75.75 0 1 1 1.06-1.06l3.97 3.97v-2.69a.75.75 0 0 1 1.5 0v4.5a.75.75 0 0 1-.75.75h-4.5a.75.75 0 0 1 0-1.5h2.69l-3.97-3.97Zm-4.94-1.06a.75.75 0 0 1 0 1.06L5.56 19.5h2.69a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75v-4.5a.75.75 0 0 1 1.5 0v2.69l3.97-3.97a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" />
                                 </svg>
                                 <span>Unstack</span>
                             <?php else: ?>
-                                
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
                                     <path fill-rule="evenodd" d="M3.22 3.22a.75.75 0 0 1 1.06 0l3.97 3.97V4.5a.75.75 0 0 1 1.5 0V9a.75.75 0 0 1-.75.75H4.5a.75.75 0 0 1 0-1.5h2.69L3.22 4.28a.75.75 0 0 1 0-1.06Zm17.56 0a.75.75 0 0 1 0 1.06l-3.97 3.97h2.69a.75.75 0 0 1 0 1.5H15a.75.75 0 0 1-.75-.75V4.5a.75.75 0 0 1 1.5 0v2.69l3.97-3.97a.75.75 0 0 1 1.06 0ZM3.75 15a.75.75 0 0 1 .75-.75H9a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-2.69l-3.97 3.97a.75.75 0 0 1-1.06-1.06l3.97-3.97H4.5a.75.75 0 0 1-.75-.75Zm10.5 0a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-2.69l3.97 3.97a.75.75 0 1 1-1.06 1.06l-3.97-3.97v2.69a.75.75 0 0 1-1.5 0V15Z" clip-rule="evenodd" />
                                 </svg>
@@ -402,9 +390,8 @@
 
         <div class="p-6">
             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($scans->count() > 0): ?>
-                
                 <div class="overflow-x-auto <?php echo e($isStacked ? '' : 'unstacked-mode'); ?>">
-                    <table class="w-full" style="min-width: 2100px; white-space: nowrap; border-collapse: separate; border-spacing: 0;">
+                    <table class="w-full" style="min-width: 2700px; white-space: nowrap; border-collapse: separate; border-spacing: 0;">
                         <thead>
                             
                             <tr class="bg-zinc-50 dark:bg-zinc-800/50">
@@ -423,12 +410,24 @@
                                     First Piece Items
                                 </th>
                                 
+                                <th colspan="2" class="px-3 py-2 text-center text-xs font-bold text-cyan-700 dark:text-cyan-300 uppercase bg-cyan-50 dark:bg-cyan-900/30">
+                                    Second First
+                                </th>
+                                
                                 <th colspan="4" class="px-3 py-2 text-center text-xs font-bold text-indigo-700 dark:text-indigo-300 uppercase bg-indigo-50 dark:bg-indigo-900/30">
                                     Middle Piece Items
                                 </th>
                                 
+                                <th colspan="2" class="px-3 py-2 text-center text-xs font-bold text-cyan-700 dark:text-cyan-300 uppercase bg-cyan-50 dark:bg-cyan-900/30">
+                                    Second Middle
+                                </th>
+                                
                                 <th colspan="4" class="px-3 py-2 text-center text-xs font-bold text-purple-700 dark:text-purple-300 uppercase bg-purple-50 dark:bg-purple-900/30">
                                     Last Piece Items
+                                </th>
+                                
+                                <th colspan="2" class="px-3 py-2 text-center text-xs font-bold text-cyan-700 dark:text-cyan-300 uppercase bg-cyan-50 dark:bg-cyan-900/30">
+                                    Second Last
                                 </th>
                                 
                                 <th colspan="3" class="px-3 py-2 text-center text-xs font-bold text-emerald-700 dark:text-emerald-300 uppercase bg-emerald-50 dark:bg-emerald-900/30">
@@ -450,15 +449,24 @@
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-amber-600 uppercase bg-amber-50/50 dark:bg-amber-900/10">Reject Rate %</th>
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-600 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">Status</th>
                                 
-                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-emerald-600 uppercase bg-emerald-50/50 dark:bg-emerald-900/10">OK</th>
-                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-red-600 uppercase bg-red-50/50 dark:bg-red-900/10">NG</th>
-                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-amber-600 uppercase bg-amber-50/50 dark:bg-amber-900/10">Reject Rate %</th>
-                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-600 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">Status</th>
+                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-700 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">QTY</th>
+                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-700 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">Status</th>
                                 
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-emerald-600 uppercase bg-emerald-50/50 dark:bg-emerald-900/10">OK</th>
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-red-600 uppercase bg-red-50/50 dark:bg-red-900/10">NG</th>
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-amber-600 uppercase bg-amber-50/50 dark:bg-amber-900/10">Reject Rate %</th>
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-600 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">Status</th>
+                                
+                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-700 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">QTY</th>
+                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-700 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">Status</th>
+                                
+                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-emerald-600 uppercase bg-emerald-50/50 dark:bg-emerald-900/10">OK</th>
+                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-red-600 uppercase bg-red-50/50 dark:bg-red-900/10">NG</th>
+                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-amber-600 uppercase bg-amber-50/50 dark:bg-amber-900/10">Reject Rate %</th>
+                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-600 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">Status</th>
+                                
+                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-700 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">QTY</th>
+                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-700 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">Status</th>
                                 
                                 <th class="px-3 py-2 text-center text-[10px] font-bold text-emerald-700 uppercase bg-emerald-100/50 dark:bg-emerald-900/20">OK</th>
                                 <th class="px-3 py-2 text-center text-[10px] font-bold text-red-700 uppercase bg-red-100/50 dark:bg-red-900/20">NG</th>
@@ -560,6 +568,26 @@
                                     </td>
 
                                     
+                                    <td class="px-3 py-3 text-center bg-cyan-50/20 dark:bg-cyan-900/5">
+                                        <span class="inline-flex items-center justify-center min-w-[36px] px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 font-bold text-xs">
+                                            <?php echo e($summary['second_first']['qty']); ?>
+
+                                        </span>
+                                    </td>
+                                    <td class="px-3 py-3 text-center bg-cyan-50/20 dark:bg-cyan-900/5">
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($summary['second_first']['status_running']): ?>
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold
+                                                <?php echo e(strtolower($summary['second_first']['status_running']) === 'running' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300'); ?>">
+                                                <span class="w-1.5 h-1.5 rounded-full <?php echo e(strtolower($summary['second_first']['status_running']) === 'running' ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-400'); ?>"></span>
+                                                <?php echo e($summary['second_first']['status_running']); ?>
+
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="text-zinc-400 italic text-[10px]">-</span>
+                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                    </td>
+
+                                    
                                     <td class="px-3 py-3 text-center bg-indigo-50/20 dark:bg-indigo-900/5">
                                         <span class="inline-flex items-center justify-center min-w-[36px] px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 font-bold text-xs">
                                             <?php echo e($summary['middle']['ok_qty']); ?>
@@ -593,6 +621,26 @@
                                     </td>
 
                                     
+                                    <td class="px-3 py-3 text-center bg-cyan-50/20 dark:bg-cyan-900/5">
+                                        <span class="inline-flex items-center justify-center min-w-[36px] px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 font-bold text-xs">
+                                            <?php echo e($summary['second_middle']['qty']); ?>
+
+                                        </span>
+                                    </td>
+                                    <td class="px-3 py-3 text-center bg-cyan-50/20 dark:bg-cyan-900/5">
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($summary['second_middle']['status_running']): ?>
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold
+                                                <?php echo e(strtolower($summary['second_middle']['status_running']) === 'running' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300'); ?>">
+                                                <span class="w-1.5 h-1.5 rounded-full <?php echo e(strtolower($summary['second_middle']['status_running']) === 'running' ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-400'); ?>"></span>
+                                                <?php echo e($summary['second_middle']['status_running']); ?>
+
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="text-zinc-400 italic text-[10px]">-</span>
+                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                    </td>
+
+                                    
                                     <td class="px-3 py-3 text-center bg-purple-50/20 dark:bg-purple-900/5">
                                         <span class="inline-flex items-center justify-center min-w-[36px] px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 font-bold text-xs">
                                             <?php echo e($summary['last']['ok_qty']); ?>
@@ -618,6 +666,26 @@
                                                 <?php echo e(strtolower($summary['last']['status_running']) === 'running' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300'); ?>">
                                                 <span class="w-1.5 h-1.5 rounded-full <?php echo e(strtolower($summary['last']['status_running']) === 'running' ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-400'); ?>"></span>
                                                 <?php echo e($summary['last']['status_running']); ?>
+
+                                            </span>
+                                        <?php else: ?>
+                                            <span class="text-zinc-400 italic text-[10px]">-</span>
+                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                    </td>
+
+                                    
+                                    <td class="px-3 py-3 text-center bg-cyan-50/20 dark:bg-cyan-900/5">
+                                        <span class="inline-flex items-center justify-center min-w-[36px] px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 font-bold text-xs">
+                                            <?php echo e($summary['second_last']['qty']); ?>
+
+                                        </span>
+                                    </td>
+                                    <td class="px-3 py-3 text-center bg-cyan-50/20 dark:bg-cyan-900/5">
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($summary['second_last']['status_running']): ?>
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold
+                                                <?php echo e(strtolower($summary['second_last']['status_running']) === 'running' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300'); ?>">
+                                                <span class="w-1.5 h-1.5 rounded-full <?php echo e(strtolower($summary['second_last']['status_running']) === 'running' ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-400'); ?>"></span>
+                                                <?php echo e($summary['second_last']['status_running']); ?>
 
                                             </span>
                                         <?php else: ?>
@@ -828,7 +896,6 @@
                     </table>
                 </div>
 
-                
                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($scans->hasPages()): ?>
                     <div class="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-700 flex justify-center">
                         <?php echo e($scans->links()); ?>
@@ -932,7 +999,6 @@
     <style>
         [x-cloak]{display:none !important;}
 
-        /* ===== UNSTACKED MODE — matikan semua sticky ===== */
         .unstacked-mode th.sticky,
         .unstacked-mode td.sticky {
             position: static !important;
@@ -942,7 +1008,6 @@
             z-index: auto !important;
         }
 
-        /* Hilangkan efek shadow pemisah di mode unstacked */
         .unstacked-mode thead th[style*="box-shadow"],
         .unstacked-mode tbody td[style*="box-shadow"] {
             box-shadow: none !important;
