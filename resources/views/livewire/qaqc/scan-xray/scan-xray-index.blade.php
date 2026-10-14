@@ -169,18 +169,50 @@
 
     {{-- ==================== TABLE ==================== --}}
     <flux:card class="p-0 shadow-lg flex flex-col overflow-hidden">
+        {{-- HEADER TABLE + TOGGLE STACK --}}
         <div class="relative px-6 py-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600">
-            <div class="flex items-center justify-between">
+            <div class="flex items-center justify-between flex-wrap gap-3">
                 <div class="text-base font-bold text-white">Scan X-Ray List</div>
-                <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/20 border border-white/30 text-white text-xs font-semibold">
-                    {{ $scans->total() }} total
-                </span>
+
+                <div class="flex items-center gap-2">
+                    {{-- TOGGLE STACK / UNSTACK --}}
+                    <flux:tooltip content="{{ $isStacked ? 'Unstack kolom (scroll bebas)' : 'Stack kolom (sticky)' }}" position="top">
+                        <button type="button"
+                            wire:click="toggleStack"
+                            wire:loading.attr="disabled"
+                            wire:target="toggleStack"
+                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer
+                                {{ $isStacked
+                                    ? 'bg-white/20 border border-white/30 text-white hover:bg-white/30'
+                                    : 'bg-white text-blue-700 hover:bg-blue-50 border border-white/40' }}">
+
+                            @if($isStacked)
+                                {{-- Icon: Unstack (arrow expand) --}}
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                                    <path fill-rule="evenodd" d="M15 3.75a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0V5.56l-3.97 3.97a.75.75 0 1 1-1.06-1.06l3.97-3.97h-2.69a.75.75 0 0 1-.75-.75Zm-12 0A.75.75 0 0 1 3.75 3h4.5a.75.75 0 0 1 0 1.5H5.56l3.97 3.97a.75.75 0 0 1-1.06 1.06L4.5 5.56v2.69a.75.75 0 0 1-1.5 0v-4.5Zm11.47 11.78a.75.75 0 1 1 1.06-1.06l3.97 3.97v-2.69a.75.75 0 0 1 1.5 0v4.5a.75.75 0 0 1-.75.75h-4.5a.75.75 0 0 1 0-1.5h2.69l-3.97-3.97Zm-4.94-1.06a.75.75 0 0 1 0 1.06L5.56 19.5h2.69a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75v-4.5a.75.75 0 0 1 1.5 0v2.69l3.97-3.97a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" />
+                                </svg>
+                                <span>Unstack</span>
+                            @else
+                                {{-- Icon: Stack (arrow collapse) --}}
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                                    <path fill-rule="evenodd" d="M3.22 3.22a.75.75 0 0 1 1.06 0l3.97 3.97V4.5a.75.75 0 0 1 1.5 0V9a.75.75 0 0 1-.75.75H4.5a.75.75 0 0 1 0-1.5h2.69L3.22 4.28a.75.75 0 0 1 0-1.06Zm17.56 0a.75.75 0 0 1 0 1.06l-3.97 3.97h2.69a.75.75 0 0 1 0 1.5H15a.75.75 0 0 1-.75-.75V4.5a.75.75 0 0 1 1.5 0v2.69l3.97-3.97a.75.75 0 0 1 1.06 0ZM3.75 15a.75.75 0 0 1 .75-.75H9a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-2.69l-3.97 3.97a.75.75 0 0 1-1.06-1.06l3.97-3.97H4.5a.75.75 0 0 1-.75-.75Zm10.5 0a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-2.69l3.97 3.97a.75.75 0 1 1-1.06 1.06l-3.97-3.97v2.69a.75.75 0 0 1-1.5 0V15Z" clip-rule="evenodd" />
+                                </svg>
+                                <span>Stack</span>
+                            @endif
+                        </button>
+                    </flux:tooltip>
+
+                    <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/20 border border-white/30 text-white text-xs font-semibold">
+                        {{ $scans->total() }} total
+                    </span>
+                </div>
             </div>
         </div>
 
         <div class="p-6">
             @if($scans->count() > 0)
-                <div class="overflow-x-auto">
+                {{-- Wrapper tabel — unstacked-mode aktif kalau $isStacked = false --}}
+                <div class="overflow-x-auto {{ $isStacked ? '' : 'unstacked-mode' }}">
                     <table class="w-full" style="min-width: 2100px; white-space: nowrap; border-collapse: separate; border-spacing: 0;">
                         <thead>
                             {{-- BARIS HEADER 1 --}}
@@ -248,8 +280,9 @@
                         <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
                             @foreach($scans as $index => $scan)
                                 @php
-                                    $summary  = $this->buildSummary($scan);
-                                    $isLocked = $scan->created_at && $scan->created_at->diffInHours(now()) >= 24;
+                                    $summary     = $this->buildSummary($scan);
+                                    $isLocked    = $scan->created_at && $scan->created_at->diffInHours(now()) >= 24;
+                                    $isCompleted = $scan->phase === 'completed';
                                 @endphp
                                 <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 group" wire:key="scan-{{ $scan->id }}">
 
@@ -264,7 +297,7 @@
                                         {{ $scan->model->model_name ?? '-' }}
                                     </td>
 
-                                    {{-- PCB TYPE (sticky kanan dari sisi kiri) --}}
+                                    {{-- PCB TYPE --}}
                                     <td class="px-3 py-3 text-center sticky z-10 bg-white dark:bg-zinc-900 group-hover:bg-zinc-50 dark:group-hover:bg-zinc-800/50" style="left: 390px; min-width: 100px; box-shadow: inset -2px 0 0 0 rgb(212 212 216);">
                                         @if($scan->pcb_type === 'SINGLE')
                                             <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300">SINGLE</span>
@@ -440,10 +473,14 @@
                                             @endcan
 
                                             @can('edit scan xray')
-                                                @if(!$isLocked)
+                                                @if(!$isLocked && !$isCompleted)
                                                     <flux:tooltip content="Edit" position="top">
                                                         <flux:button href="{{ route('qaqc.scan-xray.edit', $scan->id) }}" wire:navigate
                                                             size="sm" icon="pencil-square" variant="primary" color="yellow" class="!p-2" />
+                                                    </flux:tooltip>
+                                                @elseif($isCompleted)
+                                                    <flux:tooltip content="Data sudah selesai (completed)" position="top">
+                                                        <flux:button size="sm" icon="check-badge" variant="filled" color="emerald" class="!p-2" disabled />
                                                     </flux:tooltip>
                                                 @else
                                                     <flux:tooltip content="Tidak bisa edit (>24 jam)" position="top">
@@ -453,10 +490,14 @@
                                             @endcan
 
                                             @can('delete scan xray')
-                                                @if(!$isLocked)
+                                                @if(!$isLocked && !$isCompleted)
                                                     <flux:tooltip content="Delete" position="top">
                                                         <flux:button wire:click="confirmDelete({{ $scan->id }})"
                                                             size="sm" icon="trash" variant="primary" color="red" class="!p-2" />
+                                                    </flux:tooltip>
+                                                @elseif($isCompleted)
+                                                    <flux:tooltip content="Data sudah selesai (completed)" position="top">
+                                                        <flux:button size="sm" icon="check-badge" variant="filled" color="emerald" class="!p-2" disabled />
                                                     </flux:tooltip>
                                                 @else
                                                     <flux:tooltip content="Tidak bisa hapus (>24 jam)" position="top">
@@ -558,5 +599,23 @@
         <div class="text-white px-6 py-3 rounded-lg shadow-lg"><span x-text="message"></span></div>
     </div>
 
-    <style>[x-cloak]{display:none !important;}</style>
+    <style>
+        [x-cloak]{display:none !important;}
+
+        /* ===== UNSTACKED MODE — matikan semua sticky ===== */
+        .unstacked-mode th.sticky,
+        .unstacked-mode td.sticky {
+            position: static !important;
+            left: auto !important;
+            right: auto !important;
+            box-shadow: none !important;
+            z-index: auto !important;
+        }
+
+        /* Hilangkan efek shadow pemisah di mode unstacked */
+        .unstacked-mode thead th[style*="box-shadow"],
+        .unstacked-mode tbody td[style*="box-shadow"] {
+            box-shadow: none !important;
+        }
+    </style>
 </div>

@@ -44,11 +44,10 @@
     40 => 'Termwind\\Laravel\\TermwindServiceProvider',
     41 => 'Pest\\Laravel\\PestServiceProvider',
     42 => 'Spatie\\Activitylog\\ActivitylogServiceProvider',
-    43 => 'Spatie\\LaravelPasskeys\\LaravelPasskeysServiceProvider',
-    44 => 'Spatie\\Permission\\PermissionServiceProvider',
-    45 => 'App\\Providers\\AppServiceProvider',
-    46 => 'App\\Providers\\FortifyServiceProvider',
-    47 => 'App\\Providers\\VoletServiceProvider',
+    43 => 'Spatie\\Permission\\PermissionServiceProvider',
+    44 => 'App\\Providers\\AppServiceProvider',
+    45 => 'App\\Providers\\FortifyServiceProvider',
+    46 => 'App\\Providers\\VoletServiceProvider',
   ),
   'eager' => 
   array (
@@ -79,11 +78,10 @@
     24 => 'Termwind\\Laravel\\TermwindServiceProvider',
     25 => 'Pest\\Laravel\\PestServiceProvider',
     26 => 'Spatie\\Activitylog\\ActivitylogServiceProvider',
-    27 => 'Spatie\\LaravelPasskeys\\LaravelPasskeysServiceProvider',
-    28 => 'Spatie\\Permission\\PermissionServiceProvider',
-    29 => 'App\\Providers\\AppServiceProvider',
-    30 => 'App\\Providers\\FortifyServiceProvider',
-    31 => 'App\\Providers\\VoletServiceProvider',
+    27 => 'Spatie\\Permission\\PermissionServiceProvider',
+    28 => 'App\\Providers\\AppServiceProvider',
+    29 => 'App\\Providers\\FortifyServiceProvider',
+    30 => 'App\\Providers\\VoletServiceProvider',
   ),
   'deferred' => 
   array (

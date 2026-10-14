@@ -33,6 +33,9 @@ class ScanXrayIndex extends Component
     // ============ DELETE ============
     public $scanToDelete = null;
 
+    // ============ STACK/UNSTACK TABLE ============
+    public bool $isStacked = true; // default: stacked (sticky columns aktif)
+
     // Reset pagination saat filter berubah
     public function updatedSearch(): void { $this->resetPage(); }
     public function updatedFilterCustomerId(): void
@@ -70,6 +73,21 @@ class ScanXrayIndex extends Component
             || $this->filterYear
             || $this->filterMonth
             || $this->filterMasterLineId;
+    }
+
+    // ============ STACK TOGGLE ============
+    public function toggleStack(): void
+    {
+        $this->isStacked = !$this->isStacked;
+
+        // Simpan preferensi ke session (opsional)
+        session(['scan_xray_stacked' => $this->isStacked]);
+    }
+
+    public function mount(): void
+    {
+        // Restore preferensi dari session (default: true)
+        $this->isStacked = session('scan_xray_stacked', true);
     }
 
     // ============ EXPORT EXCEL ============
