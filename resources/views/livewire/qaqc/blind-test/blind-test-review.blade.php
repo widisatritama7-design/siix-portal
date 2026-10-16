@@ -226,9 +226,7 @@
                         $locationSame = $userLocation && $keyLocation && strtoupper(trim($userLocation)) === strtoupper(trim($keyLocation));
                     @endphp
                     <tr wire:key="ans-{{ $i }}"
-                        class="@if($isMissing) bg-yellow-50/40 dark:bg-yellow-950/10
-                            @elseif(!$deffectMatch) bg-red-50/40 dark:bg-red-950/10
-                            @elseif($locStatus === 'valid') bg-green-50/40 dark:bg-green-950/10
+                        class="@if($locStatus === 'valid') bg-green-50/40 dark:bg-green-950/10
                             @elseif($locStatus === 'invalid') bg-red-50/40 dark:bg-red-950/10
                             @else bg-white dark:bg-zinc-900 @endif">
 
@@ -315,7 +313,7 @@
                                         </svg>
                                         Cocok
                                     </span>
-                                    <div class="text-[9px] text-green-600 dark:text-green-400 italic">Perlu review lokasi</div>
+                                    <div class="text-[9px] text-green-600 dark:text-green-400 italic">Info saja</div>
                                 </div>
                             @else
                                 <div class="flex flex-col items-center gap-0.5">
@@ -325,19 +323,23 @@
                                         </svg>
                                         Tidak
                                     </span>
-                                    <div class="text-[9px] text-red-600 dark:text-red-400 italic">Auto salah</div>
+                                    <div class="text-[9px] text-red-600 dark:text-red-400 italic">Info saja</div>
                                 </div>
                             @endif
                         </td>
 
                         {{-- ========== QC: REVIEW LOCATION ========== --}}
                         <td class="px-3 py-3 text-center border-r border-zinc-200 dark:border-zinc-700">
-                            @if($isMissing || !$deffectMatch)
+                            @if($ans['auto_missing'] ?? false)
+                                {{-- Baris MISSING: tidak perlu direview --}}
                                 <div class="flex flex-col items-center gap-0.5">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5 text-zinc-300 dark:text-zinc-600">
-                                        <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-8-5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5A.75.75 0 0 1 10 5Zm0 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd" />
-                                    </svg>
-                                    <span class="text-[10px] text-zinc-400 italic">Auto</span>
+                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 text-[10px] font-bold border border-zinc-300 dark:border-zinc-700">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3">
+                                            <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-8-5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5A.75.75 0 0 1 10 5Zm0 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd" />
+                                        </svg>
+                                        Tidak Dijawab
+                                    </span>
+                                    <div class="text-[9px] text-zinc-400 italic">Auto salah</div>
                                 </div>
                             @else
                                 <div class="flex flex-col items-center gap-1">
@@ -385,8 +387,16 @@
 
                         {{-- ========== QC: FINAL ========== --}}
                         <td class="px-3 py-3 text-center">
-                            @if($locStatus === 'pending')
-                                {{-- Menunggu review QC --}}
+                            @if($ans['auto_missing'] ?? false)
+                                {{-- Baris MISSING → auto SALAH --}}
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 text-[11px] font-bold border-2 border-orange-300 dark:border-orange-700">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">
+                                        <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-8-5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5A.75.75 0 0 1 10 5Zm0 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd" />
+                                    </svg>
+                                    SALAH
+                                </span>
+                                <div class="text-[9px] text-orange-600 dark:text-orange-400 italic mt-0.5">Tidak dijawab</div>
+                            @elseif($locStatus === 'pending')
                                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 text-[11px] font-bold border-2 border-amber-300 dark:border-amber-700">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">
                                         <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z" clip-rule="evenodd" />
@@ -427,16 +437,38 @@
         @php
             $totalCorrect = collect($answers)->where('is_correct', true)->count();
             $totalAnswers = count($answers);
-            $stillPending = collect($answers)->where('location_status', 'pending')->count();
+            $stillPending = collect($answers)
+                ->filter(fn ($a) => ($a['location_status'] ?? null) === 'pending'
+                    && !($a['auto_missing'] ?? false))
+                ->count();
         @endphp
         <div class="mt-6 pt-4 border-t border-zinc-200 dark:border-zinc-700 flex flex-wrap items-center justify-between gap-4">
-            <div class="flex items-center gap-4 text-sm">
+            @php
+                // Hitung matched keys untuk preview PASS/FAIL
+                $totalKeys = count($blindTest->blind_test_items ?? []);
+                $matchedKeys = 0;
+
+                foreach ($blindTest->blind_test_items ?? [] as $keyItem) {
+                    $keyDefectId = $keyItem['deffect_item_id'] ?? null;
+                    $found = collect($answers)->first(function ($ans) use ($keyDefectId) {
+                        if (($ans['location_status'] ?? null) !== 'valid') return false;
+                        return (int) ($ans['deffect_item_id'] ?? 0) === (int) $keyDefectId;
+                    });
+                    if ($found) $matchedKeys++;
+                }
+
+                $previewPass = ($matchedKeys === $totalKeys && $totalKeys > 0);
+            @endphp
+
+            <div class="flex items-center gap-4 text-sm flex-wrap">
                 <div>
-                    <span class="text-zinc-500">Benar:</span>
-                    <strong class="text-green-600 dark:text-green-400">{{ $totalCorrect }}</strong>
+                    <span class="text-zinc-500">Kunci Terpenuhi:</span>
+                    <strong class="{{ $previewPass ? 'text-green-600 dark:text-green-400' : 'text-orange-600 dark:text-orange-400' }}">
+                        {{ $matchedKeys }} / {{ $totalKeys }}
+                    </strong>
                 </div>
                 <div>
-                    <span class="text-zinc-500">Total:</span>
+                    <span class="text-zinc-500">Total Jawaban:</span>
                     <strong class="text-zinc-700 dark:text-zinc-300">{{ $totalAnswers }}</strong>
                 </div>
                 @if($stillPending > 0)
@@ -444,6 +476,27 @@
                     <span class="text-zinc-500">Pending:</span>
                     <strong class="text-yellow-600 dark:text-yellow-400">{{ $stillPending }}</strong>
                 </div>
+                @endif
+
+                {{-- Preview hasil sementara --}}
+                @if($stillPending === 0 && count($answers) > 0)
+                    <div class="ml-auto">
+                        @if($previewPass)
+                            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-xs font-bold border border-green-300 dark:border-green-700">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">
+                                    <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
+                                </svg>
+                                Akan PASS
+                            </span>
+                        @else
+                            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 text-xs font-bold border border-red-300 dark:border-red-700">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">
+                                    <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
+                                </svg>
+                                Akan FAIL
+                            </span>
+                        @endif
+                    </div>
                 @endif
             </div>
 

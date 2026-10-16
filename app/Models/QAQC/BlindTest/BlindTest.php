@@ -207,10 +207,9 @@ class BlindTest extends EloquentModel
      */
     public function hasPendingReview(): bool
     {
-        if ($this->is_reviewed) return false;
-
-        return collect($this->user_answers ?? [])
-            ->contains(fn ($a) => ($a['location_status'] ?? null) === 'pending');
+        return collect($this->user_answers ?? [])->contains(
+            fn ($a) => ($a['location_status'] ?? null) === 'pending'
+        );
     }
 
     /**
@@ -512,11 +511,27 @@ class BlindTest extends EloquentModel
 
     public function recalculateResult(): string
     {
-        $answers = collect($this->user_answers ?? []);
-        if ($answers->isEmpty()) return 'FAIL';
+        $answers = $this->user_answers ?? [];
+        $keys    = $this->blind_test_items ?? [];
 
-        $allCorrect = $answers->every(fn ($a) => ($a['is_correct'] ?? false) === true);
-        return $allCorrect ? 'PASS' : 'FAIL';
+        if (empty($keys)) {
+            return 'FAIL';
+        }
+
+        $matchedKeys = 0;
+
+        foreach ($keys as $keyItem) {
+            $keyDefectId = $keyItem['deffect_item_id'] ?? null;
+
+            $found = collect($answers)->first(function ($ans) use ($keyDefectId) {
+                if (($ans['location_status'] ?? null) !== 'valid') return false;
+                return (int) ($ans['deffect_item_id'] ?? 0) === (int) $keyDefectId;
+            });
+
+            if ($found) $matchedKeys++;
+        }
+
+        return ($matchedKeys === count($keys)) ? 'PASS' : 'FAIL';
     }
 
     // ==================== PRIVATE HELPERS ====================

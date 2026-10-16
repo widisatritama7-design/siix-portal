@@ -404,9 +404,17 @@ class BlindTestExecution extends Component
     private function finalizeSubmit(array $answers, bool $isAutoSave): void
     {
         $evaluated  = $this->blindTest->evaluateAnswers($answers);
-        $hasPending = collect($evaluated)->contains(fn ($e) => ($e['location_status'] ?? null) === 'pending');
+        
+        // 🔥 FULL MANUAL REVIEW: semua jawaban wajib direview QC
+        $evaluated = collect($evaluated)->map(function ($e) {
+            $e['location_status'] = 'pending';
+            $e['is_correct'] = false;
+            return $e;
+        })->values()->toArray();
 
-        $result = $hasPending ? 'FAIL' : $this->blindTest->recalculateResult();
+        // Selalu pending review — gak ada auto PASS/FAIL
+        $hasPending = true;
+        $result     = 'FAIL'; // placeholder, akan dihitung di review
 
         $finishedAt = now();
         $duration   = $this->startedAt ? $finishedAt->timestamp - $this->startedAt : 0;
@@ -420,7 +428,7 @@ class BlindTestExecution extends Component
             'duration_seconds' => $duration,
             'auto_saved'       => $isAutoSave,
             'auto_saved_at'    => $isAutoSave ? $finishedAt : null,
-            'is_reviewed'      => !$hasPending,
+            'is_reviewed'      => false, // 🔥 Wajib review manual
         ]);
 
         if ($this->blindTest->attempt === 1) {
@@ -434,8 +442,8 @@ class BlindTestExecution extends Component
         $this->blindTest->refresh();
 
         $this->evaluationResult = $evaluated;
-        $this->overallResult    = $result;
-        $this->isPendingReview  = $hasPending;
+        $this->overallResult    = null; // 🔥 Belum ada hasil sampai direview
+        $this->isPendingReview  = true; // 🔥 Selalu pending
         $this->isFinished       = true;
         $this->remainingSeconds = $isAutoSave ? 0 : null;
 
@@ -445,11 +453,7 @@ class BlindTestExecution extends Component
             $this->isExpired = true;
             $this->dispatch('notify', message: "⏰ Waktu habis! Jawaban auto-saved. Menunggu review QC.", type: 'warning');
         } else {
-            $this->dispatch('notify',
-                message: $hasPending
-                    ? "Test selesai! Menunggu review QC."
-                    : "Test selesai!",
-                type: 'info');
+            $this->dispatch('notify', message: "Test selesai! Menunggu review QC.", type: 'info');
         }
     }
 
@@ -482,7 +486,8 @@ class BlindTestExecution extends Component
 
         if (!$bt->first_attempt_answers) {
             $update['first_attempt_answers'] = $bt->user_answers;
-            $update['first_attempt_result']  = $bt->overall_result;
+            // Simpan result setelah direview, kalau belum reviewed set null dulu
+            $update['first_attempt_result']  = $bt->is_reviewed ? $bt->overall_result : null;
             $update['first_attempt_at']      = $bt->finished_at;
         }
 

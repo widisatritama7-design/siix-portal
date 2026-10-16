@@ -27,9 +27,28 @@ class BlindTestReview extends Component
             abort(403, 'Test belum selesai, tidak bisa direview.');
         }
 
-        $this->answers = $this->blindTest->user_answers ?? [];
-    }
+        // Paksa semua jawaban jadi pending — full manual review
+        $this->answers = collect($this->blindTest->user_answers ?? [])
+            ->map(function ($ans) {
+                $isMissing = ($ans['user_answer'] ?? '') === 'MISSING';
 
+                if ($isMissing) {
+                    // Baris tidak dijawab → langsung invalid, tidak perlu direview
+                    $ans['location_status'] = 'invalid';
+                    $ans['is_correct'] = false;
+                    $ans['auto_missing'] = true; // flag biar UI tahu ini auto
+                } else {
+                    $ans['location_status'] = 'pending';
+                    $ans['is_correct'] = false;
+                    $ans['auto_missing'] = false;
+                }
+
+                unset($ans['reviewed_by'], $ans['reviewed_at']);
+                return $ans;
+            })
+            ->values()
+            ->toArray();
+    }
     /**
      * Mark satu location valid / invalid.
      */
@@ -39,16 +58,17 @@ class BlindTestReview extends Component
 
         if (!isset($this->answers[$index])) return;
 
+        // Baris MISSING tidak boleh direview
+        if (($this->answers[$index]['auto_missing'] ?? false) === true) {
+            return;
+        }
+
         $this->answers[$index]['location_status'] = $status;
         $this->answers[$index]['reviewed_by'] = auth()->id();
         $this->answers[$index]['reviewed_at'] = now()->toDateTimeString();
 
-        // Update is_correct:
-        // - defect match + location valid = correct
-        // - defect match + location invalid = wrong
-        // - defect tidak match = wrong (apapun locationnya)
-        $deffectMatch = $this->answers[$index]['deffect_match'] ?? false;
-        $this->answers[$index]['is_correct'] = $deffectMatch && $status === 'valid';
+        // Semua manual: valid = benar, invalid = salah
+        $this->answers[$index]['is_correct'] = ($status === 'valid');
     }
 
     /**
@@ -57,7 +77,8 @@ class BlindTestReview extends Component
     public function markAllPendingValid()
     {
         foreach ($this->answers as $i => $ans) {
-            if (($ans['location_status'] ?? null) === 'pending') {
+            if (($ans['location_status'] ?? null) === 'pending'
+                && !($ans['auto_missing'] ?? false)) {
                 $this->setLocationStatus($i, 'valid');
             }
         }
@@ -67,7 +88,8 @@ class BlindTestReview extends Component
     public function markAllPendingInvalid()
     {
         foreach ($this->answers as $i => $ans) {
-            if (($ans['location_status'] ?? null) === 'pending') {
+            if (($ans['location_status'] ?? null) === 'pending'
+                && !($ans['auto_missing'] ?? false)) {
                 $this->setLocationStatus($i, 'invalid');
             }
         }
@@ -86,7 +108,10 @@ class BlindTestReview extends Component
 
         // Cek masih ada pending?
         $hasPending = collect($this->answers)
-            ->contains(fn ($a) => ($a['location_status'] ?? null) === 'pending');
+            ->contains(function ($a) {
+                if ($a['auto_missing'] ?? false) return false;
+                return ($a['location_status'] ?? null) === 'pending';
+            });
 
         if ($hasPending) {
             $this->dispatch('notify', message: 'Masih ada yang perlu direview!', type: 'error');
@@ -95,7 +120,33 @@ class BlindTestReview extends Component
 
         // Simpan
         $this->blindTest->user_answers = $this->answers;
-        $this->blindTest->overall_result = $this->blindTest->recalculateResult();
+
+        // Hitung PASS: SEMUA kunci harus match dengan jawaban user yang valid.
+        // Kelebihan jawaban (extra) tidak menggugurkan PASS.
+        $totalKeys = count($this->blindTest->blind_test_items ?? []);
+        $matchedKeys = 0;
+
+        foreach ($this->blindTest->blind_test_items ?? [] as $keyItem) {
+            $keyDefectId = $keyItem['deffect_item_id'] ?? null;
+
+            // Cari baris jawaban user yang match dengan kunci ini
+            $matchedRow = collect($this->answers)->first(function ($ans) use ($keyDefectId) {
+                // Hanya hitung yang di-mark valid oleh QC
+                if (($ans['location_status'] ?? null) !== 'valid') return false;
+
+                // Defect item harus sama
+                return (int) ($ans['deffect_item_id'] ?? 0) === (int) $keyDefectId;
+            });
+
+            if ($matchedRow) {
+                $matchedKeys++;
+            }
+        }
+
+        // PASS hanya kalau SEMUA kunci terpenuhi
+        $overall = ($matchedKeys === $totalKeys && $totalKeys > 0) ? 'PASS' : 'FAIL';
+
+        $this->blindTest->overall_result = $overall;
         $this->blindTest->is_reviewed = true;
         $this->blindTest->reviewed_at = now();
         $this->blindTest->reviewed_by = auth()->id();

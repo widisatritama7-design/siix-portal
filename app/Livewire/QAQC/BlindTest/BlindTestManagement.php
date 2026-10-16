@@ -325,6 +325,16 @@ class BlindTestManagement extends Component
             return;
         }
 
+        // ============ CEK SUDAH TERDAFTAR DI BULAN INI ============
+        if ($this->isEmployeeAlreadyRegisteredThisMonth($e->id)) {
+            $this->dispatch(
+                'notify',
+                message: "Employee {$e->name} ({$e->nik}) sudah terdaftar blind test di bulan ini!",
+                type: 'error'
+            );
+            return;
+        }
+
         if (empty($this->tempShift)) {
             $this->dispatch('notify', message: 'Shift wajib dipilih!', type: 'error');
             return;
@@ -503,6 +513,29 @@ class BlindTestManagement extends Component
         }
 
         // ========== CREATE MODE ==========
+        $startOfMonth = now()->startOfMonth()->startOfDay();
+        $endOfMonth   = now()->endOfMonth()->endOfDay();
+
+        $conflictEmployees = [];
+
+        foreach ($this->selectedEmployees as $emp) {
+            $exists = BlindTest::where('employee_id', $emp['id'])
+                ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+                ->exists();
+
+            if ($exists) {
+                $conflictEmployees[] = $emp['name'] . ' (' . $emp['nik'] . ')';
+            }
+        }
+
+        if (!empty($conflictEmployees)) {
+            $this->dispatch(
+                'notify',
+                message: 'Employee berikut sudah terdaftar blind test bulan ini: ' . implode(', ', $conflictEmployees),
+                type: 'error'
+            );
+            return;
+        }
         $count = 0;
 
         foreach ($this->selectedEmployees as $emp) {
@@ -739,6 +772,23 @@ class BlindTestManagement extends Component
 
         $selectedIds = $this->getSelectedEmployeeIds();
 
+        // ============ BARU: Ambil employee yang sudah terdaftar bulan ini ============
+        $startOfMonth = now()->startOfMonth()->startOfDay();
+        $endOfMonth   = now()->endOfMonth()->endOfDay();
+
+        $registeredQuery = BlindTest::whereBetween('created_at', [$startOfMonth, $endOfMonth])
+            ->select('employee_id');
+
+        if ($this->blind_test_id) {
+            $registeredQuery->where('id', '!=', $this->blind_test_id);
+        }
+
+        $registeredIds = $registeredQuery->pluck('employee_id')
+            ->map(fn ($id) => (int) $id)
+            ->unique()
+            ->toArray();
+        // ============ END BARU ============
+
         return Employee::where(function ($q) use ($search) {
                 $q->where('nik', 'like', "%{$search}%")
                     ->orWhere('name', 'like', "%{$search}%");
@@ -748,12 +798,29 @@ class BlindTestManagement extends Component
             ->limit(20)
             ->get()
             ->map(fn ($e) => [
-                'id'               => $e->id,
-                'nik'              => $e->nik ?? '-',
-                'name'             => $e->name ?? '-',
-                'department'       => $e->department ?? '-',
-                'already_selected' => in_array((int) $e->id, $selectedIds, true),
+                'id'                 => $e->id,
+                'nik'                => $e->nik ?? '-',
+                'name'               => $e->name ?? '-',
+                'department'         => $e->department ?? '-',
+                'already_selected'   => in_array((int) $e->id, $selectedIds, true),
+                'already_registered' => in_array((int) $e->id, $registeredIds, true), // ← BARU
             ]);
+    }
+
+    protected function isEmployeeAlreadyRegisteredThisMonth($employeeId): bool
+    {
+        $startOfMonth = now()->startOfMonth()->startOfDay();
+        $endOfMonth   = now()->endOfMonth()->endOfDay();
+
+        $query = BlindTest::where('employee_id', $employeeId)
+            ->whereBetween('created_at', [$startOfMonth, $endOfMonth]);
+
+        // Kalau sedang edit, kecualikan record yang sedang diedit
+        if ($this->blind_test_id) {
+            $query->where('id', '!=', $this->blind_test_id);
+        }
+
+        return $query->exists();
     }
 
     /* ================= RENDER ================= */

@@ -623,11 +623,124 @@
                     <span class="text-sm font-bold text-blue-600 dark:text-blue-400">{{ $i + 1 }}</span>
                 </div>
                 <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <flux:select wire:model="userAnswers.{{ $i }}.deffect_item_id" placeholder="Pilih defect item...">
-                        @foreach($deffects as $d)
-                            <flux:select.option value="{{ $d->id }}">{{ $d->deffect_item_name }}</flux:select.option>
-                        @endforeach
-                    </flux:select>
+
+                    {{-- ============ SEARCHABLE DEFECT PICKER ============ --}}
+                    <div x-data="{
+                            open: false,
+                            search: '',
+                            selectedId: @entangle('userAnswers.' . $i . '.deffect_item_id'),
+                            selectedName: '',
+                            options: @js($deffects->map(fn($d) => ['id' => (string) $d->id, 'name' => $d->deffect_item_name])->values()),
+                            get filtered() {
+                                if (this.search === '') return this.options;
+                                const s = this.search.toLowerCase();
+                                return this.options.filter(o => o.name.toLowerCase().includes(s));
+                            },
+                            pick(opt) {
+                                this.selectedId = opt.id;
+                                this.selectedName = opt.name;
+                                this.search = '';
+                                this.open = false;
+                            },
+                            clear() {
+                                this.selectedId = '';
+                                this.selectedName = '';
+                                this.search = '';
+                            },
+                            init() {
+                                const found = this.options.find(o => String(o.id) === String(this.selectedId));
+                                this.selectedName = found ? found.name : '';
+                                this.$watch('selectedId', v => {
+                                    const f = this.options.find(o => String(o.id) === String(v));
+                                    this.selectedName = f ? f.name : '';
+                                });
+                            }
+                        }"
+                        @click.outside="open = false"
+                        class="relative">
+
+                        {{-- Trigger --}}
+                        <button type="button" @click="open = !open"
+                            class="w-full flex items-center justify-between gap-2 px-3 py-2.5
+                                border border-zinc-300 dark:border-zinc-700 rounded-lg
+                                bg-white dark:bg-zinc-800 text-left text-sm
+                                focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                                hover:border-zinc-400 dark:hover:border-zinc-600 transition-all">
+                            <span class="truncate"
+                                :class="selectedName ? 'text-zinc-800 dark:text-white' : 'text-zinc-400'"
+                                x-text="selectedName || 'Pilih defect item...'"></span>
+                            <div class="flex items-center gap-1 flex-shrink-0">
+                                <template x-if="selectedId">
+                                    <span @click.stop="clear()"
+                                        class="text-zinc-400 hover:text-red-500 transition-colors cursor-pointer">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                                            <path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                        </svg>
+                                    </span>
+                                </template>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                                    class="w-4 h-4 text-zinc-400 transition-transform duration-200"
+                                    :class="open ? 'rotate-180' : ''">
+                                    <path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                        </button>
+
+                        {{-- Dropdown --}}
+                        <div x-show="open" x-cloak
+                            x-transition:enter="transition ease-out duration-150"
+                            x-transition:enter-start="opacity-0 -translate-y-1"
+                            x-transition:enter-end="opacity-100 translate-y-0"
+                            class="absolute z-50 mt-1 w-full bg-white dark:bg-zinc-800
+                                border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-xl
+                                overflow-hidden">
+
+                            {{-- Search Box --}}
+                            <div class="p-2 border-b border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900/50">
+                                <div class="relative">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                                        class="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-400">
+                                        <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd" />
+                                    </svg>
+                                    <input type="text" x-model="search" x-ref="searchInput"
+                                        @keydown.escape="open = false"
+                                        placeholder="Cari defect..."
+                                        class="w-full pl-8 pr-2 py-1.5 text-sm rounded-md
+                                            border border-zinc-300 dark:border-zinc-700
+                                            bg-white dark:bg-zinc-800
+                                            focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                                            dark:text-white">
+                                </div>
+                            </div>
+
+                            {{-- Options --}}
+                            <div class="max-h-56 overflow-y-auto">
+                                <template x-for="opt in filtered" :key="opt.id">
+                                    <button type="button" @click="pick(opt)"
+                                        class="w-full text-left px-3 py-2 text-sm
+                                            hover:bg-blue-50 dark:hover:bg-blue-950/30
+                                            transition-colors flex items-center justify-between gap-2"
+                                        :class="String(selectedId) === String(opt.id)
+                                            ? 'bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-300 font-semibold'
+                                            : 'text-zinc-700 dark:text-zinc-300'">
+                                        <span class="truncate" x-text="opt.name"></span>
+                                        <template x-if="String(selectedId) === String(opt.id)">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-blue-600 flex-shrink-0">
+                                                <path fill-rule="evenodd" d="M19.916 4.626a.75.75 0 0 1 .208 1.04l-9 13.5a.75.75 0 0 1-1.154.114l-6-6a.75.75 0 0 1 1.06-1.06l5.353 5.353 8.493-12.74a.75.75 0 0 1 1.04-.207Z" clip-rule="evenodd" />
+                                            </svg>
+                                        </template>
+                                    </button>
+                                </template>
+
+                                <div x-show="filtered.length === 0"
+                                    class="px-3 py-6 text-center text-xs text-zinc-400 italic">
+                                    Tidak ada defect yang cocok
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- ============ COMPONENT LOCATION (TETAP SAMA) ============ --}}
                     <flux:input wire:model="userAnswers.{{ $i }}.component_location"
                         placeholder="Component location (e.g. CN4)" class="uppercase" />
                 </div>
@@ -905,7 +1018,7 @@
                     </div>
                     <div class="overflow-x-auto bg-white dark:bg-zinc-900">
                         <table class="w-full" style="min-width: 500px;">
-                            <thead class="bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-200 dark:border-zinc-700">
+                            <thead class="bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-200 dark:border-zinc-700 sticky top-0 z-10">
                                 <tr>
                                     <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase w-12">#</th>
                                     <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase">Defect Item</th>
@@ -1044,7 +1157,7 @@
                         </div>
                         <div class="overflow-x-auto bg-white dark:bg-zinc-900 flex-1">
                             <table class="w-full" style="min-width: 380px;">
-                                <thead class="bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800">
+                                <thead class="bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800 sticky top-0 z-10">
                                     <tr>
                                         <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-blue-700 dark:text-blue-300 uppercase w-12">#</th>
                                         <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-blue-700 dark:text-blue-300 uppercase" style="min-width: 180px;">Defect Item</th>
@@ -1088,7 +1201,7 @@
                         </div>
                         <div class="overflow-x-auto bg-white dark:bg-zinc-900 flex-1">
                             <table class="w-full" style="min-width: 440px;">
-                                <thead class="bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-200 dark:border-zinc-700">
+                                <thead class="bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-200 dark:border-zinc-700 sticky top-0 z-10">
                                     <tr>
                                         <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase w-12">#</th>
                                         <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase" style="min-width: 180px;">Defect Item</th>
@@ -1168,7 +1281,7 @@
                         </div>
                         <div class="overflow-x-auto bg-white dark:bg-zinc-900 flex-1">
                             <table class="w-full" style="min-width: 380px;">
-                                <thead class="bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800">
+                                <thead class="bg-blue-50 dark:bg-blue-900/20 border-b border-blue-200 dark:border-blue-800 sticky top-0 z-10">
                                     <tr>
                                         <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-blue-700 dark:text-blue-300 uppercase w-12">#</th>
                                         <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-blue-700 dark:text-blue-300 uppercase" style="min-width: 180px;">Defect Item</th>
@@ -1212,7 +1325,7 @@
                         </div>
                         <div class="overflow-x-auto bg-white dark:bg-zinc-900 flex-1">
                             <table class="w-full" style="min-width: 440px;">
-                                <thead class="bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-200 dark:border-zinc-700">
+                                <thead class="bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-200 dark:border-zinc-700 sticky top-0 z-10">
                                     <tr>
                                         <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase w-12">#</th>
                                         <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase" style="min-width: 180px;">Defect Item</th>
@@ -1287,7 +1400,7 @@
                         </div>
                         <div class="overflow-x-auto bg-white dark:bg-zinc-900 flex-1">
                             <table class="w-full" style="min-width: 440px;">
-                                <thead class="bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-200 dark:border-zinc-700">
+                                <thead class="bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-200 dark:border-zinc-700 sticky top-0 z-10">
                                     <tr>
                                         <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase w-12">#</th>
                                         <th class="px-3 py-2.5 text-left text-[10px] font-semibold text-zinc-600 dark:text-zinc-400 uppercase" style="min-width: 180px;">Defect Item</th>
@@ -1368,7 +1481,26 @@
         </div>
     </div>
 
-    <style>[x-cloak] { display: none !important; }</style>
+    <style>
+        [x-cloak] { display: none !important; }
+
+        .defect-scroll::-webkit-scrollbar {
+        width: 6px;
+        }
+        .defect-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .defect-scroll::-webkit-scrollbar-thumb {
+            background: rgba(161, 161, 170, 0.5);
+            border-radius: 999px;
+        }
+        .defect-scroll::-webkit-scrollbar-thumb:hover {
+            background: rgba(113, 113, 122, 0.8);
+        }
+        .dark .defect-scroll::-webkit-scrollbar-thumb {
+            background: rgba(113, 113, 122, 0.5);
+        }
+    </style>
 
     {{-- ==================== SCRIPT CAMERA PROCTORING ==================== --}}
     <script>

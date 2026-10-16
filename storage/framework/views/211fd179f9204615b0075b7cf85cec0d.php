@@ -236,7 +236,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                         </thead>
                                         <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
                                             <template x-for="emp in employees" :key="emp.id">
-                                                <tr :class="emp.already_selected
+                                                <tr :class="(emp.already_selected || emp.already_registered)
                                                         ? 'bg-zinc-100 dark:bg-zinc-800/50 opacity-60 cursor-not-allowed'
                                                         : 'hover:bg-blue-50 dark:hover:bg-blue-950/10'">
                                                     <td class="px-3 py-2 text-center font-mono text-xs" x-text="emp.nik"></td>
@@ -247,10 +247,15 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                                                 Sudah ditambahkan
                                                             </span>
                                                         </template>
+                                                        <template x-if="!emp.already_selected && emp.already_registered">
+                                                            <span class="ml-2 inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 text-[10px] font-semibold">
+                                                                Sudah Mengikuti Test di bulan ini
+                                                            </span>
+                                                        </template>
                                                     </td>
                                                     <td class="px-3 py-2 text-center text-xs" x-text="emp.department"></td>
                                                     <td class="px-3 py-2 text-center">
-                                                        <template x-if="!emp.already_selected">
+                                                        <template x-if="!emp.already_selected && !emp.already_registered">
                                                             <button type="button" @click="pick(emp)"
                                                                 class="px-2.5 py-1 text-xs bg-blue-600 hover:bg-blue-700 text-white rounded-md font-medium">
                                                                 Pilih
@@ -259,6 +264,11 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                                         <template x-if="emp.already_selected">
                                                             <span class="px-2.5 py-1 text-xs bg-zinc-200 dark:bg-zinc-700 text-zinc-500 rounded-md font-medium inline-block">
                                                                 Sudah Ada
+                                                            </span>
+                                                        </template>
+                                                        <template x-if="!emp.already_selected && emp.already_registered">
+                                                            <span class="px-2.5 py-1 text-xs bg-red-200 dark:bg-red-900/40 text-red-600 dark:text-red-300 rounded-md font-medium inline-block">
+                                                                Terdaftar
                                                             </span>
                                                         </template>
                                                     </td>
