@@ -25,9 +25,9 @@
 
         @can('create model')
             <div class="flex flex-wrap gap-2">
-                <flux:button 
-                    variant="primary" 
-                    icon="arrow-up-tray" 
+                <flux:button
+                    variant="primary"
+                    icon="arrow-up-tray"
                     class="bg-emerald-600 hover:bg-emerald-700"
                     wire:click="resetImport"
                     x-on:click="$dispatch('open-modal-import')"
@@ -35,9 +35,9 @@
                     Import CSV
                 </flux:button>
 
-                <flux:button 
-                    variant="primary" 
-                    icon="plus" 
+                <flux:button
+                    variant="primary"
+                    icon="plus"
                     class="bg-blue-600 hover:bg-blue-700"
                     wire:click="resetForm"
                     x-on:click="$dispatch('open-modal-model')"
@@ -110,13 +110,14 @@
         {{-- ===== BODY ===== --}}
         <div class="p-6 flex flex-col flex-1">
             <div class="overflow-x-auto flex-1">
-                <table class="w-full" style="min-width: 1050px; white-space: nowrap;">
+                <table class="w-full" style="min-width: 1150px; white-space: nowrap;">
                     <thead>
                         <tr class="bg-zinc-50 dark:bg-zinc-800/50">
                             <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 50px;">#</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 180px;">Customer</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 180px;">Model Name</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 260px;">Model Name</th>
                             <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 140px;">PCB Type</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 220px;">Digunakan Di</th>
                             <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 130px;">Created By</th>
                             <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 140px;">Date Create</th>
                             <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider" style="min-width: 140px;">Date Update</th>
@@ -125,7 +126,13 @@
                     </thead>
                     <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
                         @forelse($models as $index => $model)
-                        @php $isUsed = in_array((int) $model->id, $usedIds, true); @endphp
+                        @php
+                            $usage       = $usageMap[$model->id] ?? null;
+                            $usedInBlind = $usage['blind_test'] ?? false;
+                            $usedInXray  = $usage['scan_xray']  ?? false;
+                            $usedInQ     = $usage['question']   ?? false;
+                            $isUsed      = $usedInBlind || $usedInXray || $usedInQ;
+                        @endphp
                         <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors" wire:key="model-{{ $model->id }}">
                             <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400 text-center">
                                 {{ $models->firstItem() + $index }}
@@ -136,15 +143,10 @@
                                 </span>
                             </td>
                             <td class="px-4 py-3 text-left">
-                                <div class="flex items-center gap-2">
+                                <div class="flex items-center gap-2 flex-wrap">
                                     <span class="text-sm font-semibold {{ $isUsed ? 'text-zinc-500 dark:text-zinc-400' : 'text-zinc-800 dark:text-white' }}">
                                         {{ $model->model_name }}
                                     </span>
-                                    @if($isUsed)
-                                        <flux:badge size="sm" color="amber" title="Sudah dipakai di Blind Test / Master Question">
-                                            Used
-                                        </flux:badge>
-                                    @endif
                                 </div>
                             </td>
                             <td class="px-4 py-3 text-center">
@@ -155,6 +157,38 @@
                                         <span class="text-sm text-zinc-400">-</span>
                                     @endforelse
                                 </div>
+                            </td>
+                            <td class="px-4 py-3 text-center">
+                                @if($usedInBlind || $usedInXray || $usedInQ)
+                                    <div class="flex items-center justify-center gap-1 flex-wrap">
+                                        @if($usedInBlind)
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300"
+                                                  title="Dipakai di Blind Test">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                                Blind Test
+                                            </span>
+                                        @endif
+                                        @if($usedInXray)
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300"
+                                                  title="Dipakai di Scan X-Ray">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
+                                                Scan X-Ray
+                                            </span>
+                                        @endif
+                                        @if($usedInQ)
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-100 text-sky-700 dark:bg-sky-900 dark:text-sky-300"
+                                                  title="Dipakai di Master Question">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-sky-500"></span>
+                                                Question
+                                            </span>
+                                        @endif
+                                    </div>
+                                @else
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-zinc-100 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-400">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-zinc-400"></span>
+                                        Belum dipakai
+                                    </span>
+                                @endif
                             </td>
                             <td class="px-4 py-3 text-sm text-zinc-600 dark:text-zinc-400 text-center">
                                 {{ $model->creator->name ?? '-' }}
@@ -169,8 +203,8 @@
                                 <div class="flex items-center justify-center gap-1" style="flex-wrap: nowrap;">
                                     @can('view model')
                                     <flux:tooltip content="View" position="top">
-                                        <flux:button 
-                                            wire:click="view({{ $model->id }})" 
+                                        <flux:button
+                                            wire:click="view({{ $model->id }})"
                                             size="sm"
                                             icon="eye"
                                             variant="primary"
@@ -183,8 +217,8 @@
                                     @can('edit model')
                                         @if(!$isUsed)
                                         <flux:tooltip content="Edit" position="top">
-                                            <flux:button 
-                                                wire:click="edit({{ $model->id }})" 
+                                            <flux:button
+                                                wire:click="edit({{ $model->id }})"
                                                 size="sm"
                                                 icon="pencil-square"
                                                 variant="primary"
@@ -198,8 +232,8 @@
                                     @can('delete model')
                                         @if(!$isUsed)
                                         <flux:tooltip content="Delete" position="top">
-                                            <flux:button 
-                                                wire:click="confirmDelete({{ $model->id }})" 
+                                            <flux:button
+                                                wire:click="confirmDelete({{ $model->id }})"
                                                 size="sm"
                                                 icon="trash"
                                                 variant="primary"
@@ -214,7 +248,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="8" class="px-4 py-8 text-center">
+                            <td colspan="9" class="px-4 py-8 text-center">
                                 <div class="flex flex-col items-center justify-center gap-2 py-6">
                                     <div class="w-16 h-16 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
                                         <flux:icon name="cube" class="w-8 h-8 text-zinc-400 dark:text-zinc-500" />
@@ -249,7 +283,7 @@
     </flux:card>
 
     <!-- ==================== MODAL FORM ==================== -->
-    <div x-data="{ open: false }" 
+    <div x-data="{ open: false }"
         x-on:open-modal-model.window="open = true"
         x-on:close-modal-model.window="open = false"
         x-show="open"
@@ -271,21 +305,21 @@
                                     <flux:select.option value="{{ $customer->id }}">{{ $customer->customer_name }}</flux:select.option>
                                 @endforeach
                             </flux:select>
-                            @error('customer_id') 
-                                <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> 
+                            @error('customer_id')
+                                <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span>
                             @enderror
                         </div>
 
                         <div class="mb-4">
                             <flux:label required>Model Name</flux:label>
-                            <flux:input 
-                                wire:model="model_name" 
-                                type="text" 
+                            <flux:input
+                                wire:model="model_name"
+                                type="text"
                                 placeholder="Enter model name"
                                 class="uppercase"
                             />
-                            @error('model_name') 
-                                <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> 
+                            @error('model_name')
+                                <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span>
                             @enderror
                         </div>
 
@@ -305,9 +339,9 @@
                                                  || ($value !== 'SINGLE' && $isSingle);
                                     @endphp
                                     <label class="inline-flex items-center gap-2 select-none {{ $disabled ? 'opacity-40 cursor-not-allowed' : 'cursor-pointer' }}">
-                                        <input 
-                                            type="checkbox" 
-                                            wire:model.live="pcb_type" 
+                                        <input
+                                            type="checkbox"
+                                            wire:model.live="pcb_type"
                                             value="{{ $value }}"
                                             @disabled($disabled)
                                             class="rounded border-zinc-300 text-blue-600 focus:ring-blue-500 dark:border-zinc-600 dark:bg-zinc-800 disabled:cursor-not-allowed"
@@ -317,11 +351,11 @@
                                 @endforeach
                             </div>
 
-                            @error('pcb_type') 
-                                <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> 
+                            @error('pcb_type')
+                                <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span>
                             @enderror
-                            @error('pcb_type.*') 
-                                <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> 
+                            @error('pcb_type.*')
+                                <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span>
                             @enderror
 
                             <p class="text-[11px] text-zinc-400 mt-2">
@@ -332,12 +366,12 @@
                 </div>
 
                 <div class="p-6 pt-0 flex justify-end gap-2">
-                    <button type="button" 
+                    <button type="button"
                             @click="open = false"
                             class="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
                         Cancel
                     </button>
-                    <button type="submit" 
+                    <button type="submit"
                         form="model-form"
                         class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                         wire:loading.attr="disabled"
@@ -351,7 +385,7 @@
     </div>
 
     <!-- ==================== MODAL VIEW ==================== -->
-    <div x-data="{ open: false }" 
+    <div x-data="{ open: false }"
         x-on:open-modal-view.window="open = true"
         x-on:close-modal-view.window="open = false"
         x-show="open"
@@ -366,6 +400,9 @@
                     <h2 class="text-xl font-bold mb-4">Model Detail</h2>
 
                     @if($viewData)
+                    @php
+                        $u = $usageMap[$viewData->id] ?? ['blind_test' => false, 'scan_xray' => false, 'question' => false];
+                    @endphp
                     <div class="space-y-3">
                         <div>
                             <span class="text-xs text-zinc-500 dark:text-zinc-400">Customer</span>
@@ -385,6 +422,35 @@
                                 @endforelse
                             </div>
                         </div>
+
+                        {{-- ===== DIGUNAKAN DI ===== --}}
+                        <div>
+                            <span class="text-xs text-zinc-500 dark:text-zinc-400">Digunakan Di</span>
+                            <div class="flex items-center gap-1 flex-wrap mt-1">
+                                @if($u['blind_test'])
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>
+                                        Blind Test
+                                    </span>
+                                @endif
+                                @if($u['scan_xray'])
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-700 dark:bg-purple-900 dark:text-purple-300">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-purple-500"></span>
+                                        Scan X-Ray
+                                    </span>
+                                @endif
+                                @if($u['question'])
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-100 text-sky-700 dark:bg-sky-900 dark:text-sky-300">
+                                        <span class="w-1.5 h-1.5 rounded-full bg-sky-500"></span>
+                                        Master Question
+                                    </span>
+                                @endif
+                                @if(!$u['blind_test'] && !$u['scan_xray'] && !$u['question'])
+                                    <span class="text-sm text-zinc-400">Belum dipakai</span>
+                                @endif
+                            </div>
+                        </div>
+
                         <div>
                             <span class="text-xs text-zinc-500 dark:text-zinc-400">Created By</span>
                             <p class="text-sm text-zinc-800 dark:text-white mt-1">{{ $viewData->creator->name ?? '-' }}</p>
@@ -406,7 +472,7 @@
                 </div>
 
                 <div class="p-6 pt-0 flex justify-end">
-                    <button type="button" 
+                    <button type="button"
                             @click="open = false"
                             class="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
                         Close
@@ -417,8 +483,8 @@
     </div>
 
     <!-- ==================== MODAL DELETE ==================== -->
-    <div x-data="{ open: false }" 
-        x-show="open" 
+    <div x-data="{ open: false }"
+        x-show="open"
         x-on:open-modal-delete.window="open = true"
         x-on:close-modal-delete.window="open = false"
         x-cloak
@@ -440,11 +506,11 @@
                 </p>
 
                 <div class="flex justify-center gap-3 mt-4">
-                    <button @click="open = false" 
+                    <button @click="open = false"
                             class="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
                         Cancel
                     </button>
-                    <button wire:click="delete" 
+                    <button wire:click="delete"
                             class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
                         Yes, Delete
                     </button>
@@ -454,7 +520,7 @@
     </div>
 
     <!-- ==================== MODAL IMPORT ==================== -->
-    <div x-data="{ open: false }" 
+    <div x-data="{ open: false }"
         x-on:open-modal-import.window="open = true"
         x-on:close-modal-import.window="open = false"
         x-show="open"
@@ -466,7 +532,7 @@
         <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
             <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-5xl max-h-[94vh] flex flex-col overflow-hidden">
 
-                {{-- ===== HEADER (sticky, tidak scroll) ===== --}}
+                {{-- ===== HEADER --}}
                 <div class="relative px-6 py-5 bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 overflow-hidden flex-shrink-0">
                     <div class="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-white/10"></div>
                     <div class="absolute -right-2 -bottom-10 w-20 h-20 rounded-full bg-white/10"></div>
@@ -488,7 +554,7 @@
                             </div>
                         </div>
 
-                        <button @click="open = false" 
+                        <button @click="open = false"
                                 class="text-white/80 hover:text-white transition-colors flex-shrink-0 w-8 h-8 rounded-lg hover:bg-white/10 flex items-center justify-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -546,7 +612,7 @@
                     </div>
                 </div>
 
-                {{-- ===== BODY (scrollable, min-h-0 agar flex benar-benar membatasi tinggi) ===== --}}
+                {{-- ===== BODY ===== --}}
                 <div class="flex-1 min-h-0 overflow-y-auto overscroll-contain p-6 space-y-4 bg-zinc-50/50 dark:bg-zinc-900/50 import-scroll">
 
                     {{-- ===== STEP 1: UPLOAD ===== --}}
@@ -611,8 +677,8 @@
                                             Format .csv atau .txt — maks 2MB
                                         </p>
                                     </div>
-                                    <input 
-                                        type="file" 
+                                    <input
+                                        type="file"
                                         wire:model="importFile"
                                         accept=".csv,text/csv"
                                         @disabled($importStep === 'done')
@@ -620,8 +686,8 @@
                                     >
                                 </label>
 
-                                @error('importFile') 
-                                    <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> 
+                                @error('importFile')
+                                    <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span>
                                 @enderror
 
                                 <div wire:loading wire:target="importFile" class="flex items-center gap-2 text-xs text-emerald-600 mt-2 font-semibold">
@@ -633,7 +699,7 @@
                                 </div>
                             </div>
 
-                            <button 
+                            <button
                                 type="button"
                                 wire:click="downloadTemplate"
                                 class="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 border border-emerald-300 dark:border-emerald-700 rounded-xl
@@ -743,7 +809,6 @@
                                     </span>
                                 </div>
 
-                                {{-- Scroll area untuk tabel (max-h dibatasi, scroll sendiri) --}}
                                 <div class="max-h-80 overflow-y-auto import-scroll">
                                     <table class="w-full text-xs">
                                         <thead class="bg-zinc-50 dark:bg-zinc-800 sticky top-0 z-10 shadow-sm">
@@ -866,13 +931,12 @@
                     @endif
                 </div>
 
-                {{-- ===== FOOTER (sticky, tidak scroll) ===== --}}
+                {{-- ===== FOOTER ===== --}}
                 <div class="px-6 py-4 border-t border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 flex items-center justify-between gap-3 flex-shrink-0">
 
-                    {{-- Left: Reset --}}
                     <div>
                         @if(!empty($importPreview) && $importStep !== 'done')
-                            <button type="button" 
+                            <button type="button"
                                     wire:click="resetImport"
                                     class="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold text-zinc-600 dark:text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200 transition-colors">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -883,9 +947,8 @@
                         @endif
                     </div>
 
-                    {{-- Right: Actions --}}
                     <div class="flex items-center gap-2">
-                        <button type="button" 
+                        <button type="button"
                                 @click="open = false"
                                 class="px-4 py-2 border border-zinc-300 dark:border-zinc-600 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors text-sm font-semibold text-zinc-700 dark:text-zinc-300">
                             {{ $importStep === 'done' ? 'Close' : 'Cancel' }}
@@ -931,7 +994,7 @@
     </div>
 
     <!-- Notifikasi -->
-    <div x-data="{ show: false, message: '', type: 'success' }" 
+    <div x-data="{ show: false, message: '', type: 'success' }"
          x-on:notify.window="show = true; message = $event.detail.message; type = $event.detail.type || 'success'; setTimeout(() => show = false, 3000)"
          x-show="show"
          x-transition
@@ -950,7 +1013,6 @@
     <style>
         [x-cloak] { display: none !important; }
 
-        /* ===== Custom Scrollbar untuk modal import ===== */
         .import-scroll {
             scrollbar-width: thin;
             scrollbar-color: rgb(161 161 170 / 0.5) transparent;
@@ -978,7 +1040,6 @@
             background-clip: content-box;
         }
 
-        /* Dark mode */
         .dark .import-scroll {
             scrollbar-color: rgb(113 113 122 / 0.6) transparent;
         }

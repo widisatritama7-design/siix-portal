@@ -6,6 +6,7 @@ use App\Models\QAQC\BlindTest\Customer;
 use App\Models\QAQC\BlindTest\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Schema;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
@@ -32,9 +33,9 @@ class ModelManagement extends Component
     public $importFile = null;
     public $importPreview = []; // hasil parsing + validasi
     public $importSummary = [
-        'total'    => 0,
-        'valid'    => 0,
-        'invalid'  => 0,
+        'total'     => 0,
+        'valid'     => 0,
+        'invalid'   => 0,
         'duplicate' => 0,
     ];
     public $importStep = 'upload'; // upload | preview | done
@@ -58,7 +59,7 @@ class ModelManagement extends Component
                 'array',
                 'min:1',
                 function ($attribute, $value, $fail) {
-                    $value = array_unique($value ?? []);
+                    $value     = array_unique($value ?? []);
                     $hasSingle = in_array('SINGLE', $value, true);
                     $hasLhRh   = count(array_intersect(['LH', 'RH'], $value)) > 0;
 
@@ -116,40 +117,149 @@ class ModelManagement extends Component
         }
     }
 
-    // ==================== HELPER: CEK MODEL DIPAKAI ====================
+    // ==================== HELPER: CEK MODEL DIPAKAI (DETAIL) ====================
 
-    protected function getUsedModelIds(): array
+    /**
+     * Mengembalikan map:
+     *   model_id => ['blind_test' => bool, 'scan_xray' => bool, 'question' => bool]
+     *
+     * Mendukung multiple model:
+     *  - kolom `model_id` (single) di blind test
+     *  - kolom `model_ids` (JSON array) di blind test
+     *  - kolom `question_snapshot` (JSON) berisi banyak model_id
+     *  - kolom `model_ids` (JSON array) di scan x-ray
+     */
+    protected function getModelUsageMap(): array
     {
-        $used = [];
+        $usage = [];
 
-        $rows = DB::table('tb_qaqc_blind_test')
-            ->select('question_snapshot', 'model_id')
-            ->get();
+        $init = function (int $modelId) use (&$usage) {
+            if (!isset($usage[$modelId])) {
+                $usage[$modelId] = [
+                    'blind_test' => false,
+                    'scan_xray'  => false,
+                    'question'   => false,
+                ];
+            }
+        };
 
-        foreach ($rows as $row) {
-            if ($row->question_snapshot) {
-                $snapshots = json_decode($row->question_snapshot, true) ?? [];
-                foreach ($snapshots as $snap) {
-                    if (!empty($snap['model_id'])) {
-                        $used[] = (int) $snap['model_id'];
+        // ===== 1. BLIND TEST =====
+        if (Schema::hasTable('tb_qaqc_blind_test')) {
+            $columns = ['model_id', 'question_snapshot'];
+
+            // cek kolom model_ids (kalau ada)
+            if (Schema::hasColumn('tb_qaqc_blind_test', 'model_ids')) {
+                $columns[] = 'model_ids';
+            }
+
+            $blindRows = DB::table('tb_qaqc_blind_test')->select($columns)->get();
+
+            foreach ($blindRows as $row) {
+                // 1a. single model_id
+                if (!empty($row->model_id)) {
+                    $id = (int) $row->model_id;
+                    $init($id);
+                    $usage[$id]['blind_test'] = true;
+                }
+
+                // 1b. multiple model_ids (JSON array)
+                if (!empty($row->model_ids)) {
+                    $ids = is_array($row->model_ids)
+                        ? $row->model_ids
+                        : (json_decode($row->model_ids, true) ?? []);
+
+                    foreach ((array) $ids as $id) {
+                        if (!empty($id)) {
+                            $id = (int) $id;
+                            $init($id);
+                            $usage[$id]['blind_test'] = true;
+                        }
+                    }
+                }
+
+                // 1c. question_snapshot (JSON berisi array pertanyaan)
+                if (!empty($row->question_snapshot)) {
+                    $snapshots = is_array($row->question_snapshot)
+                        ? $row->question_snapshot
+                        : (json_decode($row->question_snapshot, true) ?? []);
+
+                    foreach ($snapshots as $snap) {
+                        if (!empty($snap['model_id'])) {
+                            $id = (int) $snap['model_id'];
+                            $init($id);
+                            $usage[$id]['blind_test'] = true;
+                        }
+
+                        if (!empty($snap['model_ids']) && is_array($snap['model_ids'])) {
+                            foreach ($snap['model_ids'] as $mid) {
+                                if (!empty($mid)) {
+                                    $id = (int) $mid;
+                                    $init($id);
+                                    $usage[$id]['blind_test'] = true;
+                                }
+                            }
+                        }
                     }
                 }
             }
+        }
 
-            if (!empty($row->model_id)) {
-                $used[] = (int) $row->model_id;
+        // ===== 2. MASTER QUESTION =====
+        if (Schema::hasTable('tb_qaqc_question')) {
+            $questionIds = DB::table('tb_qaqc_question')
+                ->whereNotNull('model_id')
+                ->pluck('model_id');
+
+            foreach ($questionIds as $id) {
+                $id = (int) $id;
+                $init($id);
+                $usage[$id]['question'] = true;
             }
         }
 
-        $questionUsed = DB::table('tb_qaqc_question')
-            ->whereNotNull('model_id')
-            ->pluck('model_id')
-            ->map(fn ($id) => (int) $id)
-            ->toArray();
+        // ===== 3. SCAN X-RAY =====
+        // Sesuaikan nama tabel dengan struktur Anda.
+        // Contoh: tb_qaqc_scan_xray dengan kolom model_id & model_ids (JSON).
+        if (Schema::hasTable('tb_qaqc_scan_xray')) {
+            $xrayCols = ['model_id'];
+            if (Schema::hasColumn('tb_qaqc_scan_xray', 'model_ids')) {
+                $xrayCols[] = 'model_ids';
+            }
 
-        $used = array_merge($used, $questionUsed);
+            $xrayRows = DB::table('tb_qaqc_scan_xray')->select($xrayCols)->get();
 
-        return array_values(array_unique($used));
+            foreach ($xrayRows as $row) {
+                if (!empty($row->model_id)) {
+                    $id = (int) $row->model_id;
+                    $init($id);
+                    $usage[$id]['scan_xray'] = true;
+                }
+
+                if (!empty($row->model_ids)) {
+                    $ids = is_array($row->model_ids)
+                        ? $row->model_ids
+                        : (json_decode($row->model_ids, true) ?? []);
+
+                    foreach ((array) $ids as $id) {
+                        if (!empty($id)) {
+                            $id = (int) $id;
+                            $init($id);
+                            $usage[$id]['scan_xray'] = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return $usage;
+    }
+
+    /**
+     * Daftar model_id yang sedang dipakai (untuk kompatibilitas).
+     */
+    protected function getUsedModelIds(): array
+    {
+        return array_keys($this->getModelUsageMap());
     }
 
     public function isUsedInBlindTest(int $modelId): bool
@@ -168,7 +278,7 @@ class ModelManagement extends Component
             }
 
             if ($this->isUsedInBlindTest((int) $this->model_id)) {
-                $this->dispatch('notify', message: 'Model sudah dipakai di Blind Test / Master Question, tidak bisa diedit!', type: 'error');
+                $this->dispatch('notify', message: 'Model sudah dipakai di Blind Test / Scan X-Ray / Master Question, tidak bisa diedit!', type: 'error');
                 return;
             }
         } else {
@@ -233,7 +343,7 @@ class ModelManagement extends Component
         if ($this->isUsedInBlindTest((int) $model->id)) {
             $this->dispatch(
                 'notify',
-                message: "Model '{$model->model_name}' sudah dipakai di Blind Test / Master Question, tidak bisa diedit!",
+                message: "Model '{$model->model_name}' sudah dipakai di Blind Test / Scan X-Ray / Master Question, tidak bisa diedit!",
                 type: 'error'
             );
             return;
@@ -279,7 +389,7 @@ class ModelManagement extends Component
         if ($this->isUsedInBlindTest((int) $model->id)) {
             $this->dispatch(
                 'notify',
-                message: "Model '{$model->model_name}' sudah dipakai di Blind Test / Master Question, tidak bisa dihapus!",
+                message: "Model '{$model->model_name}' sudah dipakai di Blind Test / Scan X-Ray / Master Question, tidak bisa dihapus!",
                 type: 'error'
             );
             return;
@@ -312,7 +422,7 @@ class ModelManagement extends Component
         if ($this->isUsedInBlindTest((int) $model->id)) {
             $this->dispatch(
                 'notify',
-                message: "Model '{$model->model_name}' sudah dipakai di Blind Test / Master Question, tidak bisa dihapus!",
+                message: "Model '{$model->model_name}' sudah dipakai di Blind Test / Scan X-Ray / Master Question, tidak bisa dihapus!",
                 type: 'error'
             );
             $this->modelToDelete = null;
@@ -378,11 +488,6 @@ class ModelManagement extends Component
 
     // ==================== IMPORT: PARSE & PREVIEW ====================
 
-    /**
-     * Dipanggil otomatis saat user selesai upload file.
-     * Membaca CSV, validasi, deteksi duplikat (dalam file & database),
-     * lalu simpan hasilnya ke $importPreview untuk ditampilkan.
-     */
     public function updatedImportFile()
     {
         $this->validate([
@@ -398,7 +503,7 @@ class ModelManagement extends Component
 
     protected function parsePreview()
     {
-        $path = $this->importFile->getRealPath();
+        $path   = $this->importFile->getRealPath();
         $handle = fopen($path, 'r');
 
         if (!$handle) {
@@ -448,13 +553,11 @@ class ModelManagement extends Component
         $summary = ['total' => 0, 'valid' => 0, 'invalid' => 0, 'duplicate' => 0];
         $rowNum  = 1;
 
-        // Untuk deteksi duplikat di dalam file CSV
         $seenInFile = [];
 
         while (($row = fgetcsv($handle, 0, $delimiter)) !== false) {
             $rowNum++;
 
-            // Skip baris kosong
             if (count(array_filter($row, fn ($v) => trim((string) $v) !== '')) === 0) {
                 continue;
             }
@@ -468,10 +571,10 @@ class ModelManagement extends Component
             $pcbTypes = preg_split('/[;,]/', $pcbRaw);
             $pcbTypes = array_values(array_unique(array_filter(array_map('trim', $pcbTypes))));
 
-            $errors    = [];
-            $isDup     = false;
+            $errors = [];
+            $isDup  = false;
 
-            // ===== Validasi customer =====
+            // Validasi customer
             $customer = null;
             if ($customerName === '') {
                 $errors[] = 'Customer name kosong.';
@@ -481,12 +584,12 @@ class ModelManagement extends Component
                 $customer = $customers->get($customerName);
             }
 
-            // ===== Validasi model name =====
+            // Validasi model name
             if ($modelName === '') {
                 $errors[] = 'Model name kosong.';
             }
 
-            // ===== Validasi PCB =====
+            // Validasi PCB
             if (empty($pcbTypes)) {
                 $errors[] = 'PCB Type kosong.';
             } else {
@@ -501,20 +604,18 @@ class ModelManagement extends Component
                 }
             }
 
-            // ===== Deteksi duplikat =====
+            // Deteksi duplikat
             if ($customer && $modelName !== '' && empty($errors)) {
                 $key = $customer->id . '|' . $modelName;
 
-                // 1) Duplikat di database
                 if (isset($existingModels[$key])) {
                     $errors[] = 'Model sudah ada di database untuk customer ini.';
-                    $isDup = true;
+                    $isDup    = true;
                 }
 
-                // 2) Duplikat di dalam file CSV
                 if (isset($seenInFile[$key])) {
                     $errors[] = 'Duplikat di file CSV (baris ' . $seenInFile[$key] . ').';
-                    $isDup = true;
+                    $isDup    = true;
                 } else {
                     $seenInFile[$key] = $rowNum;
                 }
@@ -553,7 +654,7 @@ class ModelManagement extends Component
         $this->importStep    = 'preview';
     }
 
-    // ==================== IMPORT: CONFIRM (SIMpan) ====================
+    // ==================== IMPORT: CONFIRM (SIMPAN) ====================
 
     public function confirmImport()
     {
@@ -579,7 +680,6 @@ class ModelManagement extends Component
 
         DB::beginTransaction();
         try {
-            // Re-check duplikat tepat sebelum insert (race condition)
             $existingModels = Model::select('customer_id', 'model_name')
                 ->get()
                 ->map(fn ($m) => $m->customer_id . '|' . strtoupper($m->model_name))
@@ -594,7 +694,6 @@ class ModelManagement extends Component
                 $key = $row['customer_id'] . '|' . $row['model'];
 
                 if (isset($existingModels[$key])) {
-                    // Skip — sudah diinsert baris sebelumnya di batch ini
                     $this->importPreview[$i]['status']   = 'duplicate';
                     $this->importPreview[$i]['errors'][] = 'Duplikat terdeteksi saat import.';
                     $failed++;
@@ -610,7 +709,7 @@ class ModelManagement extends Component
                 ]);
 
                 $existingModels[$key] = true;
-                $this->importPreview[$i]['status']   = 'imported';
+                $this->importPreview[$i]['status'] = 'imported';
                 $success++;
             }
 
@@ -650,12 +749,14 @@ class ModelManagement extends Component
 
         $models = $query->orderByDesc('id')->paginate(10);
 
-        $usedIds = $this->getUsedModelIds();
+        $usageMap = $this->getModelUsageMap();
+        $usedIds  = array_keys($usageMap);
 
         return view('livewire.qaqc.blind-test.model-management', [
             'models'      => $models,
             'customers'   => Customer::orderBy('customer_name')->get(),
             'usedIds'     => $usedIds,
+            'usageMap'    => $usageMap,
             'pcbTypeOpts' => Model::PCB_TYPES,
         ]);
     }
