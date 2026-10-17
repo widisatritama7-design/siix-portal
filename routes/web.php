@@ -46,6 +46,10 @@ use App\Livewire\PROD\MS\Sample\MasterSampleLoanForm;
 use App\Livewire\PROD\MS\Sample\MasterSampleManagement;
 use App\Livewire\PROD\MS\Sample\MasterSampleShow;
 use App\Livewire\PROD\MS\Sample\SampleChecksManagement;
+use App\Livewire\PROD\Patrol\CategoryPatrolManagement;
+use App\Livewire\PROD\Patrol\ResultPatrolForm;
+use App\Livewire\PROD\Patrol\ResultPatrolManagement;
+use App\Livewire\PROD\Patrol\StandardPatrolManagement;
 use App\Livewire\PROD\Uniform\MasterUniformManagement;
 use App\Livewire\PROD\Uniform\UniformRequestForm;
 use App\Livewire\PROD\Uniform\UniformRequestIndex;
@@ -71,6 +75,10 @@ use App\Livewire\QAQC\BlindTest\ModelManagement;
 use App\Livewire\QAQC\BlindTest\QuestionManagement;
 use App\Livewire\QAQC\NCPManagement;
 use App\Livewire\QAQC\NCPReport;
+use App\Livewire\QAQC\ScanXray\ScanXrayCreate;
+use App\Livewire\QAQC\ScanXray\ScanXrayEdit;
+use App\Livewire\QAQC\ScanXray\ScanXrayIndex;
+use App\Livewire\QAQC\ScanXray\ScanXrayView;
 use App\Livewire\Ticket\CategoryTicketManager;
 use App\Livewire\Ticket\TicketManager;
 use App\Livewire\Ticket\TicketView;
@@ -81,11 +89,6 @@ use App\Models\ESD\Locker\UniformTransaction;
 use App\Services\MicrosoftGraphService;
 use App\Services\WhatsAppService;
 use Illuminate\Support\Facades\Route;
-use App\Livewire\QAQC\ScanXray\ScanXrayManagement;
-use App\Livewire\QAQC\ScanXray\ScanXrayIndex;
-use App\Livewire\QAQC\ScanXray\ScanXrayCreate;
-use App\Livewire\QAQC\ScanXray\ScanXrayEdit;
-use App\Livewire\QAQC\ScanXray\ScanXrayView;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -243,6 +246,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/visual-inspection-stats', [ScanPcbController::class, 'getVisualStats']);
         Route::get('/dashboard-stats', [ScanPcbController::class, 'getDashboardStats']);
     });
+
+    // Patrol
+    Route::get('/prod/patrol/standard-patrol', StandardPatrolManagement::class)->name('prod.patrol.standard-patrol');
+    Route::get('/prod/patrol/category-patrol', CategoryPatrolManagement::class)->name('prod.patrol.category-patrol');
+    Route::get('/prod/patrol/result-patrol', ResultPatrolManagement::class)->name('prod.patrol.result-patrol.index');
+    Route::get('/prod/patrol/result-patrol/create', ResultPatrolForm::class)->name('prod.patrol.result-patrol.create');
+    Route::get('/prod/patrol/result-patrol/{id}/edit', ResultPatrolForm::class)->name('prod.patrol.result-patrol.edit');
 });
 
 // Microsoft Approvall

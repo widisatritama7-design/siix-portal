@@ -7,6 +7,7 @@
 <head>
     <?php echo '<link rel="stylesheet" href="https://test.siix-ems.co.id/vendor/volet/volet-default.css">'; ?>
     <?php echo $__env->make('partials.head', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+    <?php echo app('mingle')->mingleScripts(); ?>
     <style>
         [x-cloak] { display: none !important; }
         
@@ -584,19 +585,19 @@
                         class="mt-1 relative">
                         <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
                         <div class="space-y-1 ml-[30px]">
-                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view kaizen')): ?>
+                            <!--<?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view kaizen')): ?>-->
                             <!-- Kaizen Monitoring -->
-                            <a href="<?php echo e(route('prod.kaizens')); ?>" wire:navigate
+                            <!--<a href="<?php echo e(route('prod.kaizens')); ?>" wire:navigate
                             class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('prod.kaizens') ? 'menu-active' : ''); ?>">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
                                     <path fill-rule="evenodd" d="M12 1.5a.75.75 0 0 1 .75.75V4.5a.75.75 0 0 1-1.5 0V2.25A.75.75 0 0 1 12 1.5ZM5.636 4.136a.75.75 0 0 1 1.06 0l1.592 1.591a.75.75 0 0 1-1.061 1.06l-1.591-1.59a.75.75 0 0 1 0-1.061Zm12.728 0a.75.75 0 0 1 0 1.06l-1.591 1.592a.75.75 0 0 1-1.06-1.061l1.59-1.591a.75.75 0 0 1 1.061 0Zm-6.816 4.496a.75.75 0 0 1 .82.311l5.228 7.917a.75.75 0 0 1-.777 1.148l-2.097-.43 1.045 3.9a.75.75 0 0 1-1.45.388l-1.044-3.899-1.601 1.42a.75.75 0 0 1-1.247-.606l.569-9.47a.75.75 0 0 1 .554-.68ZM3 10.5a.75.75 0 0 1 .75-.75H6a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 10.5Zm14.25 0a.75.75 0 0 1 .75-.75h2.25a.75.75 0 0 1 0 1.5H18a.75.75 0 0 1-.75-.75Zm-8.962 3.712a.75.75 0 0 1 0 1.061l-1.591 1.591a.75.75 0 1 1-1.061-1.06l1.591-1.592a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" />
                                 </svg>
                                 <span class="truncate">Kaizen Monitoring</span>
                             </a>
-                            <?php endif; ?>
+                            <?php endif; ?> -->
                             
                             <!-- FCT Monitoring as SUB GROUP -->
-                            <div class="relative w-full">
+                            <!--<div class="relative w-full">
                                 <button @click="toggleGroup('fctMonitoring')" 
                                         class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
                                     <div class="flex items-center gap-2">
@@ -662,7 +663,7 @@
                                         </a>
                                     </div>
                                 </div>
-                            </div>
+                            <!--</div>-->
                             
                             <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->any(['view wip'])): ?>
                             <!-- WIP Monitoring as SUB GROUP -->
@@ -797,6 +798,74 @@
                                             <span class="truncate">Task</span>
                                         </a>
                                         <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                            <?php endif; ?>
+
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->any(['view result patrol'])): ?>
+                            <!-- Patrol Monitoring as SUB GROUP -->
+                            <div class="relative w-full">
+                                <button @click="toggleGroup('patrolMonitoring')" 
+                                        class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                    <div class="flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                            <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 6a.75.75 0 0 0-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 0 0 0-1.5h-3.75V6Z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)" 
+                                            class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">Patrol Monitoring</span>
+                                    </div>
+                                    <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)" 
+                                        class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0"
+                                        :class="{'rotate-180': groups.patrolMonitoring.open}"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </button>
+                                
+                                <!-- Sub-group items for Patrol Monitoring -->
+                                <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.patrolMonitoring.open" 
+                                    x-collapse 
+                                    class="mt-1 relative">
+                                    <!-- Sub garis vertikal untuk Patrol items -->
+                                    <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+                                    
+                                    <div class="space-y-1 ml-[24px]">
+                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check(['view standard patrol'])): ?>
+                                        <!-- Standard Check -->
+                                        <a href="<?php echo e(route('prod.patrol.standard-patrol')); ?>" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('prod.patrol.standard-patrol') ? 'menu-active' : ''); ?>">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                <path fill-rule="evenodd" d="M7.502 6h7.128A3.375 3.375 0 0 1 18 9.375v9.375a3 3 0 0 0 3-3V6.108c0-1.505-1.125-2.811-2.664-2.94a48.972 48.972 0 0 0-.673-.05A3 3 0 0 0 15 1.5h-1.5a3 3 0 0 0-2.663 1.618c-.225.015-.45.032-.673.05C8.662 3.295 7.554 4.542 7.502 6ZM13.5 3A1.5 1.5 0 0 0 12 4.5h4.5A1.5 1.5 0 0 0 15 3h-1.5Z" clip-rule="evenodd" />
+                                                <path fill-rule="evenodd" d="M3 9.375C3 8.339 3.84 7.5 4.875 7.5h9.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 0 1 3 20.625V9.375Zm9.586 4.594a.75.75 0 0 0-1.172-.938l-2.476 3.096-.908-.907a.75.75 0 0 0-1.06 1.06l1.5 1.5a.75.75 0 0 0 1.116-.062l3-3.75Z" clip-rule="evenodd" />
+                                            </svg>
+                                            <span class="truncate">Standard Patrol</span>
+                                        </a>
+                                        <?php endif; ?>
+                                        
+                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check(['view category patrol'])): ?>
+                                        <!-- Category -->
+                                        <a href="<?php echo e(route('prod.patrol.category-patrol')); ?>" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('prod.patrol.category-patrol') ? 'menu-active' : ''); ?>">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                <path d="M7.5 3.375c0-1.036.84-1.875 1.875-1.875h.375a3.75 3.75 0 0 1 3.75 3.75v1.875C13.5 8.161 14.34 9 15.375 9h1.875A3.75 3.75 0 0 1 21 12.75v3.375C21 17.16 20.16 18 19.125 18h-9.75A1.875 1.875 0 0 1 7.5 16.125V3.375Z" />
+                                                <path d="M15 5.25a5.23 5.23 0 0 0-1.279-3.434 9.768 9.768 0 0 1 6.963 6.963A5.23 5.23 0 0 0 17.25 7.5h-1.875A.375.375 0 0 1 15 7.125V5.25ZM4.875 6H6v10.125A3.375 3.375 0 0 0 9.375 19.5H16.5v1.125c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 0 1 3 20.625V7.875C3 6.839 3.84 6 4.875 6Z" />
+                                            </svg>
+                                            <span class="truncate">Category</span>
+                                        </a>
+                                        <?php endif; ?>
+                                        
+                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check(['view result patrol'])): ?>
+                                        <!-- Result Patrol -->
+                                        <a href="<?php echo e(route('prod.patrol.result-patrol.index')); ?>" wire:navigate
+                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('prod.patrol.result-patrol.index') ? 'menu-active' : ''); ?>">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
+                                            </svg>
+                                            <span class="truncate">Result Patrol</span>
+                                        </a>
+                                        <?php endif; ?>
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -1734,6 +1803,7 @@ unset($__split);
                     uniformMonitoring: { open: false },
                     absenceMonitoring: { open: false },
                     lockerMonitoring: { open: false },
+                    patrolMonitoring: { open: false },
                 },
                 
                 init() {
@@ -1764,7 +1834,7 @@ unset($__split);
                     }
                     
                     // Load all group states
-                    const groupNames = ['home', 'maintenance', 'production', 'dcc', 'hr', 'hrMaster', 'hrForm', 'hrReport', 'ticketing', 'settings', 'auth', 'wipMonitoring', 'msMonitoring', 'fctMonitoring', 'qaqc', 'qaqcMaster', 'qaqcForm', 'qaqcReport', 'uniformMonitoring', 'absenceMonitoring', 'lockerMonitoring'];
+                    const groupNames = ['home', 'maintenance', 'production', 'dcc', 'hr', 'hrMaster', 'hrForm', 'hrReport', 'ticketing', 'settings', 'auth', 'wipMonitoring', 'msMonitoring', 'fctMonitoring', 'qaqc', 'qaqcMaster', 'qaqcForm', 'qaqcReport', 'uniformMonitoring', 'absenceMonitoring', 'lockerMonitoring', 'patrolMonitoring'];
                     groupNames.forEach(groupName => {
                         const saved = localStorage.getItem(`sidebar_group_${groupName}`);
                         if (saved !== null) {

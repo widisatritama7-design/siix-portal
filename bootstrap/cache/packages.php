@@ -25,6 +25,17 @@
       0 => 'BladeUI\\Icons\\BladeIconsServiceProvider',
     ),
   ),
+  'ijpatricio/mingle' => 
+  array (
+    'aliases' => 
+    array (
+      'Mingle' => 'Ijpatricio\\Mingle\\Facades\\Mingle',
+    ),
+    'providers' => 
+    array (
+      0 => 'Ijpatricio\\Mingle\\MingleServiceProvider',
+    ),
+  ),
   'laravel/fortify' => 
   array (
     'providers' => 

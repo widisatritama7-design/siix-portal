@@ -39,6 +39,7 @@ Schedule::command('daily-checklist:check-update')->everyMinute()->when(fn() => !
 
 // Master Sample
 // Schedule::command('email:pending-master-sample')->dailyAt('08:00');
+Schedule::command('master-sample:send-expired-reminder')->weeklyOn(1, '08:00')->timezone('Asia/Jakarta')->withoutOverlapping();
 
 // Locker
 Schedule::command('locker:reset-finished')->everyMinute();
