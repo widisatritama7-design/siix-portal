@@ -50,3 +50,120 @@ select:focus[data-flux-control] {
 /* \[:where(&)\]:size-4 {
     @apply size-4;
 } */
+
+/* ============ Rich Text Editor List Styles ============ */
+.rte-editor {
+    word-break: break-word;
+}
+.rte-editor ul {
+    list-style-type: disc !important;
+    padding-left: 1.5rem !important;
+    margin: 0.25rem 0 !important;
+}
+.rte-editor ol {
+    list-style-type: decimal !important;
+    padding-left: 1.5rem !important;
+    margin: 0.25rem 0 !important;
+}
+.rte-editor ul ul {
+    list-style-type: circle !important;
+}
+.rte-editor ul ul ul {
+    list-style-type: square !important;
+}
+.rte-editor li {
+    display: list-item !important;
+    margin: 0.125rem 0 !important;
+}
+.rte-editor p {
+    margin: 0.25rem 0 !important;
+    min-height: 1.25em;
+}
+.rte-editor b,
+.rte-editor strong { font-weight: 700; }
+.rte-editor i,
+.rte-editor em { font-style: italic; }
+.rte-editor u { text-decoration: underline; }
+.rte-editor s,
+.rte-editor strike { text-decoration: line-through; }
+
+/* Juga untuk render HTML di modal view */
+.rte-content ul {
+    list-style-type: disc !important;
+    padding-left: 1.5rem !important;
+    margin: 0.25rem 0 !important;
+}
+.rte-content ol {
+    list-style-type: decimal !important;
+    padding-left: 1.5rem !important;
+    margin: 0.25rem 0 !important;
+}
+.rte-content li {
+    display: list-item !important;
+}
+.rte-content p {
+    margin: 0.25rem 0 !important;
+}
+
+/* ============ RICH TEXT EDITOR STYLES ============ */
+.rte-editor {
+    word-break: break-word;
+    line-height: 1.5;
+}
+.rte-editor ul {
+    list-style-type: disc !important;
+    padding-left: 1.5rem !important;
+    margin: 0.25rem 0 !important;
+}
+.rte-editor ol {
+    list-style-type: decimal !important;
+    padding-left: 1.5rem !important;
+    margin: 0.25rem 0 !important;
+}
+.rte-editor ul ul { list-style-type: circle !important; }
+.rte-editor ul ul ul { list-style-type: square !important; }
+.rte-editor li {
+    display: list-item !important;
+    margin: 0.125rem 0 !important;
+}
+.rte-editor p {
+    margin: 0.25rem 0 !important;
+    min-height: 1.25em;
+}
+.rte-editor b,
+.rte-editor strong { font-weight: 700; }
+.rte-editor i,
+.rte-editor em { font-style: italic; }
+.rte-editor u { text-decoration: underline; }
+.rte-editor s,
+.rte-editor strike { text-decoration: line-through; }
+
+/* Content read-only (view modal) */
+.rte-content ul {
+    list-style-type: disc !important;
+    padding-left: 1.5rem !important;
+    margin: 0.25rem 0 !important;
+}
+.rte-content ol {
+    list-style-type: decimal !important;
+    padding-left: 1.5rem !important;
+    margin: 0.25rem 0 !important;
+}
+.rte-content li {
+    display: list-item !important;
+    margin: 0.125rem 0 !important;
+}
+.rte-content p {
+    margin: 0.25rem 0 !important;
+}
+.rte-content b,
+.rte-content strong { font-weight: 700; }
+.rte-content i,
+.rte-content em { font-style: italic; }
+.rte-content u { text-decoration: underline; }
+
+/* Dark mode: pastikan text kontras */
+.dark .rte-editor,
+.dark .rte-content {
+    color: #e4e4e7; /* zinc-200 */
+}

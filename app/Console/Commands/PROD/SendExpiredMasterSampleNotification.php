@@ -28,8 +28,11 @@ class SendExpiredMasterSampleNotification extends Command
      * Daftar penerima email.
      */
     protected array $recipients = [
+        'wahyu.hadian@siix-global.com',
+        'sek.production01-qc@siix-global.com',
         'sek.esd@siix-global.com',
-        'widifajarsatritama@gmail.com',
+        'retno.pujiastuti@siix-global.com',
+        'bonizar@siix-global.com',
     ];
 
     public function handle(): int

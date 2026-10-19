@@ -215,7 +215,7 @@ class ResultPatrolManagement extends Component implements HasMingles
             $rowCount = count($findings);
 
             foreach ($findings as $index => $f) {
-                $sheet->getRowDimension($row)->setRowHeight(100);
+                $sheet->getRowDimension($row)->setRowHeight(180);   // ✅ GANTI (biar muat 2 baris foto)
 
                 if ($index === 0) {
                     $sheet->setCellValue('A' . $row, $no++);
@@ -236,20 +236,15 @@ class ResultPatrolManagement extends Component implements HasMingles
                     $sheet->setCellValue('H' . $row, $f['reason'] ?? '-');
                     $sheet->setCellValue('I' . $row, $f['action'] ?? '-');
 
+                    // ✅ GANTI — handle array multiple photos
                     if (!empty($f['evidence'])) {
-                        $tempPath = $this->base64ToTempImage($f['evidence']);
-                        if ($tempPath) {
-                            $this->addImageToSheet($sheet, $tempPath, $row, 'L');
-                            $tempFiles[] = $tempPath;
-                        }
+                        $photos = is_array($f['evidence']) ? $f['evidence'] : [$f['evidence']];
+                        $this->addMultipleImagesToSheet($sheet, $photos, $row, 'L', $tempFiles);
                     }
 
                     if (!empty($f['evidence_action'])) {
-                        $tempPath = $this->base64ToTempImage($f['evidence_action']);
-                        if ($tempPath) {
-                            $this->addImageToSheet($sheet, $tempPath, $row, 'M');
-                            $tempFiles[] = $tempPath;
-                        }
+                        $photos = is_array($f['evidence_action']) ? $f['evidence_action'] : [$f['evidence_action']];
+                        $this->addMultipleImagesToSheet($sheet, $photos, $row, 'M', $tempFiles);
                     }
 
                 } else {
@@ -355,6 +350,43 @@ class ResultPatrolManagement extends Component implements HasMingles
             $drawing->setOffsetY(10);
             
             $drawing->setWorksheet($sheet);
+        } catch (\Exception $e) {
+            // Abaikan error gambar
+        }
+    }
+
+    // ✅ BARU — render array foto jadi grid 2x2 dalam 1 cell Excel
+    private function addMultipleImagesToSheet($sheet, array $photos, $row, $colLetter, array &$tempFiles)
+    {
+        if (empty($photos)) return;
+        
+        try {
+            $imageCount = count($photos);
+            
+            // Max 4 foto: grid 2x2 jika > 1, single full jika 1
+            $cellHeight = $imageCount === 1 ? 160 : 80;
+            
+            foreach ($photos as $i => $base64) {
+                $tempPath = $this->base64ToTempImage($base64);
+                if (!$tempPath) continue;
+                $tempFiles[] = $tempPath;
+                
+                $drawing = new \PhpOffice\PhpSpreadsheet\Worksheet\Drawing();
+                $drawing->setName('Evidence_' . ($i + 1));
+                $drawing->setDescription('Evidence');
+                $drawing->setPath($tempPath);
+                $drawing->setHeight($cellHeight);
+                
+                // Grid offset (2 per baris)
+                $colOffset = $i % 2;
+                $rowOffset = intdiv($i, 2);
+                
+                $drawing->setCoordinates($colLetter . $row);
+                $drawing->setOffsetX(15 + $colOffset * ($cellHeight + 5));
+                $drawing->setOffsetY(10 + $rowOffset * ($cellHeight + 5));
+                
+                $drawing->setWorksheet($sheet);
+            }
         } catch (\Exception $e) {
             // Abaikan error gambar
         }

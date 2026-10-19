@@ -109,6 +109,19 @@ class ResultPatrolForm extends Component implements HasMingles
             return ['success' => false, 'message' => 'Master Line wajib dipilih'];
         }
 
+        // ✅ BARU — normalisasi: pastikan evidence & evidence_action selalu array, max 4
+        $data['finding_patrol_items'] = array_map(function ($f) {
+            $f['evidence'] = array_values(array_slice(
+                is_array($f['evidence'] ?? null) ? $f['evidence'] : (!empty($f['evidence']) ? [$f['evidence']] : []),
+                0, 4
+            ));
+            $f['evidence_action'] = array_values(array_slice(
+                is_array($f['evidence_action'] ?? null) ? $f['evidence_action'] : (!empty($f['evidence_action']) ? [$f['evidence_action']] : []),
+                0, 4
+            ));
+            return $f;
+        }, $data['finding_patrol_items']);
+
         if (!empty($payload['id'])) {
             $row = ResultPatrol::find($payload['id']);
             if (!$row) return ['success' => false, 'message' => 'Data tidak ditemukan'];

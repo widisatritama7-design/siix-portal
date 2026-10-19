@@ -641,8 +641,9 @@ export default function ResultPatrol({ wire, mingleData }) {
 
             {/* MODAL STATUS */}
             {showStatusModal && selectedRow && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
-                    <div className="w-full max-w-sm bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl overflow-hidden">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 dark:bg-black/80 p-4 backdrop-blur-sm">
+                    <div className="w-full max-w-sm bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl overflow-hidden border border-zinc-200 dark:border-zinc-700">
+                        {/* Header */}
                         <div className="px-5 py-4 bg-gradient-to-r from-blue-600 to-blue-700 flex items-center gap-3">
                             <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-white">
@@ -655,14 +656,15 @@ export default function ResultPatrol({ wire, mingleData }) {
                             </div>
                         </div>
                         
-                        <div className="p-5 space-y-4">
+                        {/* Body */}
+                        <div className="p-5 space-y-3">
                             {['Open', 'On Progress', 'Pending', 'Closed'].map((status) => (
                                 <label 
                                     key={status} 
                                     className={`flex items-center justify-between p-3 border rounded-lg cursor-pointer transition-colors ${
                                         selectedStatus === status 
-                                            ? 'bg-blue-50 border-blue-300 dark:bg-blue-900/30 dark:border-blue-700' 
-                                            : 'bg-white border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-800/80'
+                                            ? 'bg-blue-50 border-blue-300 dark:bg-blue-900/30 dark:border-blue-600' 
+                                            : 'bg-white border-zinc-200 dark:bg-zinc-800 dark:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-700/50'
                                     }`}
                                 >
                                     <div className="flex items-center gap-3">
@@ -672,7 +674,7 @@ export default function ResultPatrol({ wire, mingleData }) {
                                             value={status}
                                             checked={selectedStatus === status}
                                             onChange={() => setSelectedStatus(status)}
-                                            className="w-4 h-4 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                                            className="w-4 h-4 text-blue-600 dark:text-blue-500 bg-white dark:bg-zinc-700 border-zinc-300 dark:border-zinc-600 focus:ring-blue-500 cursor-pointer"
                                         />
                                         <span className="font-semibold text-sm text-zinc-800 dark:text-zinc-200">{status}</span>
                                     </div>
@@ -680,20 +682,26 @@ export default function ResultPatrol({ wire, mingleData }) {
                                     <span className={`w-3 h-3 rounded-full ${
                                         status === 'Open' ? 'bg-blue-500' :
                                         status === 'On Progress' ? 'bg-amber-500' :
-                                        status === 'Pending' ? 'bg-purple-500' : 'bg-zinc-500'
+                                        status === 'Pending' ? 'bg-purple-500' : 'bg-zinc-500 dark:bg-zinc-400'
                                     }`}></span>
                                 </label>
                             ))}
                         </div>
 
-                        <div className="px-5 py-3 bg-zinc-50 border-t flex justify-end gap-2">
-                            <button onClick={() => setShowStatusModal(false)} className="px-4 py-2 border rounded-lg text-sm font-semibold hover:bg-zinc-100 transition-colors">Cancel</button>
+                        {/* Footer */}
+                        <div className="px-5 py-3 bg-zinc-50 dark:bg-zinc-800/50 border-t border-zinc-200 dark:border-zinc-700 flex justify-end gap-2">
+                            <button 
+                                onClick={() => setShowStatusModal(false)} 
+                                className="px-4 py-2 border border-zinc-300 dark:border-zinc-600 rounded-lg text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
+                            >
+                                Cancel
+                            </button>
                             <button 
                                 onClick={async () => {
                                     setShowStatusModal(false);
                                     await handleStatusChange(selectedRow.id, selectedStatus);
                                 }} 
-                                className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold shadow-md hover:bg-blue-700 transition-colors"
+                                className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold shadow-md hover:bg-blue-700 dark:hover:bg-blue-500 transition-colors"
                             >
                                 Save Changes
                             </button>
@@ -704,41 +712,57 @@ export default function ResultPatrol({ wire, mingleData }) {
 
             {/* MODAL VIEW */}
             {showViewModal && selectedRow && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
-                    <div className="w-full max-w-3xl bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 dark:bg-black/80 p-4 backdrop-blur-sm">
+                    <div className="w-full max-w-3xl bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] border border-zinc-200 dark:border-zinc-700">
+                        
+                        {/* HEADER */}
                         <div className="px-5 py-4 bg-gradient-to-r from-blue-600 to-blue-700 flex justify-between items-center text-white">
                             <div className="flex items-center gap-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-blue-100"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z" /><path fillRule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.49 4.467-5.705 7.69-10.675 7.69-4.973 0-9.19-3.223-10.678-7.69a2.25 2.25 0 010-1.113zM17.25 12a5.25 5.25 0 11-10.5 0 5.25 5.25 0 0110.5 0z" clipRule="evenodd" /></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-blue-100">
+                                    <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
+                                    <path fillRule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.49 4.467-5.705 7.69-10.675 7.69-4.973 0-9.19-3.223-10.678-7.69a2.25 2.25 0 010-1.113zM17.25 12a5.25 5.25 0 11-10.5 0 5.25 5.25 0 0110.5 0z" clipRule="evenodd" />
+                                </svg>
                                 <h2 className="font-bold text-lg">Result Detail: {selectedRow.master_line?.line_number}</h2>
                             </div>
                             <button onClick={() => setShowViewModal(false)} className="p-1.5 rounded-lg hover:bg-white/20 transition-colors">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="w-5 h-5">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
                             </button>
                         </div>
+
+                        {/* BODY */}
                         <div className="p-6 overflow-y-auto space-y-6 text-sm">
+                            
+                            {/* SHIFT & GROUP CARDS */}
                             <div className="grid grid-cols-2 gap-4">
-                                <div className="bg-blue-50 border border-blue-100 p-3 rounded-xl flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-blue-200 flex items-center justify-center text-blue-700">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 6a.75.75 0 0 0-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 0 0 0-1.5h-3.75V6Z" clipRule="evenodd" /></svg>
+                                <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-800 p-3 rounded-xl flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-full bg-blue-200 dark:bg-blue-800 flex items-center justify-center text-blue-700 dark:text-blue-300">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                                            <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 6a.75.75 0 0 0-1.5 0v6c0 .414.336.75.75.75h4.5a.75.75 0 0 0 0-1.5h-3.75V6Z" clipRule="evenodd" />
+                                        </svg>
                                     </div>
                                     <div>
-                                        <span className="text-xs text-blue-600 font-semibold uppercase block">Shift</span>
-                                        <strong className="text-xl text-blue-900">{selectedRow.shift}</strong>
+                                        <span className="text-xs text-blue-600 dark:text-blue-400 font-semibold uppercase block">Shift</span>
+                                        <strong className="text-xl text-blue-900 dark:text-blue-200">{selectedRow.shift}</strong>
                                     </div>
                                 </div>
-                                <div className="bg-emerald-50 border border-emerald-100 p-3 rounded-xl flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-emerald-200 flex items-center justify-center text-emerald-700">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M4.5 6.375a4.125 4.125 0 1 1 8.25 0 4.125 4.125 0 0 1-8.25 0ZM14.25 8.625a3.375 3.375 0 1 1 6.75 0 3.375 3.375 0 0 1-6.75 0ZM1.5 19.125a7.125 7.125 0 0 1 14.25 0v.003l-.001.119a.75.75 0 0 1-.363.63 13.067 13.067 0 0 1-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 0 1-.364-.63l-.001-.122ZM17.25 19.128l-.001.144a2.25 2.25 0 0 1-.233.96 10.088 10.088 0 0 0 5.06-1.01.75.75 0 0 0 .42-.643 4.875 4.875 0 0 0-6.957-4.611 8.586 8.586 0 0 1 1.71 5.157v.003Z" /></svg>
+                                <div className="bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-100 dark:border-emerald-800 p-3 rounded-xl flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-full bg-emerald-200 dark:bg-emerald-800 flex items-center justify-center text-emerald-700 dark:text-emerald-300">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                                            <path d="M4.5 6.375a4.125 4.125 0 1 1 8.25 0 4.125 4.125 0 0 1-8.25 0ZM14.25 8.625a3.375 3.375 0 1 1 6.75 0 3.375 3.375 0 0 1-6.75 0ZM1.5 19.125a7.125 7.125 0 0 1 14.25 0v.003l-.001.119a.75.75 0 0 1-.363.63 13.067 13.067 0 0 1-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 0 1-.364-.63l-.001-.122ZM17.25 19.128l-.001.144a2.25 2.25 0 0 1-.233.96 10.088 10.088 0 0 0 5.06-1.01.75.75 0 0 0 .42-.643 4.875 4.875 0 0 0-6.957-4.611 8.586 8.586 0 0 1 1.71 5.157v.003Z" />
+                                        </svg>
                                     </div>
                                     <div>
-                                        <span className="text-xs text-emerald-600 font-semibold uppercase block">Group</span>
-                                        <strong className="text-xl text-emerald-900">{selectedRow.group}</strong>
+                                        <span className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold uppercase block">Group</span>
+                                        <strong className="text-xl text-emerald-900 dark:text-emerald-200">{selectedRow.group}</strong>
                                     </div>
                                 </div>
                             </div>
-                            {/* Standard Check */}
+
+                            {/* STANDARD CHECK */}
                             <div>
-                                <h3 className="font-bold text-base mb-2 border-b pb-2 flex items-center gap-2 text-zinc-800">
+                                <h3 className="font-bold text-base mb-2 border-b border-zinc-200 dark:border-zinc-700 pb-2 flex items-center gap-2 text-zinc-800 dark:text-zinc-100">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-4">
                                         <path fillRule="evenodd" d="M7.502 6h7.128A3.375 3.375 0 0 1 18 9.375v9.375a3 3 0 0 0 3-3V6.108c0-1.505-1.125-2.811-2.664-2.94a48.972 48.972 0 0 0-.673-.05A3 3 0 0 0 15 1.5h-1.5a3 3 0 0 0-2.663 1.618c-.225.015-.45.032-.673.05C8.662 3.295 7.554 4.542 7.502 6ZM13.5 3A1.5 1.5 0 0 0 12 4.5h4.5A1.5 1.5 0 0 0 15 3h-1.5Z" clipRule="evenodd" />
                                         <path fillRule="evenodd" d="M3 9.375C3 8.339 3.84 7.5 4.875 7.5h9.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 0 1 3 20.625V9.375Zm9.586 4.594a.75.75 0 0 0-1.172-.938l-2.476 3.096-.908-.907a.75.75 0 0 0-1.06 1.06l1.5 1.5a.75.75 0 0 0 1.116-.062l3-3.75Z" clipRule="evenodd" />
@@ -747,7 +771,7 @@ export default function ResultPatrol({ wire, mingleData }) {
                                 </h3>
                                 
                                 {(!selectedRow.standard_patrol_items || selectedRow.standard_patrol_items.length === 0) ? (
-                                    <p className="text-sm text-zinc-500 italic">No standard check available.</p>
+                                    <p className="text-sm text-zinc-500 dark:text-zinc-400 italic">No standard check available.</p>
                                 ) : (
                                     (() => {
                                         const groupedItems = selectedRow.standard_patrol_items.reduce((acc, item) => {
@@ -758,9 +782,9 @@ export default function ResultPatrol({ wire, mingleData }) {
                                         }, {});
 
                                         return Object.entries(groupedItems).map(([lineName, items]) => (
-                                            <div key={lineName} className="mb-4 last:mb-0 border rounded-lg overflow-hidden shadow-sm">
-                                                <div className="bg-zinc-100 px-4 py-2 border-b">
-                                                    <span className="font-bold text-xs text-zinc-700 flex items-center gap-2 uppercase tracking-wide">
+                                            <div key={lineName} className="mb-4 last:mb-0 border border-zinc-200 dark:border-zinc-700 rounded-lg overflow-hidden shadow-sm">
+                                                <div className="bg-zinc-100 dark:bg-zinc-800 px-4 py-2 border-b border-zinc-200 dark:border-zinc-700">
+                                                    <span className="font-bold text-xs text-zinc-700 dark:text-zinc-300 flex items-center gap-2 uppercase tracking-wide">
                                                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-4">
                                                             <path fillRule="evenodd" d="M16.28 11.47a.75.75 0 0 1 0 1.06l-7.5 7.5a.75.75 0 0 1-1.06-1.06L14.69 12 7.72 5.03a.75.75 0 0 1 1.06-1.06l7.5 7.5Z" clipRule="evenodd" />
                                                         </svg>
@@ -769,27 +793,27 @@ export default function ResultPatrol({ wire, mingleData }) {
                                                 </div>
 
                                                 <table className="w-full text-sm">
-                                                    <thead className="bg-zinc-50 border-b">
+                                                    <thead className="bg-zinc-50 dark:bg-zinc-800/50 border-b border-zinc-200 dark:border-zinc-700">
                                                         <tr>
-                                                            <th className="p-2.5 text-left font-semibold text-zinc-600 w-1/3">Item Check</th>
-                                                            <th className="p-2.5 text-center font-semibold text-zinc-600 w-24">Result</th>
-                                                            <th className="p-2.5 text-left font-semibold text-zinc-600">Remarks</th>
+                                                            <th className="p-2.5 text-left font-semibold text-zinc-600 dark:text-zinc-400 w-1/3">Item Check</th>
+                                                            <th className="p-2.5 text-center font-semibold text-zinc-600 dark:text-zinc-400 w-24">Result</th>
+                                                            <th className="p-2.5 text-left font-semibold text-zinc-600 dark:text-zinc-400">Remarks</th>
                                                         </tr>
                                                     </thead>
-                                                    <tbody className="divide-y divide-zinc-100">
+                                                    <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
                                                         {items.map((it, i) => (
-                                                            <tr key={i} className="hover:bg-zinc-50/50">
-                                                                <td className="p-2.5 text-zinc-800 font-medium">{it.item_check}</td>
+                                                            <tr key={i} className="hover:bg-zinc-50/50 dark:hover:bg-zinc-800/40">
+                                                                <td className="p-2.5 text-zinc-800 dark:text-zinc-200 font-medium">{it.item_check}</td>
                                                                 <td className="p-2.5 text-center">
                                                                     <span className={`inline-block px-2 py-1 rounded text-xs font-bold ${
                                                                         it.result === 'NG' 
-                                                                            ? 'bg-red-100 text-red-700' 
-                                                                            : 'bg-emerald-100 text-emerald-700'
+                                                                            ? 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300' 
+                                                                            : 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300'
                                                                     }`}>
                                                                         {it.result}
                                                                     </span>
                                                                 </td>
-                                                                <td className="p-2.5 text-zinc-600">{it.remarks || '-'}</td>
+                                                                <td className="p-2.5 text-zinc-600 dark:text-zinc-400">{it.remarks || '-'}</td>
                                                             </tr>
                                                         ))}
                                                     </tbody>
@@ -800,24 +824,28 @@ export default function ResultPatrol({ wire, mingleData }) {
                                 )}
                             </div>
 
-                            {/* Finding */}
+                            {/* FINDING */}
                             <div>
-                                <h3 className="font-bold text-base mb-3 border-b pb-2 flex items-center gap-2 text-zinc-800">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-red-500"><path fillRule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clipRule="evenodd" /></svg>
+                                <h3 className="font-bold text-base mb-3 border-b border-zinc-200 dark:border-zinc-700 pb-2 flex items-center gap-2 text-zinc-800 dark:text-zinc-100">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-red-500">
+                                        <path fillRule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clipRule="evenodd" />
+                                    </svg>
                                     Finding
                                 </h3>
                                 
                                 {(!selectedRow.finding_patrol_items || selectedRow.finding_patrol_items.length === 0) ? (
-                                    <div className="p-5 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-700 flex flex-col items-center justify-center gap-2">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8 text-emerald-500"><path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clipRule="evenodd" /></svg>
+                                    <div className="p-5 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl text-emerald-700 dark:text-emerald-300 flex flex-col items-center justify-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-8 h-8 text-emerald-500 dark:text-emerald-400">
+                                            <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clipRule="evenodd" />
+                                        </svg>
                                         <span className="font-bold text-sm">No findings (Safe)</span>
-                                        <span className="text-xs text-emerald-600">All inspection standards are met.</span>
+                                        <span className="text-xs text-emerald-600 dark:text-emerald-400">All inspection standards are met.</span>
                                     </div>
                                 ) : (
                                     <div className="space-y-5">
                                         {selectedRow.finding_patrol_items.map((f, i) => {
                                             return (
-                                                <div key={i} className="border border-zinc-200 rounded-xl bg-white shadow-sm overflow-hidden">
+                                                <div key={i} className="border border-zinc-200 dark:border-zinc-700 rounded-xl bg-white dark:bg-zinc-900 shadow-sm overflow-hidden">
                                                     <div className="bg-gradient-to-r from-red-600 to-red-700 px-4 py-3 flex items-center gap-3 text-white">
                                                         <span className="bg-white/20 w-7 h-7 rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
                                                             {i + 1}
@@ -826,75 +854,111 @@ export default function ResultPatrol({ wire, mingleData }) {
                                                     </div>
 
                                                     <div className="p-4 space-y-5">
+                                                        {/* INFO GRID */}
                                                         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                                            <div className="bg-zinc-50 p-3 rounded-lg border border-zinc-200">
-                                                                <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wide block mb-1">Category</span>
-                                                                <span className="text-sm font-semibold text-zinc-800">
+                                                            <div className="bg-zinc-50 dark:bg-zinc-800/50 p-3 rounded-lg border border-zinc-200 dark:border-zinc-700">
+                                                                <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide block mb-1">Category</span>
+                                                                <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-100">
                                                                     {f.category_name || mingleData?.categories?.find(c => String(c.id) === String(f.category_id))?.category_name || f.category_id || '-'}
                                                                 </span>
                                                             </div>
-                                                            <div className="bg-zinc-50 p-3 rounded-lg border border-zinc-200">
-                                                                <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wide block mb-1">Finding Result</span>
-                                                                <span className="text-sm font-semibold text-zinc-800">
-                                                                    {f.finding_result || '-'}
-                                                                </span>
+                                                            <div className="bg-zinc-50 dark:bg-zinc-800/50 p-3 rounded-lg border border-zinc-200 dark:border-zinc-700">
+                                                                <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide block mb-1">Finding Result</span>
+                                                                <div 
+                                                                    className="rte-content text-sm font-semibold text-zinc-800 dark:text-zinc-100"
+                                                                    dangerouslySetInnerHTML={{ __html: f.finding_result || '-' }}
+                                                                />
                                                             </div>
-                                                            <div className="bg-zinc-50 p-3 rounded-lg border border-zinc-200">
-                                                                <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wide block mb-1">Feedback To (Employee)</span>
-                                                                <span className="text-sm font-semibold text-zinc-800">
+                                                            <div className="bg-zinc-50 dark:bg-zinc-800/50 p-3 rounded-lg border border-zinc-200 dark:border-zinc-700">
+                                                                <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide block mb-1">Feedback To (Employee)</span>
+                                                                <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-100">
                                                                     {mingleData?.employees?.find(e => String(e.nik) === String(f.feedback_to))?.name || f.feedback_to || '-'}
                                                                 </span>
                                                             </div>
                                                         </div>
 
+                                                        {/* EVIDENCE + REASON | EVIDENCE ACTION + ACTION TAKEN */}
                                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                            
+                                                            {/* KIRI: Evidence + Reason */}
                                                             <div className="space-y-3">
                                                                 <div>
-                                                                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wide block mb-1">Evidence (Live Photo)</span>
-                                                                    {f.evidence ? (
-                                                                        <div 
-                                                                            className="relative group cursor-pointer rounded-lg overflow-hidden border border-zinc-200 aspect-video bg-zinc-100"
-                                                                            onClick={() => setPhotoPreview({ url: f.evidence, title: 'Initial Evidence' })}
-                                                                        >
-                                                                            <img src={f.evidence} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="Evidence" />
-                                                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-white"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z" /><path fillRule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.49 4.467-5.705 7.69-10.675 7.69-4.973 0-9.19-3.223-10.678-7.69a2.25 2.25 0 010-1.113zM17.25 12a5.25 5.25 0 11-10.5 0 5.25 5.25 0 0110.5 0z" clipRule="evenodd" /></svg>
+                                                                    <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide block mb-1">
+                                                                        Evidence (Live Photo) — {Array.isArray(f.evidence) ? f.evidence.length : (f.evidence ? 1 : 0)} foto
+                                                                    </span>
+                                                                    {(() => {
+                                                                        const photos = Array.isArray(f.evidence) ? f.evidence : (f.evidence ? [f.evidence] : [])
+                                                                        if (photos.length === 0) {
+                                                                            return <div className="p-3 bg-zinc-100 dark:bg-zinc-800 rounded-lg text-center text-xs text-zinc-400 dark:text-zinc-500 italic border border-zinc-200 dark:border-zinc-700">No photo</div>
+                                                                        }
+                                                                        return (
+                                                                            <div className="grid grid-cols-2 gap-2">
+                                                                                {photos.map((photo, pIdx) => (
+                                                                                    <div 
+                                                                                        key={pIdx}
+                                                                                        className="relative group cursor-pointer rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700 aspect-square bg-zinc-100 dark:bg-zinc-800"
+                                                                                        onClick={() => setPhotoPreview({ url: photo, title: `Initial Evidence ${pIdx + 1}` })}
+                                                                                    >
+                                                                                        <img src={photo} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt={`Evidence ${pIdx + 1}`} />
+                                                                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-white">
+                                                                                                <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
+                                                                                                <path fillRule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.49 4.467-5.705 7.69-10.675 7.69-4.973 0-9.19-3.223-10.678-7.69a2.25 2.25 0 010-1.113zM17.25 12a5.25 5.25 0 11-10.5 0 5.25 5.25 0 0110.5 0z" clipRule="evenodd" />
+                                                                                            </svg>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                ))}
                                                                             </div>
-                                                                        </div>
-                                                                    ) : (
-                                                                        <div className="p-3 bg-zinc-100 rounded-lg text-center text-xs text-zinc-400 italic border border-zinc-200">No photo</div>
-                                                                    )}
+                                                                        )
+                                                                    })()}
                                                                 </div>
                                                                 <div>
-                                                                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wide block mb-1">Reason</span>
-                                                                    <div className="bg-zinc-50 p-3 rounded-lg border border-zinc-200 text-sm text-zinc-800 h-[80px] overflow-y-auto">
-                                                                        {f.reason || '-'}
-                                                                    </div>
+                                                                    <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide block mb-1">Reason</span>
+                                                                    <div 
+                                                                        className="rte-content bg-zinc-50 dark:bg-zinc-800/50 p-3 rounded-lg border border-zinc-200 dark:border-zinc-700 text-sm text-zinc-800 dark:text-zinc-100 h-[80px] overflow-y-auto"
+                                                                        dangerouslySetInnerHTML={{ __html: f.reason || '-' }}
+                                                                    />
                                                                 </div>
                                                             </div>
 
+                                                            {/* KANAN: Evidence Action + Action Taken */}
                                                             <div className="space-y-3">
                                                                 <div>
-                                                                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wide block mb-1">Evidence Action (Live Photo)</span>
-                                                                    {f.evidence_action ? (
-                                                                        <div 
-                                                                            className="relative group cursor-pointer rounded-lg overflow-hidden border border-zinc-200 aspect-video bg-zinc-100"
-                                                                            onClick={() => setPhotoPreview({ url: f.evidence_action, title: 'Action Evidence' })}
-                                                                        >
-                                                                            <img src={f.evidence_action} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt="Evidence Action" />
-                                                                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                                                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-white"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z" /><path fillRule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.49 4.467-5.705 7.69-10.675 7.69-4.973 0-9.19-3.223-10.678-7.69a2.25 2.25 0 010-1.113zM17.25 12a5.25 5.25 0 11-10.5 0 5.25 5.25 0 0110.5 0z" clipRule="evenodd" /></svg>
+                                                                    <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide block mb-1">
+                                                                        Evidence Action (Live Photo) — {Array.isArray(f.evidence_action) ? f.evidence_action.length : (f.evidence_action ? 1 : 0)} foto
+                                                                    </span>
+                                                                    {(() => {
+                                                                        const photos = Array.isArray(f.evidence_action) ? f.evidence_action : (f.evidence_action ? [f.evidence_action] : [])
+                                                                        if (photos.length === 0) {
+                                                                            return <div className="p-3 bg-zinc-100 dark:bg-zinc-800 rounded-lg text-center text-xs text-zinc-400 dark:text-zinc-500 italic border border-zinc-200 dark:border-zinc-700">No photo</div>
+                                                                        }
+                                                                        return (
+                                                                            <div className="grid grid-cols-2 gap-2">
+                                                                                {photos.map((photo, pIdx) => (
+                                                                                    <div 
+                                                                                        key={pIdx}
+                                                                                        className="relative group cursor-pointer rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700 aspect-square bg-zinc-100 dark:bg-zinc-800"
+                                                                                        onClick={() => setPhotoPreview({ url: photo, title: `Action Evidence ${pIdx + 1}` })}
+                                                                                    >
+                                                                                        <img src={photo} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt={`Action Evidence ${pIdx + 1}`} />
+                                                                                        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-white">
+                                                                                                <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
+                                                                                                <path fillRule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.49 4.467-5.705 7.69-10.675 7.69-4.973 0-9.19-3.223-10.678-7.69a2.25 2.25 0 010-1.113zM17.25 12a5.25 5.25 0 11-10.5 0 5.25 5.25 0 0110.5 0z" clipRule="evenodd" />
+                                                                                            </svg>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                ))}
                                                                             </div>
-                                                                        </div>
-                                                                    ) : (
-                                                                        <div className="p-3 bg-zinc-100 rounded-lg text-center text-xs text-zinc-400 italic border border-zinc-200">No photo</div>
-                                                                    )}
+                                                                        )
+                                                                    })()}
                                                                 </div>
                                                                 <div>
-                                                                    <span className="text-[10px] font-bold text-zinc-500 uppercase tracking-wide block mb-1">Action Taken</span>
-                                                                    <div className="bg-zinc-50 p-3 rounded-lg border border-zinc-200 text-sm text-zinc-800 h-[80px] overflow-y-auto">
-                                                                        {f.action || '-'}
-                                                                    </div>
+                                                                    <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide block mb-1">Action Taken</span>
+                                                                    <div 
+                                                                        className="rte-content bg-zinc-50 dark:bg-zinc-800/50 p-3 rounded-lg border border-zinc-200 dark:border-zinc-700 text-sm text-zinc-800 dark:text-zinc-100 h-[80px] overflow-y-auto"
+                                                                        dangerouslySetInnerHTML={{ __html: f.action || '-' }}
+                                                                    />
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -912,8 +976,9 @@ export default function ResultPatrol({ wire, mingleData }) {
 
             {/* MODAL DELETE */}
             {showDeleteModal && selectedRow && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
-                    <div className="w-full max-w-sm bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl overflow-hidden">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 dark:bg-black/80 p-4 backdrop-blur-sm">
+                    <div className="w-full max-w-sm bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl overflow-hidden border border-zinc-200 dark:border-zinc-700">
+                        {/* Header */}
                         <div className="px-5 py-4 bg-gradient-to-r from-red-600 to-red-700 flex items-center gap-3">
                             <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
                                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5 text-white">
@@ -925,14 +990,28 @@ export default function ResultPatrol({ wire, mingleData }) {
                                 <p className="text-xs text-red-100">This action cannot be undone</p>
                             </div>
                         </div>
+
+                        {/* Body */}
                         <div className="p-5">
                             <p className="text-sm text-zinc-700 dark:text-zinc-300">
-                                Are you sure you want to delete result line <strong>{selectedRow.master_line?.line_number}</strong> shift <strong>{selectedRow.shift}</strong>?
+                                Are you sure you want to delete result line <strong className="text-zinc-900 dark:text-zinc-100">{selectedRow.master_line?.line_number}</strong> shift <strong className="text-zinc-900 dark:text-zinc-100">{selectedRow.shift}</strong>?
                             </p>
                         </div>
-                        <div className="px-5 py-3 bg-zinc-50 border-t flex justify-end gap-2">
-                            <button onClick={() => setShowDeleteModal(false)} className="px-4 py-2 border rounded-lg text-sm font-semibold hover:bg-zinc-100 transition-colors">Cancel</button>
-                            <button onClick={confirmDelete} className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-bold shadow-md hover:bg-red-700 transition-colors">Yes, Delete</button>
+
+                        {/* Footer */}
+                        <div className="px-5 py-3 bg-zinc-50 dark:bg-zinc-800/50 border-t border-zinc-200 dark:border-zinc-700 flex justify-end gap-2">
+                            <button 
+                                onClick={() => setShowDeleteModal(false)} 
+                                className="px-4 py-2 border border-zinc-300 dark:border-zinc-600 rounded-lg text-sm font-semibold text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button 
+                                onClick={confirmDelete} 
+                                className="px-4 py-2 bg-red-600 text-white rounded-lg text-sm font-bold shadow-md hover:bg-red-700 dark:hover:bg-red-500 transition-colors"
+                            >
+                                Yes, Delete
+                            </button>
                         </div>
                     </div>
                 </div>
