@@ -2,18 +2,19 @@
 
 namespace App\Livewire\QAQC\ScanXray;
 
+use App\Models\HR\Employee;
 use App\Models\MTC\Master\MasterLine;
 use App\Models\QAQC\BlindTest\Customer;
 use App\Models\QAQC\BlindTest\Model as BlindTestModel;
 use App\Models\QAQC\ScanXray\ScanXray;
+use Illuminate\Support\Facades\Response;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Illuminate\Support\Facades\Response;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class ScanXrayIndex extends Component
 {
@@ -31,6 +32,12 @@ class ScanXrayIndex extends Component
     public $scanToDelete = null;
 
     public bool $isStacked = true;
+
+    // ============ PIC X-RAY MODAL (sebelum create) ============
+    public bool $openPicXrayModal = false;
+    public string $picXraySearch = '';
+    public int $picXrayPage = 1;
+    public ?int $selectedPicXray = null;
 
     public function updatedSearch(): void { $this->resetPage(); }
     public function updatedFilterCustomerId(): void
@@ -640,6 +647,85 @@ class ScanXrayIndex extends Component
     {
         $this->scanToDelete = null;
         $this->dispatch('close-modal-delete');
+    }
+
+    // ============ PIC X-RAY MODAL ============
+    public function openPicXrayPicker(): void
+    {
+        if (!auth()->user()->can('create scan xray')) {
+            $this->dispatch('notify', message: 'You do not have permission!', type: 'error');
+            return;
+        }
+
+        $this->openPicXrayModal = true;
+        $this->picXraySearch    = '';
+        $this->picXrayPage      = 1;
+        $this->selectedPicXray  = null;
+    }
+
+    public function closePicXrayPicker(): void
+    {
+        $this->openPicXrayModal = false;
+        $this->picXraySearch    = '';
+        $this->picXrayPage      = 1;
+        $this->selectedPicXray  = null;
+    }
+
+    public function updatedPicXraySearch(): void
+    {
+        $this->picXrayPage = 1;
+    }
+
+    public function setPicXrayPage(int $page): void
+    {
+        $this->picXrayPage = $page;
+    }
+
+    public function selectPicXray(int $id): void
+    {
+        $this->selectedPicXray = $id;
+    }
+
+    public function proceedToCreate()
+    {
+        if (!$this->selectedPicXray) {
+            $this->dispatch('notify', message: 'Pilih PIC X-Ray dulu.', type: 'warning');
+            return;
+        }
+
+        // Simpan nama PIC di session — akan dibaca oleh komponen form create
+        session(['scan_xray_pic' => $this->selectedPicXray]);
+
+        $this->openPicXrayModal = false;
+        $this->selectedPicXray  = null;
+
+        return $this->redirect(route('qaqc.scan-xray.create'), navigate: true);
+    }
+
+    public function getPicXrayList()
+    {
+        $search = $this->picXraySearch ?? '';
+
+        // ⚠️ Sesuaikan namespace model Employee dengan project Anda
+        $q = Employee::query()
+            ->where(function ($qq) {
+                // Filter department hanya QA/QC
+                $qq->where('department', 'QA/QC')
+                ->orWhere('department', 'like', '%QA/QC%')
+                ->orWhere('department', 'like', '%QA%QC%');
+            })
+            ->whereIn('status', [1, 2, 3])          // hanya status 1, 2, 3
+            ->orderBy('nik', 'asc');                 // ⬅️ urut NIK ASC
+
+        if (!empty($search)) {
+            $term = '%' . $search . '%';
+            $q->where(function ($qq) use ($term) {
+                $qq->where('nik', 'like', $term)
+                ->orWhere('name', 'like', $term);
+            });
+        }
+
+        return $q->paginate(8, ['*'], 'picXrayPage', $this->picXrayPage ?? 1);
     }
 
     // ============ RENDER ============

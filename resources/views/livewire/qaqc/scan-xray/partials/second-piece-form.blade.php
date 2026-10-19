@@ -210,12 +210,19 @@
                                                     wire:model.live.debounce.500ms="{{ $key }}.{{ $side }}.{{ $col }}.{{ $i }}"
                                                     x-on:keydown.enter.prevent="
                                                         $el.blur();
-                                                        @if($i < $rows - 1)
+                                                        const cols = ['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'];
+                                                        const curIdx = cols.indexOf('{{ $col }}');
+                                                        const group = '{{ $key }}';
+                                                        const side = '{{ $side }}';
+                                                        let nextRow = {{ $i }};
+                                                        let nextCol = curIdx + 1;
+                                                        if (nextCol >= cols.length) { nextCol = 0; nextRow = {{ $i }} + 1; }
+                                                        if (nextRow < {{ $rows }}) {
                                                             const next = document.querySelector(
-                                                                `input[data-group='{{ $key }}'][data-side='{{ $side }}'][data-row='{{ $i + 1 }}'][data-col='{{ $col }}']`
+                                                                `input[data-group='${group}'][data-side='${side}'][data-row='${nextRow}'][data-col='${cols[nextCol]}']`
                                                             );
                                                             if (next) next.focus();
-                                                        @endif
+                                                        }
                                                     "
                                                     class="w-full border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/50
                                                         px-2 py-1.5 text-xs rounded-md text-center

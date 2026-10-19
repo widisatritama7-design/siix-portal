@@ -28,7 +28,7 @@
 
             @can('create scan xray')
                 <flux:button variant="primary" icon="plus" class="bg-blue-600 hover:bg-blue-700"
-                    href="{{ route('qaqc.scan-xray.create') }}" wire:navigate>
+                    wire:click="openPicXrayPicker">
                     Add New Scan
                 </flux:button>
             @endcan
@@ -243,7 +243,7 @@
                                     Total
                                 </th>
                                 {{-- PIC --}}
-                                <th colspan="2" class="px-3 py-2 text-center text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase bg-zinc-100 dark:bg-zinc-800/60">
+                                <th colspan="3" class="px-3 py-2 text-center text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase bg-zinc-100 dark:bg-zinc-800/60">
                                     PIC INFO
                                 </th>
 
@@ -283,6 +283,7 @@
                                 {{-- PIC --}}
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-zinc-600 uppercase bg-zinc-100/50 dark:bg-zinc-800/30">DATE</th>
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-zinc-600 uppercase bg-zinc-100/50 dark:bg-zinc-800/30">PIC</th>
+                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-blue-600 dark:text-blue-400 uppercase bg-blue-100/50 dark:bg-blue-900/20">PIC X-RAY</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
@@ -523,6 +524,37 @@
                                             <span class="text-zinc-400 italic text-[10px]">-</span>
                                         @endif
                                     </td>
+                                    {{-- PIC X-RAY --}}
+                                    <td class="px-3 py-3 text-center bg-blue-50/30 dark:bg-blue-900/10">
+                                        @php
+                                            // Sesuaikan: kalau pic_xray simpan ID, resolve ke Employee
+                                            $picXrayName = null;
+                                            $picXrayNik  = null;
+                                            if ($scan->pic_xray) {
+                                                if (is_numeric($scan->pic_xray)) {
+                                                    $emp = \App\Models\HR\Employee::find($scan->pic_xray);
+                                                    $picXrayName = $emp?->name;
+                                                    $picXrayNik  = $emp?->nik;
+                                                } else {
+                                                    // kalau isinya string nama (data lama)
+                                                    $picXrayName = $scan->pic_xray;
+                                                }
+                                            }
+                                        @endphp
+
+                                        @if($picXrayName)
+                                            <div class="flex flex-col items-center gap-0.5">
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 text-[10px] font-semibold">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3">
+                                                        <path d="M10 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM3.465 14.493a1.23 1.23 0 0 0 .41 1.412A9.957 9.957 0 0 0 10 18c2.31 0 4.438-.784 6.131-2.1.43-.333.604-.903.408-1.41a7.002 7.002 0 0 0-13.074.003Z" />
+                                                    </svg>
+                                                    {{ $picXrayName }}
+                                                </span>
+                                            </div>
+                                        @else
+                                            <span class="text-zinc-400 italic text-[10px]">-</span>
+                                        @endif
+                                    </td>
 
                                     {{-- STICKY RIGHT: ACTIONS --}}
                                     <td class="px-4 py-3 text-center sticky right-0 z-10 bg-white dark:bg-zinc-900 group-hover:bg-zinc-50 dark:group-hover:bg-zinc-800/50" style="min-width: 150px; box-shadow: inset 2px 0 0 0 rgb(212 212 216);">
@@ -612,7 +644,7 @@
                             </button>
                         @else
                             @can('create scan xray')
-                                <flux:button href="{{ route('qaqc.scan-xray.create') }}" wire:navigate
+                                <flux:button wire:click="openPicXrayPicker"
                                     variant="primary" icon="plus" class="mt-2 bg-blue-600 hover:bg-blue-700">
                                     Add New Scan
                                 </flux:button>
@@ -623,6 +655,158 @@
             @endif
         </div>
     </flux:card>
+
+    {{-- PIC X-RAY MODAL (sebelum create) --}}
+    @can('create scan xray')
+    <div x-data="{ open: @entangle('openPicXrayModal') }"
+        x-show="open"
+        x-cloak
+        @keydown.escape.window="$wire.closePicXrayPicker()">
+
+        {{-- BACKDROP --}}
+        <div class="fixed inset-0 bg-black/50 z-40" @click="$wire.closePicXrayPicker()"></div>
+
+        {{-- PANEL --}}
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-lg
+                        flex flex-col overflow-hidden"
+                style="max-height: calc(100vh - 2rem);">
+
+                {{-- HEADER (fixed) --}}
+                <div class="flex-shrink-0 px-6 py-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 relative">
+                    <div class="absolute -right-8 -top-8 w-24 h-24 rounded-full bg-white/10"></div>
+                    <div class="relative flex items-center justify-between">
+                        <div>
+                            <div class="text-[10px] text-white/80 uppercase tracking-wider font-semibold">Sebelum Create</div>
+                            <div class="text-lg font-bold text-white">Pilih PIC X-Ray</div>
+                        </div>
+                        <button type="button" wire:click="closePicXrayPicker"
+                            class="w-8 h-8 rounded-lg bg-white/20 hover:bg-white/30 text-white flex items-center justify-center font-bold">
+                            ✕
+                        </button>
+                    </div>
+                </div>
+
+                {{-- BODY (scrollable) --}}
+                <div class="flex-1 min-h-0 overflow-y-auto px-6 py-4 space-y-4">
+
+                    {{-- SEARCH --}}
+                    <div>
+                        <label class="text-[10px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-semibold mb-1 block">
+                            Cari Nama PIC
+                        </label>
+                        <flux:input
+                            wire:model.live.debounce.300ms="picXraySearch"
+                            placeholder="Ketik nama PIC X-Ray..."
+                            icon="magnifying-glass"
+                            clearable />
+                    </div>
+
+                    {{-- LIST --}}
+                    @php $picList = $this->getPicXrayList(); @endphp
+
+                    <div class="rounded-xl border border-zinc-200 dark:border-zinc-700 overflow-hidden">
+                        <table class="w-full text-sm">
+                            <thead class="bg-zinc-100 dark:bg-zinc-800">
+                                <tr>
+                                    <th class="px-4 py-2 text-left text-[10px] uppercase font-semibold text-zinc-500 w-28">NIK</th>
+                                    <th class="px-4 py-2 text-left text-[10px] uppercase font-semibold text-zinc-500">Nama</th>
+                                    <th class="px-4 py-2 text-center text-[10px] uppercase font-semibold text-zinc-500 w-24">Pilih</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
+                                @forelse($picList as $emp)
+                                    @php $isSelected = $selectedPicXray === $emp->id; @endphp
+                                    <tr wire:key="pic-xray-{{ $emp->id }}"
+                                        class="cursor-pointer transition
+                                            {{ $isSelected
+                                                ? 'bg-blue-50 dark:bg-blue-900/20'
+                                                : 'hover:bg-zinc-50 dark:hover:bg-zinc-800/50' }}"
+                                        wire:click="selectPicXray({{ $emp->id }})">
+                                        <td class="px-4 py-2.5 font-mono text-xs font-semibold text-zinc-600 dark:text-zinc-400">
+                                            {{ $emp->nik ?? '-' }}
+                                        </td>
+                                        <td class="px-4 py-2.5 font-semibold text-zinc-800 dark:text-zinc-100">
+                                            {{ $emp->name }}
+                                        </td>
+                                        <td class="px-4 py-2.5 text-center">
+                                            @if($isSelected)
+                                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-blue-600 text-white text-[10px] font-bold">
+                                                    ✓ Dipilih
+                                                </span>
+                                            @else
+                                                <button type="button"
+                                                    wire:click.stop="selectPicXray({{ $emp->id }})"
+                                                    class="px-3 py-1 text-[10px] bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-600 rounded-md hover:border-blue-400 hover:text-blue-600 font-semibold">
+                                                    Pilih
+                                                </button>
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="3" class="px-4 py-8 text-center text-zinc-500 text-xs">
+                                            Tidak ada PIC QA/QC ditemukan.
+                                        </td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+
+                        {{-- PAGINATION --}}
+                        @if($picList->hasPages())
+                            <div class="px-4 py-2 border-t border-zinc-200 dark:border-zinc-700 flex justify-between items-center bg-zinc-50 dark:bg-zinc-800/50">
+                                <span class="text-[10px] text-zinc-500 font-semibold">
+                                    {{ $picList->firstItem() ?? 0 }} - {{ $picList->lastItem() ?? 0 }} of {{ $picList->total() }}
+                                </span>
+                                <div class="flex gap-1">
+                                    @if(!$picList->onFirstPage())
+                                        <button type="button" wire:click="setPicXrayPage({{ $picList->currentPage() - 1 }})"
+                                            class="px-2 py-1 text-[10px] rounded bg-white dark:bg-zinc-800 border font-semibold">Prev</button>
+                                    @endif
+                                    <span class="px-2 py-1 text-[10px] font-semibold">
+                                        {{ $picList->currentPage() }} / {{ $picList->lastPage() }}
+                                    </span>
+                                    @if($picList->hasMorePages())
+                                        <button type="button" wire:click="setPicXrayPage({{ $picList->currentPage() + 1 }})"
+                                            class="px-2 py-1 text-[10px] rounded bg-white dark:bg-zinc-800 border font-semibold">Next</button>
+                                    @endif
+                                </div>
+                            </div>
+                        @endif
+                    </div>
+
+                    <div class="text-sm font-bold {{ $selectedPicXray ? 'text-blue-700 dark:text-blue-300' : 'text-zinc-400 italic' }}">
+                        @if($selectedPicXray)
+                            @php $sel = \App\Models\HR\Employee::find($selectedPicXray); @endphp
+                            {{ $sel->name ?? 'ID: ' . $selectedPicXray }}
+                            @if($sel?->nik)
+                                <span class="text-[10px] font-mono text-zinc-500 dark:text-zinc-400 ml-1">({{ $sel->nik }})</span>
+                            @endif
+                        @else
+                            Belum memilih PIC
+                        @endif
+                    </div>
+                </div>
+
+                {{-- FOOTER (fixed) --}}
+                <div class="flex-shrink-0 px-6 py-4 bg-zinc-50 dark:bg-zinc-800/50 border-t border-zinc-200 dark:border-zinc-700 flex justify-end gap-2">
+                    <flux:button type="button" wire:click="closePicXrayPicker" variant="filled">
+                        Batal
+                    </flux:button>
+                    <flux:button type="button"
+                        wire:click="proceedToCreate"
+                        variant="primary"
+                        icon="arrow-right"
+                        class="bg-blue-600 hover:bg-blue-700"
+                        :disabled="!$selectedPicXray">
+                        Lanjut ke Form
+                    </flux:button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endcan
 
     {{-- DELETE MODAL --}}
     <div x-data="{ open: false }"

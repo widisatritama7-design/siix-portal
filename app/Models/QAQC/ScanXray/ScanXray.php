@@ -22,12 +22,13 @@ class ScanXray extends EloquentModel
         'group',
         'master_line_id',
         'lot_qty',
+        'pic_xray',              // ⬅️ BARU
         'first_piece_items',
-        'second_first_items',      // ⬅️ BARU
+        'second_first_items',
         'middle_piece_items',
-        'second_middle_items',     // ⬅️ BARU
+        'second_middle_items',
         'last_piece_items',
-        'second_last_items',       // ⬅️ BARU
+        'second_last_items',
         'created_by',
         'updated_by',
     ];

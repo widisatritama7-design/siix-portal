@@ -17,8 +17,12 @@ class ScanXrayCreate extends Component
         if (!auth()->user()->can('create scan xray')) {
             abort(403, 'Unauthorized access.');
         }
+
         $this->phase = 'first';
         $this->initDetailStructures();
+
+        // ⬇️ BARU: ambil PIC X-Ray dari session (dipilih via modal di index)
+        $this->pic_xray = session()->pull('scan_xray_pic', '');
     }
 
     protected function rules(): array { return $this->formRules(); }

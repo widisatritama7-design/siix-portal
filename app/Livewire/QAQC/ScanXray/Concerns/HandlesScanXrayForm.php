@@ -31,6 +31,8 @@ trait HandlesScanXrayForm
     public $second_middle_items = [];
     public $second_last_items   = [];
 
+    public $pic_xray = '';
+
     // ============ JUDGEMENTS (PER CELL / PCB x ROW) ============
     public $judgements = [
         'first_piece_items'  => [
@@ -99,6 +101,7 @@ trait HandlesScanXrayForm
             'group'          => 'required|in:NS,A,B,C',
             'master_line_id' => 'required|exists:tb_mtc_master_lines,id',
             'lot_qty'        => 'required|integer|min:0',
+            'pic_xray'       => 'required|integer',
         ];
 
         foreach (['first_piece_items', 'middle_piece_items', 'last_piece_items'] as $grp) {
@@ -144,6 +147,7 @@ trait HandlesScanXrayForm
             'group.in'                => 'Group harus salah satu dari: NS, A, B, C.',
             'master_line_id.required' => 'Master Line is required.',
             'lot_qty.required'        => 'Lot Qty is required.',
+            'pic_xray.required'       => 'PIC X-Ray wajib diisi.',
         ];
 
         foreach (['first_piece_items', 'middle_piece_items', 'last_piece_items'] as $grp) {
@@ -643,40 +647,6 @@ trait HandlesScanXrayForm
             if ($this->secondGroupHasContent($item) && empty($item['status_running'])) {
                 $this->addError("{$secondGrp}.status_running", 'Second Piece — Status Running wajib diisi.');
             }
-
-            $originalGroupMap = [
-                'second_first'  => 'first_piece_items',
-                'second_middle' => 'middle_piece_items',
-                'second_last'   => 'last_piece_items',
-            ];
-            $originalGrp = $originalGroupMap[$this->phase];
-            $original    = $this->{$originalGrp} ?? [];
-
-            $ngQty = (int) ($original['ng_qty'] ?? 0);
-            if ($ngQty > 0) {
-                if (empty($original['filling_ratio']) && $original['filling_ratio'] !== 0) {
-                    $this->addError("{$originalGrp}.filling_ratio", 'NG Detail — Filling Ratio wajib diisi sebelum lanjut Second Piece.');
-                }
-                if (empty($original['qty_hold']) && $original['qty_hold'] !== 0) {
-                    $this->addError("{$originalGrp}.qty_hold", 'NG Detail — Qty Hold wajib diisi sebelum lanjut Second Piece.');
-                }
-                if (empty($original['ncp_id'])) {
-                    $this->addError("{$originalGrp}.ncp_id", 'NG Detail — NCP wajib dipilih sebelum lanjut Second Piece.');
-                }
-                if (empty($original['remarks'])) {
-                    $this->addError("{$originalGrp}.remarks", 'NG Detail — Remarks wajib diisi sebelum lanjut Second Piece.');
-                }
-                if (empty($original['pictures']) || !is_array($original['pictures']) || count($original['pictures']) === 0) {
-                    $this->addError("{$originalGrp}.pictures", 'NG Detail — Pictures wajib diupload sebelum lanjut Second Piece.');
-                }
-
-                $ok   = (int) ($original['status_after_check']['ok'] ?? 0);
-                $ng   = (int) ($original['status_after_check']['ng'] ?? 0);
-                $hold = (int) ($original['qty_hold'] ?? 0);
-                if (($ok + $ng) !== $hold && $hold > 0) {
-                    $this->addError("{$originalGrp}.qty_hold", 'NG Detail — OK + NG harus sama dengan Qty Hold.');
-                }
-            }
         }
     }
 
@@ -891,6 +861,7 @@ trait HandlesScanXrayForm
             'group'               => $this->group,
             'master_line_id'      => $this->master_line_id,
             'lot_qty'             => $this->lot_qty,
+            'pic_xray'            => $this->pic_xray,
             'first_piece_items'   => $this->prepareGroupPayload('first_piece_items', $existingPictures),
             'middle_piece_items'  => $this->prepareGroupPayload('middle_piece_items', $existingPictures),
             'last_piece_items'    => $this->prepareGroupPayload('last_piece_items', $existingPictures),
