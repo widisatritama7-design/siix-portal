@@ -137,9 +137,13 @@ export default function ResultPatrol({ wire, mingleData }) {
 
             {/* ============ BREADCRUMBS ============ */}
             <nav className="flex items-center gap-1.5 text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 overflow-x-auto whitespace-nowrap pb-1">
-                <a href="/dashboard" className="inline-flex items-center gap-1.5 hover:text-blue-600 dark:hover:text-blue-400 transition-colors shrink-0">
+                <button
+                    type="button"
+                    onClick={() => window.Livewire.navigate('/main-dashboard')}
+                    className="inline-flex items-center gap-1.5 hover:text-blue-600 dark:hover:text-blue-400 transition-colors shrink-0"
+                >
                     Dashboard
-                </a>
+                </button>
                 <span className="text-zinc-300 dark:text-zinc-600 shrink-0">/</span>
                 <span className="shrink-0 font-semibold text-black dark:text-white">PROD</span>
                 <span className="text-zinc-300 dark:text-zinc-600 shrink-0">/</span>
@@ -580,7 +584,8 @@ export default function ResultPatrol({ wire, mingleData }) {
                                                             Edit
                                                         </button>
                                                     )}
-                                                    {permissions.canDelete && (
+                                                    {/* Tombol Delete hanya muncul jika status = Open DAN punya izin */}
+                                                    {permissions.canDelete && r.status === 'Open' && (
                                                         <button 
                                                             onClick={() => openDeleteConfirm(r)} 
                                                             className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md bg-red-600 hover:bg-red-700 text-white text-xs font-semibold transition-colors shadow-sm"

@@ -137,9 +137,13 @@ export default function CategoryPatrol({ wire, mingleData }) {
 
             {/* ============ BREADCRUMBS ============ */}
             <nav className="flex items-center gap-1.5 text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 overflow-x-auto whitespace-nowrap pb-1">
-                <a href="/dashboard" className="inline-flex items-center gap-1.5 hover:text-blue-600 dark:hover:text-blue-400 transition-colors shrink-0">
+                <button
+                    type="button"
+                    onClick={() => window.Livewire.navigate('/main-dashboard')}
+                    className="inline-flex items-center gap-1.5 hover:text-blue-600 dark:hover:text-blue-400 transition-colors shrink-0"
+                >
                     Dashboard
-                </a>
+                </button>
                 <span className="text-zinc-300 dark:text-zinc-600 shrink-0">/</span>
                 <span className="shrink-0 font-semibold text-black dark:text-white">PROD</span>
                 <span className="text-zinc-300 dark:text-zinc-600 shrink-0">/</span>

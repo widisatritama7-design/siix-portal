@@ -334,24 +334,32 @@ export default function ResultPatrolForm({ wire, mingleData }) {
     return (
         <div className="p-1 space-y-2">
 
-        {/* BREADCRUMBS */}
-        <nav className="flex items-center gap-1.5 text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 overflow-x-auto whitespace-nowrap pb-1">
-            <a href="/dashboard" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors shrink-0">
-                Dashboard
-            </a>
-            <span className="text-zinc-300 dark:text-zinc-600 shrink-0">/</span>
-            <span className="shrink-0 font-semibold text-black dark:text-white">PROD</span>
-            <span className="text-zinc-300 dark:text-zinc-600 shrink-0">/</span>
-            <span className="shrink-0 font-semibold text-black dark:text-white">Patrol Monitoring</span>
-            <span className="text-zinc-300 dark:text-zinc-600 shrink-0">/</span>
-            <a href="/prod/patrol/result-patrol" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors shrink-0">
-                Result Patrol
-            </a>
-            <span className="text-zinc-300 dark:text-zinc-600 shrink-0">/</span>
-            <span className="font-semibold text-black dark:text-white shrink-0">
-                {form.id ? 'Edit' : 'Create'}
-            </span>
-        </nav>
+            {/* BREADCRUMBS */}
+            <nav className="flex items-center gap-1.5 text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 overflow-x-auto whitespace-nowrap pb-1">
+                <button
+                    type="button"
+                    onClick={() => window.Livewire.navigate('/main-dashboard')}
+                    className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors shrink-0"
+                >
+                    Dashboard
+                </button>
+                <span className="text-zinc-300 dark:text-zinc-600 shrink-0">/</span>
+                <span className="shrink-0 font-semibold text-black dark:text-white">PROD</span>
+                <span className="text-zinc-300 dark:text-zinc-600 shrink-0">/</span>
+                <span className="shrink-0 font-semibold text-black dark:text-white">Patrol Monitoring</span>
+                <span className="text-zinc-300 dark:text-zinc-600 shrink-0">/</span>
+                <button
+                    type="button"
+                    onClick={() => window.Livewire.navigate('/prod/patrol/result-patrol')}
+                    className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors shrink-0"
+                >
+                    Result Patrol
+                </button>
+                <span className="text-zinc-300 dark:text-zinc-600 shrink-0">/</span>
+                <span className="font-semibold text-black dark:text-white shrink-0">
+                    {form.id ? 'Edit' : 'Create'}
+                </span>
+            </nav>
 
             {/* HEADER PAGE */}
             <div className="flex flex-col sm:flex-row justify-between sm:items-end gap-3 mb-4">
@@ -632,7 +640,7 @@ export default function ResultPatrolForm({ wire, mingleData }) {
                             Tambah
                         </button>
                     </div>
-                    
+
                     <div className="p-5 space-y-6">
                         {form.finding_patrol_items.length === 0 ? (
                             <p className="text-sm text-zinc-500 dark:text-zinc-400 italic text-center py-4">Tidak ada temuan (Aman).</p>
@@ -643,7 +651,7 @@ export default function ResultPatrolForm({ wire, mingleData }) {
 
                                 return (
                                     <div key={idx} className="p-5 border border-red-200 dark:border-red-800 rounded-xl bg-red-50/20 dark:bg-red-900/10 relative shadow-sm space-y-5">
-                                        
+
                                         <button type="button" onClick={() => removeFinding(idx)} className="absolute top-4 right-4 text-red-400 hover:text-red-600 dark:text-red-500 dark:hover:text-red-400 bg-white dark:bg-zinc-800 rounded-full p-1.5 shadow-sm transition-colors z-10">
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4"><path fillRule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" /></svg>
                                         </button>
@@ -652,12 +660,13 @@ export default function ResultPatrolForm({ wire, mingleData }) {
                                             <span className="bg-red-600 text-white w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold">{idx + 1}</span>
                                             <h4 className="font-bold text-sm text-red-800 dark:text-red-300">Detail Temuan</h4>
                                         </div>
-                                        
-                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+                                        {/* 1 KOLOM: Category, Finding Result, Feedback To */}
+                                        <div className="grid grid-cols-1 gap-4">
                                             {/* Category Search */}
                                             <div>
                                                 <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Category</label>
-                                                <div 
+                                                <div
                                                     onClick={() => openSearchModal('category', idx)}
                                                     className="w-full border border-zinc-300 dark:border-zinc-600 rounded-lg pl-3 pr-3 py-2 text-sm bg-white dark:bg-zinc-800 cursor-pointer flex items-center justify-between hover:border-red-400 transition-colors"
                                                 >
@@ -684,7 +693,7 @@ export default function ResultPatrolForm({ wire, mingleData }) {
                                             {/* Feedback To */}
                                             <div>
                                                 <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Feedback To (Employee)</label>
-                                                <div 
+                                                <div
                                                     onClick={() => openSearchModal('employee', idx)}
                                                     className="w-full border border-zinc-300 dark:border-zinc-600 rounded-lg pl-3 pr-3 py-2 text-sm bg-white dark:bg-zinc-800 cursor-pointer flex items-center justify-between hover:border-red-400 transition-colors"
                                                 >
@@ -698,8 +707,8 @@ export default function ResultPatrolForm({ wire, mingleData }) {
                                             </div>
                                         </div>
 
-                                        {/* BARIS 2: EVIDENCE, REASON */}
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {/* 1 KOLOM: Evidence, Reason */}
+                                        <div className="grid grid-cols-1 gap-4">
                                             {renderEvidencePhotos(finding, idx, 'evidence', 'Evidence (Live Photo)', 'red')}
                                             <div>
                                                 <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Reason</label>
@@ -724,8 +733,8 @@ export default function ResultPatrolForm({ wire, mingleData }) {
                                             <h4 className="font-bold text-sm text-emerald-800 dark:text-emerald-300">Tindakan Perbaikan</h4>
                                         </div>
 
-                                        {/* BARIS 3: ACTION TAKEN, EVIDENCE ACTION */}
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        {/* 1 KOLOM: Action Taken, Evidence Action */}
+                                        <div className="grid grid-cols-1 gap-4">
                                             <div>
                                                 <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Action Taken</label>
                                                 <RichTextEditor
