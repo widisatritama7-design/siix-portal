@@ -308,12 +308,19 @@ unset($__defined_vars, $__key, $__value); ?>
                                                         wire:model.live.debounce.500ms="<?php echo e($key); ?>.<?php echo e($side); ?>.<?php echo e($col); ?>.<?php echo e($i); ?>"
                                                         x-on:keydown.enter.prevent="
                                                             $el.blur();
-                                                            <?php if($i < $rows - 1): ?>
+                                                            const cols = ['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'];
+                                                            const curIdx = cols.indexOf('<?php echo e($col); ?>');
+                                                            const group = '<?php echo e($key); ?>';
+                                                            const side = '<?php echo e($side); ?>';
+                                                            let nextRow = <?php echo e($i); ?>;
+                                                            let nextCol = curIdx + 1;
+                                                            if (nextCol >= cols.length) { nextCol = 0; nextRow = <?php echo e($i); ?> + 1; }
+                                                            if (nextRow < <?php echo e($rows); ?>) {
                                                                 const next = document.querySelector(
-                                                                    `input[data-group='<?php echo e($key); ?>'][data-side='<?php echo e($side); ?>'][data-row='<?php echo e($i + 1); ?>'][data-col='<?php echo e($col); ?>']`
+                                                                    `input[data-group='${group}'][data-side='${side}'][data-row='${nextRow}'][data-col='${cols[nextCol]}']`
                                                                 );
                                                                 if (next) next.focus();
-                                                            <?php endif; ?>
+                                                            }
                                                         "
                                                         class="flex-1 min-w-0 border
                                                             <?php echo e($hasError

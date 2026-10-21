@@ -40,6 +40,7 @@ class ScanXrayEdit extends Component
         $this->group          = $scan->group;
         $this->master_line_id = $scan->master_line_id;
         $this->lot_qty        = $scan->lot_qty;
+        $this->pic_xray       = $scan->pic_xray;
 
         $this->first_piece_items  = $this->mergeStructure($scan->first_piece_items  ?? [], 'first_piece_items');
         $this->middle_piece_items = $this->mergeStructure($scan->middle_piece_items ?? [], 'middle_piece_items');
