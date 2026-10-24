@@ -7,7 +7,9 @@ use App\Models\MTC\Master\MasterLine;
 use App\Models\QAQC\BlindTest\Customer;
 use App\Models\QAQC\BlindTest\Model as BlindTestModel;
 use App\Models\QAQC\ScanXray\ScanXray;
+use App\Models\QAQC\ScanXray\ScanXrayEditRequest;
 use Illuminate\Support\Facades\Response;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -16,6 +18,7 @@ use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
+#[Title('Scan X-Ray List')]
 class ScanXrayIndex extends Component
 {
     use WithPagination;
@@ -33,11 +36,16 @@ class ScanXrayIndex extends Component
 
     public bool $isStacked = true;
 
-    // ============ PIC X-RAY MODAL (sebelum create) ============
+    // ============ PIC X-RAY MODAL ============
     public bool $openPicXrayModal = false;
     public string $picXraySearch = '';
     public int $picXrayPage = 1;
     public ?int $selectedPicXray = null;
+
+    // ============ EDIT REQUEST MODAL (Alpine) ============
+    public ?int $editRequestScanId = null;
+    public array $editRequestGroups = [];
+    public string $editRequestReason = '';
 
     public function updatedSearch(): void { $this->resetPage(); }
     public function updatedFilterCustomerId(): void
@@ -91,7 +99,6 @@ class ScanXrayIndex extends Component
     // ============ SUMMARY ============
     public function buildSummary(ScanXray $scan): array
     {
-        // 4 grup utama (dengan judgement)
         $mainGroups = [
             'first'  => $scan->first_piece_items  ?? [],
             'middle' => $scan->middle_piece_items ?? [],
@@ -109,32 +116,24 @@ class ScanXrayIndex extends Component
             $rr    = $total > 0 ? round(($ng / $total) * 100, 2) : 0;
 
             $summary[$key] = [
-                'ok_qty'         => $ok,
-                'ng_qty'         => $ng,
-                'reject_rate'    => $rr,
-                'status_running' => $item['status_running'] ?? null,
+                'ok_qty'      => $ok,
+                'ng_qty'      => $ng,
+                'reject_rate' => $rr,
             ];
 
             $totalOk += $ok;
             $totalNg += $ng;
         }
 
-        // 3 grup second piece (hanya QTY + Status)
         $secondGroups = [
-            'second_first'  => [$scan->second_first_items  ?? [], 'first'],
-            'second_middle' => [$scan->second_middle_items ?? [], 'middle'],
-            'second_last'   => [$scan->second_last_items   ?? [], 'last'],
+            'second_first'  => $scan->second_first_items  ?? [],
+            'second_middle' => $scan->second_middle_items ?? [],
+            'second_last'   => $scan->second_last_items   ?? [],
         ];
 
-        foreach ($secondGroups as $key => [$item, $parent]) {
+        foreach ($secondGroups as $key => $item) {
             $qty = $this->countSecondQty($item, $scan->pcb_type);
-
-            $summary[$key] = [
-                'qty'            => $qty,
-                'status_running' => $item['status_running'] ?? null,
-            ];
-
-            // QTY second dihitung masuk ke total OK
+            $summary[$key] = ['qty' => $qty];
             $totalOk += $qty;
         }
 
@@ -145,12 +144,11 @@ class ScanXrayIndex extends Component
             'reject_rate' => $grand > 0 ? round(($totalNg / $grand) * 100, 2) : 0,
         ];
 
+        $summary['status_running'] = $scan->status_running;
+
         return $summary;
     }
 
-    /**
-     * Hitung QTY Second Piece = jumlah row di side aktif yang minimal punya 1 PCB terisi.
-     */
     protected function countSecondQty(?array $item, ?string $pcbType): int
     {
         if (empty($item) || !$pcbType) return 0;
@@ -255,6 +253,11 @@ class ScanXrayIndex extends Component
             'fill'      => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FFF4F4F5']],
             'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER, 'vertical' => Alignment::VERTICAL_CENTER],
         ];
+        $groupStatusStyle = [
+            'font'      => ['bold' => true, 'color' => ['argb' => 'FF0E7490'], 'size' => 10],
+            'fill'      => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FFF0F9FA']],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER, 'vertical' => Alignment::VERTICAL_CENTER],
+        ];
         $totalStyle = [
             'font' => ['bold' => true],
             'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['argb' => 'FFFFF2CC']],
@@ -264,18 +267,7 @@ class ScanXrayIndex extends Component
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle('Scan X-Ray');
 
-        // ============ TITLE ============
-        // Layout kolom (28 kolom, A..AB):
-        // A-H    : # Customer Model PCB Shift Group Line LotQty       (8)
-        // I-L    : First         OK, NG, RR, Status                  (4)
-        // M-N    : Second First  QTY, Status                          (2)
-        // O-R    : Middle        OK, NG, RR, Status                  (4)
-        // S-T    : Second Middle QTY, Status                          (2)
-        // U-X    : Last          OK, NG, RR, Status                  (4)
-        // Y-Z    : Second Last   QTY, Status                          (2)
-        // AA-AC  : Total         OK, NG, RR                           (3)
-        // AD-AF  : PIC           Date, Time, PIC                      (3)
-        $lastCol = 'AF';
+        $lastCol = 'AA';
 
         $sheet->setCellValue('A1', 'SCAN X-RAY REPORT');
         $sheet->mergeCells("A1:{$lastCol}1");
@@ -310,11 +302,9 @@ class ScanXrayIndex extends Component
         $sheet->getStyle('A4')->getFont()->setSize(9)->getColor()->setARGB('FF666666');
         $sheet->getStyle('A4')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-        // ============ HEADER ============
         $headerRow1 = 6;
         $headerRow2 = 7;
 
-        // Fixed
         $sheet->setCellValue('A' . $headerRow1, '#');           $sheet->mergeCells("A{$headerRow1}:A{$headerRow2}");
         $sheet->setCellValue('B' . $headerRow1, 'Customer');    $sheet->mergeCells("B{$headerRow1}:B{$headerRow2}");
         $sheet->setCellValue('C' . $headerRow1, 'Model');       $sheet->mergeCells("C{$headerRow1}:C{$headerRow2}");
@@ -324,123 +314,102 @@ class ScanXrayIndex extends Component
         $sheet->setCellValue('G' . $headerRow1, 'Line');        $sheet->mergeCells("G{$headerRow1}:G{$headerRow2}");
         $sheet->setCellValue('H' . $headerRow1, 'Lot Qty');     $sheet->mergeCells("H{$headerRow1}:H{$headerRow2}");
 
-        // First  I..L
         $sheet->setCellValue('I' . $headerRow1, 'First Piece Items');
-        $sheet->mergeCells("I{$headerRow1}:L{$headerRow1}");
+        $sheet->mergeCells("I{$headerRow1}:K{$headerRow1}");
         $sheet->setCellValue('I' . $headerRow2, 'OK');
         $sheet->setCellValue('J' . $headerRow2, 'NG');
         $sheet->setCellValue('K' . $headerRow2, 'Reject Rate %');
-        $sheet->setCellValue('L' . $headerRow2, 'Status');
 
-        // Second First  M..N
-        $sheet->setCellValue('M' . $headerRow1, 'Second First Piece');
-        $sheet->mergeCells("M{$headerRow1}:N{$headerRow1}");
-        $sheet->setCellValue('M' . $headerRow2, 'QTY');
-        $sheet->setCellValue('N' . $headerRow2, 'Status');
+        $sheet->setCellValue('L' . $headerRow1, 'Second First');
+        $sheet->mergeCells("L{$headerRow1}:L{$headerRow2}");
+        $sheet->setCellValue('L' . $headerRow2, 'QTY');
 
-        // Middle  O..R
-        $sheet->setCellValue('O' . $headerRow1, 'Middle Piece Items');
-        $sheet->mergeCells("O{$headerRow1}:R{$headerRow1}");
-        $sheet->setCellValue('O' . $headerRow2, 'OK');
-        $sheet->setCellValue('P' . $headerRow2, 'NG');
-        $sheet->setCellValue('Q' . $headerRow2, 'Reject Rate %');
-        $sheet->setCellValue('R' . $headerRow2, 'Status');
+        $sheet->setCellValue('M' . $headerRow1, 'Middle Piece Items');
+        $sheet->mergeCells("M{$headerRow1}:O{$headerRow1}");
+        $sheet->setCellValue('M' . $headerRow2, 'OK');
+        $sheet->setCellValue('N' . $headerRow2, 'NG');
+        $sheet->setCellValue('O' . $headerRow2, 'Reject Rate %');
 
-        // Second Middle  S..T
-        $sheet->setCellValue('S' . $headerRow1, 'Second Middle Piece');
-        $sheet->mergeCells("S{$headerRow1}:T{$headerRow1}");
-        $sheet->setCellValue('S' . $headerRow2, 'QTY');
-        $sheet->setCellValue('T' . $headerRow2, 'Status');
+        $sheet->setCellValue('P' . $headerRow1, 'Second Middle');
+        $sheet->mergeCells("P{$headerRow1}:P{$headerRow2}");
+        $sheet->setCellValue('P' . $headerRow2, 'QTY');
 
-        // Last  U..X
-        $sheet->setCellValue('U' . $headerRow1, 'Last Piece Items');
-        $sheet->mergeCells("U{$headerRow1}:X{$headerRow1}");
-        $sheet->setCellValue('U' . $headerRow2, 'OK');
-        $sheet->setCellValue('V' . $headerRow2, 'NG');
-        $sheet->setCellValue('W' . $headerRow2, 'Reject Rate %');
-        $sheet->setCellValue('X' . $headerRow2, 'Status');
+        $sheet->setCellValue('Q' . $headerRow1, 'Last Piece Items');
+        $sheet->mergeCells("Q{$headerRow1}:S{$headerRow1}");
+        $sheet->setCellValue('Q' . $headerRow2, 'OK');
+        $sheet->setCellValue('R' . $headerRow2, 'NG');
+        $sheet->setCellValue('S' . $headerRow2, 'Reject Rate %');
 
-        // Second Last  Y..Z
-        $sheet->setCellValue('Y' . $headerRow1, 'Second Last Piece');
-        $sheet->mergeCells("Y{$headerRow1}:Z{$headerRow1}");
-        $sheet->setCellValue('Y' . $headerRow2, 'QTY');
-        $sheet->setCellValue('Z' . $headerRow2, 'Status');
+        $sheet->setCellValue('T' . $headerRow1, 'Second Last');
+        $sheet->mergeCells("T{$headerRow1}:T{$headerRow2}");
+        $sheet->setCellValue('T' . $headerRow2, 'QTY');
 
-        // Total  AA..AC
-        $sheet->setCellValue('AA' . $headerRow1, 'Total');
-        $sheet->mergeCells("AA{$headerRow1}:AC{$headerRow1}");
-        $sheet->setCellValue('AA' . $headerRow2, 'OK');
-        $sheet->setCellValue('AB' . $headerRow2, 'NG');
-        $sheet->setCellValue('AC' . $headerRow2, 'Reject Rate %');
+        $sheet->setCellValue('U' . $headerRow1, 'Status Running');
+        $sheet->mergeCells("U{$headerRow1}:U{$headerRow2}");
+        $sheet->setCellValue('U' . $headerRow2, 'Status');
 
-        // PIC  AD..AF
-        $sheet->setCellValue('AD' . $headerRow1, 'PIC Info');
-        $sheet->mergeCells("AD{$headerRow1}:AF{$headerRow1}");
-        $sheet->setCellValue('AD' . $headerRow2, 'Date');
-        $sheet->setCellValue('AE' . $headerRow2, 'Time');
-        $sheet->setCellValue('AF' . $headerRow2, 'PIC');
+        $sheet->setCellValue('V' . $headerRow1, 'Total');
+        $sheet->mergeCells("V{$headerRow1}:X{$headerRow1}");
+        $sheet->setCellValue('V' . $headerRow2, 'OK');
+        $sheet->setCellValue('W' . $headerRow2, 'NG');
+        $sheet->setCellValue('X' . $headerRow2, 'Reject Rate %');
 
-        // Style header
+        $sheet->setCellValue('Y' . $headerRow1, 'PIC Info');
+        $sheet->mergeCells("Y{$headerRow1}:AA{$headerRow1}");
+        $sheet->setCellValue('Y' . $headerRow2, 'Date');
+        $sheet->setCellValue('Z' . $headerRow2, 'Time');
+        $sheet->setCellValue('AA' . $headerRow2, 'PIC');
+
         $sheet->getStyle("A{$headerRow1}:{$lastCol}{$headerRow2}")->applyFromArray($headerStyle);
-        $sheet->getStyle("I{$headerRow1}:L{$headerRow1}")->applyFromArray($groupFirstStyle);
-        $sheet->getStyle("M{$headerRow1}:N{$headerRow1}")->applyFromArray($groupSecondStyle);
-        $sheet->getStyle("O{$headerRow1}:R{$headerRow1}")->applyFromArray($groupMiddleStyle);
-        $sheet->getStyle("S{$headerRow1}:T{$headerRow1}")->applyFromArray($groupSecondStyle);
-        $sheet->getStyle("U{$headerRow1}:X{$headerRow1}")->applyFromArray($groupLastStyle);
-        $sheet->getStyle("Y{$headerRow1}:Z{$headerRow1}")->applyFromArray($groupSecondStyle);
-        $sheet->getStyle("AA{$headerRow1}:AC{$headerRow1}")->applyFromArray($groupTotalStyle);
-        $sheet->getStyle("AD{$headerRow1}:AF{$headerRow1}")->applyFromArray($groupPicStyle);
+        $sheet->getStyle("I{$headerRow1}:K{$headerRow1}")->applyFromArray($groupFirstStyle);
+        $sheet->getStyle("L{$headerRow1}:L{$headerRow1}")->applyFromArray($groupSecondStyle);
+        $sheet->getStyle("M{$headerRow1}:O{$headerRow1}")->applyFromArray($groupMiddleStyle);
+        $sheet->getStyle("P{$headerRow1}:P{$headerRow1}")->applyFromArray($groupSecondStyle);
+        $sheet->getStyle("Q{$headerRow1}:S{$headerRow1}")->applyFromArray($groupLastStyle);
+        $sheet->getStyle("T{$headerRow1}:T{$headerRow1}")->applyFromArray($groupSecondStyle);
+        $sheet->getStyle("U{$headerRow1}:U{$headerRow1}")->applyFromArray($groupStatusStyle);
+        $sheet->getStyle("V{$headerRow1}:X{$headerRow1}")->applyFromArray($groupTotalStyle);
+        $sheet->getStyle("Y{$headerRow1}:AA{$headerRow1}")->applyFromArray($groupPicStyle);
 
-        $sheet->getStyle("I{$headerRow2}:L{$headerRow2}")->applyFromArray($groupFirstStyle);
-        $sheet->getStyle("M{$headerRow2}:N{$headerRow2}")->applyFromArray($groupSecondStyle);
-        $sheet->getStyle("O{$headerRow2}:R{$headerRow2}")->applyFromArray($groupMiddleStyle);
-        $sheet->getStyle("S{$headerRow2}:T{$headerRow2}")->applyFromArray($groupSecondStyle);
-        $sheet->getStyle("U{$headerRow2}:X{$headerRow2}")->applyFromArray($groupLastStyle);
-        $sheet->getStyle("Y{$headerRow2}:Z{$headerRow2}")->applyFromArray($groupSecondStyle);
-        $sheet->getStyle("AA{$headerRow2}:AC{$headerRow2}")->applyFromArray($groupTotalStyle);
-        $sheet->getStyle("AD{$headerRow2}:AF{$headerRow2}")->applyFromArray($groupPicStyle);
+        $sheet->getStyle("I{$headerRow2}:K{$headerRow2}")->applyFromArray($groupFirstStyle);
+        $sheet->getStyle("L{$headerRow2}:L{$headerRow2}")->applyFromArray($groupSecondStyle);
+        $sheet->getStyle("M{$headerRow2}:O{$headerRow2}")->applyFromArray($groupMiddleStyle);
+        $sheet->getStyle("P{$headerRow2}:P{$headerRow2}")->applyFromArray($groupSecondStyle);
+        $sheet->getStyle("Q{$headerRow2}:S{$headerRow2}")->applyFromArray($groupLastStyle);
+        $sheet->getStyle("T{$headerRow2}:T{$headerRow2}")->applyFromArray($groupSecondStyle);
+        $sheet->getStyle("U{$headerRow2}:U{$headerRow2}")->applyFromArray($groupStatusStyle);
+        $sheet->getStyle("V{$headerRow2}:X{$headerRow2}")->applyFromArray($groupTotalStyle);
+        $sheet->getStyle("Y{$headerRow2}:AA{$headerRow2}")->applyFromArray($groupPicStyle);
 
-        // ============ DATA ============
         $row = $headerRow2 + 1;
         $no  = 1;
 
-        $sumFirstOk = 0;   $sumFirstNg = 0;
+        $sumFirstOk = 0;    $sumFirstNg = 0;
         $sumSecondFirstQty = 0;
-        $sumMidOk   = 0;   $sumMidNg = 0;
+        $sumMidOk   = 0;    $sumMidNg = 0;
         $sumSecondMiddleQty = 0;
-        $sumLastOk  = 0;   $sumLastNg = 0;
+        $sumLastOk  = 0;    $sumLastNg = 0;
         $sumSecondLastQty = 0;
 
         foreach ($scans as $scan) {
             $s = $this->buildSummary($scan);
 
-            // First
             $fOk = $s['first']['ok_qty'];
             $fNg = $s['first']['ng_qty'];
-
-            // Second first
             $sfQty = $s['second_first']['qty'];
-
-            // Middle
             $mOk = $s['middle']['ok_qty'];
             $mNg = $s['middle']['ng_qty'];
-
-            // Second middle
             $smQty = $s['second_middle']['qty'];
-
-            // Last
             $lOk = $s['last']['ok_qty'];
             $lNg = $s['last']['ng_qty'];
-
-            // Second last
             $slQty = $s['second_last']['qty'];
 
-            $sumFirstOk        += $fOk;  $sumFirstNg        += $fNg;
-            $sumSecondFirstQty += $sfQty;
-            $sumMidOk          += $mOk;  $sumMidNg          += $mNg;
+            $sumFirstOk         += $fOk;  $sumFirstNg         += $fNg;
+            $sumSecondFirstQty  += $sfQty;
+            $sumMidOk           += $mOk;  $sumMidNg           += $mNg;
             $sumSecondMiddleQty += $smQty;
-            $sumLastOk         += $lOk;  $sumLastNg         += $lNg;
-            $sumSecondLastQty  += $slQty;
+            $sumLastOk          += $lOk;  $sumLastNg          += $lNg;
+            $sumSecondLastQty   += $slQty;
 
             $sheet->setCellValue('A' . $row, $no++);
             $sheet->setCellValue('B' . $row, $scan->customer->customer_name ?? '-');
@@ -451,48 +420,27 @@ class ScanXrayIndex extends Component
             $sheet->setCellValue('G' . $row, ($scan->masterLine->location->location_name ?? '-') . ' - L' . ($scan->masterLine->line_number ?? '-'));
             $sheet->setCellValue('H' . $row, $scan->lot_qty ?? 0);
 
-            // First
             $sheet->setCellValue('I' . $row, $fOk);
             $sheet->setCellValue('J' . $row, $fNg);
             $sheet->setCellValue('K' . $row, $s['first']['reject_rate'] . '%');
-            $sheet->setCellValue('L' . $row, $scan->first_piece_items['status_running'] ?? '-');
+            $sheet->setCellValue('L' . $row, $sfQty);
+            $sheet->setCellValue('M' . $row, $mOk);
+            $sheet->setCellValue('N' . $row, $mNg);
+            $sheet->setCellValue('O' . $row, $s['middle']['reject_rate'] . '%');
+            $sheet->setCellValue('P' . $row, $smQty);
+            $sheet->setCellValue('Q' . $row, $lOk);
+            $sheet->setCellValue('R' . $row, $lNg);
+            $sheet->setCellValue('S' . $row, $s['last']['reject_rate'] . '%');
+            $sheet->setCellValue('T' . $row, $slQty);
+            $sheet->setCellValue('U' . $row, $scan->status_running ?? '-');
+            $sheet->setCellValue('V' . $row, $s['total']['ok_qty']);
+            $sheet->setCellValue('W' . $row, $s['total']['ng_qty']);
+            $sheet->setCellValue('X' . $row, $s['total']['reject_rate'] . '%');
+            $sheet->setCellValue('Y' . $row, $scan->created_at?->format('d/m/Y') ?? '-');
+            $sheet->setCellValue('Z' . $row, $scan->created_at?->format('H:i') ?? '-');
+            $sheet->setCellValue('AA' . $row, $scan->creator->name ?? $scan->creator->username ?? '-');
 
-            // Second first
-            $sheet->setCellValue('M' . $row, $sfQty);
-            $sheet->setCellValue('N' . $row, $scan->second_first_items['status_running'] ?? '-');
-
-            // Middle
-            $sheet->setCellValue('O' . $row, $mOk);
-            $sheet->setCellValue('P' . $row, $mNg);
-            $sheet->setCellValue('Q' . $row, $s['middle']['reject_rate'] . '%');
-            $sheet->setCellValue('R' . $row, $scan->middle_piece_items['status_running'] ?? '-');
-
-            // Second middle
-            $sheet->setCellValue('S' . $row, $smQty);
-            $sheet->setCellValue('T' . $row, $scan->second_middle_items['status_running'] ?? '-');
-
-            // Last
-            $sheet->setCellValue('U' . $row, $lOk);
-            $sheet->setCellValue('V' . $row, $lNg);
-            $sheet->setCellValue('W' . $row, $s['last']['reject_rate'] . '%');
-            $sheet->setCellValue('X' . $row, $scan->last_piece_items['status_running'] ?? '-');
-
-            // Second last
-            $sheet->setCellValue('Y' . $row, $slQty);
-            $sheet->setCellValue('Z' . $row, $scan->second_last_items['status_running'] ?? '-');
-
-            // Total
-            $sheet->setCellValue('AA' . $row, $s['total']['ok_qty']);
-            $sheet->setCellValue('AB' . $row, $s['total']['ng_qty']);
-            $sheet->setCellValue('AC' . $row, $s['total']['reject_rate'] . '%');
-
-            // PIC
-            $sheet->setCellValue('AD' . $row, $scan->created_at?->format('d/m/Y') ?? '-');
-            $sheet->setCellValue('AE' . $row, $scan->created_at?->format('H:i') ?? '-');
-            $sheet->setCellValue('AF' . $row, $scan->creator->name ?? $scan->creator->username ?? '-');
-
-            // Warna RR cell
-            foreach (['K' => $s['first']['reject_rate'], 'Q' => $s['middle']['reject_rate'], 'W' => $s['last']['reject_rate'], 'AC' => $s['total']['reject_rate']] as $col => $rr) {
+            foreach (['K' => $s['first']['reject_rate'], 'O' => $s['middle']['reject_rate'], 'S' => $s['last']['reject_rate'], 'X' => $s['total']['reject_rate']] as $col => $rr) {
                 $fillColor = $rr >= 5 ? 'FFEF4444' : ($rr > 0 ? 'FFF59E0B' : 'FF10B981');
                 $sheet->getStyle($col . $row)->getFill()
                     ->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB($fillColor);
@@ -500,26 +448,22 @@ class ScanXrayIndex extends Component
                 $sheet->getStyle($col . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             }
 
-            // Warna OK (hijau) — termasuk QTY second (dianggap OK)
-            foreach (['I' => $fOk, 'M' => $sfQty, 'O' => $mOk, 'S' => $smQty, 'U' => $lOk, 'Y' => $slQty, 'AA' => $s['total']['ok_qty']] as $col => $v) {
+            foreach (['I' => $fOk, 'L' => $sfQty, 'M' => $mOk, 'P' => $smQty, 'Q' => $lOk, 'T' => $slQty, 'V' => $s['total']['ok_qty']] as $col => $v) {
                 $sheet->getStyle($col . $row)->getFont()->setBold(true)->getColor()->setARGB('FF047857');
                 $sheet->getStyle($col . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             }
-            // Warna NG (merah)
-            foreach (['J' => $fNg, 'P' => $mNg, 'V' => $lNg, 'AB' => $s['total']['ng_qty']] as $col => $v) {
+            foreach (['J' => $fNg, 'N' => $mNg, 'R' => $lNg, 'W' => $s['total']['ng_qty']] as $col => $v) {
                 $sheet->getStyle($col . $row)->getFont()->setBold(true)->getColor()->setARGB('FFDC2626');
                 $sheet->getStyle($col . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             }
 
-            // Alignment center untuk kolom pendek
-            foreach (['A','D','E','F','H','L','N','R','T','X','Z','AD','AE'] as $col) {
+            foreach (['A','D','E','F','H','L','P','T','U','Y','Z'] as $col) {
                 $sheet->getStyle($col . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             }
 
             $row++;
         }
 
-        // ============ FOOTER TOTAL ============
         $grandOk = $sumFirstOk + $sumSecondFirstQty + $sumMidOk + $sumSecondMiddleQty + $sumLastOk + $sumSecondLastQty;
         $grandNg = $sumFirstNg + $sumMidNg + $sumLastNg;
         $grandRR = ($grandOk + $grandNg) > 0 ? round(($grandNg / ($grandOk + $grandNg)) * 100, 2) : 0;
@@ -527,16 +471,16 @@ class ScanXrayIndex extends Component
         $sheet->setCellValue('H' . $row, 'TOTAL');
         $sheet->setCellValue('I' . $row, $sumFirstOk);
         $sheet->setCellValue('J' . $row, $sumFirstNg);
-        $sheet->setCellValue('M' . $row, $sumSecondFirstQty);
-        $sheet->setCellValue('O' . $row, $sumMidOk);
-        $sheet->setCellValue('P' . $row, $sumMidNg);
-        $sheet->setCellValue('S' . $row, $sumSecondMiddleQty);
-        $sheet->setCellValue('U' . $row, $sumLastOk);
-        $sheet->setCellValue('V' . $row, $sumLastNg);
-        $sheet->setCellValue('Y' . $row, $sumSecondLastQty);
-        $sheet->setCellValue('AA' . $row, $grandOk);
-        $sheet->setCellValue('AB' . $row, $grandNg);
-        $sheet->setCellValue('AC' . $row, $grandRR . '%');
+        $sheet->setCellValue('L' . $row, $sumSecondFirstQty);
+        $sheet->setCellValue('M' . $row, $sumMidOk);
+        $sheet->setCellValue('N' . $row, $sumMidNg);
+        $sheet->setCellValue('P' . $row, $sumSecondMiddleQty);
+        $sheet->setCellValue('Q' . $row, $sumLastOk);
+        $sheet->setCellValue('R' . $row, $sumLastNg);
+        $sheet->setCellValue('T' . $row, $sumSecondLastQty);
+        $sheet->setCellValue('V' . $row, $grandOk);
+        $sheet->setCellValue('W' . $row, $grandNg);
+        $sheet->setCellValue('X' . $row, $grandRR . '%');
 
         $sheet->getStyle("A{$row}:{$lastCol}{$row}")->applyFromArray($totalStyle);
         $sheet->getStyle("A{$row}:{$lastCol}{$row}")->getAlignment()
@@ -544,33 +488,32 @@ class ScanXrayIndex extends Component
             ->setVertical(Alignment::VERTICAL_CENTER);
 
         $sheet->getStyle("I{$row}:J{$row}")->getFont()->getColor()->setARGB('FF047857');
-        $sheet->getStyle("M{$row}")->getFont()->getColor()->setARGB('FF0891B2');
-        $sheet->getStyle("O{$row}:P{$row}")->getFont()->getColor()->setARGB('FF3730A3');
-        $sheet->getStyle("S{$row}")->getFont()->getColor()->setARGB('FF0891B2');
-        $sheet->getStyle("U{$row}:V{$row}")->getFont()->getColor()->setARGB('FF6B21A8');
-        $sheet->getStyle("Y{$row}")->getFont()->getColor()->setARGB('FF0891B2');
-        $sheet->getStyle("AA{$row}")->getFont()->getColor()->setARGB('FF047857');
-        $sheet->getStyle("AB{$row}")->getFont()->getColor()->setARGB('FFDC2626');
-        $sheet->getStyle("AC{$row}")->getFont()->getColor()->setARGB('FFB45309');
+        $sheet->getStyle("L{$row}")->getFont()->getColor()->setARGB('FF0891B2');
+        $sheet->getStyle("M{$row}:N{$row}")->getFont()->getColor()->setARGB('FF3730A3');
+        $sheet->getStyle("P{$row}")->getFont()->getColor()->setARGB('FF0891B2');
+        $sheet->getStyle("Q{$row}:R{$row}")->getFont()->getColor()->setARGB('FF6B21A8');
+        $sheet->getStyle("T{$row}")->getFont()->getColor()->setARGB('FF0891B2');
+        $sheet->getStyle("V{$row}")->getFont()->getColor()->setARGB('FF047857');
+        $sheet->getStyle("W{$row}")->getFont()->getColor()->setARGB('FFDC2626');
+        $sheet->getStyle("X{$row}")->getFont()->getColor()->setARGB('FFB45309');
 
-        $sheet->getStyle("AC{$row}")->getFill()
+        $sheet->getStyle("X{$row}")->getFill()
             ->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFEF3C7');
 
-        // ============ BORDER ============
         $sheet->getStyle("A{$headerRow1}:{$lastCol}{$row}")->getBorders()->getAllBorders()
             ->setBorderStyle(Border::BORDER_THIN);
 
-        // ============ COLUMN WIDTH ============
         $widths = [
             'A' => 5, 'B' => 20, 'C' => 18, 'D' => 10, 'E' => 6, 'F' => 6, 'G' => 22, 'H' => 8,
-            'I' => 6, 'J' => 6, 'K' => 8, 'L' => 10,          // First
-            'M' => 8, 'N' => 10,                               // Second First
-            'O' => 6, 'P' => 6, 'Q' => 8, 'R' => 10,          // Middle
-            'S' => 8, 'T' => 10,                               // Second Middle
-            'U' => 6, 'V' => 6, 'W' => 8, 'X' => 10,          // Last
-            'Y' => 8, 'Z' => 10,                               // Second Last
-            'AA' => 6, 'AB' => 6, 'AC' => 8,                  // Total
-            'AD' => 11, 'AE' => 7, 'AF' => 15,                // PIC
+            'I' => 6, 'J' => 6, 'K' => 8,
+            'L' => 8,
+            'M' => 6, 'N' => 6, 'O' => 8,
+            'P' => 8,
+            'Q' => 6, 'R' => 6, 'S' => 8,
+            'T' => 8,
+            'U' => 16,
+            'V' => 6, 'W' => 6, 'X' => 8,
+            'Y' => 11, 'Z' => 7, 'AA' => 15,
         ];
         foreach ($widths as $col => $w) {
             $sheet->getColumnDimension($col)->setWidth($w);
@@ -578,7 +521,6 @@ class ScanXrayIndex extends Component
 
         $sheet->freezePane('B8');
 
-        // ============ DOWNLOAD ============
         $fileName = 'scan-xray-' . now()->format('Ymd-His') . '.xlsx';
         $writer   = new Xlsx($spreadsheet);
 
@@ -649,6 +591,52 @@ class ScanXrayIndex extends Component
         $this->dispatch('close-modal-delete');
     }
 
+    // ============ EDIT REQUEST MODAL (Alpine) ============
+    public function resetEditRequest(): void
+    {
+        $this->reset(['editRequestScanId', 'editRequestGroups', 'editRequestReason']);
+        $this->resetValidation();
+    }
+
+    public function submitEditRequest(): void
+    {
+        $this->validate([
+            'editRequestGroups'   => 'required|array|min:1',
+            'editRequestGroups.*' => 'in:' . implode(',', array_keys(ScanXrayEditRequest::GROUPS)),
+            'editRequestReason'   => 'required|string|min:5|max:1000',   // ✅ WAJIB
+        ], [
+            'editRequestGroups.required' => 'Pilih minimal 1 group yang mau diedit.',
+            'editRequestGroups.min'      => 'Pilih minimal 1 group yang mau diedit.',
+            'editRequestGroups.*.in'     => 'Group tidak valid.',
+            'editRequestReason.required' => 'Alasan wajib diisi.',
+            'editRequestReason.min'      => 'Alasan minimal 5 karakter.',
+            'editRequestReason.max'      => 'Alasan maksimal 1000 karakter.',
+        ]);
+
+        $scan = ScanXray::find($this->editRequestScanId);
+        if (!$scan) {
+            $this->dispatch('notify', message: 'Scan tidak ditemukan.', type: 'error');
+            return;
+        }
+
+        if ($scan->activeEditRequest && $scan->activeEditRequest->isActive()) {
+            $this->dispatch('notify', message: 'Sudah ada request aktif untuk scan ini.', type: 'warning');
+            return;
+        }
+
+        ScanXrayEditRequest::create([
+            'scan_xray_id'     => $scan->id,
+            'requested_groups' => $this->editRequestGroups,
+            'reason'           => $this->editRequestReason ?: null,
+            'status'           => 'pending',
+            'requested_by'     => auth()->id(),
+        ]);
+
+        $this->dispatch('notify', message: 'Request edit berhasil dikirim. Menunggu approval.', type: 'success');
+        $this->resetEditRequest();  
+        $this->dispatch('edit-request-submitted');   // ✅ event unik
+    }
+
     // ============ PIC X-RAY MODAL ============
     public function openPicXrayPicker(): void
     {
@@ -693,7 +681,6 @@ class ScanXrayIndex extends Component
             return;
         }
 
-        // Simpan nama PIC di session — akan dibaca oleh komponen form create
         session(['scan_xray_pic' => $this->selectedPicXray]);
 
         $this->openPicXrayModal = false;
@@ -706,16 +693,14 @@ class ScanXrayIndex extends Component
     {
         $search = $this->picXraySearch ?? '';
 
-        // ⚠️ Sesuaikan namespace model Employee dengan project Anda
         $q = Employee::query()
             ->where(function ($qq) {
-                // Filter department hanya QA/QC
                 $qq->where('department', 'QA/QC')
                 ->orWhere('department', 'like', '%QA/QC%')
                 ->orWhere('department', 'like', '%QA%QC%');
             })
-            ->whereIn('status', [1, 2, 3])          // hanya status 1, 2, 3
-            ->orderBy('nik', 'asc');                 // ⬅️ urut NIK ASC
+            ->whereIn('status', [1, 2, 3])
+            ->orderBy('nik', 'asc');
 
         if (!empty($search)) {
             $term = '%' . $search . '%';
@@ -728,6 +713,11 @@ class ScanXrayIndex extends Component
         return $q->paginate(8, ['*'], 'picXrayPage', $this->picXrayPage ?? 1);
     }
 
+    public function needsNgDetailCompletion(ScanXray $scan): bool
+    {
+        return $scan->hasIncompleteNgDetail();
+    }
+
     // ============ RENDER ============
     public function render()
     {
@@ -735,7 +725,13 @@ class ScanXrayIndex extends Component
             abort(403, 'Unauthorized access.');
         }
 
-        $query = ScanXray::with(['customer', 'model', 'masterLine.location', 'creator']);
+        $query = ScanXray::with([
+            'customer',
+            'model',
+            'masterLine.location',
+            'creator',
+            'activeEditRequest',
+        ]);
 
         if ($this->search) {
             $query->where(function ($q) {

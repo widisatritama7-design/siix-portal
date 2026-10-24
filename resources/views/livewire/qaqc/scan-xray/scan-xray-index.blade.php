@@ -200,7 +200,7 @@
         <div class="p-6">
             @if($scans->count() > 0)
                 <div class="overflow-x-auto {{ $isStacked ? '' : 'unstacked-mode' }}">
-                    <table class="w-full" style="min-width: 2700px; white-space: nowrap; border-collapse: separate; border-spacing: 0;">
+                    <table class="w-full" style="min-width: 2400px; white-space: nowrap; border-collapse: separate; border-spacing: 0;">
                         <thead>
                             {{-- BARIS HEADER 1 --}}
                             <tr class="bg-zinc-50 dark:bg-zinc-800/50">
@@ -214,35 +214,39 @@
                                 <th rowspan="2" class="px-3 py-2 text-center text-xs font-medium text-zinc-500 uppercase">Line</th>
                                 <th rowspan="2" class="px-3 py-2 text-center text-xs font-medium text-zinc-500 uppercase">Lot Qty</th>
 
-                                {{-- FIRST --}}
-                                <th colspan="4" class="px-3 py-2 text-center text-xs font-bold text-blue-700 dark:text-blue-300 uppercase bg-blue-50 dark:bg-blue-900/30">
+                                {{-- FIRST (3 kolom) --}}
+                                <th colspan="3" class="px-3 py-2 text-center text-xs font-bold text-blue-700 dark:text-blue-300 uppercase bg-blue-50 dark:bg-blue-900/30">
                                     First Piece Items
                                 </th>
-                                {{-- SECOND FIRST --}}
-                                <th colspan="2" class="px-3 py-2 text-center text-xs font-bold text-cyan-700 dark:text-cyan-300 uppercase bg-cyan-50 dark:bg-cyan-900/30">
+                                {{-- SECOND FIRST (1 kolom) --}}
+                                <th colspan="1" class="px-3 py-2 text-center text-xs font-bold text-cyan-700 dark:text-cyan-300 uppercase bg-cyan-50 dark:bg-cyan-900/30">
                                     Second First
                                 </th>
-                                {{-- MIDDLE --}}
-                                <th colspan="4" class="px-3 py-2 text-center text-xs font-bold text-indigo-700 dark:text-indigo-300 uppercase bg-indigo-50 dark:bg-indigo-900/30">
+                                {{-- MIDDLE (3 kolom) --}}
+                                <th colspan="3" class="px-3 py-2 text-center text-xs font-bold text-indigo-700 dark:text-indigo-300 uppercase bg-indigo-50 dark:bg-indigo-900/30">
                                     Middle Piece Items
                                 </th>
-                                {{-- SECOND MIDDLE --}}
-                                <th colspan="2" class="px-3 py-2 text-center text-xs font-bold text-cyan-700 dark:text-cyan-300 uppercase bg-cyan-50 dark:bg-cyan-900/30">
+                                {{-- SECOND MIDDLE (1 kolom) --}}
+                                <th colspan="1" class="px-3 py-2 text-center text-xs font-bold text-cyan-700 dark:text-cyan-300 uppercase bg-cyan-50 dark:bg-cyan-900/30">
                                     Second Middle
                                 </th>
-                                {{-- LAST --}}
-                                <th colspan="4" class="px-3 py-2 text-center text-xs font-bold text-purple-700 dark:text-purple-300 uppercase bg-purple-50 dark:bg-purple-900/30">
+                                {{-- LAST (3 kolom) --}}
+                                <th colspan="3" class="px-3 py-2 text-center text-xs font-bold text-purple-700 dark:text-purple-300 uppercase bg-purple-50 dark:bg-purple-900/30">
                                     Last Piece Items
                                 </th>
-                                {{-- SECOND LAST --}}
-                                <th colspan="2" class="px-3 py-2 text-center text-xs font-bold text-cyan-700 dark:text-cyan-300 uppercase bg-cyan-50 dark:bg-cyan-900/30">
+                                {{-- SECOND LAST (1 kolom) --}}
+                                <th colspan="1" class="px-3 py-2 text-center text-xs font-bold text-cyan-700 dark:text-cyan-300 uppercase bg-cyan-50 dark:bg-cyan-900/30">
                                     Second Last
                                 </th>
-                                {{-- TOTAL --}}
+                                {{-- ✅ STATUS RUNNING GLOBAL (1 kolom) --}}
+                                <th colspan="1" class="px-3 py-2 text-center text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase bg-zinc-100 dark:bg-zinc-800/60">
+                                    Status Running
+                                </th>
+                                {{-- TOTAL (3 kolom) --}}
                                 <th colspan="3" class="px-3 py-2 text-center text-xs font-bold text-emerald-700 dark:text-emerald-300 uppercase bg-emerald-50 dark:bg-emerald-900/30">
                                     Total
                                 </th>
-                                {{-- PIC --}}
+                                {{-- PIC (3 kolom) --}}
                                 <th colspan="3" class="px-3 py-2 text-center text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase bg-zinc-100 dark:bg-zinc-800/60">
                                     PIC INFO
                                 </th>
@@ -256,26 +260,22 @@
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-emerald-600 uppercase bg-emerald-50/50 dark:bg-emerald-900/10">OK</th>
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-red-600 uppercase bg-red-50/50 dark:bg-red-900/10">NG</th>
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-amber-600 uppercase bg-amber-50/50 dark:bg-amber-900/10">Reject Rate %</th>
-                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-600 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">Status</th>
                                 {{-- SECOND FIRST --}}
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-700 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">QTY</th>
-                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-700 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">Status</th>
                                 {{-- MIDDLE --}}
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-emerald-600 uppercase bg-emerald-50/50 dark:bg-emerald-900/10">OK</th>
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-red-600 uppercase bg-red-50/50 dark:bg-red-900/10">NG</th>
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-amber-600 uppercase bg-amber-50/50 dark:bg-amber-900/10">Reject Rate %</th>
-                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-600 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">Status</th>
                                 {{-- SECOND MIDDLE --}}
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-700 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">QTY</th>
-                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-700 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">Status</th>
                                 {{-- LAST --}}
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-emerald-600 uppercase bg-emerald-50/50 dark:bg-emerald-900/10">OK</th>
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-red-600 uppercase bg-red-50/50 dark:bg-red-900/10">NG</th>
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-amber-600 uppercase bg-amber-50/50 dark:bg-amber-900/10">Reject Rate %</th>
-                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-600 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">Status</th>
                                 {{-- SECOND LAST --}}
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-700 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">QTY</th>
-                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-700 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">Status</th>
+                                {{-- ✅ STATUS RUNNING GLOBAL --}}
+                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-zinc-600 uppercase bg-zinc-100/50 dark:bg-zinc-800/30">Status</th>
                                 {{-- TOTAL --}}
                                 <th class="px-3 py-2 text-center text-[10px] font-bold text-emerald-700 uppercase bg-emerald-100/50 dark:bg-emerald-900/20">OK</th>
                                 <th class="px-3 py-2 text-center text-[10px] font-bold text-red-700 uppercase bg-red-100/50 dark:bg-red-900/20">NG</th>
@@ -289,9 +289,11 @@
                         <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
                             @foreach($scans as $index => $scan)
                                 @php
-                                    $summary     = $this->buildSummary($scan);
-                                    $isLocked    = $scan->created_at && $scan->created_at->diffInHours(now()) >= 24;
-                                    $isCompleted = $scan->phase === 'completed';
+                                    $summary          = $this->buildSummary($scan);
+                                    $isLocked         = $scan->created_at && $scan->created_at->diffInHours(now()) >= 24;
+                                    $isCompleted      = $scan->phase === 'completed';
+                                    $needsNgDetail    = $scan->hasIncompleteNgDetail();
+                                    $incompleteCount  = $scan->countIncompleteNgDetail();
                                 @endphp
                                 <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 group" wire:key="scan-{{ $scan->id }}">
 
@@ -356,34 +358,12 @@
                                             {{ $rr }}%
                                         </span>
                                     </td>
-                                    <td class="px-3 py-3 text-center bg-blue-50/20 dark:bg-blue-900/5">
-                                        @if($summary['first']['status_running'])
-                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold
-                                                {{ strtolower($summary['first']['status_running']) === 'running' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300' }}">
-                                                <span class="w-1.5 h-1.5 rounded-full {{ strtolower($summary['first']['status_running']) === 'running' ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-400' }}"></span>
-                                                {{ $summary['first']['status_running'] }}
-                                            </span>
-                                        @else
-                                            <span class="text-zinc-400 italic text-[10px]">-</span>
-                                        @endif
-                                    </td>
 
                                     {{-- SECOND FIRST --}}
                                     <td class="px-3 py-3 text-center bg-cyan-50/20 dark:bg-cyan-900/5">
                                         <span class="inline-flex items-center justify-center min-w-[36px] px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 font-bold text-xs">
                                             {{ $summary['second_first']['qty'] }}
                                         </span>
-                                    </td>
-                                    <td class="px-3 py-3 text-center bg-cyan-50/20 dark:bg-cyan-900/5">
-                                        @if($summary['second_first']['status_running'])
-                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold
-                                                {{ strtolower($summary['second_first']['status_running']) === 'running' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300' }}">
-                                                <span class="w-1.5 h-1.5 rounded-full {{ strtolower($summary['second_first']['status_running']) === 'running' ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-400' }}"></span>
-                                                {{ $summary['second_first']['status_running'] }}
-                                            </span>
-                                        @else
-                                            <span class="text-zinc-400 italic text-[10px]">-</span>
-                                        @endif
                                     </td>
 
                                     {{-- MIDDLE --}}
@@ -404,34 +384,12 @@
                                             {{ $rr }}%
                                         </span>
                                     </td>
-                                    <td class="px-3 py-3 text-center bg-indigo-50/20 dark:bg-indigo-900/5">
-                                        @if($summary['middle']['status_running'])
-                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold
-                                                {{ strtolower($summary['middle']['status_running']) === 'running' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300' }}">
-                                                <span class="w-1.5 h-1.5 rounded-full {{ strtolower($summary['middle']['status_running']) === 'running' ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-400' }}"></span>
-                                                {{ $summary['middle']['status_running'] }}
-                                            </span>
-                                        @else
-                                            <span class="text-zinc-400 italic text-[10px]">-</span>
-                                        @endif
-                                    </td>
 
                                     {{-- SECOND MIDDLE --}}
                                     <td class="px-3 py-3 text-center bg-cyan-50/20 dark:bg-cyan-900/5">
                                         <span class="inline-flex items-center justify-center min-w-[36px] px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 font-bold text-xs">
                                             {{ $summary['second_middle']['qty'] }}
                                         </span>
-                                    </td>
-                                    <td class="px-3 py-3 text-center bg-cyan-50/20 dark:bg-cyan-900/5">
-                                        @if($summary['second_middle']['status_running'])
-                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold
-                                                {{ strtolower($summary['second_middle']['status_running']) === 'running' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300' }}">
-                                                <span class="w-1.5 h-1.5 rounded-full {{ strtolower($summary['second_middle']['status_running']) === 'running' ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-400' }}"></span>
-                                                {{ $summary['second_middle']['status_running'] }}
-                                            </span>
-                                        @else
-                                            <span class="text-zinc-400 italic text-[10px]">-</span>
-                                        @endif
                                     </td>
 
                                     {{-- LAST --}}
@@ -452,17 +410,6 @@
                                             {{ $rr }}%
                                         </span>
                                     </td>
-                                    <td class="px-3 py-3 text-center bg-purple-50/20 dark:bg-purple-900/5">
-                                        @if($summary['last']['status_running'])
-                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold
-                                                {{ strtolower($summary['last']['status_running']) === 'running' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300' }}">
-                                                <span class="w-1.5 h-1.5 rounded-full {{ strtolower($summary['last']['status_running']) === 'running' ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-400' }}"></span>
-                                                {{ $summary['last']['status_running'] }}
-                                            </span>
-                                        @else
-                                            <span class="text-zinc-400 italic text-[10px]">-</span>
-                                        @endif
-                                    </td>
 
                                     {{-- SECOND LAST --}}
                                     <td class="px-3 py-3 text-center bg-cyan-50/20 dark:bg-cyan-900/5">
@@ -470,12 +417,14 @@
                                             {{ $summary['second_last']['qty'] }}
                                         </span>
                                     </td>
-                                    <td class="px-3 py-3 text-center bg-cyan-50/20 dark:bg-cyan-900/5">
-                                        @if($summary['second_last']['status_running'])
+
+                                    {{-- ✅ STATUS RUNNING GLOBAL (1 kolom saja) --}}
+                                    <td class="px-3 py-3 text-center bg-zinc-50/50 dark:bg-zinc-800/20">
+                                        @if($scan->status_running)
                                             <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold
-                                                {{ strtolower($summary['second_last']['status_running']) === 'running' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300' }}">
-                                                <span class="w-1.5 h-1.5 rounded-full {{ strtolower($summary['second_last']['status_running']) === 'running' ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-400' }}"></span>
-                                                {{ $summary['second_last']['status_running'] }}
+                                                {{ strtolower($scan->status_running) === 'running' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300' }}">
+                                                <span class="w-1.5 h-1.5 rounded-full {{ strtolower($scan->status_running) === 'running' ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-400' }}"></span>
+                                                {{ $scan->status_running }}
                                             </span>
                                         @else
                                             <span class="text-zinc-400 italic text-[10px]">-</span>
@@ -489,9 +438,22 @@
                                         </span>
                                     </td>
                                     <td class="px-3 py-3 text-center bg-red-50/50 dark:bg-red-900/10">
-                                        <span class="inline-flex items-center justify-center min-w-[44px] px-2.5 py-1 rounded-md bg-red-500 text-white font-bold text-sm shadow-sm shadow-red-500/30">
-                                            {{ $summary['total']['ng_qty'] }}
-                                        </span>
+                                        <div class="flex flex-col items-center gap-1">
+                                            <span class="inline-flex items-center justify-center min-w-[44px] px-2.5 py-1 rounded-md bg-red-500 text-white font-bold text-sm shadow-sm shadow-red-500/30">
+                                                {{ $summary['total']['ng_qty'] }}
+                                            </span>
+                                            @if($needsNgDetail)
+                                                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold
+                                                    bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300
+                                                    ring-1 ring-amber-300 dark:ring-amber-700 animate-pulse"
+                                                    title="NG Detail belum lengkap — klik Edit untuk melengkapi">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3 flex-shrink-0">
+                                                        <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495ZM10 5a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 10 5Zm0 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    Belum lengkap
+                                                </span>
+                                            @endif
+                                        </div>
                                     </td>
                                     <td class="px-3 py-3 text-center bg-amber-50/50 dark:bg-amber-900/10">
                                         @php $rr = $summary['total']['reject_rate']; @endphp
@@ -527,16 +489,12 @@
                                     {{-- PIC X-RAY --}}
                                     <td class="px-3 py-3 text-center bg-blue-50/30 dark:bg-blue-900/10">
                                         @php
-                                            // Sesuaikan: kalau pic_xray simpan ID, resolve ke Employee
                                             $picXrayName = null;
-                                            $picXrayNik  = null;
                                             if ($scan->pic_xray) {
                                                 if (is_numeric($scan->pic_xray)) {
                                                     $emp = \App\Models\HR\Employee::find($scan->pic_xray);
                                                     $picXrayName = $emp?->name;
-                                                    $picXrayNik  = $emp?->nik;
                                                 } else {
-                                                    // kalau isinya string nama (data lama)
                                                     $picXrayName = $scan->pic_xray;
                                                 }
                                             }
@@ -567,18 +525,65 @@
                                             @endcan
 
                                             @can('edit scan xray')
-                                                @if(!$isLocked && !$isCompleted)
-                                                    <flux:tooltip content="Edit" position="top">
-                                                        <flux:button href="{{ route('qaqc.scan-xray.edit', $scan->id) }}" wire:navigate
-                                                            size="sm" icon="pencil-square" variant="primary" color="yellow" class="!p-2" />
+                                                @php
+                                                    $activeReq   = $scan->activeEditRequest;
+                                                    $hasApproval = $activeReq && $activeReq->isApproved();
+                                                    $hasPending  = $activeReq && $activeReq->isPending();
+                                                    $canEditNormal   = !$isLocked && (!$isCompleted || $needsNgDetail);
+                                                    $canEditApproved = !$isLocked && $hasApproval;
+                                                @endphp
+
+                                                @if($canEditNormal)
+                                                    <div class="relative inline-flex">
+                                                        <flux:tooltip content="{{ $needsNgDetail ? 'Lengkapi NG Detail (' . $incompleteCount . ' group belum lengkap)' : 'Edit' }}" position="top">
+                                                            <flux:button href="{{ route('qaqc.scan-xray.edit', $scan->id) }}" wire:navigate
+                                                                size="sm" icon="pencil-square" variant="primary" color="yellow" class="!p-2" />
+                                                        </flux:tooltip>
+
+                                                        @if($needsNgDetail)
+                                                            <span class="absolute -top-1 -right-1 flex items-center justify-center
+                                                                w-4 h-4 rounded-full bg-amber-500 text-white
+                                                                ring-2 ring-white dark:ring-zinc-900 shadow-md
+                                                                pointer-events-none z-10">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-2.5 h-2.5">
+                                                                    <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495ZM10 5a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 10 5Zm0 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd" />
+                                                                </svg>
+                                                            </span>
+                                                        @endif
+                                                    </div>
+
+                                                @elseif($canEditApproved)
+                                                    <div class="relative inline-flex">
+                                                        <flux:tooltip content="Edit (Approved until {{ $activeReq->expires_at?->format('d/m H:i') ?? 'no expiry' }})" position="top">
+                                                            <flux:button href="{{ route('qaqc.scan-xray.edit', $scan->id) }}" wire:navigate
+                                                                size="sm" icon="pencil-square" variant="primary" color="emerald" class="!p-2" />
+                                                        </flux:tooltip>
+                                                        <span class="absolute -top-1 -right-1 flex items-center justify-center
+                                                            w-4 h-4 rounded-full bg-emerald-500 text-white
+                                                            ring-2 ring-white dark:ring-zinc-900 shadow-md
+                                                            pointer-events-none z-10">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-2.5 h-2.5">
+                                                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
+                                                            </svg>
+                                                        </span>
+                                                    </div>
+
+                                                @elseif($hasPending)
+                                                    <flux:tooltip content="Menunggu approval edit" position="top">
+                                                        <flux:button size="sm" icon="clock" variant="filled" color="amber" class="!p-2" disabled />
                                                     </flux:tooltip>
-                                                @elseif($isCompleted)
-                                                    <flux:tooltip content="Data sudah selesai (completed)" position="top">
-                                                        <flux:button size="sm" icon="check-badge" variant="filled" color="emerald" class="!p-2" disabled />
-                                                    </flux:tooltip>
-                                                @else
+
+                                                @elseif($isLocked)
                                                     <flux:tooltip content="Tidak bisa edit (>24 jam)" position="top">
                                                         <flux:button size="sm" icon="lock-closed" variant="filled" color="zinc" class="!p-2" disabled />
+                                                    </flux:tooltip>
+
+                                                @elseif($isCompleted && !$hasApproval && !$hasPending)
+                                                    {{-- ✅ Tombol Request Edit: Alpine murni --}}
+                                                    <flux:tooltip content="Ajukan Request Edit" position="top">
+                                                        <flux:button wire:click="$set('editRequestScanId', {{ $scan->id }})"
+                                                            x-on:click="$dispatch('open-modal', 'edit-request-modal')"
+                                                            size="sm" icon="lock-open" variant="primary" color="amber" class="!p-2" />
                                                     </flux:tooltip>
                                                 @endif
                                             @endcan
@@ -608,7 +613,10 @@
                 </div>
 
                 @if($scans->hasPages())
-                    <div class="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-700 flex justify-center">
+                    <div class="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-700 flex justify-between items-center">
+                        <div class="text-xs text-zinc-500 dark:text-zinc-400">
+                            
+                        </div>
                         {{ $scans->links() }}
                     </div>
                 @endif
@@ -861,4 +869,80 @@
             box-shadow: none !important;
         }
     </style>
+
+    {{-- MODAL REQUEST EDIT — Alpine murni, tidak bergantung pada Livewire --}}
+    @can('edit scan xray')
+    <div x-data="{ open: false }"
+        x-show="open"
+        @open-modal.window="if ($event.detail === 'edit-request-modal' || $event.detail?.[0] === 'edit-request-modal') open = true"
+        @edit-request-submitted.window="open = false"
+        x-cloak>
+
+        <div class="fixed inset-0 bg-black/50 z-40" @click="open = false"></div>
+
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-xl w-full max-w-lg">
+
+                {{-- HEADER --}}
+                <div class="px-6 py-4 border-b border-zinc-200 dark:border-zinc-700 flex items-center justify-between">
+                    <h2 class="text-lg font-bold">Request Edit Scan X-Ray</h2>
+                    <button type="button" @click="open = false; $wire.resetEditRequest()" class="text-zinc-400 hover:text-zinc-600 text-xl">✕</button>
+                </div>
+
+                {{-- BODY --}}
+                <div class="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+
+                    <div class="rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 p-3 text-xs text-amber-800 dark:text-amber-200">
+                        Pilih group yang mau diedit. Setelah di-approve, Anda bisa edit dalam 24 jam.
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Pilih Group <span class="text-red-500">*</span></label>
+                        <div class="grid grid-cols-2 gap-2">
+                            @foreach(\App\Models\QAQC\ScanXray\ScanXrayEditRequest::GROUPS as $groupKey => $groupLabel)
+                                <label class="flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer
+                                    {{ in_array($groupKey, $editRequestGroups) ? 'border-amber-400 bg-amber-50 dark:bg-amber-900/20' : 'border-zinc-200 dark:border-zinc-700' }}">
+                                    <input type="checkbox"
+                                        value="{{ $groupKey }}"
+                                        wire:model.live="editRequestGroups"
+                                        class="rounded border-zinc-300 text-amber-600 focus:ring-amber-500" />
+                                    <span class="text-xs font-semibold">{{ $groupLabel }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                        @error('editRequestGroups') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                        @error('editRequestGroups.*') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-2">
+                            Alasan <span class="text-red-500">*</span>
+                        </label>
+                        <flux:textarea wire:model="editRequestReason" rows="3"
+                            placeholder="Kenapa perlu edit... (wajib diisi)" />
+                        @error('editRequestReason')
+                            <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+
+                {{-- FOOTER --}}
+                <div class="px-6 py-4 border-t border-zinc-200 dark:border-zinc-700 flex justify-end gap-2">
+                    <button type="button" @click="open = false; $wire.resetEditRequest()"
+                            class="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800">
+                        Cancel
+                    </button>
+                    <button type="button" wire:click="submitEditRequest"
+                            x-bind:disabled="!$wire.editRequestReason || $wire.editRequestReason.length < 5 || $wire.editRequestGroups.length === 0"
+                            x-bind:class="{ 'opacity-50 cursor-not-allowed': !$wire.editRequestReason || $wire.editRequestReason.length < 5 || $wire.editRequestGroups.length === 0 }"
+                            class="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700"
+                            wire:loading.attr="disabled" wire:target="submitEditRequest">
+                        <span wire:loading.remove wire:target="submitEditRequest">Kirim Request</span>
+                        <span wire:loading wire:target="submitEditRequest">Mengirim...</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endcan
 </div>

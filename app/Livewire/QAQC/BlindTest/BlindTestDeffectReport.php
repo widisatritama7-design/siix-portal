@@ -2,7 +2,6 @@
 
 namespace App\Livewire\QAQC\BlindTest;
 
-use App\Models\HR\Employee;
 use App\Models\QAQC\BlindTest\BlindTest;
 use App\Models\QAQC\BlindTest\Deffect;
 use Carbon\Carbon;

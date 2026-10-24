@@ -4,15 +4,17 @@ namespace App\Livewire\QAQC\BlindTest;
 
 use App\Models\QAQC\BlindTest\BlindTest;
 use App\Models\QAQC\BlindTest\Deffect;
+use Illuminate\Support\Facades\Response;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
-use Illuminate\Support\Facades\Response;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
+#[Title('Blind Test Report')]
 class BlindTestReport extends Component
 {
     use WithPagination;

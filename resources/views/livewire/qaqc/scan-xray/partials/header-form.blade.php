@@ -88,8 +88,8 @@
             @error('lot_qty') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
         </div>
 
-        {{-- LINE — 2 kolom --}}
-        <div class="md:col-span-2">
+        {{-- LINE — 1 kolom (sejajar dengan Group, Lot Qty, Status Running) --}}
+        <div>
             <flux:label required>Line</flux:label>
             @php
                 $selectedLine = $master_line_id ? \App\Models\MTC\Master\MasterLine::with('location')->find($master_line_id) : null;
@@ -97,11 +97,11 @@
             <div class="flex gap-2">
                 <div class="flex-1 text-sm px-3 py-2 rounded-lg border
                     {{ $master_line_id ? 'border-blue-300 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-700' : 'border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900' }}
-                    text-zinc-700 dark:text-zinc-300 flex items-center gap-2 min-h-[42px]">
+                    text-zinc-700 dark:text-zinc-300 flex items-center gap-2 min-h-[42px] min-w-0">
                     @if($selectedLine)
                         <span class="font-medium truncate">{{ $selectedLine->location->location_name ?? '-' }} — L{{ $selectedLine->line_number }}</span>
                     @else
-                        <span class="text-zinc-400 italic">Belum dipilih</span>
+                        <span class="text-zinc-400 italic truncate">Belum dipilih</span>
                     @endif
                 </div>
                 <button type="button" wire:click="toggleMasterLinePanel"
@@ -115,6 +115,16 @@
                 @endif
             </div>
             @error('master_line_id') <span class="text-red-500 text-xs block mt-1">{{ $message }}</span> @enderror
+        </div>
+
+        {{-- ✅ STATUS RUNNING — GLOBAL, hanya 1 (sejajar dengan Line) --}}
+        <div>
+            <flux:label required>Status Running</flux:label>
+            <flux:input type="text"
+                wire:model="status_running"
+                placeholder="Machine / Others"
+                class="!border-cyan-300 focus:!border-cyan-500 !font-semibold" />
+            @error('status_running') <span class="text-red-500 text-xs block mt-1">{{ $message }}</span> @enderror
         </div>
     </div>
 

@@ -69,10 +69,10 @@
         ];
         $currentPhase = $phaseLabels[$phase] ?? ['label' => 'Edit', 'color' => 'bg-zinc-100 text-zinc-700'];
 
-        // NG Detail bisa diedit kalau phase = second_*
-        $ngEditableFirst  = ($phase === 'second_first');
-        $ngEditableMiddle = ($phase === 'second_middle');
-        $ngEditableLast   = ($phase === 'second_last');
+        // ✅ PATCH: Deteksi Second Piece sudah pernah diisi (pakai helper + cek isi)
+        $secondFirstFilled = $this->secondPieceHasContent('second_first_items');
+        $secondMiddleFilled = $this->secondPieceHasContent('second_middle_items');
+        $secondLastFilled = $this->secondPieceHasContent('second_last_items');
     ?>
 
     <div class="flex items-center gap-3 mt-2">
@@ -85,13 +85,8 @@
 
     
     <div class="sticky top-25 z-30 relative rounded-xl overflow-hidden border border-white/40 dark:border-white/10 shadow-lg shadow-black/5">
-        
         <div class="absolute inset-0 bg-gradient-to-r from-indigo-100/70 via-purple-100/60 to-indigo-100/70 dark:from-indigo-900/40 dark:via-purple-900/30 dark:to-indigo-900/40"></div>
-
-        
         <div class="absolute inset-0 backdrop-blur-2xl backdrop-saturate-150 bg-white/40 dark:bg-zinc-900/30"></div>
-
-        
         <div class="relative p-4 flex items-start gap-3">
             <div class="w-9 h-9 rounded-full bg-indigo-500 flex items-center justify-center flex-shrink-0 shadow-sm">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -138,165 +133,71 @@
         <?php echo $__env->make('livewire.qaqc.scan-xray.partials.header-form', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
         
-        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($this->isGroupCompleted('first_piece_items')): ?>
-            <?php echo $__env->make('livewire.qaqc.scan-xray.partials.piece-items-form', [
-                'key' => 'first_piece_items', 'label' => 'First Piece Items (Completed)',
-                'items' => $first_piece_items, 'readonly' => true,
-                'ngEditable' => $ngEditableFirst,
+        <?php echo $__env->make('livewire.qaqc.scan-xray.partials.piece-items-form', [
+            'key'        => 'first_piece_items',
+            'label'      => 'First Piece Items' . ($this->isGroupCompleted('first_piece_items') ? ' (Completed)' : ''),
+            'items'      => $first_piece_items,
+            'readonly'   => $this->isGroupCompleted('first_piece_items') || $this->isGroupLocked('first_piece_items'),
+            'ngEditable' => true,
+            'activeSide' => $activeSide,
+            'minRows'    => \App\Models\QAQC\ScanXray\ScanXray::standardRows('first_piece_items'),
+        ], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
+
+        
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($this->isSecondPieceNeeded('second_first_items') || $secondFirstFilled || $phase === 'second_first'): ?>
+            <?php echo $__env->make('livewire.qaqc.scan-xray.partials.second-piece-form', [
+                'key'        => 'second_first_items',
+                'label'      => 'Second Piece — First' . ($secondFirstFilled ? ' (Completed)' : ''),
+                'items'      => $second_first_items,
+                'readonly'   => $phase !== 'second_first',
                 'activeSide' => $activeSide,
-                'minRows' => \App\Models\QAQC\ScanXray\ScanXray::standardRows('first_piece_items'),
-            ], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
-        <?php elseif($this->canEditGroup('first_piece_items')): ?>
-            <?php echo $__env->make('livewire.qaqc.scan-xray.partials.piece-items-form', [
-                'key' => 'first_piece_items', 'label' => 'First Piece Items',
-                'items' => $first_piece_items, 'readonly' => false,
-                'ngEditable' => true,
-                'activeSide' => $activeSide,
-                'minRows' => \App\Models\QAQC\ScanXray\ScanXray::standardRows('first_piece_items'),
+                'minRows'    => \App\Models\QAQC\ScanXray\ScanXray::standardRows('second_first_items'),
             ], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
         
-        <?php
-            // Cek apakah Second First sudah pernah diisi
-            $secondFirstFilled = false;
-            if (!empty($second_first_items)) {
-                $sfSide = $activeSide;
-                if ($sfSide && isset($second_first_items[$sfSide])) {
-                    foreach (['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'] as $sfCol) {
-                        foreach (($second_first_items[$sfSide][$sfCol] ?? []) as $sfVal) {
-                            if (!empty($sfVal)) { $secondFirstFilled = true; break 2; }
-                        }
-                    }
-                }
-            }
-        ?>
+        <?php echo $__env->make('livewire.qaqc.scan-xray.partials.piece-items-form', [
+            'key'        => 'middle_piece_items',
+            'label'      => 'Middle Piece Items' . ($this->isGroupCompleted('middle_piece_items') ? ' (Completed)' : ''),
+            'items'      => $middle_piece_items,
+            'readonly'   => $this->isGroupCompleted('middle_piece_items') || $this->isGroupLocked('middle_piece_items'),
+            'ngEditable' => true,
+            'activeSide' => $activeSide,
+            'minRows'    => \App\Models\QAQC\ScanXray\ScanXray::standardRows('middle_piece_items'),
+        ], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
-        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($phase === 'second_first' && ($first_piece_items['ng_qty'] ?? 0) > 0): ?>
-            
+        
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($this->isSecondPieceNeeded('second_middle_items') || $secondMiddleFilled || $phase === 'second_middle'): ?>
             <?php echo $__env->make('livewire.qaqc.scan-xray.partials.second-piece-form', [
-                'key' => 'second_first_items', 'label' => 'Second Piece — First',
-                'items' => $second_first_items, 'readonly' => false,
+                'key'        => 'second_middle_items',
+                'label'      => 'Second Piece — Middle' . ($secondMiddleFilled ? ' (Completed)' : ''),
+                'items'      => $second_middle_items,
+                'readonly'   => $phase !== 'second_middle',
                 'activeSide' => $activeSide,
-                'minRows' => \App\Models\QAQC\ScanXray\ScanXray::standardRows('second_first_items'),
-            ], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
-        <?php elseif($secondFirstFilled): ?>
-            
-            <?php echo $__env->make('livewire.qaqc.scan-xray.partials.second-piece-form', [
-                'key' => 'second_first_items', 'label' => 'Second Piece — First (Completed)',
-                'items' => $second_first_items, 'readonly' => true,
-                'activeSide' => $activeSide,
-                'minRows' => \App\Models\QAQC\ScanXray\ScanXray::standardRows('second_first_items'),
+                'minRows'    => \App\Models\QAQC\ScanXray\ScanXray::standardRows('second_middle_items'),
             ], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
         
-        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($this->isGroupCompleted('middle_piece_items')): ?>
-            <?php echo $__env->make('livewire.qaqc.scan-xray.partials.piece-items-form', [
-                'key' => 'middle_piece_items', 'label' => 'Middle Piece Items (Completed)',
-                'items' => $middle_piece_items, 'readonly' => true,
-                'ngEditable' => $ngEditableMiddle,
-                'activeSide' => $activeSide,
-                'minRows' => \App\Models\QAQC\ScanXray\ScanXray::standardRows('middle_piece_items'),
-            ], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
-        <?php elseif($this->canEditGroup('middle_piece_items')): ?>
-            <?php echo $__env->make('livewire.qaqc.scan-xray.partials.piece-items-form', [
-                'key' => 'middle_piece_items', 'label' => 'Middle Piece Items',
-                'items' => $middle_piece_items, 'readonly' => false,
-                'ngEditable' => true,
-                'activeSide' => $activeSide,
-                'minRows' => \App\Models\QAQC\ScanXray\ScanXray::standardRows('middle_piece_items'),
-            ], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
-        <?php elseif($this->isGroupLocked('middle_piece_items')): ?>
-            <?php echo $__env->make('livewire.qaqc.scan-xray.partials.phase-locked', [
-                'label' => 'Middle Piece Items',
-                'note'  => 'Bisa diisi setelah First Piece / Second Piece (First) disimpan.',
-            ], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
-        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+        <?php echo $__env->make('livewire.qaqc.scan-xray.partials.piece-items-form', [
+            'key'        => 'last_piece_items',
+            'label'      => 'Last Piece Items' . ($this->isGroupCompleted('last_piece_items') ? ' (Completed)' : ''),
+            'items'      => $last_piece_items,
+            'readonly'   => $this->isGroupCompleted('last_piece_items') || $this->isGroupLocked('last_piece_items'),
+            'ngEditable' => true,
+            'activeSide' => $activeSide,
+            'minRows'    => \App\Models\QAQC\ScanXray\ScanXray::standardRows('last_piece_items'),
+        ], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
         
-        <?php
-            $secondMiddleFilled = false;
-            if (!empty($second_middle_items)) {
-                $smSide = $activeSide;
-                if ($smSide && isset($second_middle_items[$smSide])) {
-                    foreach (['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'] as $smCol) {
-                        foreach (($second_middle_items[$smSide][$smCol] ?? []) as $smVal) {
-                            if (!empty($smVal)) { $secondMiddleFilled = true; break 2; }
-                        }
-                    }
-                }
-            }
-        ?>
-
-        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($phase === 'second_middle' && ($middle_piece_items['ng_qty'] ?? 0) > 0): ?>
+        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($this->isSecondPieceNeeded('second_last_items') || $secondLastFilled || $phase === 'second_last'): ?>
             <?php echo $__env->make('livewire.qaqc.scan-xray.partials.second-piece-form', [
-                'key' => 'second_middle_items', 'label' => 'Second Piece — Middle',
-                'items' => $second_middle_items, 'readonly' => false,
+                'key'        => 'second_last_items',
+                'label'      => 'Second Piece — Last' . ($secondLastFilled ? ' (Completed)' : ''),
+                'items'      => $second_last_items,
+                'readonly'   => $phase !== 'second_last',
                 'activeSide' => $activeSide,
-                'minRows' => \App\Models\QAQC\ScanXray\ScanXray::standardRows('second_middle_items'),
-            ], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
-        <?php elseif($secondMiddleFilled): ?>
-            <?php echo $__env->make('livewire.qaqc.scan-xray.partials.second-piece-form', [
-                'key' => 'second_middle_items', 'label' => 'Second Piece — Middle (Completed)',
-                'items' => $second_middle_items, 'readonly' => true,
-                'activeSide' => $activeSide,
-                'minRows' => \App\Models\QAQC\ScanXray\ScanXray::standardRows('second_middle_items'),
-            ], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
-        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-
-        
-        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($this->isGroupCompleted('last_piece_items')): ?>
-            <?php echo $__env->make('livewire.qaqc.scan-xray.partials.piece-items-form', [
-                'key' => 'last_piece_items', 'label' => 'Last Piece Items (Completed)',
-                'items' => $last_piece_items, 'readonly' => true,
-                'ngEditable' => $ngEditableLast,
-                'activeSide' => $activeSide,
-                'minRows' => \App\Models\QAQC\ScanXray\ScanXray::standardRows('last_piece_items'),
-            ], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
-        <?php elseif($this->canEditGroup('last_piece_items')): ?>
-            <?php echo $__env->make('livewire.qaqc.scan-xray.partials.piece-items-form', [
-                'key' => 'last_piece_items', 'label' => 'Last Piece Items',
-                'items' => $last_piece_items, 'readonly' => false,
-                'ngEditable' => true,
-                'activeSide' => $activeSide,
-                'minRows' => \App\Models\QAQC\ScanXray\ScanXray::standardRows('last_piece_items'),
-            ], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
-        <?php elseif($this->isGroupLocked('last_piece_items')): ?>
-            <?php echo $__env->make('livewire.qaqc.scan-xray.partials.phase-locked', [
-                'label' => 'Last Piece Items',
-                'note'  => 'Bisa diisi setelah Middle Piece / Second Piece (Middle) disimpan.',
-            ], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
-        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-
-        
-        <?php
-            $secondLastFilled = false;
-            if (!empty($second_last_items)) {
-                $slSide = $activeSide;
-                if ($slSide && isset($second_last_items[$slSide])) {
-                    foreach (['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'] as $slCol) {
-                        foreach (($second_last_items[$slSide][$slCol] ?? []) as $slVal) {
-                            if (!empty($slVal)) { $secondLastFilled = true; break 2; }
-                        }
-                    }
-                }
-            }
-        ?>
-
-        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($phase === 'second_last' && ($last_piece_items['ng_qty'] ?? 0) > 0): ?>
-            <?php echo $__env->make('livewire.qaqc.scan-xray.partials.second-piece-form', [
-                'key' => 'second_last_items', 'label' => 'Second Piece — Last',
-                'items' => $second_last_items, 'readonly' => false,
-                'activeSide' => $activeSide,
-                'minRows' => \App\Models\QAQC\ScanXray\ScanXray::standardRows('second_last_items'),
-            ], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
-        <?php elseif($secondLastFilled): ?>
-            <?php echo $__env->make('livewire.qaqc.scan-xray.partials.second-piece-form', [
-                'key' => 'second_last_items', 'label' => 'Second Piece — Last (Completed)',
-                'items' => $second_last_items, 'readonly' => true,
-                'activeSide' => $activeSide,
-                'minRows' => \App\Models\QAQC\ScanXray\ScanXray::standardRows('second_last_items'),
+                'minRows'    => \App\Models\QAQC\ScanXray\ScanXray::standardRows('second_last_items'),
             ], array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 

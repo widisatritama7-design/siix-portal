@@ -21,6 +21,8 @@
 <?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::tooltip}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/tooltip/index.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::tooltip}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/tooltip/index.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::tooltip}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/tooltip/index.blade.php}:{1776985208} ?>
@@ -400,7 +402,7 @@
         <div class="p-6">
             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($scans->count() > 0): ?>
                 <div class="overflow-x-auto <?php echo e($isStacked ? '' : 'unstacked-mode'); ?>">
-                    <table class="w-full" style="min-width: 2700px; white-space: nowrap; border-collapse: separate; border-spacing: 0;">
+                    <table class="w-full" style="min-width: 2400px; white-space: nowrap; border-collapse: separate; border-spacing: 0;">
                         <thead>
                             
                             <tr class="bg-zinc-50 dark:bg-zinc-800/50">
@@ -415,28 +417,32 @@
                                 <th rowspan="2" class="px-3 py-2 text-center text-xs font-medium text-zinc-500 uppercase">Lot Qty</th>
 
                                 
-                                <th colspan="4" class="px-3 py-2 text-center text-xs font-bold text-blue-700 dark:text-blue-300 uppercase bg-blue-50 dark:bg-blue-900/30">
+                                <th colspan="3" class="px-3 py-2 text-center text-xs font-bold text-blue-700 dark:text-blue-300 uppercase bg-blue-50 dark:bg-blue-900/30">
                                     First Piece Items
                                 </th>
                                 
-                                <th colspan="2" class="px-3 py-2 text-center text-xs font-bold text-cyan-700 dark:text-cyan-300 uppercase bg-cyan-50 dark:bg-cyan-900/30">
+                                <th colspan="1" class="px-3 py-2 text-center text-xs font-bold text-cyan-700 dark:text-cyan-300 uppercase bg-cyan-50 dark:bg-cyan-900/30">
                                     Second First
                                 </th>
                                 
-                                <th colspan="4" class="px-3 py-2 text-center text-xs font-bold text-indigo-700 dark:text-indigo-300 uppercase bg-indigo-50 dark:bg-indigo-900/30">
+                                <th colspan="3" class="px-3 py-2 text-center text-xs font-bold text-indigo-700 dark:text-indigo-300 uppercase bg-indigo-50 dark:bg-indigo-900/30">
                                     Middle Piece Items
                                 </th>
                                 
-                                <th colspan="2" class="px-3 py-2 text-center text-xs font-bold text-cyan-700 dark:text-cyan-300 uppercase bg-cyan-50 dark:bg-cyan-900/30">
+                                <th colspan="1" class="px-3 py-2 text-center text-xs font-bold text-cyan-700 dark:text-cyan-300 uppercase bg-cyan-50 dark:bg-cyan-900/30">
                                     Second Middle
                                 </th>
                                 
-                                <th colspan="4" class="px-3 py-2 text-center text-xs font-bold text-purple-700 dark:text-purple-300 uppercase bg-purple-50 dark:bg-purple-900/30">
+                                <th colspan="3" class="px-3 py-2 text-center text-xs font-bold text-purple-700 dark:text-purple-300 uppercase bg-purple-50 dark:bg-purple-900/30">
                                     Last Piece Items
                                 </th>
                                 
-                                <th colspan="2" class="px-3 py-2 text-center text-xs font-bold text-cyan-700 dark:text-cyan-300 uppercase bg-cyan-50 dark:bg-cyan-900/30">
+                                <th colspan="1" class="px-3 py-2 text-center text-xs font-bold text-cyan-700 dark:text-cyan-300 uppercase bg-cyan-50 dark:bg-cyan-900/30">
                                     Second Last
+                                </th>
+                                
+                                <th colspan="1" class="px-3 py-2 text-center text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase bg-zinc-100 dark:bg-zinc-800/60">
+                                    Status Running
                                 </th>
                                 
                                 <th colspan="3" class="px-3 py-2 text-center text-xs font-bold text-emerald-700 dark:text-emerald-300 uppercase bg-emerald-50 dark:bg-emerald-900/30">
@@ -456,26 +462,22 @@
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-emerald-600 uppercase bg-emerald-50/50 dark:bg-emerald-900/10">OK</th>
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-red-600 uppercase bg-red-50/50 dark:bg-red-900/10">NG</th>
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-amber-600 uppercase bg-amber-50/50 dark:bg-amber-900/10">Reject Rate %</th>
-                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-600 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">Status</th>
                                 
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-700 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">QTY</th>
-                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-700 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">Status</th>
                                 
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-emerald-600 uppercase bg-emerald-50/50 dark:bg-emerald-900/10">OK</th>
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-red-600 uppercase bg-red-50/50 dark:bg-red-900/10">NG</th>
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-amber-600 uppercase bg-amber-50/50 dark:bg-amber-900/10">Reject Rate %</th>
-                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-600 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">Status</th>
                                 
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-700 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">QTY</th>
-                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-700 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">Status</th>
                                 
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-emerald-600 uppercase bg-emerald-50/50 dark:bg-emerald-900/10">OK</th>
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-red-600 uppercase bg-red-50/50 dark:bg-red-900/10">NG</th>
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-amber-600 uppercase bg-amber-50/50 dark:bg-amber-900/10">Reject Rate %</th>
-                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-600 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">Status</th>
                                 
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-700 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">QTY</th>
-                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-700 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">Status</th>
+                                
+                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-zinc-600 uppercase bg-zinc-100/50 dark:bg-zinc-800/30">Status</th>
                                 
                                 <th class="px-3 py-2 text-center text-[10px] font-bold text-emerald-700 uppercase bg-emerald-100/50 dark:bg-emerald-900/20">OK</th>
                                 <th class="px-3 py-2 text-center text-[10px] font-bold text-red-700 uppercase bg-red-100/50 dark:bg-red-900/20">NG</th>
@@ -489,9 +491,11 @@
                         <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
                             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = $scans; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $scan): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
                                 <?php
-                                    $summary     = $this->buildSummary($scan);
-                                    $isLocked    = $scan->created_at && $scan->created_at->diffInHours(now()) >= 24;
-                                    $isCompleted = $scan->phase === 'completed';
+                                    $summary          = $this->buildSummary($scan);
+                                    $isLocked         = $scan->created_at && $scan->created_at->diffInHours(now()) >= 24;
+                                    $isCompleted      = $scan->phase === 'completed';
+                                    $needsNgDetail    = $scan->hasIncompleteNgDetail();
+                                    $incompleteCount  = $scan->countIncompleteNgDetail();
                                 ?>
                                 <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 group" <?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::$currentLoop['key'] = 'scan-'.e($scan->id).''; ?>wire:key="scan-<?php echo e($scan->id); ?>">
 
@@ -564,18 +568,6 @@
                                             <?php echo e($rr); ?>%
                                         </span>
                                     </td>
-                                    <td class="px-3 py-3 text-center bg-blue-50/20 dark:bg-blue-900/5">
-                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($summary['first']['status_running']): ?>
-                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold
-                                                <?php echo e(strtolower($summary['first']['status_running']) === 'running' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300'); ?>">
-                                                <span class="w-1.5 h-1.5 rounded-full <?php echo e(strtolower($summary['first']['status_running']) === 'running' ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-400'); ?>"></span>
-                                                <?php echo e($summary['first']['status_running']); ?>
-
-                                            </span>
-                                        <?php else: ?>
-                                            <span class="text-zinc-400 italic text-[10px]">-</span>
-                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-                                    </td>
 
                                     
                                     <td class="px-3 py-3 text-center bg-cyan-50/20 dark:bg-cyan-900/5">
@@ -583,18 +575,6 @@
                                             <?php echo e($summary['second_first']['qty']); ?>
 
                                         </span>
-                                    </td>
-                                    <td class="px-3 py-3 text-center bg-cyan-50/20 dark:bg-cyan-900/5">
-                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($summary['second_first']['status_running']): ?>
-                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold
-                                                <?php echo e(strtolower($summary['second_first']['status_running']) === 'running' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300'); ?>">
-                                                <span class="w-1.5 h-1.5 rounded-full <?php echo e(strtolower($summary['second_first']['status_running']) === 'running' ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-400'); ?>"></span>
-                                                <?php echo e($summary['second_first']['status_running']); ?>
-
-                                            </span>
-                                        <?php else: ?>
-                                            <span class="text-zinc-400 italic text-[10px]">-</span>
-                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </td>
 
                                     
@@ -617,18 +597,6 @@
                                             <?php echo e($rr); ?>%
                                         </span>
                                     </td>
-                                    <td class="px-3 py-3 text-center bg-indigo-50/20 dark:bg-indigo-900/5">
-                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($summary['middle']['status_running']): ?>
-                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold
-                                                <?php echo e(strtolower($summary['middle']['status_running']) === 'running' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300'); ?>">
-                                                <span class="w-1.5 h-1.5 rounded-full <?php echo e(strtolower($summary['middle']['status_running']) === 'running' ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-400'); ?>"></span>
-                                                <?php echo e($summary['middle']['status_running']); ?>
-
-                                            </span>
-                                        <?php else: ?>
-                                            <span class="text-zinc-400 italic text-[10px]">-</span>
-                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-                                    </td>
 
                                     
                                     <td class="px-3 py-3 text-center bg-cyan-50/20 dark:bg-cyan-900/5">
@@ -636,18 +604,6 @@
                                             <?php echo e($summary['second_middle']['qty']); ?>
 
                                         </span>
-                                    </td>
-                                    <td class="px-3 py-3 text-center bg-cyan-50/20 dark:bg-cyan-900/5">
-                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($summary['second_middle']['status_running']): ?>
-                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold
-                                                <?php echo e(strtolower($summary['second_middle']['status_running']) === 'running' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300'); ?>">
-                                                <span class="w-1.5 h-1.5 rounded-full <?php echo e(strtolower($summary['second_middle']['status_running']) === 'running' ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-400'); ?>"></span>
-                                                <?php echo e($summary['second_middle']['status_running']); ?>
-
-                                            </span>
-                                        <?php else: ?>
-                                            <span class="text-zinc-400 italic text-[10px]">-</span>
-                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </td>
 
                                     
@@ -670,18 +626,6 @@
                                             <?php echo e($rr); ?>%
                                         </span>
                                     </td>
-                                    <td class="px-3 py-3 text-center bg-purple-50/20 dark:bg-purple-900/5">
-                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($summary['last']['status_running']): ?>
-                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold
-                                                <?php echo e(strtolower($summary['last']['status_running']) === 'running' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300'); ?>">
-                                                <span class="w-1.5 h-1.5 rounded-full <?php echo e(strtolower($summary['last']['status_running']) === 'running' ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-400'); ?>"></span>
-                                                <?php echo e($summary['last']['status_running']); ?>
-
-                                            </span>
-                                        <?php else: ?>
-                                            <span class="text-zinc-400 italic text-[10px]">-</span>
-                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-                                    </td>
 
                                     
                                     <td class="px-3 py-3 text-center bg-cyan-50/20 dark:bg-cyan-900/5">
@@ -690,12 +634,14 @@
 
                                         </span>
                                     </td>
-                                    <td class="px-3 py-3 text-center bg-cyan-50/20 dark:bg-cyan-900/5">
-                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($summary['second_last']['status_running']): ?>
+
+                                    
+                                    <td class="px-3 py-3 text-center bg-zinc-50/50 dark:bg-zinc-800/20">
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($scan->status_running): ?>
                                             <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold
-                                                <?php echo e(strtolower($summary['second_last']['status_running']) === 'running' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300'); ?>">
-                                                <span class="w-1.5 h-1.5 rounded-full <?php echo e(strtolower($summary['second_last']['status_running']) === 'running' ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-400'); ?>"></span>
-                                                <?php echo e($summary['second_last']['status_running']); ?>
+                                                <?php echo e(strtolower($scan->status_running) === 'running' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300'); ?>">
+                                                <span class="w-1.5 h-1.5 rounded-full <?php echo e(strtolower($scan->status_running) === 'running' ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-400'); ?>"></span>
+                                                <?php echo e($scan->status_running); ?>
 
                                             </span>
                                         <?php else: ?>
@@ -711,10 +657,23 @@
                                         </span>
                                     </td>
                                     <td class="px-3 py-3 text-center bg-red-50/50 dark:bg-red-900/10">
-                                        <span class="inline-flex items-center justify-center min-w-[44px] px-2.5 py-1 rounded-md bg-red-500 text-white font-bold text-sm shadow-sm shadow-red-500/30">
-                                            <?php echo e($summary['total']['ng_qty']); ?>
+                                        <div class="flex flex-col items-center gap-1">
+                                            <span class="inline-flex items-center justify-center min-w-[44px] px-2.5 py-1 rounded-md bg-red-500 text-white font-bold text-sm shadow-sm shadow-red-500/30">
+                                                <?php echo e($summary['total']['ng_qty']); ?>
 
-                                        </span>
+                                            </span>
+                                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($needsNgDetail): ?>
+                                                <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[9px] font-bold
+                                                    bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300
+                                                    ring-1 ring-amber-300 dark:ring-amber-700 animate-pulse"
+                                                    title="NG Detail belum lengkap — klik Edit untuk melengkapi">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3 flex-shrink-0">
+                                                        <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495ZM10 5a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 10 5Zm0 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    Belum lengkap
+                                                </span>
+                                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                        </div>
                                     </td>
                                     <td class="px-3 py-3 text-center bg-amber-50/50 dark:bg-amber-900/10">
                                         <?php $rr = $summary['total']['reject_rate']; ?>
@@ -753,16 +712,12 @@
                                     
                                     <td class="px-3 py-3 text-center bg-blue-50/30 dark:bg-blue-900/10">
                                         <?php
-                                            // Sesuaikan: kalau pic_xray simpan ID, resolve ke Employee
                                             $picXrayName = null;
-                                            $picXrayNik  = null;
                                             if ($scan->pic_xray) {
                                                 if (is_numeric($scan->pic_xray)) {
                                                     $emp = \App\Models\HR\Employee::find($scan->pic_xray);
                                                     $picXrayName = $emp?->name;
-                                                    $picXrayNik  = $emp?->nik;
                                                 } else {
-                                                    // kalau isinya string nama (data lama)
                                                     $picXrayName = $scan->pic_xray;
                                                 }
                                             }
@@ -808,31 +763,87 @@
                                             <?php endif; ?>
 
                                             <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('edit scan xray')): ?>
-                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!$isLocked && !$isCompleted): ?>
-                                                    <?php ob_start(); ?><ui-tooltip position="top center"  data-flux-tooltip >
-        <?php ob_start(); ?>
-                                                        <?php ob_start(); ?><a href="<?php echo e(route('qaqc.scan-xray.edit', $scan->id)); ?>" data-flux-button="data-flux-button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-8 text-sm rounded-md w-8 inline-flex  bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 dark:border-0 shadow-[inset_0px_1px_--theme(--color-white/.2)] [[data-flux-button-group]_&amp;]:border-e-0 [:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-[1px] dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-0 dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-s-[1px] [:is([data-flux-button-group]&gt;&amp;:not(:first-child),_[data-flux-button-group]_:not(:first-child)&gt;&amp;)]:border-s-[color-mix(in_srgb,var(--color-accent-foreground),transparent_85%)]  [--color-accent:var(--color-yellow-400)] [--color-accent-content:var(--color-yellow-600)] [--color-accent-foreground:var(--color-yellow-950)] dark:[--color-accent:var(--color-yellow-400)] dark:[--color-accent-content:var(--color-yellow-400)] dark:[--color-accent-foreground:var(--color-yellow-950)] !p-2" data-flux-group-target="data-flux-group-target" wire:navigate="">
+                                                <?php
+                                                    $activeReq   = $scan->activeEditRequest;
+                                                    $hasApproval = $activeReq && $activeReq->isApproved();
+                                                    $hasPending  = $activeReq && $activeReq->isPending();
+                                                    $canEditNormal   = !$isLocked && (!$isCompleted || $needsNgDetail);
+                                                    $canEditApproved = !$isLocked && $hasApproval;
+                                                ?>
+
+                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($canEditNormal): ?>
+                                                    <div class="relative inline-flex">
+                                                        <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/tooltip/index.blade.php', $__blaze->compiledPath.'/1e349890a464f9948f6af12013af6f7e.php'); ?>
+<?php if (isset($__slots1e349890a464f9948f6af12013af6f7e)) { $__slotsStack1e349890a464f9948f6af12013af6f7e[] = $__slots1e349890a464f9948f6af12013af6f7e; } ?>
+<?php if (isset($__attrs1e349890a464f9948f6af12013af6f7e)) { $__attrsStack1e349890a464f9948f6af12013af6f7e[] = $__attrs1e349890a464f9948f6af12013af6f7e; } ?>
+<?php $__attrs1e349890a464f9948f6af12013af6f7e = ['content' => e($needsNgDetail ? 'Lengkapi NG Detail (' . $incompleteCount . ' group belum lengkap)' : 'Edit'),'position' => 'top']; ?>
+<?php $__slots1e349890a464f9948f6af12013af6f7e = []; ?>
+<?php $__blaze->pushData($__attrs1e349890a464f9948f6af12013af6f7e); ?>
+<?php ob_start(); ?>
+                                                            <?php ob_start(); ?><a href="<?php echo e(route('qaqc.scan-xray.edit', $scan->id)); ?>" data-flux-button="data-flux-button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-8 text-sm rounded-md w-8 inline-flex  bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 dark:border-0 shadow-[inset_0px_1px_--theme(--color-white/.2)] [[data-flux-button-group]_&amp;]:border-e-0 [:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-[1px] dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-0 dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-s-[1px] [:is([data-flux-button-group]&gt;&amp;:not(:first-child),_[data-flux-button-group]_:not(:first-child)&gt;&amp;)]:border-s-[color-mix(in_srgb,var(--color-accent-foreground),transparent_85%)]  [--color-accent:var(--color-yellow-400)] [--color-accent-content:var(--color-yellow-600)] [--color-accent-foreground:var(--color-yellow-950)] dark:[--color-accent:var(--color-yellow-400)] dark:[--color-accent-content:var(--color-yellow-400)] dark:[--color-accent-foreground:var(--color-yellow-950)] !p-2" data-flux-group-target="data-flux-group-target" wire:navigate="">
         <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
   <path d="m5.433 13.917 1.262-3.155A4 4 0 0 1 7.58 9.42l6.92-6.918a2.121 2.121 0 0 1 3 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 0 1-.65-.65Z"/>
   <path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0 0 10 3H4.75A2.75 2.75 0 0 0 2 5.75v9.5A2.75 2.75 0 0 0 4.75 18h9.5A2.75 2.75 0 0 0 17 15.25V10a.75.75 0 0 0-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5Z"/>
 </svg>
     </a>
 <?php echo ltrim(ob_get_clean()); ?>
-                                                    <?php echo trim(ob_get_clean()); ?>
+                                                        <?php $__slots1e349890a464f9948f6af12013af6f7e['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slots1e349890a464f9948f6af12013af6f7e); ?>
+<?php _1e349890a464f9948f6af12013af6f7e($__blaze, $__attrs1e349890a464f9948f6af12013af6f7e, $__slots1e349890a464f9948f6af12013af6f7e, [], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStack1e349890a464f9948f6af12013af6f7e)) { $__slots1e349890a464f9948f6af12013af6f7e = array_pop($__slotsStack1e349890a464f9948f6af12013af6f7e); } ?>
+<?php if (! empty($__attrsStack1e349890a464f9948f6af12013af6f7e)) { $__attrs1e349890a464f9948f6af12013af6f7e = array_pop($__attrsStack1e349890a464f9948f6af12013af6f7e); } ?>
+<?php $__blaze->popData(); ?>
 
+                                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($needsNgDetail): ?>
+                                                            <span class="absolute -top-1 -right-1 flex items-center justify-center
+                                                                w-4 h-4 rounded-full bg-amber-500 text-white
+                                                                ring-2 ring-white dark:ring-zinc-900 shadow-md
+                                                                pointer-events-none z-10">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-2.5 h-2.5">
+                                                                    <path fill-rule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495ZM10 5a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 10 5Zm0 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd" />
+                                                                </svg>
+                                                            </span>
+                                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                                    </div>
 
-                    <div popover="manual" class="relative py-2 px-2.5 rounded-md text-xs text-white font-medium bg-zinc-800 dark:bg-zinc-700 dark:border dark:border-white/10 p-0 overflow-visible" data-flux-tooltip-content>
-    Edit
-
-    </div>
-            </ui-tooltip>
+                                                <?php elseif($canEditApproved): ?>
+                                                    <div class="relative inline-flex">
+                                                        <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/tooltip/index.blade.php', $__blaze->compiledPath.'/1e349890a464f9948f6af12013af6f7e.php'); ?>
+<?php if (isset($__slots1e349890a464f9948f6af12013af6f7e)) { $__slotsStack1e349890a464f9948f6af12013af6f7e[] = $__slots1e349890a464f9948f6af12013af6f7e; } ?>
+<?php if (isset($__attrs1e349890a464f9948f6af12013af6f7e)) { $__attrsStack1e349890a464f9948f6af12013af6f7e[] = $__attrs1e349890a464f9948f6af12013af6f7e; } ?>
+<?php $__attrs1e349890a464f9948f6af12013af6f7e = ['content' => 'Edit (Approved until '.e($activeReq->expires_at?->format('d/m H:i') ?? 'no expiry').')','position' => 'top']; ?>
+<?php $__slots1e349890a464f9948f6af12013af6f7e = []; ?>
+<?php $__blaze->pushData($__attrs1e349890a464f9948f6af12013af6f7e); ?>
+<?php ob_start(); ?>
+                                                            <?php ob_start(); ?><a href="<?php echo e(route('qaqc.scan-xray.edit', $scan->id)); ?>" data-flux-button="data-flux-button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-8 text-sm rounded-md w-8 inline-flex  bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 dark:border-0 shadow-[inset_0px_1px_--theme(--color-white/.2)] [[data-flux-button-group]_&amp;]:border-e-0 [:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-[1px] dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-0 dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-s-[1px] [:is([data-flux-button-group]&gt;&amp;:not(:first-child),_[data-flux-button-group]_:not(:first-child)&gt;&amp;)]:border-s-[color-mix(in_srgb,var(--color-accent-foreground),transparent_85%)]  [--color-accent:var(--color-emerald-600)] [--color-accent-content:var(--color-emerald-600)] [--color-accent-foreground:var(--color-white)] dark:[--color-accent:var(--color-emerald-600)] dark:[--color-accent-content:var(--color-emerald-400)] dark:[--color-accent-foreground:var(--color-white)] !p-2" data-flux-group-target="data-flux-group-target" wire:navigate="">
+        <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path d="m5.433 13.917 1.262-3.155A4 4 0 0 1 7.58 9.42l6.92-6.918a2.121 2.121 0 0 1 3 3l-6.92 6.918c-.383.383-.84.685-1.343.886l-3.154 1.262a.5.5 0 0 1-.65-.65Z"/>
+  <path d="M3.5 5.75c0-.69.56-1.25 1.25-1.25H10A.75.75 0 0 0 10 3H4.75A2.75 2.75 0 0 0 2 5.75v9.5A2.75 2.75 0 0 0 4.75 18h9.5A2.75 2.75 0 0 0 17 15.25V10a.75.75 0 0 0-1.5 0v5.25c0 .69-.56 1.25-1.25 1.25h-9.5c-.69 0-1.25-.56-1.25-1.25v-9.5Z"/>
+</svg>
+    </a>
 <?php echo ltrim(ob_get_clean()); ?>
-                                                <?php elseif($isCompleted): ?>
+                                                        <?php $__slots1e349890a464f9948f6af12013af6f7e['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slots1e349890a464f9948f6af12013af6f7e); ?>
+<?php _1e349890a464f9948f6af12013af6f7e($__blaze, $__attrs1e349890a464f9948f6af12013af6f7e, $__slots1e349890a464f9948f6af12013af6f7e, [], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStack1e349890a464f9948f6af12013af6f7e)) { $__slots1e349890a464f9948f6af12013af6f7e = array_pop($__slotsStack1e349890a464f9948f6af12013af6f7e); } ?>
+<?php if (! empty($__attrsStack1e349890a464f9948f6af12013af6f7e)) { $__attrs1e349890a464f9948f6af12013af6f7e = array_pop($__attrsStack1e349890a464f9948f6af12013af6f7e); } ?>
+<?php $__blaze->popData(); ?>
+                                                        <span class="absolute -top-1 -right-1 flex items-center justify-center
+                                                            w-4 h-4 rounded-full bg-emerald-500 text-white
+                                                            ring-2 ring-white dark:ring-zinc-900 shadow-md
+                                                            pointer-events-none z-10">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-2.5 h-2.5">
+                                                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
+                                                            </svg>
+                                                        </span>
+                                                    </div>
+
+                                                <?php elseif($hasPending): ?>
                                                     <?php ob_start(); ?><ui-tooltip position="top center"  data-flux-tooltip >
         <?php ob_start(); ?>
                                                         <?php ob_start(); ?><button type="button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-8 text-sm rounded-md w-8 inline-flex  bg-zinc-800/5 hover:bg-zinc-800/10 dark:bg-white/10 dark:hover:bg-white/20 text-zinc-800 dark:text-white   [[data-flux-button-group]_&amp;]:border-e [:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-0 [[data-flux-button-group]_&amp;]:border-zinc-200/80 dark:[[data-flux-button-group]_&amp;]:border-zinc-900/50   !p-2" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target" disabled="disabled">
         <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-  <path fill-rule="evenodd" d="M16.403 12.652a3 3 0 0 0 0-5.304 3 3 0 0 0-3.75-3.751 3 3 0 0 0-5.305 0 3 3 0 0 0-3.751 3.75 3 3 0 0 0 0 5.305 3 3 0 0 0 3.75 3.751 3 3 0 0 0 5.305 0 3 3 0 0 0 3.751-3.75Zm-2.546-4.46a.75.75 0 0 0-1.214-.883l-3.483 4.79-1.88-1.88a.75.75 0 1 0-1.06 1.061l2.5 2.5a.75.75 0 0 0 1.137-.089l4-5.5Z" clip-rule="evenodd"/>
+  <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z" clip-rule="evenodd"/>
 </svg>
     </button>
 <?php echo ltrim(ob_get_clean()); ?>
@@ -840,12 +851,13 @@
 
 
                     <div popover="manual" class="relative py-2 px-2.5 rounded-md text-xs text-white font-medium bg-zinc-800 dark:bg-zinc-700 dark:border dark:border-white/10 p-0 overflow-visible" data-flux-tooltip-content>
-    Data sudah selesai (completed)
+    Menunggu approval edit
 
     </div>
             </ui-tooltip>
 <?php echo ltrim(ob_get_clean()); ?>
-                                                <?php else: ?>
+
+                                                <?php elseif($isLocked): ?>
                                                     <?php ob_start(); ?><ui-tooltip position="top center"  data-flux-tooltip >
         <?php ob_start(); ?>
                                                         <?php ob_start(); ?><button type="button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-8 text-sm rounded-md w-8 inline-flex  bg-zinc-800/5 hover:bg-zinc-800/10 dark:bg-white/10 dark:hover:bg-white/20 text-zinc-800 dark:text-white   [[data-flux-button-group]_&amp;]:border-e [:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-0 [[data-flux-button-group]_&amp;]:border-zinc-200/80 dark:[[data-flux-button-group]_&amp;]:border-zinc-900/50   !p-2" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target" disabled="disabled">
@@ -859,6 +871,33 @@
 
                     <div popover="manual" class="relative py-2 px-2.5 rounded-md text-xs text-white font-medium bg-zinc-800 dark:bg-zinc-700 dark:border dark:border-white/10 p-0 overflow-visible" data-flux-tooltip-content>
     Tidak bisa edit (&gt;24 jam)
+
+    </div>
+            </ui-tooltip>
+<?php echo ltrim(ob_get_clean()); ?>
+
+                                                <?php elseif($isCompleted && !$hasApproval && !$hasPending): ?>
+                                                    
+                                                    <?php ob_start(); ?><ui-tooltip position="top center"  data-flux-tooltip >
+        <?php ob_start(); ?>
+                                                        <?php ob_start(); ?><button type="button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-8 text-sm rounded-md w-8 inline-flex  bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 dark:border-0 shadow-[inset_0px_1px_--theme(--color-white/.2)] [[data-flux-button-group]_&amp;]:border-e-0 [:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-[1px] dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-0 dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-s-[1px] [:is([data-flux-button-group]&gt;&amp;:not(:first-child),_[data-flux-button-group]_:not(:first-child)&gt;&amp;)]:border-s-[color-mix(in_srgb,var(--color-accent-foreground),transparent_85%)] *:transition-opacity [&amp;[data-loading]&gt;:not([data-flux-loading-indicator])]:opacity-0 [&amp;[data-flux-loading]&gt;:not([data-flux-loading-indicator])]:opacity-0 [&amp;[data-loading]&gt;[data-flux-loading-indicator]]:opacity-100 [&amp;[data-flux-loading]&gt;[data-flux-loading-indicator]]:opacity-100 data-loading:pointer-events-none data-flux-loading:pointer-events-none [--color-accent:var(--color-amber-400)] [--color-accent-content:var(--color-amber-600)] [--color-accent-foreground:var(--color-amber-950)] dark:[--color-accent:var(--color-amber-400)] dark:[--color-accent-content:var(--color-amber-400)] dark:[--color-accent-foreground:var(--color-amber-950)] !p-2" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target" wire:target="$set('editRequestScanId', <?php echo e($scan->id); ?>)" wire:loading.attr="data-flux-loading" wire:click="$set('editRequestScanId', <?php echo e($scan->id); ?>)" x-on:click="$dispatch('open-modal', 'edit-request-modal')">
+        <div class="absolute inset-0 flex items-center justify-center opacity-0" data-flux-loading-indicator>
+                <svg class="shrink-0 [:where(&amp;)]:size-5 animate-spin" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true" data-slot="icon">
+    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+</svg>
+                    </div>
+        
+                    <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M14.5 1A4.5 4.5 0 0 0 10 5.5V9H3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-1.5V5.5a3 3 0 1 1 6 0v2.75a.75.75 0 0 0 1.5 0V5.5A4.5 4.5 0 0 0 14.5 1Z" clip-rule="evenodd"/>
+</svg>
+    </button>
+<?php echo ltrim(ob_get_clean()); ?>
+                                                    <?php echo trim(ob_get_clean()); ?>
+
+
+                    <div popover="manual" class="relative py-2 px-2.5 rounded-md text-xs text-white font-medium bg-zinc-800 dark:bg-zinc-700 dark:border dark:border-white/10 p-0 overflow-visible" data-flux-tooltip-content>
+    Ajukan Request Edit
 
     </div>
             </ui-tooltip>
@@ -939,7 +978,10 @@
                 </div>
 
                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($scans->hasPages()): ?>
-                    <div class="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-700 flex justify-center">
+                    <div class="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-700 flex justify-between items-center">
+                        <div class="text-xs text-zinc-500 dark:text-zinc-400">
+                            
+                        </div>
                         <?php echo e($scans->links()); ?>
 
                     </div>
@@ -1243,4 +1285,103 @@
             box-shadow: none !important;
         }
     </style>
+
+    
+    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('edit scan xray')): ?>
+    <div x-data="{ open: false }"
+        x-show="open"
+        @open-modal.window="if ($event.detail === 'edit-request-modal' || $event.detail?.[0] === 'edit-request-modal') open = true"
+        @edit-request-submitted.window="open = false"
+        x-cloak>
+
+        <div class="fixed inset-0 bg-black/50 z-40" @click="open = false"></div>
+
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-xl w-full max-w-lg">
+
+                
+                <div class="px-6 py-4 border-b border-zinc-200 dark:border-zinc-700 flex items-center justify-between">
+                    <h2 class="text-lg font-bold">Request Edit Scan X-Ray</h2>
+                    <button type="button" @click="open = false; $wire.resetEditRequest()" class="text-zinc-400 hover:text-zinc-600 text-xl">✕</button>
+                </div>
+
+                
+                <div class="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+
+                    <div class="rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20 p-3 text-xs text-amber-800 dark:text-amber-200">
+                        Pilih group yang mau diedit. Setelah di-approve, Anda bisa edit dalam 24 jam.
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Pilih Group <span class="text-red-500">*</span></label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__currentLoopData = \App\Models\QAQC\ScanXray\ScanXrayEditRequest::GROUPS; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $groupKey => $groupLabel): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
+                                <label class="flex items-center gap-2 px-3 py-2 rounded-lg border cursor-pointer
+                                    <?php echo e(in_array($groupKey, $editRequestGroups) ? 'border-amber-400 bg-amber-50 dark:bg-amber-900/20' : 'border-zinc-200 dark:border-zinc-700'); ?>">
+                                    <input type="checkbox"
+                                        value="<?php echo e($groupKey); ?>"
+                                        wire:model.live="editRequestGroups"
+                                        class="rounded border-zinc-300 text-amber-600 focus:ring-amber-500" />
+                                    <span class="text-xs font-semibold"><?php echo e($groupLabel); ?></span>
+                                </label>
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
+                        </div>
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['editRequestGroups'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <span class="text-red-500 text-xs mt-1 block"><?php echo e($message); ?></span> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['editRequestGroups.*'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <span class="text-red-500 text-xs mt-1 block"><?php echo e($message); ?></span> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium mb-2">
+                            Alasan <span class="text-red-500">*</span>
+                        </label>
+                        <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/textarea.blade.php', $__blaze->compiledPath.'/3e0c5a1b01ae05bb4233827103c44ba5.php'); ?>
+<?php $__blaze->pushData(['wire:model' => 'editRequestReason','rows' => '3','placeholder' => 'Kenapa perlu edit... (wajib diisi)']); ?>
+<?php _3e0c5a1b01ae05bb4233827103c44ba5($__blaze, ['wire:model' => 'editRequestReason','rows' => '3','placeholder' => 'Kenapa perlu edit... (wajib diisi)'], [], [], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php $__blaze->popData(); ?>
+                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['editRequestReason'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?>
+                            <span class="text-red-500 text-xs mt-1 block"><?php echo e($message); ?></span>
+                        <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                    </div>
+                </div>
+
+                
+                <div class="px-6 py-4 border-t border-zinc-200 dark:border-zinc-700 flex justify-end gap-2">
+                    <button type="button" @click="open = false; $wire.resetEditRequest()"
+                            class="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800">
+                        Cancel
+                    </button>
+                    <button type="button" wire:click="submitEditRequest"
+                            x-bind:disabled="!$wire.editRequestReason || $wire.editRequestReason.length < 5 || $wire.editRequestGroups.length === 0"
+                            x-bind:class="{ 'opacity-50 cursor-not-allowed': !$wire.editRequestReason || $wire.editRequestReason.length < 5 || $wire.editRequestGroups.length === 0 }"
+                            class="px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700"
+                            wire:loading.attr="disabled" wire:target="submitEditRequest">
+                        <span wire:loading.remove wire:target="submitEditRequest">Kirim Request</span>
+                        <span wire:loading wire:target="submitEditRequest">Mengirim...</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
 </div><?php /**PATH /www/wwwroot/testings.siix-ems.co.id/siix-portal/resources/views/livewire/qaqc/scan-xray/scan-xray-index.blade.php ENDPATH**/ ?>

@@ -6,7 +6,6 @@ use App\Models\PROD\Patrol\ResultPatrol;
 use App\Models\PROD\Patrol\StandardPatrol;
 use App\Models\PROD\Patrol\CategoryPatrol;
 use App\Models\MTC\Master\MasterLine;
-use App\Models\HR\Employee;
 use Ijpatricio\Mingle\Concerns\InteractsWithMingles;
 use Ijpatricio\Mingle\Contracts\HasMingles;
 use Livewire\Attributes\Title;
@@ -89,7 +88,16 @@ class ResultPatrolForm extends Component implements HasMingles
                     ];
                 })->toArray(),
             'categories' => CategoryPatrol::orderBy('category_name')->get(['id', 'category_name'])->toArray(),
-            'employees' => Employee::orderBy('name')->get(['ID', 'nik', 'name'])->toArray(),
+            'employees' => \App\Models\User::query()
+                ->permission('feedback result patrol')
+                ->orderBy('name')
+                ->get(['id', 'name'])
+                ->map(fn($u) => [
+                    'id'   => (string) $u->id,
+                    'nik'  => (string) $u->id,
+                    'name' => $u->name,
+                ])
+                ->toArray(),
             'standardsByLine' => $standardsByLineId,
         ];
     }

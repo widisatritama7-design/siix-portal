@@ -20,6 +20,7 @@ trait HandlesScanXrayForm
     public $group = '';
     public $master_line_id;
     public $lot_qty = 0;
+    public $status_running = '';   // ✅ GLOBAL — hanya 1
 
     // ============ DETAIL GROUPS ============
     public $first_piece_items  = [];
@@ -90,6 +91,12 @@ trait HandlesScanXrayForm
 
     public $validationErrors = [];
 
+    // ============ NCP USAGE CHECK ============
+    public $currentScanId = null;   // ✅ TAMBAH
+
+    // ✅ Groups yang di-approve untuk diedit (via request edit)
+    public array $approvedGroups = [];
+
     // ============ FORM RULES ============
     protected function formRules(): array
     {
@@ -102,10 +109,10 @@ trait HandlesScanXrayForm
             'master_line_id' => 'required|exists:tb_mtc_master_lines,id',
             'lot_qty'        => 'required|integer|min:0',
             'pic_xray'       => 'required|integer',
+            'status_running' => 'required|string|max:50',   // ✅ GLOBAL
         ];
 
         foreach (['first_piece_items', 'middle_piece_items', 'last_piece_items'] as $grp) {
-            $rules["$grp.status_running"]         = 'nullable|string|max:50';
             $rules["$grp.filling_ratio"]          = 'nullable|numeric|min:0|max:100';
             $rules["$grp.qty_hold"]               = 'nullable|integer|min:0';
             $rules["$grp.status_after_check.ok"]  = 'nullable|integer|min:0';
@@ -128,16 +135,12 @@ trait HandlesScanXrayForm
             ];
         }
 
-        foreach (['second_first_items', 'second_middle_items', 'second_last_items'] as $grp) {
-            $rules["$grp.status_running"] = 'nullable|string|max:50';
-        }
-
         return $rules;
     }
 
     protected function formMessages(): array
     {
-        $messages = [
+        return [
             'customer_id.required'    => 'Customer is required.',
             'model_id.required'       => 'Model is required.',
             'pcb_type.required'       => 'PCB Type wajib dipilih.',
@@ -148,13 +151,8 @@ trait HandlesScanXrayForm
             'master_line_id.required' => 'Master Line is required.',
             'lot_qty.required'        => 'Lot Qty is required.',
             'pic_xray.required'       => 'PIC X-Ray wajib diisi.',
+            'status_running.required' => 'Status Running wajib diisi.',   // ✅ GLOBAL
         ];
-
-        foreach (['first_piece_items', 'middle_piece_items', 'last_piece_items'] as $grp) {
-            $messages["$grp.status_running.required"] = 'Status Running wajib diisi.';
-        }
-
-        return $messages;
     }
 
     // ============ INIT ============
@@ -241,6 +239,11 @@ trait HandlesScanXrayForm
 
     public function canEditGroup(string $groupKey): bool
     {
+        // ✅ Approval override: group yang di-approve selalu editable
+        if (in_array($groupKey, $this->approvedGroups ?? [], true)) {
+            return true;
+        }
+
         return match ($this->phase) {
             'first'         => $groupKey === 'first_piece_items',
             'second_first'  => $groupKey === 'second_first_items',
@@ -255,6 +258,10 @@ trait HandlesScanXrayForm
 
     public function isGroupLocked(string $groupKey): bool
     {
+         // ✅ Approval override: group yang di-approve tidak locked
+        if (in_array($groupKey, $this->approvedGroups ?? [], true)) {
+            return false;
+        }
         $order       = $this->phaseOrder();
         $groupPhase  = $this->groupToPhase($groupKey);
         if (!$groupPhase) return true;
@@ -265,6 +272,10 @@ trait HandlesScanXrayForm
 
     public function isGroupCompleted(string $groupKey): bool
     {
+        // ✅ Approval override: anggap "belum completed" supaya bisa diedit
+        if (in_array($groupKey, $this->approvedGroups ?? [], true)) {
+            return false;
+        }
         $order       = $this->phaseOrder();
         $groupPhase  = $this->groupToPhase($groupKey);
         if (!$groupPhase) return false;
@@ -274,10 +285,6 @@ trait HandlesScanXrayForm
     }
 
     // ============ COLLAPSE HELPERS ============
-    /**
-     * Set grup mana yang terbuka berdasarkan phase saat ini.
-     * Grup aktif → open, sisanya → closed.
-     */
     public function syncOpenGroupsWithPhase(): void
     {
         $activeGroup = match ($this->phase) {
@@ -295,22 +302,14 @@ trait HandlesScanXrayForm
         }
     }
 
-    /**
-     * Toggle manual oleh user.
-     */
     public function toggleGroup(string $groupKey): void
     {
         if (!array_key_exists($groupKey, $this->openGroups)) return;
-
-        // Grup yang belum waktunya (locked) tidak boleh dibuka
         if (!$this->canOpenGroup($groupKey)) return;
 
         $this->openGroups[$groupKey] = !$this->openGroups[$groupKey];
     }
 
-    /**
-     * Cek apakah grup boleh dibuka.
-     */
     public function canOpenGroup(string $groupKey): bool
     {
         return $this->isGroupCompleted($groupKey) || $this->canEditGroup($groupKey);
@@ -428,7 +427,6 @@ trait HandlesScanXrayForm
 
         $field = $parts[1] ?? null;
 
-        // ============ DETEKSI PERUBAHAN CELL PCB ============
         if (in_array($field, ['side_single', 'side_lh', 'side_rh'], true)) {
             if (in_array($groupKey, ['first_piece_items', 'middle_piece_items', 'last_piece_items'], true)) {
                 $this->recalcQtyFromJudgements($groupKey);
@@ -476,6 +474,11 @@ trait HandlesScanXrayForm
         if (!in_array($col, ['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'], true)) return;
         if (!in_array($groupKey, ['first_piece_items', 'middle_piece_items', 'last_piece_items'], true)) return;
 
+        // ✅ Guard: hanya boleh edit kalau grup masih editable, ATAU ada NG yang belum lengkap
+        if (!$this->canEditGroup($groupKey) && !$this->shouldAutoOpenNgDetail($groupKey)) {
+            return;
+        }
+
         $cellValue = $this->{$groupKey}[$side][$col][$row] ?? '';
         if (empty($cellValue)) return;
 
@@ -483,6 +486,40 @@ trait HandlesScanXrayForm
         $this->judgements[$groupKey][$side][$col][$row] = ($current === 'ng') ? null : 'ng';
 
         $this->recalcQtyFromJudgements($groupKey);
+    }
+    
+    /**
+     * Cek apakah Second Piece untuk grup tertentu diperlukan
+     * (yaitu: ada NG di piece sebelumnya).
+     */
+    public function isSecondPieceNeeded(string $secondKey): bool
+    {
+        $map = [
+            'second_first_items'  => 'first_piece_items',
+            'second_middle_items' => 'middle_piece_items',
+            'second_last_items'   => 'last_piece_items',
+        ];
+        $src = $map[$secondKey] ?? null;
+        if (!$src) return false;
+        return (int) ($this->{$src}['ng_qty'] ?? 0) > 0;
+    }
+
+    /**
+     * Cek apakah Second Piece sudah pernah diisi (untuk label "Completed").
+     * Hanya cek active side supaya tidak false-positive dari side lain.
+     */
+    public function secondPieceHasContent(string $secondKey): bool
+    {
+        $item = $this->{$secondKey} ?? [];
+        $side = $this->activeSide();
+        if (!$side) return false;
+
+        foreach (['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'] as $col) {
+            foreach (($item[$side][$col] ?? []) as $val) {
+                if (!empty($val)) return true;
+            }
+        }
+        return false;
     }
 
     protected function recalcQtyFromJudgements(string $groupKey): void
@@ -600,8 +637,25 @@ trait HandlesScanXrayForm
                 }
             }
 
-            if ($this->groupHasContent($item) && empty($item['status_running'])) {
-                $this->addError("{$grp}.status_running", 'Status Running wajib diisi.');
+            // ✅ VALIDASI NCP: bentrok dengan scan lain
+            $ncpId = (int) ($this->{$grp}['ncp_id'] ?? 0);
+            if ($ncpId > 0) {
+                $usage = $this->findNcpUsage($ncpId);
+                if ($usage) {
+                    $this->addError(
+                        "{$grp}.ncp_id",
+                        "NCP sudah dipakai di {$usage['group_label']} Piece pada Scan #{$usage['scan_id']} ({$usage['customer']} / {$usage['model']}). Pilih NCP lain."
+                    );
+                }
+
+                // ✅ VALIDASI NCP: dobel dalam scan ini
+                $sameScanUsage = $this->findNcpUsageInThisScan($ncpId, $grp);
+                if ($sameScanUsage) {
+                    $this->addError(
+                        "{$grp}.ncp_id",
+                        "NCP ini sudah dipakai di {$sameScanUsage['group_label']} Piece dalam scan ini. Pilih NCP berbeda untuk setiap piece."
+                    );
+                }
             }
         }
 
@@ -643,10 +697,6 @@ trait HandlesScanXrayForm
                     }
                 }
             }
-
-            if ($this->secondGroupHasContent($item) && empty($item['status_running'])) {
-                $this->addError("{$secondGrp}.status_running", 'Second Piece — Status Running wajib diisi.');
-            }
         }
     }
 
@@ -687,6 +737,33 @@ trait HandlesScanXrayForm
         $ng    = (int) ($this->{$groupKey}['ng_qty'] ?? 0);
         $total = $ok + $ng;
         $this->{$groupKey}['reject_rate'] = $total > 0 ? round(($ng / $total) * 100, 2) : 0;
+    }
+
+    /**
+     * Cek apakah NCP sudah dipakai di group LAIN dalam scan ini sendiri.
+     * Return array info kalau dipakai, null kalau belum.
+     *
+     * @return array{group:string, group_label:string}|null
+     */
+    public function findNcpUsageInThisScan(int $ncpId, string $excludeGroupKey): ?array
+    {
+        foreach (['first_piece_items', 'middle_piece_items', 'last_piece_items'] as $grp) {
+            if ($grp === $excludeGroupKey) continue;   // skip group yang sedang dicek
+
+            $otherNcpId = (int) ($this->{$grp}['ncp_id'] ?? 0);
+            if ($otherNcpId !== $ncpId) continue;
+
+            return [
+                'group'       => $grp,
+                'group_label' => match ($grp) {
+                    'first_piece_items'  => 'First',
+                    'middle_piece_items' => 'Middle',
+                    'last_piece_items'   => 'Last',
+                    default              => 'Unknown',
+                },
+            ];
+        }
+        return null;
     }
 
     // ============ ROW MANAGEMENT ============
@@ -758,6 +835,28 @@ trait HandlesScanXrayForm
 
     public function selectNcp(string $groupKey, int $ncpId): void
     {
+        // 1. Cek dipakai di scan LAIN
+        $usageOther = $this->findNcpUsage($ncpId);
+        if ($usageOther) {
+            $this->dispatch(
+                'notify',
+                message: "NCP ini sudah dipakai di {$usageOther['group_label']} Piece (Scan #{$usageOther['scan_id']} — {$usageOther['customer']} / {$usageOther['model']}). Tidak bisa dipakai lagi.",
+                type: 'error'
+            );
+            return;
+        }
+
+        // 2. Cek dipakai di group LAIN dalam scan ini
+        $usageSame = $this->findNcpUsageInThisScan($ncpId, $groupKey);
+        if ($usageSame) {
+            $this->dispatch(
+                'notify',
+                message: "NCP ini sudah dipakai di {$usageSame['group_label']} Piece dalam scan ini. Pilih NCP berbeda untuk setiap piece.",
+                type: 'error'
+            );
+            return;
+        }
+
         if (isset($this->{$groupKey})) $this->{$groupKey}['ncp_id'] = $ncpId;
         $this->openNcpPanels[$groupKey] = false;
         $this->ncpSearches[$groupKey] = '';
@@ -779,7 +878,151 @@ trait HandlesScanXrayForm
                 $qq->where('ncp_number', 'like', $term);
             });
         }
-        return $q->paginate(5, ['*'], 'ncpPage_' . $groupKey, $this->ncpPages[$groupKey] ?? 1);
+
+        $paginator = $q->paginate(5, ['*'], 'ncpPage_' . $groupKey, $this->ncpPages[$groupKey] ?? 1);
+
+        $ncpIds = collect($paginator->items())->pluck('id')->all();
+        $usages = $this->getBulkNcpUsages($ncpIds);
+
+        // ✅ Kumpulkan NCP yang dipakai di group LAIN dalam scan ini
+        $sameScanUsage = [];
+        foreach (['first_piece_items', 'middle_piece_items', 'last_piece_items'] as $grp) {
+            if ($grp === $groupKey) continue;   // exclude group aktif
+            $ncpId = (int) ($this->{$grp}['ncp_id'] ?? 0);
+            if ($ncpId > 0) {
+                $sameScanUsage[$ncpId] = [
+                    'scan_id'      => $this->currentScanId,
+                    'group'        => $grp,
+                    'group_label'  => match ($grp) {
+                        'first_piece_items'  => 'First',
+                        'middle_piece_items' => 'Middle',
+                        'last_piece_items'   => 'Last',
+                        default              => 'Unknown',
+                    },
+                    'customer'     => 'Scan ini',
+                    'model'        => 'Piece lain',
+                    'is_same_scan' => true,
+                ];
+            }
+        }
+
+        $paginator->getCollection()->transform(function ($ncp) use ($usages, $sameScanUsage, $groupKey) {
+            // ✅ Prioritas 1: dipakai scan lain (existing)
+            if (isset($usages[$ncp->id])) {
+                $ncp->usage_info = $usages[$ncp->id];
+                return $ncp;
+            }
+
+            // ✅ Prioritas 2: dipakai group lain dalam scan ini
+            if (isset($sameScanUsage[$ncp->id])) {
+                $ncp->usage_info = $sameScanUsage[$ncp->id];
+                return $ncp;
+            }
+
+            // ✅ NCP milik group ini sendiri — TIDAK dianggap "dipakai", biar bisa dipilih ulang
+            $ncp->usage_info = null;
+            return $ncp;
+        });
+
+        return $paginator;
+    }
+
+        /**
+     * Cek apakah NCP sudah dipakai di scan lain (first/middle/last).
+     * Return array info kalau dipakai, null kalau belum.
+     */
+    public function findNcpUsage(int $ncpId, ?int $excludeScanId = null): ?array
+    {
+        $excludeScanId = $excludeScanId ?? $this->currentScanId;
+
+        $query = ScanXray::query()
+            ->where(function ($q) use ($ncpId) {
+                $q->where('first_piece_items->ncp_id', $ncpId)
+                  ->orWhere('middle_piece_items->ncp_id', $ncpId)
+                  ->orWhere('last_piece_items->ncp_id', $ncpId);
+            })
+            ->with(['customer', 'model']);
+
+        if ($excludeScanId) {
+            $query->where('id', '!=', $excludeScanId);
+        }
+
+        $scan = $query->first();
+        if (!$scan) return null;
+
+        $groupKey = null;
+        foreach (['first_piece_items', 'middle_piece_items', 'last_piece_items'] as $g) {
+            if ((int) ($scan->{$g}['ncp_id'] ?? 0) === $ncpId) {
+                $groupKey = $g;
+                break;
+            }
+        }
+
+        $groupLabel = match ($groupKey) {
+            'first_piece_items'  => 'First',
+            'middle_piece_items' => 'Middle',
+            'last_piece_items'   => 'Last',
+            default              => 'Unknown',
+        };
+
+        return [
+            'scan_id'     => $scan->id,
+            'group'       => $groupKey,
+            'group_label' => $groupLabel,
+            'customer'    => $scan->customer->customer_name ?? '-',
+            'model'       => $scan->model->model_name ?? '-',
+        ];
+    }
+
+    /**
+     * Ambil usage info untuk banyak NCP sekaligus (1 query).
+     * Return: [ncp_id => usage_info]
+     */
+    protected function getBulkNcpUsages(array $ncpIds): array
+    {
+        if (empty($ncpIds)) return [];
+
+        $ncpIds = array_map('intval', $ncpIds);
+
+        $query = ScanXray::query()
+            ->where(function ($q) use ($ncpIds) {
+                foreach (['first_piece_items', 'middle_piece_items', 'last_piece_items'] as $g) {
+                    foreach ($ncpIds as $id) {
+                        $q->orWhere("{$g}->ncp_id", $id);
+                    }
+                }
+            })
+            ->with(['customer', 'model']);
+
+        if ($this->currentScanId) {
+            $query->where('id', '!=', $this->currentScanId);
+        }
+
+        $scans  = $query->get();
+        $result = [];
+
+        foreach ($scans as $scan) {
+            foreach (['first_piece_items', 'middle_piece_items', 'last_piece_items'] as $g) {
+                $ncpId = (int) ($scan->{$g}['ncp_id'] ?? 0);
+                if (!$ncpId || !in_array($ncpId, $ncpIds, true)) continue;
+                if (isset($result[$ncpId])) continue;
+
+                $result[$ncpId] = [
+                    'scan_id'     => $scan->id,
+                    'group'       => $g,
+                    'group_label' => match ($g) {
+                        'first_piece_items'  => 'First',
+                        'middle_piece_items' => 'Middle',
+                        'last_piece_items'   => 'Last',
+                        default              => 'Unknown',
+                    },
+                    'customer'    => $scan->customer->customer_name ?? '-',
+                    'model'       => $scan->model->model_name ?? '-',
+                ];
+            }
+        }
+
+        return $result;
     }
 
     // ============ MASTER LINE ============
@@ -862,6 +1105,7 @@ trait HandlesScanXrayForm
             'master_line_id'      => $this->master_line_id,
             'lot_qty'             => $this->lot_qty,
             'pic_xray'            => $this->pic_xray,
+            'status_running'      => $this->status_running,   // ✅ GLOBAL
             'first_piece_items'   => $this->prepareGroupPayload('first_piece_items', $existingPictures),
             'middle_piece_items'  => $this->prepareGroupPayload('middle_piece_items', $existingPictures),
             'last_piece_items'    => $this->prepareGroupPayload('last_piece_items', $existingPictures),
@@ -1026,7 +1270,8 @@ trait HandlesScanXrayForm
             }
         }
 
-        foreach (['status_running', 'filling_ratio', 'qty_hold', 'ncp_id', 'remarks'] as $field) {
+        // ✅ status_running sudah dipindah ke global — tidak dicek di sini
+        foreach (['filling_ratio', 'qty_hold', 'ncp_id', 'remarks'] as $field) {
             if (!empty($item[$field])) return true;
         }
         if (!empty($item['pictures']) && is_array($item['pictures'])) return true;
@@ -1037,7 +1282,7 @@ trait HandlesScanXrayForm
 
     protected function secondGroupHasContent(array $item): bool
     {
-        if (!empty($item['status_running'])) return true;
+        // ✅ status_running sudah dipindah ke global — tidak dicek di sini
 
         foreach (['side_single', 'side_lh', 'side_rh'] as $side) {
             foreach (['pcb_a', 'pcb_b', 'pcb_c', 'pcb_circuit'] as $col) {
@@ -1095,7 +1340,6 @@ trait HandlesScanXrayForm
 
     /**
      * Cek apakah NG Detail untuk grup ini perlu di-auto-open.
-     * Return true kalau NG Qty > 0 DAN field wajibnya belum lengkap semua.
      */
     public function shouldAutoOpenNgDetail(string $groupKey): bool
     {

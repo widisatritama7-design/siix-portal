@@ -2,12 +2,14 @@
 
 namespace App\Livewire\QAQC\BlindTest;
 
-use App\Models\QAQC\BlindTest\Deffect;
 use App\Models\QAQC\BlindTest\BlindTest;
+use App\Models\QAQC\BlindTest\Deffect;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+#[Title('Defect List')]
 class DeffectManagement extends Component
 {
     use WithPagination;

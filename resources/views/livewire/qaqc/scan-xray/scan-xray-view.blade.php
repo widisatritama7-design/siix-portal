@@ -149,18 +149,14 @@
                     </div>
                 </div>
 
-                <div class="rounded-lg bg-gradient-to-br from-cyan-50 to-cyan-100/50 dark:from-cyan-900/20 dark:to-cyan-900/10 p-3 border border-cyan-200 dark:border-cyan-800">
-                    <div class="text-[10px] text-cyan-700 dark:text-cyan-400 uppercase tracking-wider font-semibold mb-1">Shift</div>
-                    <div class="text-sm font-bold">
+                {{-- ✅ SHIFT & GROUP — GABUNG 1 CARD --}}
+                <div class="rounded-lg bg-gradient-to-br from-cyan-50 via-purple-50 to-purple-100/50 dark:from-cyan-900/20 dark:via-purple-900/20 dark:to-purple-900/10 p-3 border border-cyan-200 dark:border-cyan-800">
+                    <div class="text-[10px] text-cyan-700 dark:text-cyan-400 uppercase tracking-wider font-semibold mb-1">Shift / Group</div>
+                    <div class="flex items-center gap-1.5 flex-wrap">
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-bold bg-cyan-100 text-cyan-700 dark:bg-cyan-900/40 dark:text-cyan-300">
                             {{ $scan->shift }}
                         </span>
-                    </div>
-                </div>
-
-                <div class="rounded-lg bg-gradient-to-br from-purple-50 to-purple-100/50 dark:from-purple-900/20 dark:to-purple-900/10 p-3 border border-purple-200 dark:border-purple-800">
-                    <div class="text-[10px] text-purple-700 dark:text-purple-400 uppercase tracking-wider font-semibold mb-1">Group</div>
-                    <div class="text-sm font-bold">
+                        <span class="text-zinc-400 font-bold text-xs">/</span>
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-bold bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-300">
                             {{ $scan->group }}
                         </span>
@@ -168,7 +164,7 @@
                 </div>
 
                 <div class="rounded-lg bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-emerald-900/20 dark:to-emerald-900/10 p-3 border border-emerald-200 dark:border-emerald-800">
-                    <div class="text-[10px] text-emerald-700 dark:text-emerald-400 uppercase tracking-wider font-semibold mb-1">Master Line</div>
+                    <div class="text-[10px] text-emerald-700 dark:text-emerald-400 uppercase tracking-wider font-semibold mb-1">Line</div>
                     <div class="text-sm font-bold text-zinc-800 dark:text-white truncate">
                         {{ $scan->masterLine->location->location_name ?? '-' }} — L{{ $scan->masterLine->line_number ?? '-' }}
                     </div>
@@ -187,6 +183,23 @@
                 <div class="rounded-lg bg-gradient-to-br from-zinc-50 to-zinc-100/50 dark:from-zinc-800/50 dark:to-zinc-800/20 p-3 border border-zinc-200 dark:border-zinc-700">
                     <div class="text-[10px] text-zinc-600 dark:text-zinc-400 uppercase tracking-wider font-semibold mb-1">DATE</div>
                     <div class="text-sm font-semibold text-zinc-800 dark:text-white">{{ $scan->created_at?->format('d M Y, H:i') }}</div>
+                </div>
+                {{-- ✅ STATUS RUNNING --}}
+                <div class="rounded-lg bg-gradient-to-br from-teal-50 to-cyan-100/50 dark:from-teal-900/20 dark:to-cyan-900/10 p-3 border border-teal-200 dark:border-teal-800">
+                    <div class="text-[10px] text-teal-700 dark:text-teal-400 uppercase tracking-wider font-semibold mb-1">Status Running</div>
+                    <div class="text-sm font-bold">
+                        @if($scan->status_running)
+                            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-xs font-semibold
+                                {{ strtolower($scan->status_running) === 'running'
+                                    ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
+                                    : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300' }}">
+                                <span class="w-1.5 h-1.5 rounded-full {{ strtolower($scan->status_running) === 'running' ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-400' }}"></span>
+                                {{ $scan->status_running }}
+                            </span>
+                        @else
+                            <span class="text-zinc-400 italic">-</span>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>

@@ -8,7 +8,9 @@ use Illuminate\Support\Facades\Cache;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
+use Livewire\Attributes\Title;
 
+#[Title('NCP List')]
 class NCPManagement extends Component
 {
     use WithPagination, WithFileUploads;

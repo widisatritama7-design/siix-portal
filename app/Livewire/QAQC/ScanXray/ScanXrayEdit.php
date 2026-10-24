@@ -4,15 +4,19 @@ namespace App\Livewire\QAQC\ScanXray;
 
 use App\Livewire\QAQC\ScanXray\Concerns\HandlesScanXrayForm;
 use App\Models\QAQC\ScanXray\ScanXray;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
+#[Title('Scan X-Ray Edit')]
 class ScanXrayEdit extends Component
 {
     use HandlesScanXrayForm;
     use WithFileUploads;
 
     public $scan_id;
+
+    public array $approvedGroups = [];
 
     public function mount($id): void
     {
@@ -27,11 +31,21 @@ class ScanXrayEdit extends Component
             abort(403, 'Data sudah lebih dari 24 jam, tidak bisa diedit.');
         }
 
-        if ($scan->phase === 'completed') {
-            abort(403, 'Data sudah selesai (all phases completed).');
+        // ✅ Cek approval edit aktif
+        $hasApproval = $scan->hasActiveEditApproval();
+
+        // Kalau tidak ada approval DAN completed DAN tidak ada NG belum lengkap → 403
+        if (!$hasApproval && $scan->phase === 'completed' && !$scan->hasIncompleteNgDetail()) {
+            abort(403, 'Data sudah selesai (all phases completed). Ajukan request edit untuk membuka akses.');
         }
 
+        // ✅ Simpan group yang di-approve
+        $this->approvedGroups = $hasApproval
+            ? ($scan->activeEditRequest?->requested_groups ?? [])
+            : [];
+
         $this->scan_id        = $scan->id;
+        $this->currentScanId  = $scan->id;
         $this->customer_id    = $scan->customer_id;
         $this->model_id       = $scan->model_id;
         $this->pcb_type       = $scan->pcb_type ?? '';
@@ -41,6 +55,7 @@ class ScanXrayEdit extends Component
         $this->master_line_id = $scan->master_line_id;
         $this->lot_qty        = $scan->lot_qty;
         $this->pic_xray       = $scan->pic_xray;
+        $this->status_running = $scan->status_running ?? '';   // ✅ TAMBAH
 
         $this->first_piece_items  = $this->mergeStructure($scan->first_piece_items  ?? [], 'first_piece_items');
         $this->middle_piece_items = $this->mergeStructure($scan->middle_piece_items ?? [], 'middle_piece_items');
@@ -100,17 +115,21 @@ class ScanXrayEdit extends Component
             return;
         }
 
-        // Reset dulu
+        // ✅ Cek approval edit aktif
+        $hasApproval = $scan->hasActiveEditApproval();
+
+        if (!$hasApproval && $scan->phase === 'completed' && !$scan->hasIncompleteNgDetail()) {
+            $this->dispatch('notify', message: 'Data sudah selesai, tidak bisa diedit!', type: 'error');
+            return;
+        }
+
         $this->validationErrors = [];
 
-        // 1. Validasi custom
         $this->validateGroupRows();
-
         if ($this->getErrorBag()->isNotEmpty()) {
             $this->validationErrors = $this->getErrorBag()->all();
         }
 
-        // 2. Validasi standard
         try {
             $this->validate();
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -121,14 +140,12 @@ class ScanXrayEdit extends Component
             }
         }
 
-        // 3. Kalau ada error → tampilkan modal, stop
         if (!empty($this->validationErrors)) {
             $this->validationErrors = array_values(array_unique($this->validationErrors));
             $this->dispatch('open-modal-error');
             return;
         }
 
-        // 4. Save
         $existing = [
             'first_piece_items'  => $scan->first_piece_items['pictures']  ?? [],
             'middle_piece_items' => $scan->middle_piece_items['pictures'] ?? [],
@@ -137,23 +154,12 @@ class ScanXrayEdit extends Component
 
         $payload = $this->buildPayload($existing);
 
-        $phaseOrder = [
-            'first' => 1, 'second_first' => 2,
-            'middle' => 3, 'second_middle' => 4,
-            'last' => 5, 'second_last' => 6,
-            'completed' => 7,
-        ];
-        $currentOrder = $phaseOrder[$scan->phase] ?? 0;
+        // ✅ Kalau phase sebelumnya completed (mode lengkapi NG), jangan ubah phase
+        if ($scan->phase === 'completed') {
+            $payload['phase'] = 'completed';
+        }
 
-        if ($currentOrder > 1) {
-            $payload['first_piece_items'] = $scan->first_piece_items;
-        }
-        if ($currentOrder > 3) {
-            $payload['middle_piece_items'] = $scan->middle_piece_items;
-        }
-        if ($currentOrder > 5) {
-            $payload['last_piece_items'] = $scan->last_piece_items;
-        }
+        // ⚠️ HAPUS blok if ($currentOrder > 1) { ... } dkk — itu yang menimpa payload dengan data lama
 
         $scan->update($payload);
 
@@ -164,6 +170,9 @@ class ScanXrayEdit extends Component
             'second_middle' => 'Second Piece (Middle) saved. Lanjut isi Last Piece.',
             'last'          => 'Last Piece saved.',
             'second_last'   => 'Second Piece (Last) saved. Data scan x-ray sudah selesai.',
+            'completed'     => $hasApproval
+                ? 'Perubahan tersimpan (via approval edit).'
+                : 'NG Detail berhasil dilengkapi.',
             default         => 'Scan X-Ray updated successfully!',
         };
         $this->dispatch('notify', message: $msg);

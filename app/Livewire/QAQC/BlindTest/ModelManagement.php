@@ -7,10 +7,12 @@ use App\Models\QAQC\BlindTest\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Schema;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 
+#[Title('Model List')]
 class ModelManagement extends Component
 {
     use WithPagination, WithFileUploads;

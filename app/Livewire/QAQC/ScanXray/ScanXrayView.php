@@ -4,8 +4,10 @@ namespace App\Livewire\QAQC\ScanXray;
 
 use App\Livewire\QAQC\ScanXray\Concerns\HandlesScanXrayForm;
 use App\Models\QAQC\ScanXray\ScanXray;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 
+#[Title('Scan X-Ray View')]
 class ScanXrayView extends Component
 {
     use HandlesScanXrayForm;

@@ -6,9 +6,11 @@ use App\Models\QAQC\BlindTest\Customer;
 use App\Models\QAQC\BlindTest\Deffect;
 use App\Models\QAQC\BlindTest\Model;
 use App\Models\QAQC\BlindTest\Question;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+#[Title('Question List')]
 class QuestionManagement extends Component
 {
     use WithPagination;

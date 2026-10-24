@@ -23,7 +23,6 @@
         'side_rh'     => ['label' => 'Side RH',     'class' => 'from-emerald-500 to-emerald-600'],
     ];
 
-    $statusRunning = $items['status_running'] ?? null;
     $side = $activeSide;
     $meta = $side ? ($sideMeta[$side] ?? null) : null;
 
@@ -111,12 +110,6 @@
             </div>
 
             <div class="flex items-center gap-2">
-                @if($statusRunning && !$isOpen)
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 text-white text-xs font-semibold">
-                        {{ $statusRunning }}
-                    </span>
-                @endif
-
                 <div class="w-8 h-8 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 flex items-center justify-center transition-transform duration-300
                     {{ $isOpen ? 'rotate-180' : '' }}">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 text-white">
@@ -262,37 +255,18 @@
             </div>
         @endif
 
-        {{-- RINGKASAN --}}
-        <div class="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-3 shadow-sm">
-            <div class="text-[10px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-semibold mb-2 text-center">Ringkasan</div>
-
-            <div class="grid {{ $readonly ? 'grid-cols-2 md:grid-cols-2' : 'grid-cols-2' }} gap-3">
-
-                @if($readonly)
+        {{-- RINGKASAN — Status Running dihapus, dipindah ke header form global --}}
+        @if($readonly)
+            <div class="rounded-xl border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-3 shadow-sm">
+                <div class="text-[10px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-semibold mb-2 text-center">Ringkasan</div>
+                <div class="grid grid-cols-1 gap-3">
                     <div class="rounded-lg bg-zinc-50 dark:bg-zinc-800/50 p-3 border border-zinc-100 dark:border-zinc-800 text-center">
                         <div class="text-[10px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-semibold mb-1">Time Scan</div>
                         <div class="text-sm font-mono font-bold text-zinc-800 dark:text-zinc-200">{{ $items['time_scan'] ?? '-' }}</div>
                     </div>
-                @endif
-
-                <div class="rounded-lg bg-gradient-to-br from-cyan-50 to-cyan-100/50 dark:from-cyan-900/20 dark:to-cyan-900/10 p-3 border border-cyan-200 dark:border-cyan-800 text-center">
-                    <div class="text-[10px] text-cyan-700 dark:text-cyan-400 uppercase tracking-wider font-semibold mb-1">
-                        Status Running <span class="text-red-500">*</span>
-                    </div>
-                    @if($readonly)
-                        <div class="text-sm font-bold text-zinc-700 dark:text-zinc-300">{{ $statusRunning ?: '-' }}</div>
-                    @else
-                        <flux:input type="text"
-                            wire:model="{{ $key }}.status_running"
-                            placeholder="Machine / Others"
-                            class="!text-center !font-semibold !border-cyan-300 focus:!border-cyan-500" />
-                        @error("$key.status_running")
-                            <span class="text-red-500 text-xs block mt-1 text-center">{{ $message }}</span>
-                        @enderror
-                    @endif
                 </div>
             </div>
-        </div>
+        @endif
 
     </div>
 </div>

@@ -20,7 +20,7 @@
         .report-header {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start; /* Sejajarkan dari atas */
+            align-items: flex-start;
             padding-bottom: 12px;
             margin-bottom: 16px;
             border-bottom: 3px solid #1e3a8a;
@@ -40,7 +40,7 @@
             font-weight: bold;
             letter-spacing: 0.5px;
             line-height: 1;
-            margin: 0; /* Paksa margin 0 agar sejajar */
+            margin: 0;
         }
 
         .company-text p {
@@ -63,7 +63,7 @@
         .header-right strong {
             font-size: 15px;
             color: #1a1a1a;
-            margin: 0; /* Paksa margin 0 agar sejajar */
+            margin: 0;
             line-height: 1;
         }
 
@@ -234,6 +234,23 @@
 </head>
 <body>
 
+    {{-- ==================== HELPER ==================== --}}
+    @php
+        /**
+         * Bersihkan HTML:
+         * - null / kosong / hanya tag (mis. <div><br></div>) → '-'
+         * - ada isi → teks biasa (strip tags + decode entity)
+         */
+        $plainText = function ($html) {
+            if ($html === null) return '-';
+            $text = strip_tags($html);
+            $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+            $text = preg_replace('/\x{00A0}/u', ' ', $text); // ganti &nbsp; jadi spasi
+            $text = trim(preg_replace('/\s+/u', ' ', $text));
+            return $text === '' ? '-' : $text;
+        };
+    @endphp
+
     {{-- ==================== HEADER ==================== --}}
     <div class="report-header">
         <div class="header-left">
@@ -295,30 +312,49 @@
                                     -
                                 @endif
                             </td>
-                            <td>{{ $f['finding_result'] ?? '-' }}</td>
+                            <td>{{ $plainText($f['finding_result'] ?? null) }}</td>
                             <td>
-                                @if(!empty($f['feedback_to']))
-                                    {{ \App\Models\HR\Employee::where('nik', $f['feedback_to'])->first()?->name ?? $f['feedback_to'] }}
-                                @else
-                                    -
-                                @endif
+                                @php
+                                    $fb = $f['feedback_to'] ?? null;
+                                    $fbIds = is_array($fb) ? $fb : ($fb ? [$fb] : []);
+                                    $fbNames = collect($fbIds)
+                                        ->map(function ($id) {
+                                            $u = \App\Models\User::find($id);
+                                            return $u?->name ?? $id;
+                                        })
+                                        ->filter()
+                                        ->implode(', ');
+                                @endphp
+                                {{ $fbNames ?: '-' }}
                             </td>
                             <td style="text-align: center;">
-                                @if(!empty($f['evidence']))
-                                    <img src="{{ $f['evidence'] }}" class="photo" alt="Evidence" />
+                                @php
+                                    $ev = $f['evidence'] ?? [];
+                                    $evList = is_array($ev) ? $ev : ($ev ? [$ev] : []);
+                                @endphp
+                                @if(count($evList) > 0)
+                                    @foreach($evList as $photo)
+                                        <img src="{{ $photo }}" class="photo" alt="Evidence" />
+                                    @endforeach
                                 @else
                                     <span class="no-photo">No Photo</span>
                                 @endif
                             </td>
-                            <td>{{ $f['reason'] ?? '-' }}</td>
+                            <td>{{ $plainText($f['reason'] ?? null) }}</td>
                             <td style="text-align: center;">
-                                @if(!empty($f['evidence_action']))
-                                    <img src="{{ $f['evidence_action'] }}" class="photo" alt="Action" />
+                                @php
+                                    $eva = $f['evidence_action'] ?? [];
+                                    $evaList = is_array($eva) ? $eva : ($eva ? [$eva] : []);
+                                @endphp
+                                @if(count($evaList) > 0)
+                                    @foreach($evaList as $photo)
+                                        <img src="{{ $photo }}" class="photo" alt="Action" />
+                                    @endforeach
                                 @else
                                     <span class="no-photo">No Photo</span>
                                 @endif
                             </td>
-                            <td>{{ $f['action'] ?? '-' }}</td>
+                            <td>{{ $plainText($f['action'] ?? null) }}</td>
                         @else
                             {{-- Jika Aman (Tidak ada temuan) --}}
                             <td style="text-align: center;">-</td>

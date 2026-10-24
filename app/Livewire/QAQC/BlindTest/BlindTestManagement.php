@@ -8,9 +8,11 @@ use App\Models\QAQC\BlindTest\Customer;
 use App\Models\QAQC\BlindTest\Model as QaqcModel;
 use App\Models\QAQC\BlindTest\Question;
 use App\Models\User;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+#[Title('Blind Test')]
 class BlindTestManagement extends Component
 {
     use WithPagination;

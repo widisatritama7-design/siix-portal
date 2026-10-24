@@ -118,9 +118,7 @@ export default function ResultPatrolForm({ wire, mingleData }) {
                     finding_result: '', 
                     evidence: [],
                     feedback_to: '', 
-                    reason: '', 
-                    action: '', 
-                    evidence_action: []
+                    reason: ''
                 }
             ]
         })
@@ -217,7 +215,7 @@ export default function ResultPatrolForm({ wire, mingleData }) {
                 </div>
 
                 {photos.length > 0 && (
-                    <div className="grid grid-cols-2 gap-2 mb-2">
+                    <div className="grid grid-cols-4 gap-1.5 mb-2">
                         {photos.map((photo, pIdx) => (
                             <div key={pIdx} className="relative group rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-700 aspect-square bg-zinc-100 dark:bg-zinc-800">
                                 <img 
@@ -230,16 +228,16 @@ export default function ResultPatrolForm({ wire, mingleData }) {
                                         onDelete: () => removePhoto(idx, field, pIdx)
                                     })}
                                 />
-                                <span className="absolute top-1 left-1 bg-black/60 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">
+                                <span className="absolute top-0.5 left-0.5 bg-black/60 text-white text-[9px] font-bold px-1 py-0.5 rounded">
                                     {pIdx + 1}
                                 </span>
                                 <button
                                     type="button"
                                     onClick={(e) => { e.stopPropagation(); removePhoto(idx, field, pIdx) }}
-                                    className="absolute top-1 right-1 w-6 h-6 rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center shadow-md opacity-90 hover:opacity-100 transition-opacity"
+                                    className="absolute top-0.5 right-0.5 w-5 h-5 rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center shadow-md opacity-90 hover:opacity-100 transition-opacity"
                                     title="Hapus foto"
                                 >
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5">
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3">
                                         <path fillRule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
                                     </svg>
                                 </button>
@@ -279,8 +277,8 @@ export default function ResultPatrolForm({ wire, mingleData }) {
             return mingleData.categories.filter(c => c.category_name.toLowerCase().includes(q))
         }
         if (target === 'employee') {
-            return mingleData.employees.filter(e => 
-                e.name.toLowerCase().includes(q) || e.nik.toLowerCase().includes(q)
+            return mingleData.employees.filter(e =>
+                e.name.toLowerCase().includes(q)
             )
         }
         return []
@@ -290,7 +288,7 @@ export default function ResultPatrolForm({ wire, mingleData }) {
         if (searchModal.target === 'category') {
             updateFinding(searchModal.findingIdx, 'category_id', item.id)
         } else if (searchModal.target === 'employee') {
-            updateFinding(searchModal.findingIdx, 'feedback_to', item.nik)
+            updateFinding(searchModal.findingIdx, 'feedback_to', item.id)
         }
         closeSearchModal()
     }
@@ -636,7 +634,7 @@ export default function ResultPatrolForm({ wire, mingleData }) {
                             <h3 className="font-bold text-white text-sm">Temuan / Finding</h3>
                         </div>
                         <button type="button" onClick={addFinding} className="text-xs bg-white/20 hover:bg-white/30 text-white px-3 py-1.5 rounded-md font-semibold transition-colors flex items-center gap-1">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path fillRule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clipRule="evenodd" /></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3 h-3"><path fillRule="evenodd" d="M12 3.75a.75.75 0 0 1 .75.75v6.75h6.75a.75.75 0 0 1 0 1.5h-6.75v6.75a.75.75 0 0 1-1.5 0v-6.75H4.5a.75.75 0 0 1 0-1.5h6.75V4.5a.75.75 0 0 1 .75-.75Z" clipRule="evenodd" /></svg>
                             Tambah
                         </button>
                     </div>
@@ -692,7 +690,7 @@ export default function ResultPatrolForm({ wire, mingleData }) {
 
                                             {/* Feedback To */}
                                             <div>
-                                                <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Feedback To (Employee)</label>
+                                                <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Feedback To (User)</label>
                                                 <div
                                                     onClick={() => openSearchModal('employee', idx)}
                                                     className="w-full border border-zinc-300 dark:border-zinc-600 rounded-lg pl-3 pr-3 py-2 text-sm bg-white dark:bg-zinc-800 cursor-pointer flex items-center justify-between hover:border-red-400 transition-colors"
@@ -719,32 +717,6 @@ export default function ResultPatrolForm({ wire, mingleData }) {
                                                     rows={4}
                                                 />
                                             </div>
-                                        </div>
-
-                                        {/* HEADER: TINDAKAN PERBAIKAN */}
-                                        <div className="flex items-center gap-2 pb-2 border-b border-red-200 dark:border-red-800 mt-6">
-                                            <span className="bg-emerald-600 text-white w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0">
-                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-4">
-                                                    <path fillRule="evenodd" d="M12 6.75a5.25 5.25 0 0 1 6.775-5.025.75.75 0 0 1 .313 1.248l-3.32 3.319c.063.475.276.934.641 1.299.365.365.824.578 1.3.64l3.318-3.319a.75.75 0 0 1 1.248.313 5.25 5.25 0 0 1-5.472 6.756c-1.018-.086-1.87.1-2.309.634L7.344 21.3A3.298 3.298 0 1 1 2.7 16.657l8.684-7.151c.533-.44.72-1.291.634-2.309A5.342 5.342 0 0 1 12 6.75ZM4.117 19.125a.75.75 0 0 1 .75-.75h.008a.75.75 0 0 1 .75.75v.008a.75.75 0 0 1-.75.75h-.008a.75.75 0 0 1-.75-.75v-.008Z" clipRule="evenodd" />
-                                                    <path d="m10.076 8.64-2.201-2.2V4.874a.75.75 0 0 0-.364-.643l-3.75-2.25a.75.75 0 0 0-.916.113l-.75.75a.75.75 0 0 0-.113.916l2.25 3.75a.75.75 0 0 0 .643.364h1.564l2.062 2.062 1.575-1.297Z" />
-                                                    <path fillRule="evenodd" d="m12.556 17.329 4.183 4.182a3.375 3.375 0 0 0 4.773-4.773l-3.306-3.305a6.803 6.803 0 0 1-1.53.043c-.394-.034-.682-.006-.867.042a.589.589 0 0 0-.167.063l-3.086 3.748Zm3.414-1.36a.75.75 0 0 1 1.06 0l1.875 1.876a.75.75 0 1 1-1.06 1.06L15.97 17.03a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
-                                                </svg>
-                                            </span>
-                                            <h4 className="font-bold text-sm text-emerald-800 dark:text-emerald-300">Tindakan Perbaikan</h4>
-                                        </div>
-
-                                        {/* 1 KOLOM: Action Taken, Evidence Action */}
-                                        <div className="grid grid-cols-1 gap-4">
-                                            <div>
-                                                <label className="block text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">Action Taken</label>
-                                                <RichTextEditor
-                                                    value={finding.action}
-                                                    onChange={(val) => updateFinding(idx, 'action', val)}
-                                                    placeholder="Tindakan perbaikan yang dilakukan..."
-                                                    rows={4}
-                                                />
-                                            </div>
-                                            {renderEvidencePhotos(finding, idx, 'evidence_action', 'Evidence Action (Live Photo)', 'emerald')}
                                         </div>
                                     </div>
                                 )
@@ -804,7 +776,7 @@ export default function ResultPatrolForm({ wire, mingleData }) {
                     <div className="bg-white dark:bg-zinc-900 rounded-xl shadow-2xl overflow-hidden w-full max-w-lg flex flex-col max-h-[80vh] border dark:border-zinc-700">
                         <div className="bg-zinc-800 dark:bg-zinc-950 px-4 py-3 flex justify-between items-center text-white">
                             <h3 className="font-bold text-sm">
-                                Pilih {searchModal.target === 'category' ? 'Kategori' : 'Karyawan'}
+                                Pilih {searchModal.target === 'category' ? 'Kategori' : 'User'}
                             </h3>
                             <button onClick={closeSearchModal} className="text-zinc-400 hover:text-white">✕</button>
                         </div>
@@ -842,10 +814,7 @@ export default function ResultPatrolForm({ wire, mingleData }) {
                                                 {searchModal.target === 'category' ? (
                                                     <th className="px-4 py-2 text-xs font-bold text-zinc-600 dark:text-zinc-400">Nama Kategori</th>
                                                 ) : (
-                                                    <>
-                                                        <th className="px-4 py-2 text-xs font-bold text-zinc-600 dark:text-zinc-400">Nama</th>
-                                                        <th className="px-4 py-2 text-xs font-bold text-zinc-600 dark:text-zinc-400">NIK</th>
-                                                    </>
+                                                    <th className="px-4 py-2 text-xs font-bold text-zinc-600 dark:text-zinc-400">Nama User</th>
                                                 )}
                                             </tr>
                                         </thead>
@@ -856,14 +825,11 @@ export default function ResultPatrolForm({ wire, mingleData }) {
                                                     onClick={() => handleSelectModalData(item)}
                                                     className="cursor-pointer hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
                                                 >
-                                                    {searchModal.target === 'category' ? (
-                                                        <td className="px-4 py-2 font-medium text-zinc-800 dark:text-zinc-200">{item.category_name}</td>
-                                                    ) : (
-                                                        <>
-                                                            <td className="px-4 py-2 font-medium text-zinc-800 dark:text-zinc-200">{item.name}</td>
-                                                            <td className="px-4 py-2 text-zinc-500 dark:text-zinc-400">{item.nik}</td>
-                                                        </>
-                                                    )}
+                                                {searchModal.target === 'category' ? (
+                                                    <td className="px-4 py-2 font-medium text-zinc-800 dark:text-zinc-200">{item.category_name}</td>
+                                                ) : (
+                                                    <td className="px-4 py-2 font-medium text-zinc-800 dark:text-zinc-200">{item.name}</td>
+                                                )}
                                                 </tr>
                                             ))}
                                         </tbody>

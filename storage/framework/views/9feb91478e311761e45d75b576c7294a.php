@@ -20,6 +20,7 @@
 <?php # [BlazeFolded]:{flux::select}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/select/index.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::label}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/label.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::label}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/label.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::label}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/label.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::card}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/card/index.blade.php}:{1776985208} ?>
 <?php ob_start(); ?><?php $__blaze->pushData(['class' => 'p-6']); $__env->pushConsumableComponentData(['class' => 'p-6']); ?><div class="[:where(&amp;)]:bg-white dark:[:where(&amp;)]:bg-white/10 border border-zinc-200 dark:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl p-6" data-flux-card>
     <?php ob_start(); ?>
@@ -279,7 +280,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
         </div>
 
         
-        <div class="md:col-span-2">
+        <div>
             <?php ob_start(); ?><ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" required="required" data-flux-label>
     <?php ob_start(); ?>Line<?php echo trim(ob_get_clean()); ?>
 
@@ -295,11 +296,11 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                 <div class="flex-1 text-sm px-3 py-2 rounded-lg border
                     <?php echo e($master_line_id ? 'border-blue-300 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-700' : 'border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900'); ?>
 
-                    text-zinc-700 dark:text-zinc-300 flex items-center gap-2 min-h-[42px]">
+                    text-zinc-700 dark:text-zinc-300 flex items-center gap-2 min-h-[42px] min-w-0">
                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($selectedLine): ?>
                         <span class="font-medium truncate"><?php echo e($selectedLine->location->location_name ?? '-'); ?> — L<?php echo e($selectedLine->line_number); ?></span>
                     <?php else: ?>
-                        <span class="text-zinc-400 italic">Belum dipilih</span>
+                        <span class="text-zinc-400 italic truncate">Belum dipilih</span>
                     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                 </div>
                 <button type="button" wire:click="toggleMasterLinePanel"
@@ -314,6 +315,30 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                 <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
             </div>
             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['master_line_id'];
+$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
+if ($__bag->has($__errorArgs[0])) :
+if (isset($message)) { $__messageOriginal = $message; }
+$message = $__bag->first($__errorArgs[0]); ?> <span class="text-red-500 text-xs block mt-1"><?php echo e($message); ?></span> <?php unset($message);
+if (isset($__messageOriginal)) { $message = $__messageOriginal; }
+endif;
+unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+        </div>
+
+        
+        <div>
+            <?php ob_start(); ?><ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" required="required" data-flux-label>
+    <?php ob_start(); ?>Status Running<?php echo trim(ob_get_clean()); ?>
+
+
+    
+    
+    </ui-label>
+<?php echo ltrim(ob_get_clean()); ?>
+            <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/input/index.blade.php', $__blaze->compiledPath.'/5ae551d98c08f0bc67bd05455e08306c.php'); ?>
+<?php $__blaze->pushData(['type' => 'text','wire:model' => 'status_running','placeholder' => 'Machine / Others','class' => '!border-cyan-300 focus:!border-cyan-500 !font-semibold']); ?>
+<?php _5ae551d98c08f0bc67bd05455e08306c($__blaze, ['type' => 'text','wire:model' => 'status_running','placeholder' => 'Machine / Others','class' => '!border-cyan-300 focus:!border-cyan-500 !font-semibold'], [], [], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php $__blaze->popData(); ?>
+            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['status_running'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }

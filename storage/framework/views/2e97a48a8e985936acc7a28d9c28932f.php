@@ -50,7 +50,6 @@ unset($__defined_vars, $__key, $__value); ?>
         'ok_qty'         => 'OK Qty',
         'ng_qty'         => 'NG Qty',
         'reject_rate'    => 'Reject Rate',
-        'status_running' => 'Status Running',
         'filling_ratio'  => 'Filling Ratio',
         'pictures'       => 'Pictures',
         'qty_hold'       => 'Qty Hold',
@@ -73,12 +72,21 @@ unset($__defined_vars, $__key, $__value); ?>
         'side_rh'     => ['label' => 'Side RH',     'class' => 'from-emerald-500 to-emerald-600'],
     ];
 
-    $ngQty         = (int) ($items['ng_qty'] ?? 0);
-    $showNgFields  = $ngQty > 0;
+    $ngQty = (int) ($items['ng_qty'] ?? 0);
+
+    $hasNgDetailContent =
+        !empty($items['filling_ratio'])
+        || !empty($items['qty_hold'])
+        || !empty($items['status_after_check']['ok'])
+        || !empty($items['status_after_check']['ng'])
+        || !empty($items['ncp_id'])
+        || !empty($items['remarks'])
+        || (!empty($items['pictures']) && is_array($items['pictures']) && count($items['pictures']) > 0);
+
+    $showNgFields     = $ngQty > 0 || $hasNgDetailContent;
     $ngDetailReadonly = $readonly && !$ngEditable;
-    $okQty         = (int) ($items['ok_qty'] ?? 0);
-    $totalQty      = $okQty + $ngQty;
-    $statusRunning = $items['status_running'] ?? null;
+    $okQty            = (int) ($items['ok_qty'] ?? 0);
+    $totalQty         = $okQty + $ngQty;
 
     $side = $activeSide;
     $meta = $side ? ($sideMeta[$side] ?? null) : null;
@@ -90,7 +98,6 @@ unset($__defined_vars, $__key, $__value); ?>
     }
 
     $emptyRowsCount = 0;
-    $unjudgedCount  = 0;
     if (!$readonly && $side) {
         $sideData = $items[$side] ?? [];
         $maxRows = 0;
@@ -107,11 +114,13 @@ unset($__defined_vars, $__key, $__value); ?>
         }
     }
 
-    // ============ COLLAPSE STATE ============
     $isOpen      = $openGroups[$key] ?? false;
     $canOpen     = $this->canOpenGroup($key);
     $isCompleted = $this->isGroupCompleted($key);
     $isLocked    = $this->isGroupLocked($key);
+
+    // ✅ Cek apakah Second Piece ini diperlukan (ada NG di piece sebelumnya?)
+    $isNeeded = $this->isSecondPieceNeeded($key);
 ?>
 
 <div class="relative rounded-2xl overflow-hidden shadow-lg ring-1 ring-blue-200/50 dark:ring-blue-800/50 bg-white dark:bg-zinc-900">
@@ -169,12 +178,6 @@ unset($__defined_vars, $__key, $__value); ?>
             </div>
 
             <div class="flex items-center gap-2">
-                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($statusRunning && !$isOpen): ?>
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 text-white text-xs font-semibold">
-                        <?php echo e($statusRunning); ?>
-
-                    </span>
-                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($totalQty > 0 && !$isOpen): ?>
                     <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 text-white text-xs font-semibold">
                         OK: <?php echo e($okQty); ?>
@@ -386,7 +389,7 @@ unset($__defined_vars, $__key, $__value); ?>
             <div class="text-[10px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-semibold mb-2 text-center">Ringkasan</div>
 
             <?php
-                $gridClass = $readonly ? 'grid-cols-2 md:grid-cols-5' : 'grid-cols-2 md:grid-cols-4';
+                $gridClass = $readonly ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-2 md:grid-cols-3';
             ?>
 
             <div class="grid <?php echo e($gridClass); ?> gap-3">
@@ -421,30 +424,6 @@ unset($__defined_vars, $__key, $__value); ?>
                         <?php echo e($rr); ?>%
                     </div>
                 </div>
-
-                <div class="rounded-lg bg-gradient-to-br from-cyan-50 to-cyan-100/50 dark:from-cyan-900/20 dark:to-cyan-900/10 p-3 border border-cyan-200 dark:border-cyan-800 text-center">
-                    <div class="text-[10px] text-cyan-700 dark:text-cyan-400 uppercase tracking-wider font-semibold mb-1">
-                        Status Running <span class="text-red-500">*</span>
-                    </div>
-                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($readonly): ?>
-                        <div class="text-sm font-bold text-zinc-700 dark:text-zinc-300"><?php echo e($statusRunning ?: '-'); ?></div>
-                    <?php else: ?>
-                        <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/input/index.blade.php', $__blaze->compiledPath.'/5ae551d98c08f0bc67bd05455e08306c.php'); ?>
-<?php $__blaze->pushData(['type' => 'text','wire:model' => e($key).'.status_running','placeholder' => 'Machine / Others','class' => '!text-center !font-semibold !border-cyan-300 focus:!border-cyan-500']); ?>
-<?php _5ae551d98c08f0bc67bd05455e08306c($__blaze, ['type' => 'text','wire:model' => e($key).'.status_running','placeholder' => 'Machine / Others','class' => '!text-center !font-semibold !border-cyan-300 focus:!border-cyan-500'], [], [], [], $__this ?? (isset($this) ? $this : null)); ?>
-<?php $__blaze->popData(); ?>
-                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ["$key.status_running"];
-$__bag = $errors->getBag($__errorArgs[1] ?? 'default');
-if ($__bag->has($__errorArgs[0])) :
-if (isset($message)) { $__messageOriginal = $message; }
-$message = $__bag->first($__errorArgs[0]); ?>
-                            <span class="text-red-500 text-xs block mt-1 text-center"><?php echo e($message); ?></span>
-                        <?php unset($message);
-if (isset($__messageOriginal)) { $message = $__messageOriginal; }
-endif;
-unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
-                </div>
             </div>
         </div>
 
@@ -458,13 +437,11 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                 if (!empty($items['status_after_check']['ng'])) $ngFieldFilled++;
                 if (!empty($items['ncp_id'])) $ngFieldFilled++;
                 if (!empty($items['remarks'])) $ngFieldFilled++;
-
-                $autoOpenNgDetail = $this->shouldAutoOpenNgDetail($key);
             ?>
 
             <div
-                <?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::$currentLoop['key'] = 'ng-detail-'.e($key).'-'.e($ngQty).''; ?>wire:key="ng-detail-<?php echo e($key); ?>-<?php echo e($ngQty); ?>"
-                x-data="{ open: <?php echo e($autoOpenNgDetail ? 'true' : 'false'); ?> }"
+                <?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::$currentLoop['key'] = 'ng-detail-'.e($key).''; ?>wire:key="ng-detail-<?php echo e($key); ?>"
+                x-data="{ open: true }"
                 class="relative rounded-2xl overflow-hidden shadow-lg ring-1 ring-red-200/50 dark:ring-red-800/50 bg-white dark:bg-zinc-900">
 
                 <button type="button"
@@ -506,6 +483,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                 <div x-show="open" x-collapse class="p-5 bg-white dark:bg-zinc-900">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 
+                        
                         <div class="rounded-xl border border-orange-200 dark:border-orange-800 bg-gradient-to-br from-orange-50 to-orange-100/50 dark:from-orange-900/20 dark:to-orange-900/10 overflow-hidden shadow-sm">
                             <div class="px-3 py-2 bg-gradient-to-r from-orange-500 to-amber-500 text-center">
                                 <span class="text-xs font-bold text-white uppercase tracking-wide">Filling Ratio</span>
@@ -519,8 +497,8 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                 <?php else: ?>
                                     <div class="relative">
                                         <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/input/index.blade.php', $__blaze->compiledPath.'/5ae551d98c08f0bc67bd05455e08306c.php'); ?>
-<?php $__blaze->pushData(['type' => 'number','step' => '0.01','min' => '0','max' => '100','wire:model' => e($key).'.filling_ratio','placeholder' => '0 - 100','class' => 'pr-9 !text-center !text-lg !font-bold']); ?>
-<?php _5ae551d98c08f0bc67bd05455e08306c($__blaze, ['type' => 'number','step' => '0.01','min' => '0','max' => '100','wire:model' => e($key).'.filling_ratio','placeholder' => '0 - 100','class' => 'pr-9 !text-center !text-lg !font-bold'], [], [], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php $__blaze->pushData(['type' => 'number','step' => '0.01','min' => '0','max' => '100','wire:model.blur' => e($key).'.filling_ratio','placeholder' => '0 - 100','class' => 'pr-9 !text-center !text-lg !font-bold']); ?>
+<?php _5ae551d98c08f0bc67bd05455e08306c($__blaze, ['type' => 'number','step' => '0.01','min' => '0','max' => '100','wire:model.blur' => e($key).'.filling_ratio','placeholder' => '0 - 100','class' => 'pr-9 !text-center !text-lg !font-bold'], [], [], [], $__this ?? (isset($this) ? $this : null)); ?>
 <?php $__blaze->popData(); ?>
                                         <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-zinc-400 font-bold">%</span>
                                     </div>
@@ -536,6 +514,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                             </div>
                         </div>
 
+                        
                         <div class="rounded-xl border border-amber-200 dark:border-amber-800 bg-gradient-to-br from-amber-50 to-amber-100/50 dark:from-amber-900/20 dark:to-amber-900/10 overflow-hidden shadow-sm">
                             <div class="px-3 py-2 bg-gradient-to-r from-amber-500 to-yellow-500 text-center">
                                 <span class="text-xs font-bold text-white uppercase tracking-wide">Qty Hold</span>
@@ -552,6 +531,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                             </div>
                         </div>
 
+                        
                         <div class="rounded-xl border border-emerald-200 dark:border-emerald-800 bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-emerald-900/20 dark:to-emerald-900/10 overflow-hidden shadow-sm">
                             <div class="px-3 py-2 bg-gradient-to-r from-emerald-500 to-green-500 text-center">
                                 <span class="text-xs font-bold text-white uppercase tracking-wide">Status OK</span>
@@ -568,6 +548,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                             </div>
                         </div>
 
+                        
                         <div class="rounded-xl border border-red-200 dark:border-red-800 bg-gradient-to-br from-red-50 to-red-100/50 dark:from-red-900/20 dark:to-red-900/10 overflow-hidden shadow-sm">
                             <div class="px-3 py-2 bg-gradient-to-r from-red-500 to-rose-500 text-center">
                                 <span class="text-xs font-bold text-white uppercase tracking-wide">Status NG</span>
@@ -584,6 +565,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                             </div>
                         </div>
 
+                        
                         <div class="md:col-span-2 lg:col-span-4 rounded-xl border border-indigo-200 dark:border-indigo-800 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/10 overflow-hidden shadow-sm">
                             <div class="px-4 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 flex items-center justify-between">
                                 <span class="text-xs font-bold text-white uppercase tracking-wide">NCP</span>
@@ -595,9 +577,11 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                 <?php
                                     $ncpId = $items['ncp_id'] ?? null;
                                     $ncpLabel = '-';
+                                    $ncpUsage = null;
                                     if ($ncpId) {
                                         $ncpModel = \App\Models\QAQC\NCP::find($ncpId);
                                         $ncpLabel = $ncpModel ? $ncpModel->ncp_number : "ID: $ncpId";
+                                        try { $ncpUsage = $this->findNcpUsage((int) $ncpId); } catch (\Throwable $e) {}
                                     }
                                     $isPanelOpen = $openNcpPanels[$key] ?? false;
                                 ?>
@@ -646,6 +630,15 @@ if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
+                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($ncpUsage): ?>
+                                        <div class="mt-2 px-3 py-2 rounded-lg bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-800 text-xs text-red-700 dark:text-red-300 flex items-start gap-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 flex-shrink-0 mt-0.5">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-8-5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5A.75.75 0 0 1 10 5Zm0 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd" />
+                                            </svg>
+                                            <span>NCP ini sudah dipakai di <?php echo e($ncpUsage['group_label']); ?> Piece (Scan #<?php echo e($ncpUsage['scan_id']); ?>). Ganti NCP atau hapus penggunaan di scan tersebut.</span>
+                                        </div>
+                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+
                                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($isPanelOpen): ?>
                                         <?php $ncpList = $this->getNcpListFor($key); ?>
                                         <div class="mt-3 rounded-xl overflow-hidden border border-indigo-300 dark:border-indigo-700 bg-white dark:bg-zinc-900 shadow-lg">
@@ -660,22 +653,73 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                                     <thead>
                                                         <tr class="bg-zinc-100 dark:bg-zinc-800/80 border-b border-zinc-200 dark:border-zinc-700">
                                                             <th class="px-3 py-2.5 text-left font-semibold text-zinc-600 dark:text-zinc-300 uppercase text-[10px]">NCP Number</th>
+                                                            <th class="px-3 py-2.5 text-center font-semibold text-zinc-600 dark:text-zinc-300 uppercase text-[10px]">Status</th>
                                                             <th class="px-3 py-2.5 text-center font-semibold text-zinc-600 dark:text-zinc-300 uppercase text-[10px] w-20">Action</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
                                                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::openLoop(); ?><?php endif; ?><?php $__empty_1 = true; $__currentLoopData = $ncpList; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $ncp): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::startLoopIteration(); ?><?php endif; ?>
-                                                            <tr class="hover:bg-indigo-50 dark:hover:bg-indigo-900/20 cursor-pointer" wire:click="selectNcp('<?php echo e($key); ?>', <?php echo e($ncp->id); ?>)">
-                                                                <td class="px-3 py-2 font-mono font-semibold"><?php echo e($ncp->ncp_number); ?></td>
+                                                            <?php
+                                                                $usage  = $ncp->usage_info ?? null;
+                                                                $isUsed = $usage !== null;
+                                                            ?>
+                                                            <tr <?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::$currentLoop['key'] = 'ncp-'.e($ncp->id).''; ?>wire:key="ncp-<?php echo e($ncp->id); ?>"
+                                                                class="<?php echo e($isUsed ? 'bg-red-50/50 dark:bg-red-950/20 cursor-not-allowed' : 'hover:bg-indigo-50 dark:hover:bg-indigo-900/20 cursor-pointer'); ?>"
+                                                                <?php if(!$isUsed): ?> wire:click="selectNcp('<?php echo e($key); ?>', <?php echo e($ncp->id); ?>)" <?php endif; ?>>
+
+                                                                <td class="px-3 py-2 font-mono font-semibold
+                                                                    <?php echo e($isUsed ? 'text-zinc-400 line-through' : 'text-zinc-800 dark:text-zinc-200'); ?>">
+                                                                    <?php echo e($ncp->ncp_number); ?>
+
+                                                                </td>
+
                                                                 <td class="px-3 py-2 text-center">
-                                                                    <button type="button" wire:click.stop="selectNcp('<?php echo e($key); ?>', <?php echo e($ncp->id); ?>)"
-                                                                        class="px-3 py-1 text-[10px] bg-blue-600 text-white rounded-md hover:bg-blue-700 font-semibold">
-                                                                        Pilih
-                                                                    </button>
+                                                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($isUsed): ?>
+                                                                        <div class="flex flex-col items-center gap-0.5">
+                                                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold
+                                                                                bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300">
+                                                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3">
+                                                                                    <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-8-5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5A.75.75 0 0 1 10 5Zm0 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd" />
+                                                                                </svg>
+                                                                                Sudah Dipakai
+                                                                            </span>
+                                                                            <span class="text-[9px] text-zinc-500 dark:text-zinc-400">
+                                                                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(!empty($usage['is_same_scan'])): ?>
+                                                                                    <?php echo e($usage['group_label']); ?> · Piece lain (scan ini)
+                                                                                <?php else: ?>
+                                                                                    <?php echo e($usage['group_label']); ?> · Scan #<?php echo e($usage['scan_id']); ?>
+
+                                                                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                                                            </span>
+                                                                            <span class="text-[9px] text-zinc-400 dark:text-zinc-500 truncate max-w-[140px]">
+                                                                                <?php echo e($usage['customer']); ?>
+
+                                                                            </span>
+                                                                        </div>
+                                                                    <?php else: ?>
+                                                                        <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold
+                                                                            bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+                                                                            Tersedia
+                                                                        </span>
+                                                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                                                </td>
+
+                                                                <td class="px-3 py-2 text-center">
+                                                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($isUsed): ?>
+                                                                        <span class="inline-flex items-center justify-center px-3 py-1 text-[10px] rounded-md
+                                                                            bg-zinc-200 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-600 font-semibold cursor-not-allowed">
+                                                                            Terkunci
+                                                                        </span>
+                                                                    <?php else: ?>
+                                                                        <button type="button" wire:click.stop="selectNcp('<?php echo e($key); ?>', <?php echo e($ncp->id); ?>)"
+                                                                                class="px-3 py-1 text-[10px] bg-blue-600 text-white rounded-md hover:bg-blue-700 font-semibold">
+                                                                            Pilih
+                                                                        </button>
+                                                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                                 </td>
                                                             </tr>
                                                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
-                                                            <tr><td colspan="2" class="px-3 py-6 text-center text-zinc-500">No NCP found</td></tr>
+                                                            <tr><td colspan="3" class="px-3 py-6 text-center text-zinc-500">No NCP found</td></tr>
                                                         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                                     </tbody>
                                                 </table>
@@ -705,6 +749,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                             </div>
                         </div>
 
+                        
                         <div class="md:col-span-2 lg:col-span-2 rounded-xl border border-sky-200 dark:border-sky-800 bg-gradient-to-br from-sky-50 to-cyan-50 dark:from-sky-900/20 dark:to-cyan-900/10 overflow-hidden shadow-sm">
                             <div class="px-4 py-2.5 bg-gradient-to-r from-sky-500 to-cyan-500 flex items-center justify-between">
                                 <span class="text-xs font-bold text-white uppercase tracking-wide">Pictures</span>
@@ -778,6 +823,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                             </div>
                         </div>
 
+                        
                         <div class="md:col-span-2 lg:col-span-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-gradient-to-br from-zinc-50 to-slate-50 dark:from-zinc-900/50 dark:to-slate-900/30 overflow-hidden shadow-sm">
                             <div class="px-4 py-2.5 bg-gradient-to-r from-zinc-600 to-slate-600 flex items-center justify-between">
                                 <span class="text-xs font-bold text-white uppercase tracking-wide">Remarks</span>
@@ -790,8 +836,8 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                     </div>
                                 <?php else: ?>
                                     <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/textarea.blade.php', $__blaze->compiledPath.'/3e0c5a1b01ae05bb4233827103c44ba5.php'); ?>
-<?php $__blaze->pushData(['wire:model' => e($key).'.remarks','rows' => '3','placeholder' => 'Tulis keterangan...']); ?>
-<?php _3e0c5a1b01ae05bb4233827103c44ba5($__blaze, ['wire:model' => e($key).'.remarks','rows' => '3','placeholder' => 'Tulis keterangan...'], [], [], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php $__blaze->pushData(['wire:model.blur' => e($key).'.remarks','rows' => '3','placeholder' => 'Tulis keterangan...']); ?>
+<?php _3e0c5a1b01ae05bb4233827103c44ba5($__blaze, ['wire:model.blur' => e($key).'.remarks','rows' => '3','placeholder' => 'Tulis keterangan...'], [], [], [], $__this ?? (isset($this) ? $this : null)); ?>
 <?php $__blaze->popData(); ?>
                                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ["$key.remarks"];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');

@@ -77,6 +77,7 @@ use App\Livewire\QAQC\NCPManagement;
 use App\Livewire\QAQC\NCPReport;
 use App\Livewire\QAQC\ScanXray\ScanXrayCreate;
 use App\Livewire\QAQC\ScanXray\ScanXrayEdit;
+use App\Livewire\QAQC\ScanXray\ScanXrayEditApprovals;
 use App\Livewire\QAQC\ScanXray\ScanXrayIndex;
 use App\Livewire\QAQC\ScanXray\ScanXrayView;
 use App\Livewire\Ticket\CategoryTicketManager;
@@ -201,6 +202,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/qaqc/scan-xray/create', ScanXrayCreate::class)->name('qaqc.scan-xray.create');
     Route::get('/qaqc/scan-xray/{id}/edit', ScanXrayEdit::class)->name('qaqc.scan-xray.edit');
     Route::get('/qaqc/scan-xray/{id}', ScanXrayView::class)->name('qaqc.scan-xray.view');
+    Route::get('/qaqc/edit-approval', ScanXrayEditApprovals::class)->name('qaqc.edit-approvals');
 
     // Doorlock
     Route::get('/doorlock/test-pin/{deviceId}', [DoorLockController::class, 'generatePin']);

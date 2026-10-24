@@ -4,9 +4,11 @@ namespace App\Livewire\QAQC\BlindTest;
 
 use App\Models\QAQC\BlindTest\Customer;
 use Illuminate\Support\Facades\DB;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+#[Title('Customer List')]
 class CustomerManagement extends Component
 {
     use WithPagination;

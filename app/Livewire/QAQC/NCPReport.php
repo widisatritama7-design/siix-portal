@@ -3,15 +3,17 @@
 namespace App\Livewire\QAQC;
 
 use App\Models\QAQC\NCP;
-use Livewire\Component;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Response;
+use Livewire\Attributes\Title;
+use Livewire\Component;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
+#[Title('NCP Report')]
 class NCPReport extends Component
 {
     public $dateFrom = '';

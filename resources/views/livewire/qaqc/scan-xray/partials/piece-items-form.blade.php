@@ -14,7 +14,6 @@
         'ok_qty'         => 'OK Qty',
         'ng_qty'         => 'NG Qty',
         'reject_rate'    => 'Reject Rate',
-        'status_running' => 'Status Running',
         'filling_ratio'  => 'Filling Ratio',
         'pictures'       => 'Pictures',
         'qty_hold'       => 'Qty Hold',
@@ -37,12 +36,21 @@
         'side_rh'     => ['label' => 'Side RH',     'class' => 'from-emerald-500 to-emerald-600'],
     ];
 
-    $ngQty         = (int) ($items['ng_qty'] ?? 0);
-    $showNgFields  = $ngQty > 0;
+    $ngQty = (int) ($items['ng_qty'] ?? 0);
+
+    $hasNgDetailContent =
+        !empty($items['filling_ratio'])
+        || !empty($items['qty_hold'])
+        || !empty($items['status_after_check']['ok'])
+        || !empty($items['status_after_check']['ng'])
+        || !empty($items['ncp_id'])
+        || !empty($items['remarks'])
+        || (!empty($items['pictures']) && is_array($items['pictures']) && count($items['pictures']) > 0);
+
+    $showNgFields     = $ngQty > 0 || $hasNgDetailContent;
     $ngDetailReadonly = $readonly && !$ngEditable;
-    $okQty         = (int) ($items['ok_qty'] ?? 0);
-    $totalQty      = $okQty + $ngQty;
-    $statusRunning = $items['status_running'] ?? null;
+    $okQty            = (int) ($items['ok_qty'] ?? 0);
+    $totalQty         = $okQty + $ngQty;
 
     $side = $activeSide;
     $meta = $side ? ($sideMeta[$side] ?? null) : null;
@@ -54,7 +62,6 @@
     }
 
     $emptyRowsCount = 0;
-    $unjudgedCount  = 0;
     if (!$readonly && $side) {
         $sideData = $items[$side] ?? [];
         $maxRows = 0;
@@ -71,11 +78,13 @@
         }
     }
 
-    // ============ COLLAPSE STATE ============
     $isOpen      = $openGroups[$key] ?? false;
     $canOpen     = $this->canOpenGroup($key);
     $isCompleted = $this->isGroupCompleted($key);
     $isLocked    = $this->isGroupLocked($key);
+
+    // ✅ Cek apakah Second Piece ini diperlukan (ada NG di piece sebelumnya?)
+    $isNeeded = $this->isSecondPieceNeeded($key);
 @endphp
 
 <div class="relative rounded-2xl overflow-hidden shadow-lg ring-1 ring-blue-200/50 dark:ring-blue-800/50 bg-white dark:bg-zinc-900">
@@ -133,11 +142,6 @@
             </div>
 
             <div class="flex items-center gap-2">
-                @if($statusRunning && !$isOpen)
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 text-white text-xs font-semibold">
-                        {{ $statusRunning }}
-                    </span>
-                @endif
                 @if($totalQty > 0 && !$isOpen)
                     <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/20 backdrop-blur-sm border border-white/30 text-white text-xs font-semibold">
                         OK: {{ $okQty }}
@@ -341,7 +345,7 @@
             <div class="text-[10px] text-zinc-500 dark:text-zinc-400 uppercase tracking-wider font-semibold mb-2 text-center">Ringkasan</div>
 
             @php
-                $gridClass = $readonly ? 'grid-cols-2 md:grid-cols-5' : 'grid-cols-2 md:grid-cols-4';
+                $gridClass = $readonly ? 'grid-cols-2 md:grid-cols-4' : 'grid-cols-2 md:grid-cols-3';
             @endphp
 
             <div class="grid {{ $gridClass }} gap-3">
@@ -376,23 +380,6 @@
                         {{ $rr }}%
                     </div>
                 </div>
-
-                <div class="rounded-lg bg-gradient-to-br from-cyan-50 to-cyan-100/50 dark:from-cyan-900/20 dark:to-cyan-900/10 p-3 border border-cyan-200 dark:border-cyan-800 text-center">
-                    <div class="text-[10px] text-cyan-700 dark:text-cyan-400 uppercase tracking-wider font-semibold mb-1">
-                        Status Running <span class="text-red-500">*</span>
-                    </div>
-                    @if($readonly)
-                        <div class="text-sm font-bold text-zinc-700 dark:text-zinc-300">{{ $statusRunning ?: '-' }}</div>
-                    @else
-                        <flux:input type="text"
-                            wire:model="{{ $key }}.status_running"
-                            placeholder="Machine / Others"
-                            class="!text-center !font-semibold !border-cyan-300 focus:!border-cyan-500" />
-                        @error("$key.status_running")
-                            <span class="text-red-500 text-xs block mt-1 text-center">{{ $message }}</span>
-                        @enderror
-                    @endif
-                </div>
             </div>
         </div>
 
@@ -406,13 +393,11 @@
                 if (!empty($items['status_after_check']['ng'])) $ngFieldFilled++;
                 if (!empty($items['ncp_id'])) $ngFieldFilled++;
                 if (!empty($items['remarks'])) $ngFieldFilled++;
-
-                $autoOpenNgDetail = $this->shouldAutoOpenNgDetail($key);
             @endphp
 
             <div
-                wire:key="ng-detail-{{ $key }}-{{ $ngQty }}"
-                x-data="{ open: {{ $autoOpenNgDetail ? 'true' : 'false' }} }"
+                wire:key="ng-detail-{{ $key }}"
+                x-data="{ open: true }"
                 class="relative rounded-2xl overflow-hidden shadow-lg ring-1 ring-red-200/50 dark:ring-red-800/50 bg-white dark:bg-zinc-900">
 
                 <button type="button"
@@ -453,6 +438,7 @@
                 <div x-show="open" x-collapse class="p-5 bg-white dark:bg-zinc-900">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
 
+                        {{-- FILLING RATIO --}}
                         <div class="rounded-xl border border-orange-200 dark:border-orange-800 bg-gradient-to-br from-orange-50 to-orange-100/50 dark:from-orange-900/20 dark:to-orange-900/10 overflow-hidden shadow-sm">
                             <div class="px-3 py-2 bg-gradient-to-r from-orange-500 to-amber-500 text-center">
                                 <span class="text-xs font-bold text-white uppercase tracking-wide">Filling Ratio</span>
@@ -465,7 +451,7 @@
                                 @else
                                     <div class="relative">
                                         <flux:input type="number" step="0.01" min="0" max="100"
-                                            wire:model="{{ $key }}.filling_ratio"
+                                            wire:model.blur="{{ $key }}.filling_ratio"
                                             placeholder="0 - 100" class="pr-9 !text-center !text-lg !font-bold" />
                                         <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-zinc-400 font-bold">%</span>
                                     </div>
@@ -474,6 +460,7 @@
                             </div>
                         </div>
 
+                        {{-- QTY HOLD --}}
                         <div class="rounded-xl border border-amber-200 dark:border-amber-800 bg-gradient-to-br from-amber-50 to-amber-100/50 dark:from-amber-900/20 dark:to-amber-900/10 overflow-hidden shadow-sm">
                             <div class="px-3 py-2 bg-gradient-to-r from-amber-500 to-yellow-500 text-center">
                                 <span class="text-xs font-bold text-white uppercase tracking-wide">Qty Hold</span>
@@ -489,6 +476,7 @@
                             </div>
                         </div>
 
+                        {{-- STATUS OK --}}
                         <div class="rounded-xl border border-emerald-200 dark:border-emerald-800 bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-emerald-900/20 dark:to-emerald-900/10 overflow-hidden shadow-sm">
                             <div class="px-3 py-2 bg-gradient-to-r from-emerald-500 to-green-500 text-center">
                                 <span class="text-xs font-bold text-white uppercase tracking-wide">Status OK</span>
@@ -504,6 +492,7 @@
                             </div>
                         </div>
 
+                        {{-- STATUS NG --}}
                         <div class="rounded-xl border border-red-200 dark:border-red-800 bg-gradient-to-br from-red-50 to-red-100/50 dark:from-red-900/20 dark:to-red-900/10 overflow-hidden shadow-sm">
                             <div class="px-3 py-2 bg-gradient-to-r from-red-500 to-rose-500 text-center">
                                 <span class="text-xs font-bold text-white uppercase tracking-wide">Status NG</span>
@@ -519,6 +508,7 @@
                             </div>
                         </div>
 
+                        {{-- NCP --}}
                         <div class="md:col-span-2 lg:col-span-4 rounded-xl border border-indigo-200 dark:border-indigo-800 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/10 overflow-hidden shadow-sm">
                             <div class="px-4 py-2.5 bg-gradient-to-r from-indigo-500 to-purple-500 flex items-center justify-between">
                                 <span class="text-xs font-bold text-white uppercase tracking-wide">NCP</span>
@@ -530,9 +520,11 @@
                                 @php
                                     $ncpId = $items['ncp_id'] ?? null;
                                     $ncpLabel = '-';
+                                    $ncpUsage = null;
                                     if ($ncpId) {
                                         $ncpModel = \App\Models\QAQC\NCP::find($ncpId);
                                         $ncpLabel = $ncpModel ? $ncpModel->ncp_number : "ID: $ncpId";
+                                        try { $ncpUsage = $this->findNcpUsage((int) $ncpId); } catch (\Throwable $e) {}
                                     }
                                     $isPanelOpen = $openNcpPanels[$key] ?? false;
                                 @endphp
@@ -572,6 +564,15 @@
                                     </div>
                                     @error("$key.ncp_id") <span class="text-red-500 text-xs block mt-1">{{ $message }}</span> @enderror
 
+                                    @if($ncpUsage)
+                                        <div class="mt-2 px-3 py-2 rounded-lg bg-red-100 dark:bg-red-900/30 border border-red-300 dark:border-red-800 text-xs text-red-700 dark:text-red-300 flex items-start gap-2">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 flex-shrink-0 mt-0.5">
+                                                <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-8-5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5A.75.75 0 0 1 10 5Zm0 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd" />
+                                            </svg>
+                                            <span>NCP ini sudah dipakai di {{ $ncpUsage['group_label'] }} Piece (Scan #{{ $ncpUsage['scan_id'] }}). Ganti NCP atau hapus penggunaan di scan tersebut.</span>
+                                        </div>
+                                    @endif
+
                                     @if($isPanelOpen)
                                         @php $ncpList = $this->getNcpListFor($key); @endphp
                                         <div class="mt-3 rounded-xl overflow-hidden border border-indigo-300 dark:border-indigo-700 bg-white dark:bg-zinc-900 shadow-lg">
@@ -587,22 +588,70 @@
                                                     <thead>
                                                         <tr class="bg-zinc-100 dark:bg-zinc-800/80 border-b border-zinc-200 dark:border-zinc-700">
                                                             <th class="px-3 py-2.5 text-left font-semibold text-zinc-600 dark:text-zinc-300 uppercase text-[10px]">NCP Number</th>
+                                                            <th class="px-3 py-2.5 text-center font-semibold text-zinc-600 dark:text-zinc-300 uppercase text-[10px]">Status</th>
                                                             <th class="px-3 py-2.5 text-center font-semibold text-zinc-600 dark:text-zinc-300 uppercase text-[10px] w-20">Action</th>
                                                         </tr>
                                                     </thead>
                                                     <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
                                                         @forelse($ncpList as $ncp)
-                                                            <tr class="hover:bg-indigo-50 dark:hover:bg-indigo-900/20 cursor-pointer" wire:click="selectNcp('{{ $key }}', {{ $ncp->id }})">
-                                                                <td class="px-3 py-2 font-mono font-semibold">{{ $ncp->ncp_number }}</td>
+                                                            @php
+                                                                $usage  = $ncp->usage_info ?? null;
+                                                                $isUsed = $usage !== null;
+                                                            @endphp
+                                                            <tr wire:key="ncp-{{ $ncp->id }}"
+                                                                class="{{ $isUsed ? 'bg-red-50/50 dark:bg-red-950/20 cursor-not-allowed' : 'hover:bg-indigo-50 dark:hover:bg-indigo-900/20 cursor-pointer' }}"
+                                                                @if(!$isUsed) wire:click="selectNcp('{{ $key }}', {{ $ncp->id }})" @endif>
+
+                                                                <td class="px-3 py-2 font-mono font-semibold
+                                                                    {{ $isUsed ? 'text-zinc-400 line-through' : 'text-zinc-800 dark:text-zinc-200' }}">
+                                                                    {{ $ncp->ncp_number }}
+                                                                </td>
+
                                                                 <td class="px-3 py-2 text-center">
-                                                                    <button type="button" wire:click.stop="selectNcp('{{ $key }}', {{ $ncp->id }})"
-                                                                        class="px-3 py-1 text-[10px] bg-blue-600 text-white rounded-md hover:bg-blue-700 font-semibold">
-                                                                        Pilih
-                                                                    </button>
+                                                                    @if($isUsed)
+                                                                        <div class="flex flex-col items-center gap-0.5">
+                                                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold
+                                                                                bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300">
+                                                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3">
+                                                                                    <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-8-5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5A.75.75 0 0 1 10 5Zm0 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd" />
+                                                                                </svg>
+                                                                                Sudah Dipakai
+                                                                            </span>
+                                                                            <span class="text-[9px] text-zinc-500 dark:text-zinc-400">
+                                                                                @if(!empty($usage['is_same_scan']))
+                                                                                    {{ $usage['group_label'] }} · Piece lain (scan ini)
+                                                                                @else
+                                                                                    {{ $usage['group_label'] }} · Scan #{{ $usage['scan_id'] }}
+                                                                                @endif
+                                                                            </span>
+                                                                            <span class="text-[9px] text-zinc-400 dark:text-zinc-500 truncate max-w-[140px]">
+                                                                                {{ $usage['customer'] }}
+                                                                            </span>
+                                                                        </div>
+                                                                    @else
+                                                                        <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold
+                                                                            bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">
+                                                                            Tersedia
+                                                                        </span>
+                                                                    @endif
+                                                                </td>
+
+                                                                <td class="px-3 py-2 text-center">
+                                                                    @if($isUsed)
+                                                                        <span class="inline-flex items-center justify-center px-3 py-1 text-[10px] rounded-md
+                                                                            bg-zinc-200 text-zinc-500 dark:bg-zinc-800 dark:text-zinc-600 font-semibold cursor-not-allowed">
+                                                                            Terkunci
+                                                                        </span>
+                                                                    @else
+                                                                        <button type="button" wire:click.stop="selectNcp('{{ $key }}', {{ $ncp->id }})"
+                                                                                class="px-3 py-1 text-[10px] bg-blue-600 text-white rounded-md hover:bg-blue-700 font-semibold">
+                                                                            Pilih
+                                                                        </button>
+                                                                    @endif
                                                                 </td>
                                                             </tr>
                                                         @empty
-                                                            <tr><td colspan="2" class="px-3 py-6 text-center text-zinc-500">No NCP found</td></tr>
+                                                            <tr><td colspan="3" class="px-3 py-6 text-center text-zinc-500">No NCP found</td></tr>
                                                         @endforelse
                                                     </tbody>
                                                 </table>
@@ -631,6 +680,7 @@
                             </div>
                         </div>
 
+                        {{-- PICTURES --}}
                         <div class="md:col-span-2 lg:col-span-2 rounded-xl border border-sky-200 dark:border-sky-800 bg-gradient-to-br from-sky-50 to-cyan-50 dark:from-sky-900/20 dark:to-cyan-900/10 overflow-hidden shadow-sm">
                             <div class="px-4 py-2.5 bg-gradient-to-r from-sky-500 to-cyan-500 flex items-center justify-between">
                                 <span class="text-xs font-bold text-white uppercase tracking-wide">Pictures</span>
@@ -697,6 +747,7 @@
                             </div>
                         </div>
 
+                        {{-- REMARKS --}}
                         <div class="md:col-span-2 lg:col-span-2 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-gradient-to-br from-zinc-50 to-slate-50 dark:from-zinc-900/50 dark:to-slate-900/30 overflow-hidden shadow-sm">
                             <div class="px-4 py-2.5 bg-gradient-to-r from-zinc-600 to-slate-600 flex items-center justify-between">
                                 <span class="text-xs font-bold text-white uppercase tracking-wide">Remarks</span>
@@ -707,7 +758,7 @@
                                         {{ $items['remarks'] ?? '-' }}
                                     </div>
                                 @else
-                                    <flux:textarea wire:model="{{ $key }}.remarks" rows="3" placeholder="Tulis keterangan..." />
+                                    <flux:textarea wire:model.blur="{{ $key }}.remarks" rows="3" placeholder="Tulis keterangan..." />
                                     @error("$key.remarks") <span class="text-red-500 text-xs block mt-1">{{ $message }}</span> @enderror
                                 @endif
                             </div>

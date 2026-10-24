@@ -8,6 +8,9 @@ use App\Models\MTC\Master\MasterLine;
 use App\Models\QAQC\BlindTest\Customer;
 use App\Models\QAQC\BlindTest\Model as BlindTestModel;
 use App\Models\User;
+use App\Models\QAQC\ScanXray\ScanXrayEditRequest;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class ScanXray extends EloquentModel
 {
@@ -22,7 +25,8 @@ class ScanXray extends EloquentModel
         'group',
         'master_line_id',
         'lot_qty',
-        'pic_xray',              // ⬅️ BARU
+        'pic_xray',
+        'status_running',        // ✅ TAMBAH
         'first_piece_items',
         'second_first_items',
         'middle_piece_items',
@@ -84,6 +88,37 @@ class ScanXray extends EloquentModel
         return $this->belongsTo(User::class, 'updated_by');
     }
 
+    // ==================== EDIT REQUEST RELATIONS ====================
+
+    /**
+     * Semua request edit (history) untuk scan ini.
+     */
+    public function editRequests(): HasMany
+    {
+        return $this->hasMany(ScanXrayEditRequest::class, 'scan_xray_id');
+    }
+
+    /**
+     * Request edit terbaru yang masih aktif (pending / approved).
+     * Dipakai untuk cek apakah ada approval yang berlaku saat ini.
+     */
+    public function activeEditRequest(): HasOne
+    {
+        return $this->hasOne(ScanXrayEditRequest::class, 'scan_xray_id')
+            ->whereIn('status', ['pending', 'approved'])
+            ->latestOfMany();
+    }
+
+    /**
+     * Request edit pending (kalau ada).
+     */
+    public function pendingEditRequest(): HasOne
+    {
+        return $this->hasOne(ScanXrayEditRequest::class, 'scan_xray_id')
+            ->where('status', 'pending')
+            ->latestOfMany();
+    }
+
     // ==================== DEFAULT STRUCTURE ====================
 
     public static function defaultItemStructure(): array
@@ -93,7 +128,6 @@ class ScanXray extends EloquentModel
             'ok_qty'             => 0,
             'ng_qty'             => 0,
             'reject_rate'        => 0,
-            'status_running'     => '',
             'filling_ratio'      => null,
             'qty_hold'           => 0,
             'status_after_check' => ['ok' => 0, 'ng' => 0],
@@ -131,6 +165,38 @@ class ScanXray extends EloquentModel
         };
     }
 
+    // ==================== EDIT APPROVAL HELPERS ====================
+
+    /**
+     * Cek apakah scan ini punya approval edit aktif.
+     */
+    public function hasActiveEditApproval(): bool
+    {
+        $req = $this->activeEditRequest;
+        return $req && $req->isApproved();
+    }
+
+    /**
+     * Cek apakah user bisa edit group tertentu.
+     * True kalau:
+     * - Tidak completed / ada NG belum lengkap, ATAU
+     * - Ada approval edit aktif untuk group tsb
+     */
+    public function canEditGroupViaApproval(string $groupKey): bool
+    {
+        $req = $this->activeEditRequest;
+        if (!$req || !$req->isApproved()) return false;
+        return in_array($groupKey, $req->requested_groups ?? [], true);
+    }
+
+    /**
+     * Cek apakah ada pending request (menunggu approval).
+     */
+    public function hasPendingEditRequest(): bool
+    {
+        return $this->activeEditRequest && $this->activeEditRequest->isPending();
+    }
+
     public function isLocked(): bool
     {
         return $this->created_at && $this->created_at->diffInHours(now()) >= 24;
@@ -154,7 +220,6 @@ class ScanXray extends EloquentModel
     {
         return [
             'time_scan'      => null,
-            'status_running' => '',
             'side_single'    => ['pcb_a' => [''], 'pcb_b' => [''], 'pcb_c' => [''], 'pcb_circuit' => ['']],
             'side_lh'        => ['pcb_a' => [''], 'pcb_b' => [''], 'pcb_c' => [''], 'pcb_circuit' => ['']],
             'side_rh'        => ['pcb_a' => [''], 'pcb_b' => [''], 'pcb_c' => [''], 'pcb_circuit' => ['']],
@@ -186,5 +251,50 @@ class ScanXray extends EloquentModel
             'second_last'   => 'completed',
             default         => 'completed',
         };
+    }
+
+    /**
+     * Cek apakah NG Detail untuk group ini sudah lengkap.
+     * Hanya relevan kalau ng_qty > 0.
+     */
+    public function isNgDetailComplete(string $groupKey): bool
+    {
+        $item = $this->{$groupKey} ?? [];
+        $ngQty = (int) ($item['ng_qty'] ?? 0);
+
+        if ($ngQty <= 0) return true;   // tidak ada NG → dianggap lengkap
+
+        // Field wajib NG Detail
+        if (empty($item['filling_ratio'])) return false;
+        if (empty($item['qty_hold'])) return false;
+        if (empty($item['status_after_check']['ok']) && empty($item['status_after_check']['ng'])) return false;
+        if (empty($item['ncp_id'])) return false;
+        if (empty($item['remarks'])) return false;
+        if (empty($item['pictures']) || !is_array($item['pictures']) || count($item['pictures']) === 0) return false;
+
+        return true;
+    }
+
+    /**
+     * Cek apakah ADA group mana pun yang NG tapi detail-nya belum lengkap.
+     */
+    public function hasIncompleteNgDetail(): bool
+    {
+        foreach (['first_piece_items', 'middle_piece_items', 'last_piece_items'] as $grp) {
+            if (!$this->isNgDetailComplete($grp)) return true;
+        }
+        return false;
+    }
+
+    /**
+     * Berapa banyak group yang NG detail-nya belum lengkap.
+     */
+    public function countIncompleteNgDetail(): int
+    {
+        $count = 0;
+        foreach (['first_piece_items', 'middle_piece_items', 'last_piece_items'] as $grp) {
+            if (!$this->isNgDetailComplete($grp)) $count++;
+        }
+        return $count;
     }
 }
