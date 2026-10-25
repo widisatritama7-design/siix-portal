@@ -32,6 +32,7 @@ trait HasCustomer
     public const SPECIAL_OXYGEN_CUSTOMERS = [
         'MITSUBA',
         'TOKAI RIKA',
+        'KAWAI',
     ];
 
     public function usesSpecialOxygenDensity(): bool

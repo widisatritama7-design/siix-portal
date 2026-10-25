@@ -879,7 +879,7 @@
                     Customer menentukan field Oxygen Density yang wajib diisi:
                 </p>
                 <ul class="text-xs text-zinc-500 dark:text-zinc-400 list-disc list-inside space-y-1">
-                    <li><strong>MITSUBA</strong> & <strong>TOKAI RIKA</strong> → wajib isi <em>Oxygen Density Special</em></li>
+                    <li><strong>MITSUBA</strong>, <strong>TOKAI RIKA</strong> & <strong>KAWAI</strong> → wajib isi <em>Oxygen Density Special</em></li>
                     <li>Customer lain → wajib isi <em>Oxygen Density SEK</em></li>
                 </ul>
             @endif

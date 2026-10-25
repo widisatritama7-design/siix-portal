@@ -9,6 +9,16 @@
     <?php echo app('mingle')->mingleScripts(); ?>
     <style>
         [x-cloak] { display: none !important; }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .dark body {
+            background-color: #000000; 
+        }
         
         /* Sidebar scrollbar hidden */
         .sidebar-scroll {
@@ -128,7 +138,7 @@
 
 <body class="bg-gray-100 dark:bg-zinc-900">
 
-    <div x-data="sidebarPersistence()" x-init="init()" x-cloak class="min-h-screen">
+    <div x-data="sidebarPersistence()" x-init="init()" x-cloak class="min-h-screen flex">
         
         <!-- Overlay for mobile -->
         <div class="overlay" :class="{'open': sidebarOpen && isMobile}" @click="closeMobileSidebar"></div>
@@ -151,7 +161,7 @@
             class="bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-700 shadow-lg h-screen overflow-hidden sidebar-transition flex flex-col"
             :class="{
                 // Posisi: selalu fixed (mobile & desktop)
-                'fixed top-0 left-0 z-50': true,
+                'fixed top-0 left-0 z-40': true, // <--- UBAH DARI z-50 KE z-40
 
                 // Width
                 'w-64': (isMobile && sidebarOpen) || (!isMobile && (sidebarPinned || isHovering)),
@@ -1667,10 +1677,9 @@
             </nav>
         </aside>
         
-        <!-- MAIN CONTENT -->
-         <div class="min-w-0 transition-[margin] duration-300 ease-in-out"
+        <div class="min-w-0 flex-1 transition-[margin] duration-300 ease-in-out"
              :class="isMobile ? 'ml-0' : (sidebarPinned ? 'ml-64' : 'ml-20')">
-            <main class="min-w-0 bg-gray-100 dark:bg-black w-full">
+            <main class="min-w-0 bg-gray-100 dark:bg-black w-full min-h-screen flex flex-col">
                 <?php ob_start(); ?><header class="[grid-area:header] z-10 min-h-14 flex items-center px-6 lg:px-8 sticky top-0 z-10 block! bg-white dark:bg-black border-b border-zinc-200 dark:border-zinc-800 p-0! m-0! w-full shadow-sm" data-flux-header>
             <?php ob_start(); ?>
                     <?php ob_start(); ?><nav class="flex items-center gap-1 py-3  flex items-center justify-between px-3 lg:px-4 mx-0!" data-flux-navbar>
@@ -1781,7 +1790,7 @@ unset($__split);
     </header>
 <?php echo ltrim(ob_get_clean()); ?>
                 
-                <div class="p-0">
+                <div class="p-0 flex-1 w-full">
                     <?php echo e($slot); ?>
 
                 </div>
@@ -1825,7 +1834,7 @@ unset($__split);
                     msMonitoring: { open: false },
                     fctMonitoring: { open: false },
                     qaqc: { open: false },
-                    qaqcMaster: { open: false },    // NEW
+                    qaqcMaster: { open: false },
                     qaqcForm: { open: false },
                     qaqcReport: { open: false },
                     uniformMonitoring: { open: false },
@@ -1835,33 +1844,59 @@ unset($__split);
                 },
                 
                 init() {
-                    // Check if mobile
+                    // 1. Event listener Modal (Tutup sidebar saat modal buka di semua device)
+                    window.addEventListener('modal-show', () => {
+                        this.sidebarOpen = false;
+                    });
+
+                    window.addEventListener('modal-close', () => {
+                        this.sidebarOpen = true;
+                    });
+
+                    // 2. Cek ukuran layar (Mobile / Desktop)
                     window.addEventListener('resize', () => {
                         this.isMobile = window.innerWidth < 768;
                         if (this.isMobile) {
                             this.sidebarOpen = false;
                             this.sidebarPinned = false;
                         } else {
-                            // Load pinned state from localStorage
                             const savedPinned = localStorage.getItem('sidebar_pinned');
                             if (savedPinned !== null) {
                                 this.sidebarPinned = JSON.parse(savedPinned);
                                 this.sidebarOpen = this.sidebarPinned;
+                            } else {
+                                this.sidebarOpen = true;
+                                this.sidebarPinned = true;
                             }
                         }
                     });
-                    
-                    // Load sidebar open state
-                    const savedSidebarOpen = localStorage.getItem('sidebar_open');
-                    if (savedSidebarOpen !== null && !this.isMobile) {
-                        this.sidebarOpen = JSON.parse(savedSidebarOpen);
-                        this.sidebarPinned = this.sidebarOpen;
-                    } else if (this.isMobile) {
+
+                    // 3. Load State Awal (Memastikan desktop langsung terbuka full)
+                    if (this.isMobile) {
                         this.sidebarOpen = false;
                         this.sidebarPinned = false;
+                    } else {
+                        const savedSidebarOpen = localStorage.getItem('sidebar_open');
+                        if (savedSidebarOpen !== null) {
+                            this.sidebarOpen = JSON.parse(savedSidebarOpen);
+                            this.sidebarPinned = this.sidebarOpen;
+                        } else {
+                            // Default desktop: Buka sidebar
+                            this.sidebarOpen = true;
+                            this.sidebarPinned = true;
+                        }
                     }
-                    
-                    // Load all group states
+
+                    // 4. Watch perubahan state sidebar
+                    this.$watch('sidebarOpen', value => {
+                        if (!this.isMobile && !this.isHovering) {
+                            this.sidebarPinned = value;
+                            localStorage.setItem('sidebar_open', JSON.stringify(value));
+                            localStorage.setItem('sidebar_pinned', JSON.stringify(value));
+                        }
+                    });
+
+                    // 5. Load state group menu (accordion)
                     const groupNames = ['home', 'maintenance', 'production', 'dcc', 'hr', 'hrMaster', 'hrForm', 'hrReport', 'ticketing', 'settings', 'auth', 'wipMonitoring', 'msMonitoring', 'fctMonitoring', 'qaqc', 'qaqcMaster', 'qaqcForm', 'qaqcReport', 'uniformMonitoring', 'absenceMonitoring', 'lockerMonitoring', 'patrolMonitoring'];
                     groupNames.forEach(groupName => {
                         const saved = localStorage.getItem(`sidebar_group_${groupName}`);
@@ -1870,16 +1905,7 @@ unset($__split);
                         }
                     });
                     
-                    // Watch sidebar changes
-                    this.$watch('sidebarOpen', value => {
-                        if (!this.isMobile && !this.isHovering) {
-                            this.sidebarPinned = value;
-                            localStorage.setItem('sidebar_open', JSON.stringify(value));
-                            localStorage.setItem('sidebar_pinned', JSON.stringify(value));
-                        }
-                    });
-                    
-                    // Close dropdown when clicking outside
+                    // 6. Klik di luar untuk menutup dropdown search
                     document.addEventListener('click', (e) => {
                         const searchContainer = document.querySelector('.relative');
                         if (searchContainer && !searchContainer.contains(e.target)) {
@@ -1925,16 +1951,13 @@ unset($__split);
                 },
                 
                 // ========== SEARCH METHODS ==========
-                
                 async handleSearchInput() {
                     const query = this.searchQuery.trim();
                     
-                    // Clear previous timer
                     if (this.searchDebounceTimer) {
                         clearTimeout(this.searchDebounceTimer);
                     }
                     
-                    // Reset results if query is too short
                     if (query.length < 2) {
                         this.searchResults = [];
                         this.selectedIndex = -1;
@@ -1942,10 +1965,8 @@ unset($__split);
                         return;
                     }
                     
-                    // Set loading state
                     this.searchLoading = true;
                     
-                    // Debounce search
                     this.searchDebounceTimer = setTimeout(() => {
                         this.performSearch();
                     }, 300);
@@ -2003,7 +2024,6 @@ unset($__split);
                 
                 scrollToSelected() {
                     this.$nextTick(() => {
-                        // Find the selected element by checking for bg-blue-50 class
                         const selected = document.querySelector('.bg-blue-50');
                         if (selected) {
                             selected.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
@@ -2019,8 +2039,7 @@ unset($__split);
                     }
                 },
                 
-                // ========== MENU FILTER METHODS (optional) ==========
-                
+                // ========== MENU FILTER METHODS ==========
                 filterMenu() {
                     const query = this.searchQuery.toLowerCase().trim();
                     
