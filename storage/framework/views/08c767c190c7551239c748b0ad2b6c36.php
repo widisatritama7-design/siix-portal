@@ -1,10 +1,3 @@
-<?php # [BlazeFolded]:{flux::label}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/label.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::input}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/input/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::label}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/label.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::input}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/input/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
-
 <?php if (isset($component)) { $__componentOriginal08b8a564843783787e0bee3357e24f38 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal08b8a564843783787e0bee3357e24f38 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'f4ac99e09542ff494432bc959d4fee61::auth','data' => ['title' => __('Log in')]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -78,56 +71,28 @@
             </div>
         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-        
-        <form method="POST" action="<?php echo e(route('login.store')); ?>" class="flex flex-col gap-6">
+        <form id="login-form" method="POST" action="<?php echo e(route('login.store')); ?>" class="flex flex-col gap-6">
             <?php echo csrf_field(); ?>
 
-            <div>
-                <?php ob_start(); ?><ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" data-flux-label>
-    <?php ob_start(); ?><?php echo e(__('NIK')); ?><?php echo trim(ob_get_clean()); ?>
+            <div class="relative">
+                <label for="nik"
+                    class="absolute -top-2 left-3 px-1 bg-white dark:bg-zinc-900 text-xs font-medium text-zinc-600 dark:text-zinc-400 z-10">
+                    <?php echo e(__('NIK')); ?>
 
-
-    
-    
-    </ui-label>
-<?php echo ltrim(ob_get_clean()); ?>
-                <?php ob_start(); ?><div class="w-full relative block group/input [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none" data-flux-input>
-            
-            <input
-                type="text"
-                
-                class="w-full border rounded-lg block disabled:shadow-none dark:shadow-none appearance-none text-base sm:text-sm py-2 h-10 leading-[1.375rem] ps-3 pe-3 bg-white dark:bg-white/10 dark:disabled:bg-white/[7%] text-zinc-700 disabled:text-zinc-500 placeholder-zinc-400 disabled:placeholder-zinc-400/70 dark:text-zinc-300 dark:disabled:text-zinc-400 dark:placeholder-zinc-400 dark:disabled:placeholder-zinc-500 shadow-xs border-zinc-200 border-b-zinc-300/80 disabled:border-b-zinc-200 dark:border-white/10 dark:disabled:border-white/5 data-invalid:shadow-none data-invalid:border-red-500 dark:data-invalid:border-red-500 disabled:data-invalid:border-red-500 dark:disabled:data-invalid:border-red-500" inputmode="numeric" <?php if (($__blazeAttr = old('nik')) !== false && !is_null($__blazeAttr)): ?>value="<?php echo e($__blazeAttr === true ? 'value' : $__blazeAttr); ?>"<?php endif; unset($__blazeAttr); ?> required="required" autofocus="autofocus" autocomplete="username webauthn" placeholder="Enter your NIK"
-                 name="nik"                                                 <?php if (isset($scope)) $__scope = $scope; ?><?php $scope = array (
-  'name' => 'nik',
-  'invalid' => false,
-); ?>
-                <?php if ($scope['invalid'] || ($scope['name'] && $errors->has($scope['name']))): ?>
-                aria-invalid="true" data-invalid
-                <?php endif; ?>
-                <?php if (isset($__scope)) { $scope = $__scope; unset($__scope); } ?>
-                data-flux-control
-                data-flux-group-target
-                                            >
-
-                    </div>
-<?php echo ltrim(ob_get_clean()); ?>
+                </label>
+                <input
+                    id="nik" name="nik" type="text" inputmode="numeric"
+                    value="<?php echo e(old('nik')); ?>" required autofocus
+                    autocomplete="username webauthn"
+                    placeholder="Enter your NIK"
+                    class="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 pt-3 pb-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                />
                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['nik'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
-                    <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/error.blade.php', $__blaze->compiledPath.'/3559abad7aa305aa719d924dc49d3610.php'); ?>
-<?php if (isset($__slots3559abad7aa305aa719d924dc49d3610)) { $__slotsStack3559abad7aa305aa719d924dc49d3610[] = $__slots3559abad7aa305aa719d924dc49d3610; } ?>
-<?php if (isset($__attrs3559abad7aa305aa719d924dc49d3610)) { $__attrsStack3559abad7aa305aa719d924dc49d3610[] = $__attrs3559abad7aa305aa719d924dc49d3610; } ?>
-<?php $__attrs3559abad7aa305aa719d924dc49d3610 = []; ?>
-<?php $__slots3559abad7aa305aa719d924dc49d3610 = []; ?>
-<?php $__blaze->pushData($__attrs3559abad7aa305aa719d924dc49d3610); ?>
-<?php ob_start(); ?><?php echo e($message); ?><?php $__slots3559abad7aa305aa719d924dc49d3610['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
-<?php $__blaze->pushSlots($__slots3559abad7aa305aa719d924dc49d3610); ?>
-<?php _3559abad7aa305aa719d924dc49d3610($__blaze, $__attrs3559abad7aa305aa719d924dc49d3610, $__slots3559abad7aa305aa719d924dc49d3610, [], [], $__this ?? (isset($this) ? $this : null)); ?>
-<?php if (! empty($__slotsStack3559abad7aa305aa719d924dc49d3610)) { $__slots3559abad7aa305aa719d924dc49d3610 = array_pop($__slotsStack3559abad7aa305aa719d924dc49d3610); } ?>
-<?php if (! empty($__attrsStack3559abad7aa305aa719d924dc49d3610)) { $__attrs3559abad7aa305aa719d924dc49d3610 = array_pop($__attrsStack3559abad7aa305aa719d924dc49d3610); } ?>
-<?php $__blaze->popData(); ?>
+                    <p class="mt-1 text-sm text-red-600 dark:text-red-400"><?php echo e($message); ?></p>
                 <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
@@ -135,141 +100,295 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
             </div>
 
             <div class="relative">
-                <?php ob_start(); ?><ui-label class="inline-flex items-center text-sm font-medium  [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white [&amp;:has([data-flux-label-trailing])]:flex" data-flux-label>
-    <?php ob_start(); ?><?php echo e(__('Password')); ?><?php echo trim(ob_get_clean()); ?>
+                <label for="password"
+                    class="absolute -top-2 left-3 px-1 bg-white dark:bg-zinc-900 text-xs font-medium text-zinc-600 dark:text-zinc-400 z-10">
+                    <?php echo e(__('Password')); ?>
 
-
-    
-    
-    </ui-label>
-<?php echo ltrim(ob_get_clean()); ?>
-                <?php ob_start(); ?><div class="w-full relative block group/input" data-flux-input>
-            
-            <input
-                type="password"
-                
-                class="w-full border rounded-lg block disabled:shadow-none dark:shadow-none appearance-none text-base sm:text-sm py-2 h-10 leading-[1.375rem] ps-3 pe-10 bg-white dark:bg-white/10 dark:disabled:bg-white/[7%] text-zinc-700 disabled:text-zinc-500 placeholder-zinc-400 disabled:placeholder-zinc-400/70 dark:text-zinc-300 dark:disabled:text-zinc-400 dark:placeholder-zinc-400 dark:disabled:placeholder-zinc-500 shadow-xs border-zinc-200 border-b-zinc-300/80 disabled:border-b-zinc-200 dark:border-white/10 dark:disabled:border-white/5 data-invalid:shadow-none data-invalid:border-red-500 dark:data-invalid:border-red-500 disabled:data-invalid:border-red-500 dark:disabled:data-invalid:border-red-500" required="required" autocomplete="current-password" placeholder="<?php echo e(__('Password')); ?>"                 name="password"                                                 <?php if (isset($scope)) $__scope = $scope; ?><?php $scope = array (
-  'name' => 'password',
-  'invalid' => false,
-); ?>
-                <?php if ($scope['invalid'] || ($scope['name'] && $errors->has($scope['name']))): ?>
-                aria-invalid="true" data-invalid
-                <?php endif; ?>
-                <?php if (isset($__scope)) { $scope = $__scope; unset($__scope); } ?>
-                data-flux-control
-                data-flux-group-target
-                                            >
-
-                            <div class="absolute top-0 bottom-0 flex items-center gap-x-1.5 pe-2 border-e border-transparent end-0 text-xs text-zinc-400">
-                    
-                    
-                    
-                    
-                    
-                    
-                                            <button type="button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-8 text-sm rounded-md w-8 inline-flex -ms-1.5 -me-1.5 bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white      -me-1" data-flux-button="data-flux-button" x-data="fluxInputViewable" x-on:click="toggle()" x-bind:data-viewable-open="open" aria-label="Toggle password visibility">
-        <svg class="shrink-0 [:where(&amp;)]:size-5 hidden [[data-viewable-open]>&]:block" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-  <path fill-rule="evenodd" d="M3.28 2.22a.75.75 0 0 0-1.06 1.06l14.5 14.5a.75.75 0 1 0 1.06-1.06l-1.745-1.745a10.029 10.029 0 0 0 3.3-4.38 1.651 1.651 0 0 0 0-1.185A10.004 10.004 0 0 0 9.999 3a9.956 9.956 0 0 0-4.744 1.194L3.28 2.22ZM7.752 6.69l1.092 1.092a2.5 2.5 0 0 1 3.374 3.373l1.091 1.092a4 4 0 0 0-5.557-5.557Z" clip-rule="evenodd"/>
-  <path d="m10.748 13.93 2.523 2.523a9.987 9.987 0 0 1-3.27.547c-4.258 0-7.894-2.66-9.337-6.41a1.651 1.651 0 0 1 0-1.186A10.007 10.007 0 0 1 2.839 6.02L6.07 9.252a4 4 0 0 0 4.678 4.678Z"/>
-</svg>
-
-            <svg class="shrink-0 [:where(&amp;)]:size-5 block [[data-viewable-open]>&]:hidden" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-  <path d="M10 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"/>
-  <path fill-rule="evenodd" d="M.664 10.59a1.651 1.651 0 0 1 0-1.186A10.004 10.004 0 0 1 10 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0 1 10 17c-4.257 0-7.893-2.66-9.336-6.41ZM14 10a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z" clip-rule="evenodd"/>
-</svg>
-    </button>
-                    
-                                    </div>
-                    </div>
-<?php echo ltrim(ob_get_clean()); ?>
+                </label>
+                <input
+                    id="password" name="password" type="password" required
+                    autocomplete="current-password"
+                    placeholder="<?php echo e(__('Password')); ?>"
+                    class="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 pt-3 pb-2 pr-10 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                />
+                <button type="button" id="toggle-password" aria-label="<?php echo e(__('Show password')); ?>" aria-pressed="false"
+                    class="absolute inset-y-0 right-0 flex items-center px-3 text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                        <line id="password-slash" x1="4" y1="20" x2="20" y2="4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" class="hidden" />
+                    </svg>
+                </button>
                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['password'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
-                    <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/error.blade.php', $__blaze->compiledPath.'/3559abad7aa305aa719d924dc49d3610.php'); ?>
-<?php if (isset($__slots3559abad7aa305aa719d924dc49d3610)) { $__slotsStack3559abad7aa305aa719d924dc49d3610[] = $__slots3559abad7aa305aa719d924dc49d3610; } ?>
-<?php if (isset($__attrs3559abad7aa305aa719d924dc49d3610)) { $__attrsStack3559abad7aa305aa719d924dc49d3610[] = $__attrs3559abad7aa305aa719d924dc49d3610; } ?>
-<?php $__attrs3559abad7aa305aa719d924dc49d3610 = []; ?>
-<?php $__slots3559abad7aa305aa719d924dc49d3610 = []; ?>
-<?php $__blaze->pushData($__attrs3559abad7aa305aa719d924dc49d3610); ?>
-<?php ob_start(); ?><?php echo e($message); ?><?php $__slots3559abad7aa305aa719d924dc49d3610['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
-<?php $__blaze->pushSlots($__slots3559abad7aa305aa719d924dc49d3610); ?>
-<?php _3559abad7aa305aa719d924dc49d3610($__blaze, $__attrs3559abad7aa305aa719d924dc49d3610, $__slots3559abad7aa305aa719d924dc49d3610, [], [], $__this ?? (isset($this) ? $this : null)); ?>
-<?php if (! empty($__slotsStack3559abad7aa305aa719d924dc49d3610)) { $__slots3559abad7aa305aa719d924dc49d3610 = array_pop($__slotsStack3559abad7aa305aa719d924dc49d3610); } ?>
-<?php if (! empty($__attrsStack3559abad7aa305aa719d924dc49d3610)) { $__attrs3559abad7aa305aa719d924dc49d3610 = array_pop($__attrsStack3559abad7aa305aa719d924dc49d3610); } ?>
-<?php $__blaze->popData(); ?>
+                    <p class="mt-1 text-sm text-red-600 dark:text-red-400"><?php echo e($message); ?></p>
                 <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
 unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
             </div>
 
-            <?php $__blaze->ensureRequired('/www/wwwroot/testings.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/checkbox/index.blade.php', $__blaze->compiledPath.'/31a9ed35077ed656460ba3cb3d350b2b.php'); ?>
-<?php $__blaze->pushData(['name' => 'remember','label' => __('Remember me'),'checked' => old('remember')]); ?>
-<?php _31a9ed35077ed656460ba3cb3d350b2b($__blaze, ['name' => 'remember','label' => __('Remember me'),'checked' => old('remember')], [], ['label', 'checked'], [], $__this ?? (isset($this) ? $this : null)); ?>
-<?php $__blaze->popData(); ?>
+            <label class="inline-flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+                <input type="checkbox" name="remember" value="1" <?php if(old('remember')): echo 'checked'; endif; ?>
+                    class="rounded border-zinc-300 dark:border-zinc-700 text-blue-600 focus:ring-blue-500" />
+                <span><?php echo e(__('Remember me')); ?></span>
+            </label>
 
-            <?php ob_start(); ?><button type="submit" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-10 text-sm rounded-lg ps-4 pe-4 inline-flex  bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 dark:border-0 shadow-[inset_0px_1px_--theme(--color-white/.2)] [[data-flux-button-group]_&amp;]:border-e-0 [:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-[1px] dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-0 dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-s-[1px] [:is([data-flux-button-group]&gt;&amp;:not(:first-child),_[data-flux-button-group]_:not(:first-child)&gt;&amp;)]:border-s-[color-mix(in_srgb,var(--color-accent-foreground),transparent_85%)] *:transition-opacity [&amp;[disabled]&gt;:not([data-flux-loading-indicator])]:opacity-0 [&amp;[disabled]&gt;[data-flux-loading-indicator]]:opacity-100 [&amp;[disabled]]:pointer-events-none  w-full" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target" data-test="login-button">
-        <div class="absolute inset-0 flex items-center justify-center opacity-0" data-flux-loading-indicator>
-                <svg class="shrink-0 [:where(&amp;)]:size-4 animate-spin" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true" data-slot="icon">
-    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-</svg>
-                    </div>
-        
-        
-                    
-            
-            <span><?php ob_start(); ?>
-                <?php echo e(__('Log in')); ?>
-
-            <?php echo trim(ob_get_clean()); ?></span>
-    </button>
-<?php echo ltrim(ob_get_clean()); ?>
+            <button type="submit" id="login-submit"
+                class="w-full inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition disabled:opacity-60 disabled:cursor-not-allowed"
+                data-test="login-button">
+                <span id="login-submit-text"><?php echo e(__('Log in')); ?></span>
+                <svg id="login-spinner" class="hidden ml-2 w-4 h-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                </svg>
+            </button>
         </form>
 
-        
         <div class="relative flex items-center">
             <div class="flex-grow border-t border-zinc-200 dark:border-zinc-700"></div>
             <span class="px-3 text-xs text-zinc-500">OR</span>
             <div class="flex-grow border-t border-zinc-200 dark:border-zinc-700"></div>
         </div>
 
-        
         <div class="flex flex-col gap-3">
-            <?php ob_start(); ?><button type="button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-10 text-sm rounded-lg ps-3 pe-4 inline-flex  bg-white hover:bg-zinc-50 dark:bg-zinc-700 dark:hover:bg-zinc-600/75 text-zinc-800 dark:text-white border border-zinc-200 hover:border-zinc-200 border-b-zinc-300/80 dark:border-zinc-600 dark:hover:border-zinc-600 shadow-xs [[data-flux-button-group]_&amp;]:border-s-0 [:is([data-flux-button-group]&gt;&amp;:first-child,_[data-flux-button-group]_:first-child&gt;&amp;)]:border-s-[1px]   w-full" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target" id="passkey-login-button">
-        <svg class="shrink-0 [:where(&amp;)]:size-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-  <path fill-rule="evenodd" d="M8 3c-.988 0-1.908.286-2.682.78a.75.75 0 0 1-.806-1.266A6.5 6.5 0 0 1 14.5 8c0 1.665-.333 3.254-.936 4.704a.75.75 0 0 1-1.385-.577C12.708 10.857 13 9.464 13 8a5 5 0 0 0-5-5ZM3.55 4.282a.75.75 0 0 1 .23 1.036A4.973 4.973 0 0 0 3 8a.75.75 0 0 1-1.5 0c0-1.282.372-2.48 1.014-3.488a.75.75 0 0 1 1.036-.23ZM8 5.875A2.125 2.125 0 0 0 5.875 8a3.625 3.625 0 0 1-3.625 3.625H2.213a.75.75 0 1 1 .008-1.5h.03A2.125 2.125 0 0 0 4.376 8a3.625 3.625 0 1 1 7.25 0c0 .078-.001.156-.003.233a.75.75 0 1 1-1.5-.036c.002-.066.003-.131.003-.197A2.125 2.125 0 0 0 8 5.875ZM7.995 7.25a.75.75 0 0 1 .75.75 6.502 6.502 0 0 1-4.343 6.133.75.75 0 1 1-.498-1.415A5.002 5.002 0 0 0 7.245 8a.75.75 0 0 1 .75-.75Zm2.651 2.87a.75.75 0 0 1 .463.955 9.39 9.39 0 0 1-3.008 4.25.75.75 0 0 1-.936-1.171 7.892 7.892 0 0 0 2.527-3.57.75.75 0 0 1 .954-.463Z" clip-rule="evenodd"/>
-</svg>
-
-                
-                    
-            
-            <span><?php ob_start(); ?>
+            <button id="passkey-login-button" type="button"
+                class="w-full inline-flex items-center justify-center gap-2 rounded-lg border border-blue-600 bg-white dark:bg-zinc-900 px-4 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-950/30 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7.864 4.243A7.5 7.5 0 0 1 19.5 10.5c0 2.92-.556 5.709-1.568 8.268M5.742 6.364A7.465 7.465 0 0 0 4.5 10.5a7.464 7.464 0 0 1-1.15 3.993m1.989 3.559A11.209 11.209 0 0 0 8.25 10.5a3.75 3.75 0 1 1 7.5 0c0 .527-.021 1.049-.064 1.565M12 10.5a14.94 14.94 0 0 1-3.6 9.75m6.633-4.596a18.666 18.666 0 0 1-2.485 5.33" />
+                </svg>
                 Login with Passkey
-            <?php echo trim(ob_get_clean()); ?></span>
-    </button>
-<?php echo ltrim(ob_get_clean()); ?>
+            </button>
 
-            <div
-                id="passkey-login-error"
-                class="hidden p-3 rounded-lg bg-red-100 text-red-700 text-sm text-center"
-                role="alert"
-                aria-live="polite"
-            ></div>
+            <div id="passkey-login-error" class="hidden p-3 rounded-lg bg-red-100 text-red-700 text-sm text-center" role="alert" aria-live="polite"></div>
         </div>
     </div>
 
+    
+    <div id="login-success-modal"
+         class="hidden fixed inset-0 z-50 items-center justify-center bg-black/50 backdrop-blur-sm p-4 opacity-0 transition-opacity duration-300">
+        <div id="login-success-card"
+             class="w-full max-w-sm rounded-2xl bg-white dark:bg-zinc-900 p-6 shadow-xl text-center
+                    scale-90 opacity-0 translate-y-3 transition-all duration-300">
+            
+            
+            <div class="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/40 relative">
+                <svg id="success-check" class="w-14 h-14 text-green-600 dark:text-green-400" viewBox="0 0 52 52" fill="none">
+                    <circle id="success-circle" cx="26" cy="26" r="22"
+                            stroke="currentColor" stroke-width="4"
+                            stroke-dasharray="138" stroke-dashoffset="138"
+                            transform="rotate(-90 26 26)" />
+                    <path id="success-path" d="M15 27 L23 35 L38 18"
+                          stroke="currentColor" stroke-width="5"
+                          stroke-linecap="round" stroke-linejoin="round"
+                          stroke-dasharray="35" stroke-dashoffset="35" />
+                </svg>
+            </div>
+
+            <h3 class="mt-4 text-lg font-semibold text-zinc-900 dark:text-zinc-100"><?php echo e(__('Login Berhasil')); ?></h3>
+            <p class="mt-1 text-sm text-zinc-600 dark:text-zinc-400"><?php echo e(__('Selamat datang! Anda akan diarahkan ke dashboard.')); ?></p>
+
+            <div class="mt-6 flex flex-col gap-2">
+                <button type="button" id="go-dashboard"
+                    class="w-full inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition">
+                    <?php echo e(__('Ke Dashboard')); ?>
+
+                </button>
+                <p class="text-xs text-zinc-500"><?php echo e(__('Dialihkan otomatis dalam')); ?> <span id="countdown">3</span>s</p>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Sembunyikan ikon mata bawaan browser */
+        input[type="password"]::-ms-reveal,
+        input[type="password"]::-ms-clear { display: none; }
+        input[type="password"]::-webkit-credentials-auto-fill-button,
+        input[type="password"]::-webkit-contacts-auto-fill-button {
+            visibility: hidden; display: none !important; pointer-events: none; position: absolute; right: 0;
+        }
+
+        /* ===== Animasi Checkmark ===== */
+        @keyframes drawCircle { to { stroke-dashoffset: 0; } }
+        @keyframes drawCheck  { to { stroke-dashoffset: 0; } }
+
+        #login-success-modal.is-visible #success-circle {
+            animation: drawCircle 0.6s ease-in-out forwards;
+        }
+        #login-success-modal.is-visible #success-path {
+            animation: drawCheck 0.4s ease-in-out 0.55s forwards;
+        }
+
+        /* ===== Countdown ===== */
+        #countdown {
+            display: inline-block;
+            min-width: 1ch;
+            font-variant-numeric: tabular-nums;
+            transform-origin: center;
+            transition: transform 0.12s ease;
+            will-change: transform;
+        }
+        #countdown.pop {
+            transform: scale(1.08);
+        }
+    </style>
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const button = document.getElementById('passkey-login-button');
+            const form = document.getElementById('login-form');
+            const submitBtn = document.getElementById('login-submit');
+            const submitText = document.getElementById('login-submit-text');
+            const spinner = document.getElementById('login-spinner');
+
+            const modal = document.getElementById('login-success-modal');
+            const card = document.getElementById('login-success-card');
+            const circle = document.getElementById('success-circle');
+            const path = document.getElementById('success-path');
+            const goDashboardBtn = document.getElementById('go-dashboard');
+            const countdownEl = document.getElementById('countdown');
+
+            const DASHBOARD_URL = '/main-dashboard';
+            const COUNTDOWN_SECONDS = 3;
+            let countdownRaf = null;
+            let countdownStarted = false;
+
+            // ---------- Toggle password ----------
+            const passwordInput = document.getElementById('password');
+            const togglePassword = document.getElementById('toggle-password');
+            const slash = document.getElementById('password-slash');
+
+            if (togglePassword && passwordInput && slash) {
+                togglePassword.addEventListener('click', () => {
+                    const isHidden = passwordInput.type === 'password';
+                    passwordInput.type = isHidden ? 'text' : 'password';
+                    slash.classList.toggle('hidden', !isHidden);
+                    togglePassword.setAttribute('aria-pressed', String(isHidden));
+                });
+            }
+
+            // ---------- Countdown halus ----------
+            const startCountdown = () => {
+                if (countdownRaf) cancelAnimationFrame(countdownRaf);
+
+                const totalMs = COUNTDOWN_SECONDS * 1000;
+                const start = performance.now();
+                let lastShown = null;
+
+                countdownEl.textContent = COUNTDOWN_SECONDS;
+
+                const frame = (now) => {
+                    const elapsed = now - start;
+                    const remainingMs = Math.max(0, totalMs - elapsed);
+                    const shown = Math.ceil(remainingMs / 1000);
+
+                    if (shown !== lastShown) {
+                        lastShown = shown;
+                        countdownEl.textContent = shown;
+
+                        countdownEl.classList.remove('pop');
+                        void countdownEl.offsetWidth;
+                        countdownEl.classList.add('pop');
+                    }
+
+                    if (remainingMs <= 0) {
+                        window.location.assign(DASHBOARD_URL);
+                        return;
+                    }
+
+                    countdownRaf = requestAnimationFrame(frame);
+                };
+
+                countdownRaf = requestAnimationFrame(frame);
+            };
+
+            // ---------- Modal sukses + animasi checkmark ----------
+            const showSuccessModal = () => {
+                modal.classList.remove('is-visible');
+                circle.style.animation = 'none';
+                path.style.animation = 'none';
+                circle.style.strokeDashoffset = '138';
+                path.style.strokeDashoffset = '35';
+
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        modal.classList.remove('opacity-0');
+                        card.classList.remove('scale-90', 'opacity-0', 'translate-y-3');
+                        card.classList.add('scale-100', 'opacity-100', 'translate-y-0');
+                    });
+                });
+
+                // Trigger animasi centang setelah card muncul
+                setTimeout(() => {
+                    circle.style.animation = '';
+                    path.style.animation = '';
+                    void circle.getBoundingClientRect();
+                    void path.getBoundingClientRect();
+                    modal.classList.add('is-visible');
+                }, 350);
+
+                // Mulai countdown setelah centang selesai digambar
+                setTimeout(() => {
+                    if (!countdownStarted) {
+                        countdownStarted = true;
+                        startCountdown();
+                    }
+                }, 1400); 
+            };
+
+            goDashboardBtn?.addEventListener('click', () => {
+                if (countdownRaf) cancelAnimationFrame(countdownRaf);
+                window.location.assign(DASHBOARD_URL);
+            });
+
+            // ---------- Submit via fetch ----------
+            form?.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                submitBtn.disabled = true;
+                spinner.classList.remove('hidden');
+                submitText.textContent = 'Memproses...';
+
+                try {
+                    const formData = new FormData(form);
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json',
+                        },
+                        credentials: 'same-origin',
+                        redirect: 'manual'
+                    });
+
+                    if (response.ok || response.type === 'opaqueredirect' || response.status === 302 || response.status === 0) {
+                        showSuccessModal();
+                        return;
+                    }
+
+                    window.location.reload();
+                } catch (err) {
+                    console.error(err);
+                    form.submit();
+                } finally {
+                    submitBtn.disabled = false;
+                    spinner.classList.add('hidden');
+                    submitText.textContent = '<?php echo e(__('Log in')); ?>';
+                }
+            });
+
+            // ---------- Passkey ----------
+            const passkeyBtn = document.getElementById('passkey-login-button');
             const errorBox = document.getElementById('passkey-login-error');
 
-            if (!button || !errorBox) return;
-
-            const showError = (message) => {
-                errorBox.textContent = message;
+            const showError = (msg) => {
+                errorBox.textContent = msg;
                 errorBox.classList.remove('hidden');
             };
 
@@ -277,45 +396,30 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                 document.querySelector('input[name="remember"]')?.checked ?? false;
 
             if (!window.Passkeys) {
-                button.disabled = true;
+                passkeyBtn.disabled = true;
                 showError('Passkey belum siap. Muat ulang halaman atau periksa build Vite.');
                 return;
             }
 
-            button.addEventListener('click', async () => {
+            passkeyBtn.addEventListener('click', async () => {
                 errorBox.classList.add('hidden');
-                button.disabled = true;
-                button.textContent = 'Menunggu autentikasi...';
+                passkeyBtn.disabled = true;
+                passkeyBtn.textContent = 'Menunggu autentikasi...';
 
                 try {
-                    const response = await window.Passkeys.verify({
-                        remember: rememberMe(),
-                    });
-
-                    if (response?.redirect) {
-                        window.location.assign(response.redirect);
-                    } else {
-                        window.location.reload();
-                    }
+                    await window.Passkeys.verify({ remember: rememberMe() });
+                    showSuccessModal();
                 } catch (error) {
                     console.error('Passkey login error:', error);
-
-                    showError(
-                        error?.message ||
-                        'Login passkey gagal atau dibatalkan. Silakan coba lagi.'
-                    );
-
-                    button.disabled = false;
-                    button.textContent = 'Login dengan Passkey';
+                    showError(error?.message || 'Login passkey gagal atau dibatalkan. Silakan coba lagi.');
+                    passkeyBtn.disabled = false;
+                    passkeyBtn.textContent = 'Login dengan Passkey';
                 }
             });
 
-            // Mencoba menampilkan passkey tersimpan melalui autofill browser.
             if (typeof window.Passkeys.autofill === 'function') {
-                window.Passkeys.autofill({
-                    remember: rememberMe(),
-                }).catch((error) => {
-                    console.debug('Passkey autofill tidak aktif:', error);
+                window.Passkeys.autofill({ remember: rememberMe() }).catch((err) => {
+                    console.debug('Passkey autofill tidak aktif:', err);
                 });
             }
         });
@@ -329,5 +433,4 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
 <?php if (isset($__componentOriginal08b8a564843783787e0bee3357e24f38)): ?>
 <?php $component = $__componentOriginal08b8a564843783787e0bee3357e24f38; ?>
 <?php unset($__componentOriginal08b8a564843783787e0bee3357e24f38); ?>
-<?php endif; ?>
-<?php /**PATH /www/wwwroot/testings.siix-ems.co.id/siix-portal/resources/views/livewire/auth/login.blade.php ENDPATH**/ ?>
+<?php endif; ?><?php /**PATH /www/wwwroot/testings.siix-ems.co.id/siix-portal/resources/views/livewire/auth/login.blade.php ENDPATH**/ ?>
