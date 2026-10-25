@@ -14,7 +14,19 @@ class FlooringDetail extends Model
 
     protected $table = 'tb_esd_flooring_details';
 
-    protected $fillable = ['flooring_id', 'area', 'location', 'b1', 'b1_scientific', 'judgement', 'remarks', 'next_date', 'created_by'];
+    protected $fillable = [
+        'flooring_id', 'area', 'location',
+        'b1', 'b1_scientific', 'judgement',
+        'b2_1', 'b2_2', 'b2_3',   // ✅ baru
+        'remarks', 'next_date', 'created_by', 'updated_by'
+    ];
+
+    protected $casts = [
+        'b2_1' => 'boolean',
+        'b2_2' => 'boolean',
+        'b2_3' => 'boolean',
+        'next_date' => 'date',
+    ];
 
     public function flooring()
     {

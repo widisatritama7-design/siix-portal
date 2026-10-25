@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="dark">
 <head>
-    @voletStyles
     @include('partials.head')
     @mingles
     <style>
@@ -125,10 +124,21 @@
 
 <body class="bg-gray-100 dark:bg-zinc-900">
 
-    <div x-data="sidebarPersistence()" x-init="init()" x-cloak class="flex min-h-screen">
+    <div x-data="sidebarPersistence()" x-init="init()" x-cloak class="min-h-screen">
         
         <!-- Overlay for mobile -->
         <div class="overlay" :class="{'open': sidebarOpen && isMobile}" @click="closeMobileSidebar"></div>
+
+        <!-- Backdrop saat sidebar floating di desktop -->
+        <div x-show="!isMobile && isHovering && !sidebarPinned"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            class="fixed inset-0 bg-black/20 z-40"
+            x-cloak></div>
         
         <!-- SIDEBAR -->
         <aside x-ref="sidebar"
@@ -136,15 +146,19 @@
             @mouseleave="handleMouseLeave"
             class="bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-700 shadow-lg h-screen overflow-hidden sidebar-transition flex flex-col"
             :class="{
-                'fixed top-0 left-0 z-50': isMobile,
-                'sticky top-0': !isMobile,
-                'w-64': (!isMobile && ((sidebarOpen && !isMobile) || (isHovering && !sidebarPinned && !isMobile))) || (isMobile && sidebarOpen),
-                'w-20': (!isMobile && (!sidebarOpen && !isMobile) && (!isHovering || sidebarPinned)),
-                'hidden': isMobile && !sidebarOpen,
-                'translate-x-0': isMobile && sidebarOpen,
-                '-translate-x-full': isMobile && !sidebarOpen
+                // Posisi: selalu fixed (mobile & desktop)
+                'fixed top-0 left-0 z-50': true,
+
+                // Width
+                'w-64': (isMobile && sidebarOpen) || (!isMobile && (sidebarPinned || isHovering)),
+                'w-20': !isMobile && !sidebarPinned && !isHovering,
+
+                // Visibilitas mobile
+                'hidden': isMobile && !sidebarOpen
             }"
-            :style="(isHovering && !sidebarPinned && !isMobile) ? 'transition: width 0.2s ease-in-out;' : 'transition: width 0.3s ease-in-out;'">
+            :style="(!isMobile && isHovering && !sidebarPinned) 
+                ? 'transition: width 0.2s ease-in-out; box-shadow: 8px 0 24px rgba(0,0,0,0.15);' 
+                : 'transition: width 0.3s ease-in-out;'">
             
             <!-- Sidebar Header -->
             <div class="h-16 flex items-center px-4" 
@@ -1650,69 +1664,72 @@
         </aside>
         
         <!-- MAIN CONTENT -->
-        <main class="flex-1 min-w-0 bg-gray-100 dark:bg-black">
-            <flux:header class="sticky top-0 z-10 block! bg-white dark:bg-black border-b border-zinc-200 dark:border-zinc-800 p-0! m-0! w-full shadow-sm">
-                <flux:navbar class="flex items-center justify-between px-3 lg:px-4 mx-0!">
-                    <div class="flex items-center gap-3">
-                        <button @click="toggleSidebar" 
-                                class="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
-                            <svg class="w-5 h-5 text-zinc-600 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                            </svg>
-                        </button>
+         <div class="min-w-0 transition-[margin] duration-300 ease-in-out"
+             :class="isMobile ? 'ml-0' : (sidebarPinned ? 'ml-64' : 'ml-20')">
+            <main class="min-w-0 bg-gray-100 dark:bg-black w-full">
+                <flux:header class="sticky top-0 z-10 block! bg-white dark:bg-black border-b border-zinc-200 dark:border-zinc-800 p-0! m-0! w-full shadow-sm">
+                    <flux:navbar class="flex items-center justify-between px-3 lg:px-4 mx-0!">
+                        <div class="flex items-center gap-3">
+                            <button @click="toggleSidebar" 
+                                    class="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                <svg class="w-5 h-5 text-zinc-600 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                                </svg>
+                            </button>
+                            
+                            <livewire:header-badge />
+                        </div>
                         
-                        <livewire:header-badge />
-                    </div>
-                    
-                    <div class="flex items-center gap-1 sm:gap-2">
-                        <a href="{{ route('profile.edit') }}" 
-                            class="flex items-center gap-2 rounded-lg !p-2 lg:!p-2.5 
-                                text-zinc-700 dark:text-zinc-300 
-                                hover:text-zinc-900 dark:hover:text-zinc-100 
-                                hover:bg-zinc-100 dark:hover:bg-zinc-800 
-                                focus:bg-zinc-100 dark:focus:bg-zinc-800
-                                focus:outline-none focus:ring-2 focus:ring-zinc-400/30
-                                transition-all duration-200">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
-                                <path fill-rule="evenodd" d="M18.685 19.097A9.723 9.723 0 0 0 21.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 0 0 3.065 7.097A9.716 9.716 0 0 0 12 21.75a9.716 9.716 0 0 0 6.685-2.653Zm-12.54-1.285A7.486 7.486 0 0 1 12 15a7.486 7.486 0 0 1 5.855 2.812A8.224 8.224 0 0 1 12 20.25a8.224 8.224 0 0 1-5.855-2.438ZM15.75 9a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" clip-rule="evenodd" />
-                            </svg>
-                            <span class="hidden lg:inline text-sm font-medium text-zinc-700 dark:text-zinc-300">
-                                {{ auth()->user()?->name ?? 'Guest' }}
-                            </span>
-                        </a>
+                        <div class="flex items-center gap-1 sm:gap-2">
+                            <a href="{{ route('profile.edit') }}" 
+                                class="flex items-center gap-2 rounded-lg !p-2 lg:!p-2.5 
+                                    text-zinc-700 dark:text-zinc-300 
+                                    hover:text-zinc-900 dark:hover:text-zinc-100 
+                                    hover:bg-zinc-100 dark:hover:bg-zinc-800 
+                                    focus:bg-zinc-100 dark:focus:bg-zinc-800
+                                    focus:outline-none focus:ring-2 focus:ring-zinc-400/30
+                                    transition-all duration-200">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-6">
+                                    <path fill-rule="evenodd" d="M18.685 19.097A9.723 9.723 0 0 0 21.75 12c0-5.385-4.365-9.75-9.75-9.75S2.25 6.615 2.25 12a9.723 9.723 0 0 0 3.065 7.097A9.716 9.716 0 0 0 12 21.75a9.716 9.716 0 0 0 6.685-2.653Zm-12.54-1.285A7.486 7.486 0 0 1 12 15a7.486 7.486 0 0 1 5.855 2.812A8.224 8.224 0 0 1 12 20.25a8.224 8.224 0 0 1-5.855-2.438ZM15.75 9a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" clip-rule="evenodd" />
+                                </svg>
+                                <span class="hidden lg:inline text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                                    {{ auth()->user()?->name ?? 'Guest' }}
+                                </span>
+                            </a>
 
-                        <flux:separator vertical class="my-2" />
-                        
-                        <button 
-                            x-data
-                            @click="$flux.dark = ! $flux.dark"
-                            class="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
-                            :aria-label="$flux.dark ? 'Switch to light mode' : 'Switch to dark mode'">
-                            <svg x-show="!$flux.dark" class="w-5 h-5 text-zinc-600 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                            </svg>
-                            <svg x-show="$flux.dark" class="w-5 h-5 text-zinc-600 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
-                            </svg>
-                        </button>
-                        
-                        <!-- Tombol Logout - Hanya tampil jika user bukan guest -->
-                        @auth
-                        <form method="POST" action="{{ route('logout') }}">
-                            @csrf
-                            <flux:button type="submit" variant="danger" icon="arrow-right" size="sm">
-                                <span class="hidden lg:inline">{{ __('Logout') }}</span>
-                            </flux:button>
-                        </form>
-                        @endauth
-                    </div>
-                </flux:navbar>
-            </flux:header>
-            
-            <div class="p-0">
-                {{ $slot }}
-            </div>
-        </main>
+                            <flux:separator vertical class="my-2" />
+                            
+                            <button 
+                                x-data
+                                @click="$flux.dark = ! $flux.dark"
+                                class="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                                :aria-label="$flux.dark ? 'Switch to light mode' : 'Switch to dark mode'">
+                                <svg x-show="!$flux.dark" class="w-5 h-5 text-zinc-600 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                </svg>
+                                <svg x-show="$flux.dark" class="w-5 h-5 text-zinc-600 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                                </svg>
+                            </button>
+                            
+                            <!-- Tombol Logout - Hanya tampil jika user bukan guest -->
+                            @auth
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <flux:button type="submit" variant="danger" icon="arrow-right" size="sm">
+                                    <span class="hidden lg:inline">{{ __('Logout') }}</span>
+                                </flux:button>
+                            </form>
+                            @endauth
+                        </div>
+                    </flux:navbar>
+                </flux:header>
+                
+                <div class="p-0">
+                    {{ $slot }}
+                </div>
+            </main>
+        </div>
     </div>
 
     @fluxScripts
@@ -2034,6 +2051,5 @@
             }
         }
     </script>
-    @volet
 </body>
 </html>

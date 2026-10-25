@@ -9,80 +9,82 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Arial', sans-serif;
-            font-size: 9pt;
-            line-height: 1.3;
-            margin: 15px;
+            font-size: 8pt;
+            line-height: 1.25;
+            margin: 12px;
             padding: 0;
         }
-        
+
         .container {
             width: 100%;
             margin: 0 auto;
         }
-        
+
         .header {
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             border-bottom: 2px solid #333;
             padding-bottom: 8px;
         }
-        
+
         .header h1 {
             margin: 0;
-            font-size: 16pt;
+            font-size: 15pt;
             color: #1a56db;
         }
-        
+
         .report-info {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             padding: 8px;
             background: #f3f4f6;
             border-radius: 5px;
-            font-size: 8pt;
+            font-size: 7.5pt;
         }
-        
+
         .report-info table {
             width: 100%;
         }
-        
+
         .report-info td {
             padding: 2px 5px;
         }
-        
+
         .report-info td:first-child {
             font-weight: bold;
             width: 100px;
         }
-        
+
         table.data-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
-            font-size: 8pt;
+            margin-top: 8px;
+            font-size: 6.5pt;
         }
-        
+
         table.data-table th {
             background: #1a56db;
             color: white;
-            padding: 6px 4px;
+            padding: 5px 3px;
             text-align: center;
             border: 1px solid #ddd;
             font-weight: bold;
+            font-size: 6pt;
+            line-height: 1.15;
         }
-        
+
         table.data-table td {
-            padding: 5px 4px;
+            padding: 4px 3px;
             border: 1px solid #ddd;
-            vertical-align: top;
+            vertical-align: middle;
         }
-        
+
         table.data-table tr:nth-child(even) {
             background: #f9fafb;
         }
-        
+
         .footer {
             margin-top: 15px;
             text-align: center;
@@ -95,47 +97,39 @@
             left: 0;
             right: 0;
         }
-        
-        .badge-ok {
-            color: #059669;
-            font-weight: bold;
-        }
-        
-        .badge-ng {
-            color: #dc2626;
-            font-weight: bold;
-        }
-        
-        .text-center {
-            text-align: center;
-        }
-        
-        .text-left {
-            text-align: left;
-        }
-        
+
+        .badge-ok { color: #059669; font-weight: bold; }
+        .badge-ng { color: #dc2626; font-weight: bold; }
+        .badge-yes { color: #059669; font-weight: bold; }
+        .badge-no  { color: #dc2626; font-weight: bold; }
+        .badge-na  { color: #9ca3af; }
+
+        .text-center { text-align: center; }
+        .text-left { text-align: left; }
+
         .wrap-text {
             word-wrap: break-word;
             word-break: break-all;
             white-space: normal;
         }
-        
-        .col-no { width: 3%; }
-        .col-sap { width: 10%; }
-        .col-description { width: 15%; }
-        .col-delivery { width: 8%; }
-        .col-c1 { width: 10%; }
-        .col-judge { width: 5%; }
-        .col-remarks { width: 12%; }
-        .col-date { width: 8%; }
-        .col-next-date { width: 8%; }
-        .col-checked { width: 8%; }
-        
+
+        .col-no { width: 2.5%; }
+        .col-sap { width: 9%; }
+        .col-description { width: 13%; }
+        .col-delivery { width: 7%; }
+        .col-c1 { width: 8%; }
+        .col-judge { width: 4.5%; }
+        .col-c2 { width: 4.5%; }
+        .col-remarks { width: 11%; }
+        .col-date { width: 7%; }
+        .col-next-date { width: 7%; }
+        .col-checked { width: 9%; }
+
         @page {
             size: A4 landscape;
-            margin: 15px;
+            margin: 12px;
         }
-        
+
         @media print {
             body {
                 margin: 0;
@@ -165,7 +159,7 @@
                 </tr>
             </table>
         </div>
-        
+
         <div class="report-info">
             <table style="width: 100%;">
                 <tr>
@@ -200,9 +194,9 @@
                             @if($date_from || $date_until)
                             <tr>
                                 <td>Date Range</td>
-                                <td colspan="3">: 
-                                    {{ $date_from ? \Carbon\Carbon::parse($date_from)->format('d M Y') : 'Start' }} 
-                                    to 
+                                <td colspan="3">:
+                                    {{ $date_from ? \Carbon\Carbon::parse($date_from)->format('d M Y') : 'Start' }}
+                                    to
                                     {{ $date_until ? \Carbon\Carbon::parse($date_until)->format('d M Y') : 'End' }}
                                 </td>
                             </tr>
@@ -221,35 +215,38 @@
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
-                                    <span style="font-size: 7pt;">( {{ '_________________' }} )</span>
+                                    <span style="font-size: 7pt;">( _________________ )</span>
                                 </td>
                                 <td style="text-align: center; padding: 0 10px; width: 33%;">
                                     <strong>CHECKED BY</strong><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
-                                    <span style="font-size: 7pt;">( {{ '_________________' }} )</span>
+                                    <span style="font-size: 7pt;">( _________________ )</span>
                                 </td>
                                 <td style="text-align: center; padding: 0 10px; width: 33%;">
                                     <strong>APPROVED BY</strong><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
-                                    <span style="font-size: 7pt;">( {{ '_________________' }} )</span>
+                                    <span style="font-size: 7pt;">( _________________ )</span>
                                 </td>
                             </tr>
                         </table>
                     </td>
                 </tr>
             </table>
-            <div style="margin-top: 10px; padding-top: 8px; border-top: 1px solid #ddd; font-size: 8pt; text-align: left;">
-                <strong>STANDARD ESD OF GLOVE</strong><br>
-                <div style="margin-top: 5px; font-size: 7.5pt;">
-                    <div>( C1 ) Glove Point to Ground Resistance Test : &lt; 3.50E+7 Ohm</div>
+
+            <div style="margin-top: 10px; padding: 6px 8px; background: #e8f0fe; border-radius: 4px; font-size: 7pt; text-align: left; border-top: 1px solid #ddd;">
+                <strong>STANDARD ESD OF GLOVE</strong>
+                <div style="margin-top: 4px;">
+                    <div>• (C1) Glove Point to Ground Resistance Test : &lt; 3.50E+7 Ohm</div>
+                    <div style="margin-top: 3px;"><strong>• (C-2) Visual Inspection Checklist</strong></div>
+                    <div style="padding-left: 12px;">(C-2.1) Gloves ESD tidak robek atau berlubang</div>
                 </div>
             </div>
         </div>
-        
+
         <table class="data-table">
             <thead>
                 <tr>
@@ -258,7 +255,8 @@
                     <th class="col-description">Description</th>
                     <th class="col-delivery">Delivery</th>
                     <th class="col-c1">C1 Result</th>
-                    <th class="col-judge">Judgement</th>
+                    <th class="col-judge">Judg</th>
+                    <th class="col-c2">C-2.1</th>
                     <th class="col-remarks">Remarks</th>
                     <th class="col-date">Date</th>
                     <th class="col-next-date">Next Date</th>
@@ -278,6 +276,18 @@
                             {{ $detail->judgement ?? '-' }}
                         </span>
                     </td>
+
+                    {{-- C-2.1 --}}
+                    <td class="text-center">
+                        @if($detail->c_2_1 !== null)
+                            <span class="{{ $detail->c_2_1 ? 'badge-yes' : 'badge-no' }}">
+                                {{ $detail->c_2_1 ? 'Yes' : 'No' }}
+                            </span>
+                        @else
+                            <span class="badge-na">-</span>
+                        @endif
+                    </td>
+
                     <td class="wrap-text">{{ $detail->remarks ?? '-' }}</td>
                     <td class="text-center">{{ $detail->created_at ? $detail->created_at->format('d M Y') : '-' }}</td>
                     <td class="text-center">{{ $detail->next_date ? \Carbon\Carbon::parse($detail->next_date)->format('d M Y') : '-' }}</td>
@@ -285,14 +295,14 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="10" class="text-center" style="padding: 20px;">
+                    <td colspan="11" class="text-center" style="padding: 20px;">
                         No data found for the selected filters.
                     </td>
                 </tr>
                 @endforelse
             </tbody>
         </table>
-        
+
         <div class="footer" style="font-weight: bold;">
             QR-ADM-24-K013
         </div>

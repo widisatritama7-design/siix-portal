@@ -13,14 +13,14 @@ class FlooringShow extends Component
     use WithPagination;
 
     public $flooring;
-    
+
     // Filter properties
     public $filterDateFrom;
     public $filterDateUntil;
     public $filterNextDateFrom;
     public $filterNextDateUntil;
     public $search = '';
-    
+
     // Form properties
     public $detail_id;
     public $flooring_id;
@@ -30,11 +30,14 @@ class FlooringShow extends Component
     public $b1;
     public $b1_scientific;
     public $judgement;
+    public $b2_1;
+    public $b2_2;
+    public $b2_3;
     public $remarks;
     public $next_date;
     public $modalTitle = 'Add New Measurement';
     public $detailToDelete = null;
-    
+
     // Flooring list for dropdown
     public $floorings;
 
@@ -42,12 +45,15 @@ class FlooringShow extends Component
     {
         return [
             'flooring_id' => 'required|exists:tb_esd_floorings,id',
-            'b1' => 'nullable|numeric|min:0', // Diubah jadi nullable
+            'b1' => 'nullable|numeric|min:0',
+            'b2_1' => 'nullable|boolean',
+            'b2_2' => 'nullable|boolean',
+            'b2_3' => 'nullable|boolean',
             'remarks' => 'nullable|string',
             'next_date' => 'nullable|date',
         ];
     }
-    
+
     protected function messages()
     {
         return [
@@ -55,6 +61,9 @@ class FlooringShow extends Component
             'flooring_id.exists' => 'Selected flooring does not exist.',
             'b1.numeric' => 'B1 measurement must be a number.',
             'b1.min' => 'B1 measurement must be at least 0.',
+            'b2_1.boolean' => 'B2.1 must be Yes or No.',
+            'b2_2.boolean' => 'B2.2 must be Yes or No.',
+            'b2_3.boolean' => 'B2.3 must be Yes or No.',
             'next_date.date' => 'Next date must be a valid date.',
         ];
     }
@@ -62,11 +71,11 @@ class FlooringShow extends Component
     public function mount($id)
     {
         $this->flooring = Flooring::with('creator')->findOrFail($id);
-        
+
         if (!auth()->user()->can('view flooring')) {
             abort(403, 'Unauthorized access.');
         }
-        
+
         $this->loadFloorings();
     }
 
@@ -75,10 +84,8 @@ class FlooringShow extends Component
         $this->floorings = Flooring::orderBy('register_no')->get();
     }
 
-    // Fungsi baru untuk handle input kosong
     public function updatedB1($value)
     {
-        // Jika kosong, set ke null
         if ($value === '' || $value === null) {
             $this->b1 = null;
         }
@@ -87,11 +94,8 @@ class FlooringShow extends Component
 
     public function resetJudgement()
     {
-        // Handle jika b1 kosong
         if ($this->b1 !== null && $this->b1 !== '') {
-            // Standard: < 1.00E+9 Ohm (1,000,000,000 Ohm)
             $this->judgement = floatval($this->b1) >= 1000000000 ? 'NG' : 'OK';
-            // Convert to scientific notation with 2 decimal places
             $this->b1_scientific = sprintf('%.2E', floatval($this->b1));
         } else {
             $this->judgement = null;
@@ -117,8 +121,12 @@ class FlooringShow extends Component
 
     public function resetForm()
     {
-        $this->reset(['detail_id', 'flooring_id', 'register_no', 'area', 'location', 
-                      'b1', 'b1_scientific', 'judgement', 'remarks', 'next_date']);
+        $this->reset([
+            'detail_id', 'flooring_id', 'register_no', 'area', 'location',
+            'b1', 'b1_scientific', 'judgement',
+            'b2_1', 'b2_2', 'b2_3',
+            'remarks', 'next_date'
+        ]);
         $this->modalTitle = 'Add New Measurement';
         $this->resetValidation();
     }
@@ -142,42 +150,46 @@ class FlooringShow extends Component
                 return;
             }
         }
-    
-        // Set flooring_id from the current flooring
+
         $this->flooring_id = $this->flooring->id;
-    
+
         $this->validate([
-            'b1' => 'nullable|numeric|min:0', // Diubah jadi nullable
+            'b1' => 'nullable|numeric|min:0',
+            'b2_1' => 'nullable|boolean',
+            'b2_2' => 'nullable|boolean',
+            'b2_3' => 'nullable|boolean',
             'remarks' => 'nullable|string',
             'next_date' => 'nullable|date',
         ]);
-    
-        // Reset judgement sebelum save
+
         $this->resetJudgement();
-    
+
         $data = [
             'flooring_id' => $this->flooring_id,
             'b1' => $this->b1,
             'b1_scientific' => $this->b1_scientific,
             'judgement' => $this->judgement,
+            'b2_1' => $this->b2_1,
+            'b2_2' => $this->b2_2,
+            'b2_3' => $this->b2_3,
             'remarks' => $this->remarks,
             'next_date' => $this->next_date,
         ];
-    
+
         if ($this->detail_id) {
             $detail = FlooringDetail::find($this->detail_id);
             if (!$detail) {
                 $this->dispatch('notify', message: 'Measurement record not found!', type: 'error');
                 return;
             }
-            
+
             $detail->update($data);
             $message = 'Measurement updated successfully!';
         } else {
             FlooringDetail::create($data);
             $message = 'Measurement created successfully!';
         }
-    
+
         $this->resetForm();
         $this->dispatch('notify', message: $message);
         $this->dispatch('close-modal', 'detail-form-modal');
@@ -189,14 +201,14 @@ class FlooringShow extends Component
             $this->dispatch('notify', message: 'You do not have permission!', type: 'error');
             return;
         }
-    
+
         $detail = FlooringDetail::with('flooring')->find($id);
-    
+
         if (!$detail) {
             $this->dispatch('notify', message: 'Measurement record not found!', type: 'error');
             return;
         }
-    
+
         $this->detail_id = $detail->id;
         $this->flooring_id = $detail->flooring_id;
         $this->register_no = $detail->flooring->register_no ?? '';
@@ -205,6 +217,9 @@ class FlooringShow extends Component
         $this->b1 = $detail->b1;
         $this->b1_scientific = $detail->b1_scientific;
         $this->judgement = $detail->judgement;
+        $this->b2_1 = $detail->b2_1;
+        $this->b2_2 = $detail->b2_2;
+        $this->b2_3 = $detail->b2_3;
         $this->remarks = $detail->remarks;
         $this->next_date = $detail->next_date ? Carbon::parse($detail->next_date)->format('Y-m-d') : null;
         $this->modalTitle = 'Edit Measurement';

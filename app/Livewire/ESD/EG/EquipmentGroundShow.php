@@ -29,6 +29,8 @@ class EquipmentGroundShow extends Component
     public $measure_results_volts;
     public $judgement_ohm;
     public $judgement_volts;
+    public $eg_3_1;
+    public $eg_3_2;
     public $remarks;
     public $next_date;
     public $modalTitle = 'Add New Measurement';
@@ -40,9 +42,11 @@ class EquipmentGroundShow extends Component
     protected function rules()
     {
         return [
-            'equipment_ground_id' => 'required|exists:equipment_grounds,id',
-            'measure_results_ohm' => 'nullable|numeric', // hapus required, min, regex
-            'measure_results_volts' => 'nullable|numeric', // hapus required, min, regex
+            'equipment_ground_id' => 'required|exists:tb_esd_equipment_grounds,id',
+            'measure_results_ohm' => 'nullable|numeric',
+            'measure_results_volts' => 'nullable|numeric',
+            'eg_3_1' => 'nullable|boolean',
+            'eg_3_2' => 'nullable|boolean',
             'remarks' => 'nullable|string',
             'next_date' => 'nullable|date',
         ];
@@ -55,6 +59,8 @@ class EquipmentGroundShow extends Component
             'equipment_ground_id.exists' => 'Selected machine does not exist.',
             'measure_results_ohm.numeric' => 'Ohm measurement must be a number.',
             'measure_results_volts.numeric' => 'Volts measurement must be a number.',
+            'eg_3_1.boolean' => 'EG-3.1 must be Yes or No.',
+            'eg_3_2.boolean' => 'EG-3.2 must be Yes or No.',
             'next_date.date' => 'Next date must be a valid date.',
         ];
     }
@@ -89,10 +95,14 @@ class EquipmentGroundShow extends Component
     {
         if ($this->measure_results_ohm !== null && $this->measure_results_ohm !== '') {
             $this->judgement_ohm = floatval($this->measure_results_ohm) < 1.0 ? 'OK' : 'NG';
+        } else {
+            $this->judgement_ohm = null;
         }
         
         if ($this->measure_results_volts !== null && $this->measure_results_volts !== '') {
             $this->judgement_volts = floatval($this->measure_results_volts) < 2.0 ? 'OK' : 'NG';
+        } else {
+            $this->judgement_volts = null;
         }
     }
 
@@ -114,7 +124,7 @@ class EquipmentGroundShow extends Component
     {
         $this->reset(['detail_id', 'equipment_ground_id', 'area', 'location', 
                       'measure_results_ohm', 'measure_results_volts', 'judgement_ohm', 
-                      'judgement_volts', 'remarks', 'next_date']);
+                      'judgement_volts', 'eg_3_1', 'eg_3_2', 'remarks', 'next_date']);
         $this->modalTitle = 'Add New Measurement';
         $this->resetValidation();
     }
@@ -139,12 +149,13 @@ class EquipmentGroundShow extends Component
             }
         }
     
-        // Set equipment_ground_id from the current equipment ground
         $this->equipment_ground_id = $this->equipmentGround->id;
     
         $this->validate([
             'measure_results_ohm' => 'required|numeric|min:0',
             'measure_results_volts' => 'required|numeric|min:0',
+            'eg_3_1' => 'nullable|boolean',
+            'eg_3_2' => 'nullable|boolean',
             'remarks' => 'nullable|string',
             'next_date' => 'nullable|date',
         ]);
@@ -157,6 +168,8 @@ class EquipmentGroundShow extends Component
             'measure_results_volts' => $this->measure_results_volts,
             'judgement_ohm' => $this->judgement_ohm,
             'judgement_volts' => $this->judgement_volts,
+            'eg_3_1' => $this->eg_3_1,
+            'eg_3_2' => $this->eg_3_2,
             'remarks' => $this->remarks,
             'next_date' => $this->next_date,
         ];
@@ -202,6 +215,8 @@ class EquipmentGroundShow extends Component
         $this->measure_results_volts = $detail->measure_results_volts;
         $this->judgement_ohm = $detail->judgement_ohm;
         $this->judgement_volts = $detail->judgement_volts;
+        $this->eg_3_1 = $detail->eg_3_1;
+        $this->eg_3_2 = $detail->eg_3_2;
         $this->remarks = $detail->remarks;
         $this->next_date = $detail->next_date ? \Carbon\Carbon::parse($detail->next_date)->format('Y-m-d') : null;
         $this->modalTitle = 'Edit Measurement';

@@ -18,9 +18,19 @@ class WristStrap extends Model
         'result',
         'result_scientific',
         'judgement',
+        'c_3_1',         // ✅ baru
+        'c_3_2',         // ✅ baru
         'remarks',
         'type',
         'next_date',
+        'created_by',
+        'updated_by',
+    ];
+
+    protected $casts = [
+        'c_3_1' => 'boolean',   // ✅ baru
+        'c_3_2' => 'boolean',   // ✅ baru
+        'next_date' => 'date',
     ];
 
     public function creator()

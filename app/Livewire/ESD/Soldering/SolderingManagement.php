@@ -52,7 +52,7 @@ class SolderingManagement extends Component
     {
         return [
             'register_no' => 'required|min:3|max:100|unique:tb_esd_solderings,register_no,' . ($this->soldering_id ?? 'NULL'),
-            'area' => 'required|min:2|max:100',
+            'area' => 'required|min:2|in:PRODUCTION 01,PRODUCTION 02,WH MATERIAL,WH FINISH GOOD',
             'location' => 'required|min:2|max:100',
             'type' => 'nullable|max:100',
             'spec' => 'nullable|max:100',
@@ -67,6 +67,7 @@ class SolderingManagement extends Component
         'register_no.unique' => 'Register number already exists.',
         'area.required' => 'Area is required.',
         'area.min' => 'Area must be at least 2 characters.',
+        'area.in' => 'Area must be one of: PRODUCTION 01, PRODUCTION 02, WH MATERIAL, WH FINISH GOOD.',
         'location.required' => 'Location is required.',
         'location.min' => 'Location must be at least 2 characters.',
         'status.required' => 'Status is required.',

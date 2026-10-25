@@ -84,18 +84,6 @@
                             Clear All Filters
                         </button>
                         @endif
-                        
-                        @can('create flooring details')
-                        <flux:button 
-                            variant="primary" 
-                            icon="plus" 
-                            class="bg-blue-600 hover:bg-blue-700 whitespace-nowrap"
-                            wire:click="resetForm"
-                            x-on:click="$dispatch('open-modal', 'detail-form-modal')"
-                        >
-                            Add New Measurement
-                        </flux:button>
-                        @endcan
                     </div>
                 </div>
 
@@ -217,11 +205,13 @@
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[120px]">Location</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[120px]">B1 Result</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider w-20">Judgement</th>
+                                <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">B2.1</th>
+                                <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">B2.2</th>
+                                <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">B2.3</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[150px]">Remarks</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Date</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Next Date</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[120px]">Checked By</th>
-                                <th class="px-4 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider w-24">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
@@ -257,6 +247,38 @@
                                         {{ $detail->judgement }}
                                     </span>
                                 </td>
+                                {{-- B2.1 --}}
+                                <td class="px-4 py-3 text-center">
+                                    @if($detail->b2_1 !== null)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $detail->b2_1 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' }}">
+                                            {{ $detail->b2_1 ? 'Yes' : 'No' }}
+                                        </span>
+                                    @else
+                                        <span class="text-zinc-400">-</span>
+                                    @endif
+                                </td>
+
+                                {{-- B2.2 --}}
+                                <td class="px-4 py-3 text-center">
+                                    @if($detail->b2_2 !== null)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $detail->b2_2 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' }}">
+                                            {{ $detail->b2_2 ? 'Yes' : 'No' }}
+                                        </span>
+                                    @else
+                                        <span class="text-zinc-400">-</span>
+                                    @endif
+                                </td>
+
+                                {{-- B2.3 --}}
+                                <td class="px-4 py-3 text-center">
+                                    @if($detail->b2_3 !== null)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $detail->b2_3 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' }}">
+                                            {{ $detail->b2_3 ? 'Yes' : 'No' }}
+                                        </span>
+                                    @else
+                                        <span class="text-zinc-400">-</span>
+                                    @endif
+                                </td>
                                 <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300 truncate max-w-[150px]" title="{{ $detail->remarks }}">
                                     {{ $detail->remarks ?? '-' }}
                                 </td>
@@ -268,35 +290,6 @@
                                 </td>
                                 <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
                                     {{ $detail->creator->name ?? 'N/A' }}
-                                </td>
-                                <td class="px-4 py-3 text-right">
-                                    <div class="flex items-center justify-end gap-1 whitespace-nowrap">
-                                        @can('edit flooring details')
-                                        <flux:button 
-                                            wire:click="edit({{ $detail->id }})" 
-                                            x-on:click="$dispatch('open-modal', 'detail-form-modal')"
-                                            size="sm"
-                                            icon="pencil-square"
-                                            variant="primary"
-                                            color="yellow"
-                                            class="!p-2 flex-shrink-0"
-                                            title="Edit measurement"
-                                        />
-                                        @endcan
-
-                                        @can('delete flooring details')
-                                            <flux:button 
-                                                wire:click="confirmDelete({{ $detail->id }})" 
-                                                x-on:click="$dispatch('open-modal', 'delete-detail-modal')"
-                                                size="sm"
-                                                icon="trash"
-                                                variant="primary"
-                                                color="red"
-                                                class="!p-2 flex-shrink-0"
-                                                title="Delete measurement"
-                                            />
-                                        @endcan
-                                    </div>
                                 </td>
                             </tr>
                             @empty
@@ -413,6 +406,69 @@
                                         <span class="inline-flex px-3 py-1 rounded-full text-sm font-medium {{ $judgement == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
                                             {{ $judgement ?: 'Auto' }}
                                         </span>
+                                    </div>
+                                </div>
+
+                                <!-- B2 Visual Inspection Checklist -->
+                                <div class="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                                    <div class="flex items-center gap-2 mb-3">
+                                        <flux:icon name="clipboard-document-check" class="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                                        <h3 class="text-sm font-semibold text-blue-800 dark:text-blue-400">
+                                            (B2) Visual Inspection Checklist
+                                        </h3>
+                                    </div>
+
+                                    @php
+                                        $b2Items = [
+                                            ['field' => 'b2_1', 'code' => 'B-2.1', 'text' => 'Permukaan lantai ESD tidak rusak, retak, terkelupas, atau menggelembung'],
+                                            ['field' => 'b2_2', 'code' => 'B-2.2', 'text' => 'Area lantai bersih dari debu, minyak, cairan, dan material asing'],
+                                            ['field' => 'b2_3', 'code' => 'B-2.3', 'text' => 'Sambungan antara tile/flooring dalam kondisi baik'],
+                                        ];
+                                    @endphp
+
+                                    <div class="space-y-2">
+                                        @foreach($b2Items as $item)
+                                            @php
+                                                $field = $item['field'];
+                                                $value = $this->$field;
+                                                $isYes = ($value === 1 || $value === true || $value === '1');
+                                                $isNo  = ($value === 0 || $value === false || $value === '0');
+                                            @endphp
+                                            <div class="bg-white dark:bg-zinc-900 rounded-lg border border-zinc-200 dark:border-zinc-700 p-3
+                                                        flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3
+                                                        {{ $isYes ? 'ring-1 ring-green-200 dark:ring-green-900' : ($isNo ? 'ring-1 ring-red-200 dark:ring-red-900' : '') }}">
+                                                <div class="flex items-start gap-3 flex-1 min-w-0">
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide bg-blue-600 text-white flex-shrink-0 mt-0.5">
+                                                        {{ $item['code'] }}
+                                                    </span>
+                                                    <p class="text-sm text-zinc-700 dark:text-zinc-300 leading-snug">{{ $item['text'] }}</p>
+                                                </div>
+
+                                                <div class="flex items-center gap-2 flex-shrink-0 self-end sm:self-auto">
+                                                    {{-- YES --}}
+                                                    <button type="button"
+                                                            wire:click="$set('{{ $field }}', {{ $isYes ? 'null' : '1' }})"
+                                                            class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide transition-all duration-150
+                                                                {{ $isYes
+                                                                    ? 'bg-green-600 text-white shadow-md shadow-green-600/30 ring-2 ring-green-300 dark:ring-green-700 scale-105'
+                                                                    : 'bg-white dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 border border-zinc-300 dark:border-zinc-600 hover:bg-green-50 dark:hover:bg-green-900/20 hover:border-green-400 hover:text-green-700 dark:hover:text-green-400' }}">
+                                                        <flux:icon name="check-circle" class="w-4 h-4" />
+                                                        <span>YES</span>
+                                                    </button>
+
+                                                    {{-- NO --}}
+                                                    <button type="button"
+                                                            wire:click="$set('{{ $field }}', {{ $isNo ? 'null' : '0' }})"
+                                                            class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide transition-all duration-150
+                                                                {{ $isNo
+                                                                    ? 'bg-red-600 text-white shadow-md shadow-red-600/30 ring-2 ring-red-300 dark:ring-red-700 scale-105'
+                                                                    : 'bg-white dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 border border-zinc-300 dark:border-zinc-600 hover:bg-red-50 dark:hover:bg-red-900/20 hover:border-red-400 hover:text-red-700 dark:hover:text-red-400' }}">
+                                                        <flux:icon name="x-circle" class="w-4 h-4" />
+                                                        <span>NO</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        @endforeach
                                     </div>
                                 </div>
 

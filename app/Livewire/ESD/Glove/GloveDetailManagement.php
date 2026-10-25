@@ -21,6 +21,7 @@ class GloveDetailManagement extends Component
     public $c1;
     public $c1_scientific;
     public $judgement;
+    public $c_2_1;
     public $remarks;
     public $next_date;
 
@@ -51,6 +52,7 @@ class GloveDetailManagement extends Component
         return [
             'glove_id' => 'required|exists:tb_esd_gloves,id',
             'c1' => 'nullable|numeric',
+            'c_2_1' => 'nullable|boolean',   // ✅ baru
             'remarks' => 'nullable|string|max:255',
             'next_date' => 'nullable|date',
         ];
@@ -60,6 +62,7 @@ class GloveDetailManagement extends Component
         'glove_id.required' => 'SAP Code is required.',
         'glove_id.exists' => 'Selected glove does not exist.',
         'c1.numeric' => 'C1 measurement result must be a number.',
+        'c_2_1.boolean' => 'C-2.1 must be Yes or No.',
         'remarks.max' => 'Remarks cannot exceed 255 characters.',
         'next_date.date' => 'Next date must be a valid date.',
     ];
@@ -109,7 +112,9 @@ class GloveDetailManagement extends Component
     {
         $this->reset([
             'detail_id', 'glove_id', 'sap_code', 'description', 'delivery',
-            'c1', 'c1_scientific', 'judgement', 'remarks', 'next_date'
+            'c1', 'c1_scientific', 'judgement',
+            'c_2_1',   // ✅ baru
+            'remarks', 'next_date'
         ]);
         $this->modalTitle = 'Add New Glove Measurement';
         $this->resetValidation();
@@ -153,6 +158,7 @@ class GloveDetailManagement extends Component
             'c1' => $this->c1,
             'c1_scientific' => $this->c1_scientific,
             'judgement' => $this->judgement,
+            'c_2_1' => $this->c_2_1,   // ✅ baru
             'remarks' => $this->remarks,
             'next_date' => $this->next_date,
         ];
@@ -198,6 +204,7 @@ class GloveDetailManagement extends Component
         $this->c1 = $detail->c1;
         $this->c1_scientific = $detail->c1_scientific;
         $this->judgement = $detail->judgement;
+        $this->c_2_1 = $detail->c_2_1;
         $this->remarks = $detail->remarks;
         $this->next_date = $detail->next_date ? Carbon::parse($detail->next_date)->format('Y-m-d') : null;
         $this->modalTitle = 'Edit Glove Measurement';

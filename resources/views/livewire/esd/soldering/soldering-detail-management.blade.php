@@ -75,22 +75,6 @@
                             </span>
                         </button>
                     </div>
-                    
-                    <!-- Create Button and Clear Filters -->
-                    <div class="flex gap-2">
-                        
-                        @can('create soldering details')
-                        <flux:button 
-                            variant="primary" 
-                            icon="plus" 
-                            class="bg-blue-600 hover:bg-blue-700 whitespace-nowrap"
-                            wire:click="resetForm"
-                            x-on:click="$dispatch('open-modal', 'detail-form-modal')"
-                        >
-                            Add New Measurement
-                        </flux:button>
-                        @endcan
-                    </div>
                 </div>
 
                 <!-- Filters Section with Collapsible -->
@@ -218,15 +202,14 @@
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[150px]">Register No</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Area</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Location</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[80px]">Type</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[80px]">Spec</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[60px]">Line</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">E1 Result</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider w-20">Judgement</th>
+                                <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">E2.1</th>
+                                <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">E2.2</th>
+                                <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">E2.3</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Date</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Next Date</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[120px]">Checked By</th>
-                                <th class="px-4 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider w-24">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
@@ -251,19 +234,6 @@
                                 <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
                                     {{ $detail->soldering->location ?? 'N/A' }}
                                 </td>
-                                <td class="px-4 py-3">
-                                    <span class="text-sm text-zinc-700 dark:text-zinc-300 uppercase">
-                                        {{ $detail->soldering->type ?? '-' }}
-                                    </span>
-                                </td>
-                                <td class="px-4 py-3">
-                                    <span class="text-sm text-zinc-700 dark:text-zinc-300 uppercase">
-                                        {{ $detail->soldering->spec ?? '-' }}
-                                    </span>
-                                </td>
-                                <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
-                                    {{ $detail->soldering->line ?? '-' }}
-                                </td>
                                 <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
                                     {{ $detail->e1 }}
                                 </td>
@@ -275,6 +245,38 @@
                                         {{ $detail->judgement }}
                                     </span>
                                 </td>
+                                {{-- E2.1 --}}
+                                <td class="px-4 py-3 text-center">
+                                    @if($detail->e2_1 !== null)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $detail->e2_1 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' }}">
+                                            {{ $detail->e2_1 ? 'Yes' : 'No' }}
+                                        </span>
+                                    @else
+                                        <span class="text-zinc-400">-</span>
+                                    @endif
+                                </td>
+
+                                {{-- E2.2 --}}
+                                <td class="px-4 py-3 text-center">
+                                    @if($detail->e2_2 !== null)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $detail->e2_2 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' }}">
+                                            {{ $detail->e2_2 ? 'Yes' : 'No' }}
+                                        </span>
+                                    @else
+                                        <span class="text-zinc-400">-</span>
+                                    @endif
+                                </td>
+
+                                {{-- E2.3 --}}
+                                <td class="px-4 py-3 text-center">
+                                    @if($detail->e2_3 !== null)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $detail->e2_3 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' }}">
+                                            {{ $detail->e2_3 ? 'Yes' : 'No' }}
+                                        </span>
+                                    @else
+                                        <span class="text-zinc-400">-</span>
+                                    @endif
+                                </td>
                                 <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
                                     {{ $detail->created_at ? $detail->created_at->format('d M Y') : '-' }}
                                 </td>
@@ -283,35 +285,6 @@
                                 </td>
                                 <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
                                     {{ $detail->creator->name ?? 'N/A' }}
-                                </td>
-                                <td class="px-4 py-3 text-right">
-                                    <div class="flex items-center justify-end gap-1 whitespace-nowrap">
-                                        @can('edit soldering details')
-                                        <flux:button 
-                                            wire:click="edit({{ $detail->id }})" 
-                                            x-on:click="$dispatch('open-modal', 'detail-form-modal')"
-                                            size="sm"
-                                            icon="pencil-square"
-                                            variant="primary"
-                                            color="yellow"
-                                            class="!p-2 flex-shrink-0"
-                                            title="Edit measurement"
-                                        />
-                                        @endcan
-
-                                        @can('delete soldering details')
-                                            <flux:button 
-                                                wire:click="confirmDelete({{ $detail->id }})" 
-                                                x-on:click="$dispatch('open-modal', 'delete-detail-modal')"
-                                                size="sm"
-                                                icon="trash"
-                                                variant="primary"
-                                                color="red"
-                                                class="!p-2 flex-shrink-0"
-                                                title="Delete measurement"
-                                            />
-                                        @endcan
-                                    </div>
                                 </td>
                             </tr>
                             @empty

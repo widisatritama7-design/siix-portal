@@ -33,9 +33,20 @@ class IonizerDetail extends Model
         'judgement_c2',
         'c3',
         'judgement_c3',
+        'c4_1', 'c4_2', 'c4_3', 'c4_4', 'c4_5',   // ✅ baru
         'remarks',
         'next_date',
         'created_by',
+        'updated_by',
+    ];
+
+    protected $casts = [
+        'c4_1' => 'boolean',
+        'c4_2' => 'boolean',
+        'c4_3' => 'boolean',
+        'c4_4' => 'boolean',
+        'c4_5' => 'boolean',
+        'next_date' => 'date',
     ];
 
     public function ionizer()

@@ -21,9 +21,16 @@ class MagazineDetail extends Model
         'judgement_m1',
         'm2',
         'judgement_m2',
+        'm_3_1',         // ✅ baru
         'remarks',
         'next_date',
         'created_by',
+        'updated_by',
+    ];
+
+    protected $casts = [
+        'm_3_1' => 'boolean',   // ✅ baru
+        'next_date' => 'date',
     ];
 
     public function magazine()

@@ -18,9 +18,17 @@ class SolderingDetail extends Model
         'soldering_id',
         'e1',
         'judgement',
+        'e2_1', 'e2_2', 'e2_3',   // ✅ baru
         'next_date',
         'created_by',
         'updated_by',
+    ];
+
+    protected $casts = [
+        'e2_1' => 'boolean',
+        'e2_2' => 'boolean',
+        'e2_3' => 'boolean',
+        'next_date' => 'date',
     ];
 
     public function soldering()

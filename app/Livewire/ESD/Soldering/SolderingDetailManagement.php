@@ -22,6 +22,9 @@ class SolderingDetailManagement extends Component
     public $spec;
     public $line;
     public $e1;
+    public $e2_1;
+    public $e2_2;
+    public $e2_3;
     public $judgement;
     public $next_date;
 
@@ -52,7 +55,10 @@ class SolderingDetailManagement extends Component
     {
         return [
             'soldering_id' => 'required|exists:tb_esd_solderings,id',
-            'e1' => 'nullable|numeric', // diubah dari required|numeric|min:0|max:9.99
+            'e1' => 'nullable|numeric',
+            'e2_1' => 'nullable|boolean',   // ✅ baru
+            'e2_2' => 'nullable|boolean',   // ✅ baru
+            'e2_3' => 'nullable|boolean',   // ✅ baru
             'next_date' => 'nullable|date',
         ];
     }
@@ -61,6 +67,9 @@ class SolderingDetailManagement extends Component
         'soldering_id.required' => 'Soldering equipment is required.',
         'soldering_id.exists' => 'Selected soldering does not exist.',
         'e1.numeric' => 'E1 measurement result must be a number.',
+        'e2_1.boolean' => 'E2.1 must be Yes or No.',
+        'e2_2.boolean' => 'E2.2 must be Yes or No.',
+        'e2_3.boolean' => 'E2.3 must be Yes or No.',
         'next_date.date' => 'Next date must be a valid date.',
     ];
 
@@ -203,7 +212,9 @@ class SolderingDetailManagement extends Component
     {
         $this->reset([
             'detail_id', 'soldering_id', 'register_no', 'area', 'location', 'type', 'spec', 'line',
-            'e1', 'judgement', 'next_date'
+            'e1', 'judgement',
+            'e2_1', 'e2_2', 'e2_3',   // ✅ baru
+            'next_date'
         ]);
         $this->modalTitle = 'Add New Soldering Measurement';
         $this->resetValidation();

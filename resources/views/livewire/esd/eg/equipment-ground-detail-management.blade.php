@@ -73,13 +73,6 @@
                         @if(!empty($selectedMachines) || $filterDateFrom || $filterDateUntil || $filterNextDateFrom || $filterNextDateUntil || $search)
                         <button wire:click="resetFilters" class="text-sm text-blue-600 hover:text-blue-800">Clear All Filters</button>
                         @endif
-                        
-                        @can('create equipment ground details')
-                        <flux:button variant="primary" icon="plus" class="bg-blue-600 hover:bg-blue-700"
-                            wire:click="resetForm" x-on:click="$dispatch('open-modal', 'detail-form-modal')">
-                            Add New Measurement
-                        </flux:button>
-                        @endcan
                     </div>
                 </div>
 
@@ -263,11 +256,12 @@
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider w-20">Judgement</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Volts Result</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider w-20">Judgement</th>
+                                <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">EG-3.1</th>
+                                <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">EG-3.2</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[150px]">Remarks</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Date</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Next Date</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[120px]">Checked By</th>
-                                <th class="px-4 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider w-24">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
@@ -314,6 +308,27 @@
                                         {{ $detail->judgement_volts }}
                                     </span>
                                 </td>
+                                {{-- EG-3.1 --}}
+                                <td class="px-4 py-3 text-center">
+                                    @if($detail->eg_3_1 !== null)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $detail->eg_3_1 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' }}">
+                                            {{ $detail->eg_3_1 ? 'Yes' : 'No' }}
+                                        </span>
+                                    @else
+                                        <span class="text-zinc-400">-</span>
+                                    @endif
+                                </td>
+
+                                {{-- EG-3.2 --}}
+                                <td class="px-4 py-3 text-center">
+                                    @if($detail->eg_3_2 !== null)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $detail->eg_3_2 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' }}">
+                                            {{ $detail->eg_3_2 ? 'Yes' : 'No' }}
+                                        </span>
+                                    @else
+                                        <span class="text-zinc-400">-</span>
+                                    @endif
+                                </td>
                                 <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300 truncate max-w-[150px]" title="{{ $detail->remarks }}">
                                     {{ $detail->remarks ?? '-' }}
                                 </td>
@@ -325,35 +340,6 @@
                                 </td>
                                 <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
                                     {{ $detail->creator->name ?? 'N/A' }}
-                                </td>
-                                <td class="px-4 py-3 text-right">
-                                    <div class="flex items-center justify-end gap-1 whitespace-nowrap">
-                                        @can('edit equipment ground details')
-                                        <flux:button 
-                                            wire:click="edit({{ $detail->id }})" 
-                                            x-on:click="$dispatch('open-modal', 'detail-form-modal')"
-                                            size="sm"
-                                            icon="pencil-square"
-                                            variant="primary"
-                                            color="yellow"
-                                            class="!p-2 flex-shrink-0"
-                                            title="Edit measurement"
-                                        />
-                                        @endcan
-
-                                        @can('delete equipment ground details')
-                                            <flux:button 
-                                                wire:click="confirmDelete({{ $detail->id }})" 
-                                                x-on:click="$dispatch('open-modal', 'delete-detail-modal')"
-                                                size="sm"
-                                                icon="trash"
-                                                variant="primary"
-                                                color="red"
-                                                class="!p-2 flex-shrink-0"
-                                                title="Delete measurement"
-                                            />
-                                        @endcan
-                                    </div>
                                 </td>
                             </tr>
                             @empty

@@ -15,7 +15,15 @@ class PackagingDetail extends Model
     protected $table = 'tb_esd_packaging_details';
     
     protected $fillable = [
-        'packaging_id','f1', 'f1_scientific', 'judgement_f1', 'f2', 'judgement_f2', 'next_date','remarks', 'created_by',
+        'packaging_id', 'f1', 'f1_scientific', 'judgement_f1',
+        'f2', 'judgement_f2',
+        'f3_1',                       // ✅ baru
+        'next_date', 'remarks', 'created_by', 'updated_by',
+    ];
+
+    protected $casts = [
+        'f3_1' => 'boolean',          // ✅ baru
+        'next_date' => 'date',
     ];
 
     public function packaging()

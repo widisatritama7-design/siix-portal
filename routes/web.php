@@ -90,6 +90,7 @@ use App\Models\ESD\Locker\UniformTransaction;
 use App\Services\MicrosoftGraphService;
 use App\Services\WhatsAppService;
 use Illuminate\Support\Facades\Route;
+use App\Livewire\Inventory\FloorPlanBuilder;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -255,6 +256,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/prod/patrol/result-patrol', ResultPatrolManagement::class)->name('prod.patrol.result-patrol.index');
     Route::get('/prod/patrol/result-patrol/create', ResultPatrolForm::class)->name('prod.patrol.result-patrol.create');
     Route::get('/prod/patrol/result-patrol/{id}/edit', ResultPatrolForm::class)->name('prod.patrol.result-patrol.edit');
+
+    Route::get('/floor-plan', FloorPlanBuilder::class);
 });
 
 // Microsoft Approvall
@@ -375,3 +378,4 @@ Route::prefix('esd/locker')->group(function () {
 require __DIR__.'/settings.php';
 require __DIR__.'/esd.php';
 require __DIR__.'/mtc.php';
+require base_path('vendor/laravel/passkeys/routes/routes.php');

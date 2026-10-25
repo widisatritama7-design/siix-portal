@@ -24,11 +24,39 @@ class WorksurfaceDetail extends Model
         'judgement_a1',
         'a2',
         'judgement_a2',
+        'a3',              // ✅ baru
+        'judgement_a3',    // ✅ baru
+        'a4_1',            // ✅ baru
+        'a4_2',            // ✅ baru
+        'a4_3',            // ✅ baru
+        'a4_4',            // ✅ baru
+        'a4_5',            // ✅ baru
         'remarks',
         'created_at',
         'next_date',
         'created_by',
+        'updated_by',
     ];
+
+    protected $casts = [
+        'a4_1' => 'boolean',
+        'a4_2' => 'boolean',
+        'a4_3' => 'boolean',
+        'a4_4' => 'boolean',
+        'a4_5' => 'boolean',
+        'next_date' => 'date',
+    ];
+
+    public static function itemOptions(): array
+    {
+        $options = [];
+        foreach (['TABLE', 'RACK', 'TROLLEY'] as $type) {
+            for ($i = 1; $i <= 5; $i++) {
+                $options[] = "{$type} LAYER {$i}";
+            }
+        }
+        return $options;
+    }
 
     public function worksurface()
     {

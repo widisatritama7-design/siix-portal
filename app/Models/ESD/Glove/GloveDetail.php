@@ -19,9 +19,16 @@ class GloveDetail extends Model
         'c1',
         'c1_scientific',
         'judgement',
+        'c_2_1',         // ✅ baru
         'remarks',
         'next_date',
         'created_by',
+        'updated_by',
+    ];
+
+    protected $casts = [
+        'c_2_1' => 'boolean',   // ✅ baru
+        'next_date' => 'date',
     ];
 
     public function glove()

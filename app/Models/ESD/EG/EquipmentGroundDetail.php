@@ -22,9 +22,18 @@ class EquipmentGroundDetail extends Model
         'judgement_ohm',
         'measure_results_volts',
         'judgement_volts',
+        'eg_3_1',         // ✅ baru
+        'eg_3_2',         // ✅ baru
         'remarks',
         'next_date',
         'created_by',
+        'updated_by',
+    ];
+
+    protected $casts = [
+        'eg_3_1' => 'boolean',   // ✅ baru
+        'eg_3_2' => 'boolean',   // ✅ baru
+        'next_date' => 'date',
     ];
 
     public function equipmentGround()
@@ -56,5 +65,4 @@ class EquipmentGroundDetail extends Model
             $model->updated_by = Auth::id();
         });
     }
-
 }

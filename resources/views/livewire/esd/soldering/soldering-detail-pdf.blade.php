@@ -9,86 +9,82 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
-        /* Font utama dengan dukungan Unicode penuh */
+
         body {
             font-family: 'DejaVu Sans', 'Arial', 'Segoe UI', 'Helvetica', sans-serif;
-            font-size: 9pt;
-            line-height: 1.3;
-            margin: 15px;
+            font-size: 8pt;
+            line-height: 1.25;
+            margin: 12px;
             padding: 0;
         }
-        
+
         .container {
             width: 100%;
             margin: 0 auto;
         }
-        
+
         .header {
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             border-bottom: 2px solid #333;
             padding-bottom: 8px;
         }
-        
+
         .header h1 {
             margin: 0;
-            font-size: 16pt;
+            font-size: 15pt;
             color: #1a56db;
-            font-family: 'DejaVu Sans', 'Arial', sans-serif;
         }
-        
+
         .report-info {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             padding: 8px;
             background: #f3f4f6;
             border-radius: 5px;
-            font-size: 8pt;
-            font-family: 'DejaVu Sans', 'Arial', sans-serif;
+            font-size: 7.5pt;
         }
-        
+
         .report-info table {
             width: 100%;
         }
-        
+
         .report-info td {
             padding: 2px 5px;
         }
-        
+
         .report-info td:first-child {
             font-weight: bold;
             width: 100px;
         }
-        
+
         table.data-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
-            font-size: 8pt;
-            font-family: 'DejaVu Sans', 'Arial', sans-serif;
+            margin-top: 8px;
+            font-size: 6.5pt;
         }
-        
+
         table.data-table th {
             background: #1a56db;
             color: white;
-            padding: 6px 4px;
+            padding: 5px 3px;
             text-align: center;
             border: 1px solid #ddd;
             font-weight: bold;
-            font-family: 'DejaVu Sans', 'Arial', sans-serif;
+            font-size: 6pt;
+            line-height: 1.15;
         }
-        
+
         table.data-table td {
-            padding: 5px 4px;
+            padding: 4px 3px;
             border: 1px solid #ddd;
-            vertical-align: top;
-            font-family: 'DejaVu Sans', 'Arial', sans-serif;
+            vertical-align: middle;
         }
-        
+
         table.data-table tr:nth-child(even) {
             background: #f9fafb;
         }
-        
+
         .footer {
             margin-top: 15px;
             text-align: center;
@@ -100,56 +96,44 @@
             bottom: 10px;
             left: 0;
             right: 0;
-            font-family: 'DejaVu Sans', 'Arial', sans-serif;
         }
-        
-        .badge-ok {
-            color: #059669;
-            font-weight: bold;
-        }
-        
-        .badge-ng {
-            color: #dc2626;
-            font-weight: bold;
-        }
-        
-        .text-center {
-            text-align: center;
-        }
-        
-        .text-left {
-            text-align: left;
-        }
-        
-        .text-uppercase {
-            text-transform: uppercase;
-        }
-        
+
+        .badge-ok { color: #059669; font-weight: bold; }
+        .badge-ng { color: #dc2626; font-weight: bold; }
+        .badge-yes { color: #059669; font-weight: bold; }
+        .badge-no  { color: #dc2626; font-weight: bold; }
+        .badge-na  { color: #9ca3af; }
+
+        .text-center { text-align: center; }
+        .text-left { text-align: left; }
+        .text-uppercase { text-transform: uppercase; }
+
         .wrap-text {
             word-wrap: break-word;
             word-break: break-all;
             white-space: normal;
         }
-        
-        .col-no { width: 3%; }
-        .col-register { width: 10%; }
-        .col-area { width: 8%; }
-        .col-location { width: 8%; }
-        .col-type { width: 6%; }
-        .col-spec { width: 6%; }
-        .col-line { width: 5%; }
-        .col-e1 { width: 8%; }
-        .col-judge { width: 6%; }
-        .col-remarks { width: 12%; }
-        .col-date { width: 8%; }
-        .col-next-date { width: 8%; }
-        .col-checked { width: 10%; }
-        
+
+        .col-no { width: 2.5%; }
+        .col-register { width: 8%; }
+        .col-area { width: 6.5%; }
+        .col-location { width: 6.5%; }
+        .col-type { width: 5%; }
+        .col-spec { width: 5%; }
+        .col-line { width: 4.5%; }
+        .col-e1 { width: 6%; }
+        .col-judge { width: 4.5%; }
+        .col-e2 { width: 3.5%; }
+        .col-remarks { width: 10%; }
+        .col-date { width: 6.5%; }
+        .col-next-date { width: 6.5%; }
+        .col-checked { width: 8%; }
+
         @page {
             size: A4 landscape;
-            margin: 15px;
+            margin: 12px;
         }
-        
+
         @media print {
             body {
                 margin: 0;
@@ -179,7 +163,7 @@
                 </tr>
             </table>
         </div>
-        
+
         <div class="report-info">
             <table style="width: 100%;">
                 <tr>
@@ -202,9 +186,9 @@
                             @if($date_from || $date_until)
                             <tr>
                                 <td>Date Range</td>
-                                <td colspan="3">: 
-                                    {{ $date_from ? \Carbon\Carbon::parse($date_from)->format('d M Y') : 'Start' }} 
-                                    to 
+                                <td colspan="3">:
+                                    {{ $date_from ? \Carbon\Carbon::parse($date_from)->format('d M Y') : 'Start' }}
+                                    to
                                     {{ $date_until ? \Carbon\Carbon::parse($date_until)->format('d M Y') : 'End' }}
                                 </td>
                             </tr>
@@ -223,35 +207,40 @@
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
-                                    <span style="font-size: 7pt;">( {{ '_________________' }} )</span>
+                                    <span style="font-size: 7pt;">( _________________ )</span>
                                 </td>
                                 <td style="text-align: center; padding: 0 10px; width: 33%;">
                                     <strong>CHECKED BY</strong><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
-                                    <span style="font-size: 7pt;">( {{ '_________________' }} )</span>
+                                    <span style="font-size: 7pt;">( _________________ )</span>
                                 </td>
                                 <td style="text-align: center; padding: 0 10px; width: 33%;">
                                     <strong>APPROVED BY</strong><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
-                                    <span style="font-size: 7pt;">( {{ '_________________' }} )</span>
+                                    <span style="font-size: 7pt;">( _________________ )</span>
                                 </td>
                             </tr>
                         </table>
                     </td>
                 </tr>
             </table>
-            <div style="margin-top: 10px; padding: 6px 8px; background: #e8f0fe; border-radius: 4px; font-size: 8pt; text-align: left; border-top: 1px solid #ddd;">
-                <strong>STANDARD ESD OF SOLDERING</strong><br>
+
+            <div style="margin-top: 10px; padding: 6px 8px; background: #e8f0fe; border-radius: 4px; font-size: 7pt; text-align: left; border-top: 1px solid #ddd;">
+                <strong>STANDARD ESD OF SOLDERING</strong>
                 <div style="margin-top: 4px;">
-                    <div>• (E1) Tip Solder To Ground : < 10 Ohm</div>
+                    <div>• (E1) Tip Solder To Ground : &lt; 10 Ohm</div>
+                    <div style="margin-top: 3px;"><strong>• (E2) Visual Inspection Checklist</strong></div>
+                    <div style="padding-left: 12px;">(E-2.1) Kabel power terpasang dan tidak longgar</div>
+                    <div style="padding-left: 12px;">(E-2.2) Soldering tip dalam kondisi baik dan tidak rusak</div>
+                    <div style="padding-left: 12px;">(E-2.3) Grounding connection terpasang dengan benar</div>
                 </div>
             </div>
         </div>
-        
+
         <table class="data-table">
             <thead>
                 <tr>
@@ -259,11 +248,11 @@
                     <th class="col-register">Register No</th>
                     <th class="col-area">Area</th>
                     <th class="col-location">Location</th>
-                    <th class="col-type">Type</th>
-                    <th class="col-spec">Spec</th>
-                    <th class="col-line">Line</th>
                     <th class="col-e1">E1 Result</th>
                     <th class="col-judge">Judg</th>
+                    <th class="col-e2">E2.1</th>
+                    <th class="col-e2">E2.2</th>
+                    <th class="col-e2">E2.3</th>
                     <th class="col-remarks">Remarks</th>
                     <th class="col-date">Date</th>
                     <th class="col-next-date">Next Date</th>
@@ -277,9 +266,6 @@
                     <td class="text-center">{{ $detail->soldering->register_no ?? 'N/A' }}</td>
                     <td class="text-center">{{ $detail->soldering->area ?? '-' }}</td>
                     <td class="text-center">{{ $detail->soldering->location ?? '-' }}</td>
-                    <td class="text-center text-uppercase">{{ $detail->soldering->type ?? '-' }}</td>
-                    <td class="text-center text-uppercase">{{ $detail->soldering->spec ?? '-' }}</td>
-                    <td class="text-center">{{ $detail->soldering->line ?? '-' }}</td>
                     <td class="text-center">
                         @php
                             $e1Value = $detail->e1;
@@ -295,6 +281,40 @@
                             {{ $detail->judgement ?? '-' }}
                         </span>
                     </td>
+
+                    {{-- E2.1 --}}
+                    <td class="text-center">
+                        @if($detail->e2_1 !== null)
+                            <span class="{{ $detail->e2_1 ? 'badge-yes' : 'badge-no' }}">
+                                {{ $detail->e2_1 ? 'Yes' : 'No' }}
+                            </span>
+                        @else
+                            <span class="badge-na">-</span>
+                        @endif
+                    </td>
+
+                    {{-- E2.2 --}}
+                    <td class="text-center">
+                        @if($detail->e2_2 !== null)
+                            <span class="{{ $detail->e2_2 ? 'badge-yes' : 'badge-no' }}">
+                                {{ $detail->e2_2 ? 'Yes' : 'No' }}
+                            </span>
+                        @else
+                            <span class="badge-na">-</span>
+                        @endif
+                    </td>
+
+                    {{-- E2.3 --}}
+                    <td class="text-center">
+                        @if($detail->e2_3 !== null)
+                            <span class="{{ $detail->e2_3 ? 'badge-yes' : 'badge-no' }}">
+                                {{ $detail->e2_3 ? 'Yes' : 'No' }}
+                            </span>
+                        @else
+                            <span class="badge-na">-</span>
+                        @endif
+                    </td>
+
                     <td class="wrap-text">{{ $detail->remarks ?? '-' }}</td>
                     <td class="text-center">{{ $detail->created_at ? $detail->created_at->format('d M Y') : '-' }}</td>
                     <td class="text-center">{{ $detail->next_date ? \Carbon\Carbon::parse($detail->next_date)->format('d M Y') : '-' }}</td>
@@ -302,14 +322,14 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="13" class="text-center" style="padding: 20px;">
+                    <td colspan="16" class="text-center" style="padding: 20px;">
                         No data found for the selected filters.
                     </td>
                 </tr>
                 @endforelse
             </tbody>
         </table>
-        
+
         <div class="footer" style="font-weight: bold;">
             QR-ADM-22-K022
         </div>

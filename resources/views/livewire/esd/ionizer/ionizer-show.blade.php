@@ -242,6 +242,42 @@
                                     </div>
                                 </div>
                             </div>
+
+                            {{-- C4 Visual Inspection --}}
+                            <div class="pt-4">
+                                <h4 class="text-lg font-semibold text-amber-700 dark:text-amber-400 mb-3 flex items-center gap-2">
+                                    <flux:icon name="clipboard-document-check" class="w-5 h-5" />
+                                    Visual Inspection Checklist
+                                </h4>
+
+                                <div class="bg-amber-50 dark:bg-amber-950/30 rounded-lg p-4 border border-amber-200 dark:border-amber-800">
+                                    <div class="space-y-2">
+                                        @php
+                                            $c4Standards = [
+                                                ['code' => 'C-4.1', 'text' => 'Unit ionizer dalam kondisi fisik baik dan tidak rusak'],
+                                                ['code' => 'C-4.2', 'text' => 'Posisi ionizer sesuai dengan arah Panah yang ditentukan'],
+                                                ['code' => 'C-4.3', 'text' => 'Emitter pin/nozzle tidak kotor atau tertutup debu dan tidak bengkok'],
+                                                ['code' => 'C-4.4', 'text' => 'Kabel power/ground terpasang'],
+                                                ['code' => 'C-4.5', 'text' => 'Indikator/status ionizer menunjukkan kondisi normal'],
+                                            ];
+                                        @endphp
+
+                                        @foreach($c4Standards as $std)
+                                            <div class="flex items-start gap-3 bg-white dark:bg-zinc-900/40 rounded-md p-2.5">
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide bg-amber-600 text-white flex-shrink-0 mt-0.5">
+                                                    {{ $std['code'] }}
+                                                </span>
+                                                <p class="text-sm text-zinc-700 dark:text-zinc-300 leading-snug">{{ $std['text'] }}</p>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                    <div class="mt-3 pt-3 border-t border-amber-200 dark:border-amber-800 text-center">
+                                        <p class="text-xs font-medium text-amber-800 dark:text-amber-300">
+                                            Expected Result: <span class="font-bold uppercase">All YES</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
                             
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-6">
                                 <div class="text-center">
@@ -339,6 +375,11 @@
                                     <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[80px]">Judge</th>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[120px]">C3</th>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[80px]">Judge</th>
+                                    <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">C4.1</th>
+                                    <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">C4.2</th>
+                                    <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">C4.3</th>
+                                    <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">C4.4</th>
+                                    <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">C4.5</th>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[150px]">Remarks</th>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Date</th>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Next Date</th>
@@ -391,6 +432,60 @@
                                     <td class="px-4 py-3">
                                         @php $judgeColor = $detail->judgement_c3 == 'OK' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'; @endphp
                                         <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $judgeColor }}">{{ $detail->judgement_c3 }}</span>
+                                    </td>
+                                    {{-- C4.1 --}}
+                                    <td class="px-4 py-3 text-center">
+                                        @if($detail->c4_1 !== null)
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $detail->c4_1 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' }}">
+                                                {{ $detail->c4_1 ? 'Yes' : 'No' }}
+                                            </span>
+                                        @else
+                                            <span class="text-zinc-400">-</span>
+                                        @endif
+                                    </td>
+
+                                    {{-- C4.2 --}}
+                                    <td class="px-4 py-3 text-center">
+                                        @if($detail->c4_2 !== null)
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $detail->c4_2 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' }}">
+                                                {{ $detail->c4_2 ? 'Yes' : 'No' }}
+                                            </span>
+                                        @else
+                                            <span class="text-zinc-400">-</span>
+                                        @endif
+                                    </td>
+
+                                    {{-- C4.3 --}}
+                                    <td class="px-4 py-3 text-center">
+                                        @if($detail->c4_3 !== null)
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $detail->c4_3 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' }}">
+                                                {{ $detail->c4_3 ? 'Yes' : 'No' }}
+                                            </span>
+                                        @else
+                                            <span class="text-zinc-400">-</span>
+                                        @endif
+                                    </td>
+
+                                    {{-- C4.4 --}}
+                                    <td class="px-4 py-3 text-center">
+                                        @if($detail->c4_4 !== null)
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $detail->c4_4 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' }}">
+                                                {{ $detail->c4_4 ? 'Yes' : 'No' }}
+                                            </span>
+                                        @else
+                                            <span class="text-zinc-400">-</span>
+                                        @endif
+                                    </td>
+
+                                    {{-- C4.5 --}}
+                                    <td class="px-4 py-3 text-center">
+                                        @if($detail->c4_5 !== null)
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $detail->c4_5 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' }}">
+                                                {{ $detail->c4_5 ? 'Yes' : 'No' }}
+                                            </span>
+                                        @else
+                                            <span class="text-zinc-400">-</span>
+                                        @endif
                                     </td>
                                     <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300 truncate max-w-[150px]" title="{{ $detail->remarks }}">{{ $detail->remarks ?? '-' }}</td>
                                     <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">{{ $detail->created_at ? $detail->created_at->format('d M Y') : '-' }}</td>
@@ -457,120 +552,477 @@
             </div>
 
             <!-- MODAL FORM MEASUREMENT DETAIL -->
-            <div x-data="{ open: false }" 
-                 x-show="open" 
-                 @open-detail-modal.window="open = true"
-                 @close-modal.window="if ($event.detail === 'detail-form-modal') open = false"
-                 @keydown.escape.window="open = false"
-                 x-cloak>
-                <div class="fixed inset-0 bg-black/50 z-40" @click="open = false"></div>
+            <div x-data="{ open: false }"
+                x-show="open"
+                @open-detail-modal.window="open = true"
+                @close-modal.window="if ($event.detail === 'detail-form-modal') open = false"
+                @keydown.escape.window="open = false"
+                x-cloak>
+
+                {{-- Backdrop --}}
+                <div class="fixed inset-0 bg-zinc-900/60 backdrop-blur-sm z-40"
+                    x-transition.opacity
+                    @click="open = false"></div>
+
+                {{-- Modal Panel --}}
                 <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-xl w-full max-w-4xl max-h-[90vh] overflow-y-auto">
-                        <div class="p-6">
-                            <h2 class="text-xl font-bold mb-4">{{ $modalTitle }}</h2>
-                            <form wire:submit.prevent="save">
-                                <input type="hidden" wire:model="ionizer_id" value="{{ $ionizer->id }}">
-                                <!-- PM Section -->
-                                <div class="mb-6 p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg border border-purple-200 dark:border-purple-800">
-                                    <h3 class="text-md font-semibold text-purple-800 dark:text-purple-400 mb-3">Preventive Maintenance (PM)</h3>
-                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                        <div>
-                                            <label class="block text-sm font-medium mb-1">PM 1 <span class="text-red-500">*</span></label>
-                                            <div class="flex gap-4 mt-2">
-                                                <label class="inline-flex items-center"><input type="radio" wire:model="pm_1" value="FLASH" class="form-radio text-red-600"><span class="ml-2">FLASH</span></label>
-                                                <label class="inline-flex items-center"><input type="radio" wire:model="pm_1" value="NO" class="form-radio text-green-600"><span class="ml-2">NO</span></label>
-                                            </div>
-                                            @error('pm_1') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                    <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden border border-zinc-200 dark:border-zinc-800"
+                        x-transition:enter="transition ease-out duration-200"
+                        x-transition:enter-start="opacity-0 scale-95"
+                        x-transition:enter-end="opacity-100 scale-100">
+
+                        {{-- =================== HEADER =================== --}}
+                        <div class="sticky top-0 z-10 bg-gradient-to-r from-orange-600 via-orange-600 to-amber-600 px-6 py-4 flex items-center justify-between shadow-lg">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-white/20 backdrop-blur flex items-center justify-center ring-2 ring-white/30">
+                                    <flux:icon name="{{ $detail_id ? 'pencil-square' : 'plus-circle' }}" class="w-5 h-5 text-white" />
+                                </div>
+                                <div>
+                                    <h2 class="text-lg font-bold text-white leading-tight">
+                                        {{ $detail_id ? 'Edit Measurement' : 'New Measurement' }}
+                                    </h2>
+                                    <p class="text-xs text-orange-100 mt-0.5">
+                                        {{ $detail_id ? 'Update existing ionizer measurement' : 'Add a new ionizer measurement' }}
+                                    </p>
+                                </div>
+                            </div>
+                            <button type="button"
+                                    @click="open = false"
+                                    class="w-9 h-9 rounded-lg bg-white/10 hover:bg-white/25 flex items-center justify-center text-white transition-colors">
+                                <flux:icon name="x-mark" class="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        {{-- =================== BODY =================== --}}
+                        <div class="flex-1 overflow-y-auto">
+                            <form wire:submit.prevent="save" id="detail-form" class="p-6 space-y-6">
+                                <input type="hidden" wire:model="ionizer_id">
+
+                                {{-- SECTION 1: PREVENTIVE MAINTENANCE --}}
+                                <div class="bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-200 dark:border-zinc-700 p-5">
+                                    <div class="flex items-center gap-2.5 mb-4">
+                                        <div class="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center">
+                                            <flux:icon name="wrench-screwdriver" class="w-4 h-4 text-purple-600 dark:text-purple-400" />
                                         </div>
                                         <div>
-                                            <label class="block text-sm font-medium mb-1">PM 2 <span class="text-red-500">*</span></label>
-                                            <div class="flex gap-4 mt-2">
-                                                <label class="inline-flex items-center"><input type="radio" wire:model="pm_2" value="OK" class="form-radio text-green-600"><span class="ml-2">OK</span></label>
-                                                <label class="inline-flex items-center"><input type="radio" wire:model="pm_2" value="NO" class="form-radio text-red-600"><span class="ml-2">NO</span></label>
-                                            </div>
-                                            @error('pm_2') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                            <h3 class="text-sm font-bold text-zinc-800 dark:text-zinc-100 uppercase tracking-wide">
+                                                Preventive Maintenance (PM)
+                                            </h3>
+                                            <p class="text-xs text-zinc-500 dark:text-zinc-400">
+                                                Physical inspection before measurement
+                                            </p>
                                         </div>
-                                        <div>
-                                            <label class="block text-sm font-medium mb-1">PM 3 <span class="text-red-500">*</span></label>
-                                            <div class="flex gap-4 mt-2">
-                                                <label class="inline-flex items-center"><input type="radio" wire:model="pm_3" value="YES" class="form-radio text-green-600"><span class="ml-2">YES</span></label>
-                                                <label class="inline-flex items-center"><input type="radio" wire:model="pm_3" value="NO" class="form-radio text-red-600"><span class="ml-2">NO</span></label>
+                                    </div>
+
+                                    <div class="space-y-3">
+                                        {{-- PM 1 --}}
+                                        <div class="bg-white dark:bg-zinc-900 rounded-xl border border-purple-200 dark:border-purple-800/60 p-4">
+                                            <div class="flex items-start justify-between gap-4 mb-3">
+                                                <div class="flex items-start gap-3">
+                                                    <div class="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center flex-shrink-0">
+                                                        <span class="text-xs font-bold text-purple-700 dark:text-purple-400">1</span>
+                                                    </div>
+                                                    <div>
+                                                        <div class="text-sm font-semibold text-zinc-800 dark:text-zinc-100">
+                                                            H.V Light Flashing Condition
+                                                        </div>
+                                                        <div class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+                                                            If indicator is flashing → NG
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
-                                            @error('pm_3') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+
+                                            <div class="flex items-center gap-2">
+                                                <button type="button"
+                                                        wire:click="$set('pm_1', 'FLASH')"
+                                                        @class([
+                                                            'inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wide transition-all duration-150',
+                                                            'bg-red-600 text-white shadow-md shadow-red-600/30 ring-2 ring-red-300 dark:ring-red-700 scale-105' => $pm_1 === 'FLASH',
+                                                            'bg-white dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 border border-zinc-300 dark:border-zinc-600 hover:bg-red-50 dark:hover:bg-red-900/20 hover:border-red-400 hover:text-red-700 dark:hover:text-red-400' => $pm_1 !== 'FLASH',
+                                                        ])>
+                                                    <flux:icon name="bolt" class="w-4 h-4" />
+                                                    FLASH
+                                                </button>
+                                                <button type="button"
+                                                        wire:click="$set('pm_1', 'NO')"
+                                                        @class([
+                                                            'inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wide transition-all duration-150',
+                                                            'bg-green-600 text-white shadow-md shadow-green-600/30 ring-2 ring-green-300 dark:ring-green-700 scale-105' => $pm_1 === 'NO',
+                                                            'bg-white dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 border border-zinc-300 dark:border-zinc-600 hover:bg-green-50 dark:hover:bg-green-900/20 hover:border-green-400 hover:text-green-700 dark:hover:text-green-400' => $pm_1 !== 'NO',
+                                                        ])>
+                                                    <flux:icon name="check-circle" class="w-4 h-4" />
+                                                    NO
+                                                </button>
+                                            </div>
+                                            @error('pm_1') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                                        </div>
+
+                                        {{-- PM 2 --}}
+                                        <div class="bg-white dark:bg-zinc-900 rounded-xl border border-purple-200 dark:border-purple-800/60 p-4">
+                                            <div class="flex items-start justify-between gap-4 mb-3">
+                                                <div class="flex items-start gap-3">
+                                                    <div class="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center flex-shrink-0">
+                                                        <span class="text-xs font-bold text-purple-700 dark:text-purple-400">2</span>
+                                                    </div>
+                                                    <div>
+                                                        <div class="text-sm font-semibold text-zinc-800 dark:text-zinc-100">
+                                                            Discharge Electrode Needle
+                                                        </div>
+                                                        <div class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+                                                            Check and clean the needle
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex items-center gap-2">
+                                                <button type="button"
+                                                        wire:click="$set('pm_2', 'OK')"
+                                                        @class([
+                                                            'inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wide transition-all duration-150',
+                                                            'bg-green-600 text-white shadow-md shadow-green-600/30 ring-2 ring-green-300 dark:ring-green-700 scale-105' => $pm_2 === 'OK',
+                                                            'bg-white dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 border border-zinc-300 dark:border-zinc-600 hover:bg-green-50 dark:hover:bg-green-900/20 hover:border-green-400 hover:text-green-700 dark:hover:text-green-400' => $pm_2 !== 'OK',
+                                                        ])>
+                                                    <flux:icon name="check-circle" class="w-4 h-4" />
+                                                    OK
+                                                </button>
+                                                <button type="button"
+                                                        wire:click="$set('pm_2', 'NO')"
+                                                        @class([
+                                                            'inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wide transition-all duration-150',
+                                                            'bg-red-600 text-white shadow-md shadow-red-600/30 ring-2 ring-red-300 dark:ring-red-700 scale-105' => $pm_2 === 'NO',
+                                                            'bg-white dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 border border-zinc-300 dark:border-zinc-600 hover:bg-red-50 dark:hover:bg-red-900/20 hover:border-red-400 hover:text-red-700 dark:hover:text-red-400' => $pm_2 !== 'NO',
+                                                        ])>
+                                                    <flux:icon name="x-circle" class="w-4 h-4" />
+                                                    NO
+                                                </button>
+                                            </div>
+                                            @error('pm_2') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                                        </div>
+
+                                        {{-- PM 3 --}}
+                                        <div class="bg-white dark:bg-zinc-900 rounded-xl border border-purple-200 dark:border-purple-800/60 p-4">
+                                            <div class="flex items-start justify-between gap-4 mb-3">
+                                                <div class="flex items-start gap-3">
+                                                    <div class="w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-900/40 flex items-center justify-center flex-shrink-0">
+                                                        <span class="text-xs font-bold text-purple-700 dark:text-purple-400">3</span>
+                                                    </div>
+                                                    <div>
+                                                        <div class="text-sm font-semibold text-zinc-800 dark:text-zinc-100">
+                                                            Filter & Fan Cleanup
+                                                        </div>
+                                                        <div class="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
+                                                            Verification after preventive maintenance
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="flex items-center gap-2">
+                                                <button type="button"
+                                                        wire:click="$set('pm_3', 'YES')"
+                                                        @class([
+                                                            'inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wide transition-all duration-150',
+                                                            'bg-green-600 text-white shadow-md shadow-green-600/30 ring-2 ring-green-300 dark:ring-green-700 scale-105' => $pm_3 === 'YES',
+                                                            'bg-white dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 border border-zinc-300 dark:border-zinc-600 hover:bg-green-50 dark:hover:bg-green-900/20 hover:border-green-400 hover:text-green-700 dark:hover:text-green-400' => $pm_3 !== 'YES',
+                                                        ])>
+                                                    <flux:icon name="check-circle" class="w-4 h-4" />
+                                                    YES
+                                                </button>
+                                                <button type="button"
+                                                        wire:click="$set('pm_3', 'NO')"
+                                                        @class([
+                                                            'inline-flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wide transition-all duration-150',
+                                                            'bg-red-600 text-white shadow-md shadow-red-600/30 ring-2 ring-red-300 dark:ring-red-700 scale-105' => $pm_3 === 'NO',
+                                                            'bg-white dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 border border-zinc-300 dark:border-zinc-600 hover:bg-red-50 dark:hover:bg-red-900/20 hover:border-red-400 hover:text-red-700 dark:hover:text-red-400' => $pm_3 !== 'NO',
+                                                        ])>
+                                                    <flux:icon name="x-circle" class="w-4 h-4" />
+                                                    NO
+                                                </button>
+                                            </div>
+                                            @error('pm_3') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                                         </div>
                                     </div>
                                 </div>
-                                <!-- Before Maintenance -->
-                                <div class="mb-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                                    <h3 class="text-md font-semibold text-blue-800 dark:text-blue-400 mb-3">Before Maintenance Measurements</h3>
-                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                        <div>
-                                            <label class="block text-sm font-medium mb-1">C1 Before <span class="text-red-500">*</span></label>
-                                            <div class="text-xs text-blue-600 mb-1">Standard: &lt; 8.0 (Max 7.9 = OK)</div>
-                                            <input type="number" step="0.01" wire:model="c1_before" wire:blur="resetJudgements" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                                            @error('c1_before') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                            <div class="mt-1"><span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium {{ $judgement_c1_before == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">Judgement: {{ $judgement_c1_before ?: 'Auto' }}</span></div>
+
+                                {{-- SECTION 2: BEFORE MAINTENANCE --}}
+                                <div class="bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-200 dark:border-zinc-700 p-5">
+                                    <div class="flex items-center gap-2.5 mb-4">
+                                        <div class="w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center">
+                                            <flux:icon name="beaker" class="w-4 h-4 text-blue-600 dark:text-blue-400" />
                                         </div>
                                         <div>
-                                            <label class="block text-sm font-medium mb-1">C2 Before <span class="text-red-500">*</span></label>
-                                            <div class="text-xs text-blue-600 mb-1">Standard: &lt; 8.0 (Max 7.9 = OK)</div>
-                                            <input type="number" step="0.01" wire:model="c2_before" wire:blur="resetJudgements" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                                            @error('c2_before') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                            <div class="mt-1"><span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium {{ $judgement_c2_before == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">Judgement: {{ $judgement_c2_before ?: 'Auto' }}</span></div>
+                                            <h3 class="text-sm font-bold text-zinc-800 dark:text-zinc-100 uppercase tracking-wide">
+                                                Before Maintenance Measurements
+                                            </h3>
+                                            <p class="text-xs text-zinc-500 dark:text-zinc-400">
+                                                Initial measurements before servicing
+                                            </p>
                                         </div>
-                                        <div>
-                                            <label class="block text-sm font-medium mb-1">C3 Before <span class="text-red-500">*</span></label>
-                                            <div class="text-xs text-green-600 mb-1">Standard: ± 35 (-34.9 to 34.9 = OK)</div>
-                                            <input type="number" step="0.01" wire:model="c3_before" wire:blur="resetJudgements" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                                            @error('c3_before') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                            <div class="mt-1"><span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium {{ $judgement_c3_before == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">Judgement: {{ $judgement_c3_before ?: 'Auto' }}</span></div>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                        {{-- C1 Before --}}
+                                        <div class="bg-white dark:bg-zinc-900 rounded-xl border border-blue-200 dark:border-blue-800/60 p-4">
+                                            <div class="flex items-start justify-between gap-2 mb-2">
+                                                <div>
+                                                    <div class="text-xs font-bold text-blue-700 dark:text-blue-400 uppercase tracking-wide">C1 Before</div>
+                                                    <div class="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5">Decay Time (+)</div>
+                                                </div>
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase
+                                                    {{ $judgement_c1_before == 'OK' ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300' : ($judgement_c1_before == 'NG' ? 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300' : 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400') }}">
+                                                    {{ $judgement_c1_before ?: 'AUTO' }}
+                                                </span>
+                                            </div>
+                                            <div class="text-[10px] text-blue-600 dark:text-blue-400 mb-1">&lt; 8.0 s</div>
+                                            <input type="number" step="0.01" wire:model="c1_before" wire:blur="resetJudgements"
+                                                placeholder="0.00"
+                                                class="w-full px-3 py-2 text-sm border border-zinc-300 dark:border-zinc-600 rounded-lg dark:bg-zinc-800 focus:ring-2 focus:ring-blue-500 font-mono">
+                                            @error('c1_before') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                                        </div>
+
+                                        {{-- C2 Before --}}
+                                        <div class="bg-white dark:bg-zinc-900 rounded-xl border border-blue-200 dark:border-blue-800/60 p-4">
+                                            <div class="flex items-start justify-between gap-2 mb-2">
+                                                <div>
+                                                    <div class="text-xs font-bold text-blue-700 dark:text-blue-400 uppercase tracking-wide">C2 Before</div>
+                                                    <div class="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5">Decay Time (-)</div>
+                                                </div>
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase
+                                                    {{ $judgement_c2_before == 'OK' ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300' : ($judgement_c2_before == 'NG' ? 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300' : 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400') }}">
+                                                    {{ $judgement_c2_before ?: 'AUTO' }}
+                                                </span>
+                                            </div>
+                                            <div class="text-[10px] text-blue-600 dark:text-blue-400 mb-1">&lt; 8.0 s</div>
+                                            <input type="number" step="0.01" wire:model="c2_before" wire:blur="resetJudgements"
+                                                placeholder="0.00"
+                                                class="w-full px-3 py-2 text-sm border border-zinc-300 dark:border-zinc-600 rounded-lg dark:bg-zinc-800 focus:ring-2 focus:ring-blue-500 font-mono">
+                                            @error('c2_before') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                                        </div>
+
+                                        {{-- C3 Before --}}
+                                        <div class="bg-white dark:bg-zinc-900 rounded-xl border border-blue-200 dark:border-blue-800/60 p-4">
+                                            <div class="flex items-start justify-between gap-2 mb-2">
+                                                <div>
+                                                    <div class="text-xs font-bold text-blue-700 dark:text-blue-400 uppercase tracking-wide">C3 Before</div>
+                                                    <div class="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5">Offset Voltage</div>
+                                                </div>
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase
+                                                    {{ $judgement_c3_before == 'OK' ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300' : ($judgement_c3_before == 'NG' ? 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300' : 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400') }}">
+                                                    {{ $judgement_c3_before ?: 'AUTO' }}
+                                                </span>
+                                            </div>
+                                            <div class="text-[10px] text-green-600 dark:text-green-400 mb-1">± 35 V</div>
+                                            <input type="number" step="0.01" wire:model="c3_before" wire:blur="resetJudgements"
+                                                placeholder="0.00"
+                                                class="w-full px-3 py-2 text-sm border border-zinc-300 dark:border-zinc-600 rounded-lg dark:bg-zinc-800 focus:ring-2 focus:ring-blue-500 font-mono">
+                                            @error('c3_before') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                                         </div>
                                     </div>
                                 </div>
-                                <!-- After Maintenance -->
-                                <div class="mb-6 p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
-                                    <h3 class="text-md font-semibold text-green-800 dark:text-green-400 mb-3">After Maintenance Measurements</h3>
-                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                        <div>
-                                            <label class="block text-sm font-medium mb-1">C1 <span class="text-red-500">*</span></label>
-                                            <div class="text-xs text-blue-600 mb-1">Standard: &lt; 8.0 (Max 7.9 = OK)</div>
-                                            <input type="number" step="0.01" wire:model="c1" wire:blur="resetJudgements" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                                            @error('c1') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                            <div class="mt-1"><span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium {{ $judgement_c1 == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">Judgement: {{ $judgement_c1 ?: 'Auto' }}</span></div>
+
+                                {{-- SECTION 3: AFTER MAINTENANCE --}}
+                                <div class="bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-200 dark:border-zinc-700 p-5">
+                                    <div class="flex items-center gap-2.5 mb-4">
+                                        <div class="w-8 h-8 rounded-lg bg-green-100 dark:bg-green-900/40 flex items-center justify-center">
+                                            <flux:icon name="sparkles" class="w-4 h-4 text-green-600 dark:text-green-400" />
                                         </div>
                                         <div>
-                                            <label class="block text-sm font-medium mb-1">C2 <span class="text-red-500">*</span></label>
-                                            <div class="text-xs text-blue-600 mb-1">Standard: &lt; 8.0 (Max 7.9 = OK)</div>
-                                            <input type="number" step="0.01" wire:model="c2" wire:blur="resetJudgements" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                                            @error('c2') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                            <div class="mt-1"><span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium {{ $judgement_c2 == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">Judgement: {{ $judgement_c2 ?: 'Auto' }}</span></div>
+                                            <h3 class="text-sm font-bold text-zinc-800 dark:text-zinc-100 uppercase tracking-wide">
+                                                After Maintenance Measurements
+                                            </h3>
+                                            <p class="text-xs text-zinc-500 dark:text-zinc-400">
+                                                Final measurements after servicing
+                                            </p>
                                         </div>
-                                        <div>
-                                            <label class="block text-sm font-medium mb-1">C3 <span class="text-red-500">*</span></label>
-                                            <div class="text-xs text-green-600 mb-1">Standard: ± 35 (-34.9 to 34.9 = OK)</div>
-                                            <input type="number" step="0.01" wire:model="c3" wire:blur="resetJudgements" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                                            @error('c3') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                            <div class="mt-1"><span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium {{ $judgement_c3 == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">Judgement: {{ $judgement_c3 ?: 'Auto' }}</span></div>
+                                    </div>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                        {{-- C1 --}}
+                                        <div class="bg-white dark:bg-zinc-900 rounded-xl border border-green-200 dark:border-green-800/60 p-4">
+                                            <div class="flex items-start justify-between gap-2 mb-2">
+                                                <div>
+                                                    <div class="text-xs font-bold text-green-700 dark:text-green-400 uppercase tracking-wide">C1</div>
+                                                    <div class="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5">Decay Time (+)</div>
+                                                </div>
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase
+                                                    {{ $judgement_c1 == 'OK' ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300' : ($judgement_c1 == 'NG' ? 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300' : 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400') }}">
+                                                    {{ $judgement_c1 ?: 'AUTO' }}
+                                                </span>
+                                            </div>
+                                            <div class="text-[10px] text-blue-600 dark:text-blue-400 mb-1">&lt; 8.0 s</div>
+                                            <input type="number" step="0.01" wire:model="c1" wire:blur="resetJudgements"
+                                                placeholder="0.00"
+                                                class="w-full px-3 py-2 text-sm border border-zinc-300 dark:border-zinc-600 rounded-lg dark:bg-zinc-800 focus:ring-2 focus:ring-blue-500 font-mono">
+                                            @error('c1') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                                        </div>
+
+                                        {{-- C2 --}}
+                                        <div class="bg-white dark:bg-zinc-900 rounded-xl border border-green-200 dark:border-green-800/60 p-4">
+                                            <div class="flex items-start justify-between gap-2 mb-2">
+                                                <div>
+                                                    <div class="text-xs font-bold text-green-700 dark:text-green-400 uppercase tracking-wide">C2</div>
+                                                    <div class="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5">Decay Time (-)</div>
+                                                </div>
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase
+                                                    {{ $judgement_c2 == 'OK' ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300' : ($judgement_c2 == 'NG' ? 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300' : 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400') }}">
+                                                    {{ $judgement_c2 ?: 'AUTO' }}
+                                                </span>
+                                            </div>
+                                            <div class="text-[10px] text-blue-600 dark:text-blue-400 mb-1">&lt; 8.0 s</div>
+                                            <input type="number" step="0.01" wire:model="c2" wire:blur="resetJudgements"
+                                                placeholder="0.00"
+                                                class="w-full px-3 py-2 text-sm border border-zinc-300 dark:border-zinc-600 rounded-lg dark:bg-zinc-800 focus:ring-2 focus:ring-blue-500 font-mono">
+                                            @error('c2') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                                        </div>
+
+                                        {{-- C3 --}}
+                                        <div class="bg-white dark:bg-zinc-900 rounded-xl border border-green-200 dark:border-green-800/60 p-4">
+                                            <div class="flex items-start justify-between gap-2 mb-2">
+                                                <div>
+                                                    <div class="text-xs font-bold text-green-700 dark:text-green-400 uppercase tracking-wide">C3</div>
+                                                    <div class="text-[10px] text-zinc-500 dark:text-zinc-400 mt-0.5">Offset Voltage</div>
+                                                </div>
+                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold uppercase
+                                                    {{ $judgement_c3 == 'OK' ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300' : ($judgement_c3 == 'NG' ? 'bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-300' : 'bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400') }}">
+                                                    {{ $judgement_c3 ?: 'AUTO' }}
+                                                </span>
+                                            </div>
+                                            <div class="text-[10px] text-green-600 dark:text-green-400 mb-1">± 35 V</div>
+                                            <input type="number" step="0.01" wire:model="c3" wire:blur="resetJudgements"
+                                                placeholder="0.00"
+                                                class="w-full px-3 py-2 text-sm border border-zinc-300 dark:border-zinc-600 rounded-lg dark:bg-zinc-800 focus:ring-2 focus:ring-blue-500 font-mono">
+                                            @error('c3') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
                                         </div>
                                     </div>
                                 </div>
-                                <!-- Remarks & Next Date -->
-                                <div class="mb-4">
-                                    <label class="block text-sm font-medium mb-1">Remarks</label>
-                                    <textarea wire:model="remarks" rows="3" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700"></textarea>
-                                    @error('remarks') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+
+                                {{-- SECTION 4: VISUAL INSPECTION C4 --}}
+                                <div class="bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-200 dark:border-zinc-700 p-5">
+                                    <div class="flex items-center gap-2.5 mb-4">
+                                        <div class="w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center">
+                                            <flux:icon name="clipboard-document-check" class="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                                        </div>
+                                        <div>
+                                            <h3 class="text-sm font-bold text-zinc-800 dark:text-zinc-100 uppercase tracking-wide">
+                                                C4 — Visual Inspection Checklist
+                                            </h3>
+                                            <p class="text-xs text-zinc-500 dark:text-zinc-400">
+                                                Tick <span class="font-semibold text-green-600">YES</span> if condition is met, <span class="font-semibold text-red-600">NO</span> if not
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div class="space-y-2">
+                                        @php
+                                            $c4Items = [
+                                                ['field' => 'c4_1', 'code' => 'C-4.1', 'text' => 'Unit ionizer dalam kondisi fisik baik dan tidak rusak'],
+                                                ['field' => 'c4_2', 'code' => 'C-4.2', 'text' => 'Posisi ionizer sesuai dengan arah Panah yang ditentukan'],
+                                                ['field' => 'c4_3', 'code' => 'C-4.3', 'text' => 'Emitter pin/nozzle tidak kotor atau tertutup debu dan tidak bengkok'],
+                                                ['field' => 'c4_4', 'code' => 'C-4.4', 'text' => 'Kabel power/ground terpasang'],
+                                                ['field' => 'c4_5', 'code' => 'C-4.5', 'text' => 'Indikator/status ionizer menunjukkan kondisi normal'],
+                                            ];
+                                        @endphp
+
+                                        @foreach($c4Items as $item)
+                                            @php
+                                                $field = $item['field'];
+                                                $value = $this->$field;
+                                                $isYes = ($value === 1 || $value === true || $value === '1');
+                                                $isNo  = ($value === 0 || $value === false || $value === '0');
+                                            @endphp
+                                            <div class="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-700 p-3
+                                                        flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3
+                                                        {{ $isYes ? 'ring-1 ring-green-200 dark:ring-green-900' : ($isNo ? 'ring-1 ring-red-200 dark:ring-red-900' : '') }}">
+                                                <div class="flex items-start gap-3 flex-1 min-w-0">
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wide bg-amber-600 text-white flex-shrink-0 mt-0.5">
+                                                        {{ $item['code'] }}
+                                                    </span>
+                                                    <p class="text-sm text-zinc-700 dark:text-zinc-300 leading-snug">{{ $item['text'] }}</p>
+                                                </div>
+
+                                                <div class="flex items-center gap-2 flex-shrink-0 self-end sm:self-auto">
+                                                    <button type="button"
+                                                            wire:click="$set('{{ $field }}', {{ $isYes ? 'null' : '1' }})"
+                                                            class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide transition-all duration-150
+                                                                {{ $isYes
+                                                                    ? 'bg-green-600 text-white shadow-md shadow-green-600/30 ring-2 ring-green-300 dark:ring-green-700 scale-105'
+                                                                    : 'bg-white dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 border border-zinc-300 dark:border-zinc-600 hover:bg-green-50 dark:hover:bg-green-900/20 hover:border-green-400 hover:text-green-700 dark:hover:text-green-400' }}">
+                                                        <flux:icon name="check-circle" class="w-4 h-4" />
+                                                        <span>YES</span>
+                                                    </button>
+
+                                                    <button type="button"
+                                                            wire:click="$set('{{ $field }}', {{ $isNo ? 'null' : '0' }})"
+                                                            class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide transition-all duration-150
+                                                                {{ $isNo
+                                                                    ? 'bg-red-600 text-white shadow-md shadow-red-600/30 ring-2 ring-red-300 dark:ring-red-700 scale-105'
+                                                                    : 'bg-white dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 border border-zinc-300 dark:border-zinc-600 hover:bg-red-50 dark:hover:bg-red-900/20 hover:border-red-400 hover:text-red-700 dark:hover:text-red-400' }}">
+                                                        <flux:icon name="x-circle" class="w-4 h-4" />
+                                                        <span>NO</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
                                 </div>
-                                <div class="mb-4">
-                                    <label class="block text-sm font-medium mb-1">Next Date</label>
-                                    <input type="date" wire:model="next_date" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                                    @error('next_date') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+
+                                {{-- SECTION 5: NOTES --}}
+                                <div class="bg-zinc-50 dark:bg-zinc-800/50 rounded-2xl border border-zinc-200 dark:border-zinc-700 p-5">
+                                    <div class="flex items-center gap-2.5 mb-4">
+                                        <div class="w-8 h-8 rounded-lg bg-zinc-200 dark:bg-zinc-700 flex items-center justify-center">
+                                            <flux:icon name="document-text" class="w-4 h-4 text-zinc-600 dark:text-zinc-300" />
+                                        </div>
+                                        <div>
+                                            <h3 class="text-sm font-bold text-zinc-800 dark:text-zinc-100 uppercase tracking-wide">
+                                                Additional Notes
+                                            </h3>
+                                            <p class="text-xs text-zinc-500 dark:text-zinc-400">Remarks and next measurement schedule</p>
+                                        </div>
+                                    </div>
+
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label class="block text-sm font-medium mb-1.5 text-zinc-700 dark:text-zinc-300">Remarks</label>
+                                            <textarea wire:model="remarks" rows="3"
+                                                    placeholder="Additional observations, notes, or follow-up actions..."
+                                                    class="w-full px-3 py-2.5 text-sm border border-zinc-300 dark:border-zinc-600 rounded-xl dark:bg-zinc-800 focus:ring-2 focus:ring-blue-500 resize-none"></textarea>
+                                            @error('remarks') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-sm font-medium mb-1.5 text-zinc-700 dark:text-zinc-300">Next Measurement Date</label>
+                                            <input type="date" wire:model="next_date"
+                                                class="w-full px-3 py-2.5 text-sm border border-zinc-300 dark:border-zinc-600 rounded-xl dark:bg-zinc-800 focus:ring-2 focus:ring-blue-500">
+                                            @error('next_date') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="flex justify-end gap-2 mt-6">
-                                    <button type="button" @click="open = false" class="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">Cancel</button>
-                                    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">{{ $detail_id ? 'Update' : 'Create' }}</button>
-                                </div>
+
                             </form>
                         </div>
+
+                        {{-- =================== FOOTER =================== --}}
+                        <div class="sticky bottom-0 bg-white dark:bg-zinc-900 border-t border-zinc-200 dark:border-zinc-700 px-6 py-4 flex items-center justify-between shadow-[0_-4px_12px_rgba(0,0,0,0.05)]">
+                            <p class="text-xs text-zinc-500 dark:text-zinc-400 hidden sm:block">
+                                <span class="text-red-500">*</span> Required fields
+                            </p>
+                            <div class="flex items-center gap-2 ml-auto">
+                                <button type="button"
+                                        @click="open = false"
+                                        class="inline-flex items-center gap-2 px-5 py-2.5 border border-zinc-300 dark:border-zinc-600 rounded-xl hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                                    <flux:icon name="x-mark" class="w-4 h-4" />
+                                    Cancel
+                                </button>
+                                <button type="submit" form="detail-form"
+                                        class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-700 hover:to-amber-700 text-white rounded-xl transition-all text-sm font-semibold shadow-lg shadow-orange-600/30 hover:shadow-orange-600/50">
+                                    <flux:icon name="{{ $detail_id ? 'check' : 'plus' }}" class="w-4 h-4" />
+                                    {{ $detail_id ? 'Update Measurement' : 'Create Measurement' }}
+                                </button>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>

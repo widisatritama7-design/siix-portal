@@ -9,80 +9,82 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Arial', sans-serif;
-            font-size: 8pt;
+            font-size: 7.5pt;
             line-height: 1.2;
             margin: 15px;
             padding: 0;
         }
-        
+
         .container {
             width: 100%;
             margin: 0 auto;
         }
-        
+
         .header {
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             border-bottom: 2px solid #333;
             padding-bottom: 8px;
         }
-        
+
         .header h1 {
             margin: 0;
-            font-size: 16pt;
+            font-size: 15pt;
             color: #1a56db;
         }
-        
+
         .report-info {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             padding: 8px;
             background: #f3f4f6;
             border-radius: 5px;
             font-size: 7pt;
         }
-        
+
         .report-info table {
             width: 100%;
         }
-        
+
         .report-info td {
             padding: 2px 5px;
         }
-        
+
         .report-info td:first-child {
             font-weight: bold;
             width: 100px;
         }
-        
+
         table.data-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
-            font-size: 6.5pt;
+            margin-top: 8px;
+            font-size: 6pt;
         }
-        
+
         table.data-table th {
             background: #1a56db;
             color: white;
-            padding: 5px 3px;
+            padding: 4px 2px;
             text-align: center;
             border: 1px solid #ddd;
             font-weight: bold;
+            font-size: 5.5pt;
+            line-height: 1.1;
         }
-        
+
         table.data-table td {
-            padding: 4px 3px;
+            padding: 3px 2px;
             border: 1px solid #ddd;
             vertical-align: top;
         }
-        
+
         table.data-table tr:nth-child(even) {
             background: #f9fafb;
         }
-        
+
         .footer {
             margin-top: 15px;
             text-align: center;
@@ -95,65 +97,54 @@
             left: 0;
             right: 0;
         }
-        
-        .badge-ok {
-            color: #059669;
-            font-weight: bold;
-        }
-        
-        .badge-ng {
-            color: #dc2626;
-            font-weight: bold;
-        }
-        
-        .text-center {
-            text-align: center;
-        }
-        
+
+        .badge-ok { color: #059669; font-weight: bold; }
+        .badge-ng { color: #dc2626; font-weight: bold; }
+        .badge-yes { color: #059669; font-weight: bold; }
+        .badge-no  { color: #dc2626; font-weight: bold; }
+        .badge-na  { color: #9ca3af; }
+
+        .text-center { text-align: center; }
+
         .wrap-text {
             word-wrap: break-word;
             word-break: break-all;
             white-space: normal;
         }
-        
+
         .col-no { width: 2%; }
-        .col-register { width: 6%; }
-        .col-area { width: 5%; }
-        .col-location { width: 5%; }
-        .col-pm1 { width: 4%; }
-        .col-pm2 { width: 4%; }
-        .col-pm3 { width: 4%; }
-        .col-c1b { width: 5%; }
-        .col-judge1b { width: 3%; }
-        .col-c2b { width: 5%; }
-        .col-judge2b { width: 3%; }
-        .col-c3b { width: 5%; }
-        .col-judge3b { width: 3%; }
-        .col-c1 { width: 5%; }
-        .col-judge1 { width: 3%; }
-        .col-c2 { width: 5%; }
-        .col-judge2 { width: 3%; }
-        .col-c3 { width: 5%; }
-        .col-judge3 { width: 3%; }
-        .col-remarks { width: 7%; }
-        .col-date { width: 5%; }
-        .col-next-date { width: 5%; }
-        .col-checked { width: 6%; }
-        
+        .col-register { width: 5.5%; }
+        .col-area { width: 4.5%; }
+        .col-location { width: 4.5%; }
+        .col-pm1 { width: 3.5%; }
+        .col-pm2 { width: 3.5%; }
+        .col-pm3 { width: 3.5%; }
+        .col-c1b { width: 4%; }
+        .col-judge1b { width: 2.5%; }
+        .col-c2b { width: 4%; }
+        .col-judge2b { width: 2.5%; }
+        .col-c3b { width: 4%; }
+        .col-judge3b { width: 2.5%; }
+        .col-c1 { width: 4%; }
+        .col-judge1 { width: 2.5%; }
+        .col-c2 { width: 4%; }
+        .col-judge2 { width: 2.5%; }
+        .col-c3 { width: 4%; }
+        .col-judge3 { width: 2.5%; }
+        .col-c4 { width: 2.5%; }
+        .col-remarks { width: 6%; }
+        .col-date { width: 4.5%; }
+        .col-next-date { width: 4.5%; }
+        .col-checked { width: 5%; }
+
         @page {
             size: A4 landscape;
             margin: 10px;
         }
-        
+
         @media print {
-            body {
-                margin: 0;
-                padding: 0;
-            }
-            .footer {
-                position: fixed;
-                bottom: 0;
-            }
+            body { margin: 0; padding: 0; }
+            .footer { position: fixed; bottom: 0; }
         }
     </style>
 </head>
@@ -174,7 +165,7 @@
                 </tr>
             </table>
         </div>
-        
+
         <div class="report-info">
             <table style="width: 100%;">
                 <tr>
@@ -197,9 +188,9 @@
                             @if($date_from || $date_until)
                             <tr>
                                 <td>Date Range</td>
-                                <td colspan="3">: 
-                                    {{ $date_from ? \Carbon\Carbon::parse($date_from)->format('d M Y') : 'Start' }} 
-                                    to 
+                                <td colspan="3">:
+                                    {{ $date_from ? \Carbon\Carbon::parse($date_from)->format('d M Y') : 'Start' }}
+                                    to
                                     {{ $date_until ? \Carbon\Carbon::parse($date_until)->format('d M Y') : 'End' }}
                                 </td>
                             </tr>
@@ -218,40 +209,47 @@
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
-                                    <span style="font-size: 7pt;">( {{ '_________________' }} )</span>
+                                    <span style="font-size: 7pt;">( _________________ )</span>
                                 </td>
                                 <td style="text-align: center; padding: 0 10px; width: 33%;">
                                     <strong>CHECKED BY</strong><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
-                                    <span style="font-size: 7pt;">( {{ '_________________' }} )</span>
+                                    <span style="font-size: 7pt;">( _________________ )</span>
                                 </td>
                                 <td style="text-align: center; padding: 0 10px; width: 33%;">
                                     <strong>APPROVED BY</strong><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
-                                    <span style="font-size: 7pt;">( {{ '_________________' }} )</span>
+                                    <span style="font-size: 7pt;">( _________________ )</span>
                                 </td>
                             </tr>
                         </table>
                     </td>
                 </tr>
             </table>
+
             <div style="margin-top: 10px; padding: 6px 8px; background: #e8f0fe; border-radius: 4px; font-size: 7pt; text-align: left; border-top: 1px solid #ddd;">
-                <strong>STANDARD ESD OF IONIZER</strong><br>
+                <strong>STANDARD ESD OF IONIZER</strong>
                 <div style="margin-top: 4px;">
                     <div>• (PM 1) Check H.V light flashing condition. If the indicator is flashing, record as NG and perform inspection immediately.</div>
                     <div>• (PM 2) Check and clean the discharge electrode needle. Result: OK / NG.</div>
                     <div>• (PM 3) Clean up filter and fan. Perform verification after PM (Preventive Maintenance).</div>
                     <div>• (C1) Measure Charge Decay Time (+), from 1,000V to 100V &lt; 8.0 seconds.</div>
                     <div>• (C2) Measure Charge Decay Time (-), from 1,000V to 100V &lt; 8.0 seconds.</div>
-                    <div>• (C3) Measure Offset Voltage, voltage swing within ±35V in 30 seconds.</div>
+                    <div>• (C3) Measure Offset Voltage, voltage swing within &lt; ±35V in 30 seconds.</div>
+                    <div style="margin-top: 3px;"><strong>• (C4) Visual Inspection Checklist</strong></div>
+                    <div style="padding-left: 12px;">(C-4.1) Unit ionizer dalam kondisi fisik baik dan tidak rusak</div>
+                    <div style="padding-left: 12px;">(C-4.2) Posisi ionizer sesuai dengan arah Panah yang ditentukan</div>
+                    <div style="padding-left: 12px;">(C-4.3) Emitter pin/nozzle tidak kotor atau tertutup debu dan tidak bengkok</div>
+                    <div style="padding-left: 12px;">(C-4.4) Kabel power/ground terpasang</div>
+                    <div style="padding-left: 12px;">(C-4.5) Indikator/status ionizer menunjukkan kondisi normal</div>
                 </div>
             </div>
         </div>
-        
+
         <table class="data-table">
             <thead>
                 <tr>
@@ -274,6 +272,11 @@
                     <th class="col-judge2">Jdg</th>
                     <th class="col-c3">C3</th>
                     <th class="col-judge3">Jdg</th>
+                    <th class="col-c4">C4.1</th>
+                    <th class="col-c4">C4.2</th>
+                    <th class="col-c4">C4.3</th>
+                    <th class="col-c4">C4.4</th>
+                    <th class="col-c4">C4.5</th>
                     <th class="col-remarks">Remarks</th>
                     <th class="col-date">Date</th>
                     <th class="col-next-date">Next Date</th>
@@ -326,6 +329,62 @@
                             {{ $detail->judgement_c3 ?? '-' }}
                         </span>
                     </td>
+
+                    {{-- C4.1 --}}
+                    <td class="text-center">
+                        @if($detail->c4_1 !== null)
+                            <span class="{{ $detail->c4_1 ? 'badge-yes' : 'badge-no' }}">
+                                {{ $detail->c4_1 ? 'Yes' : 'No' }}
+                            </span>
+                        @else
+                            <span class="badge-na">-</span>
+                        @endif
+                    </td>
+
+                    {{-- C4.2 --}}
+                    <td class="text-center">
+                        @if($detail->c4_2 !== null)
+                            <span class="{{ $detail->c4_2 ? 'badge-yes' : 'badge-no' }}">
+                                {{ $detail->c4_2 ? 'Yes' : 'No' }}
+                            </span>
+                        @else
+                            <span class="badge-na">-</span>
+                        @endif
+                    </td>
+
+                    {{-- C4.3 --}}
+                    <td class="text-center">
+                        @if($detail->c4_3 !== null)
+                            <span class="{{ $detail->c4_3 ? 'badge-yes' : 'badge-no' }}">
+                                {{ $detail->c4_3 ? 'Yes' : 'No' }}
+                            </span>
+                        @else
+                            <span class="badge-na">-</span>
+                        @endif
+                    </td>
+
+                    {{-- C4.4 --}}
+                    <td class="text-center">
+                        @if($detail->c4_4 !== null)
+                            <span class="{{ $detail->c4_4 ? 'badge-yes' : 'badge-no' }}">
+                                {{ $detail->c4_4 ? 'Yes' : 'No' }}
+                            </span>
+                        @else
+                            <span class="badge-na">-</span>
+                        @endif
+                    </td>
+
+                    {{-- C4.5 --}}
+                    <td class="text-center">
+                        @if($detail->c4_5 !== null)
+                            <span class="{{ $detail->c4_5 ? 'badge-yes' : 'badge-no' }}">
+                                {{ $detail->c4_5 ? 'Yes' : 'No' }}
+                            </span>
+                        @else
+                            <span class="badge-na">-</span>
+                        @endif
+                    </td>
+
                     <td class="wrap-text">{{ $detail->remarks ?? '-' }}</td>
                     <td class="text-center">{{ $detail->created_at ? $detail->created_at->format('d M Y') : '-' }}</td>
                     <td class="text-center">{{ $detail->next_date ? \Carbon\Carbon::parse($detail->next_date)->format('d M Y') : '-' }}</td>
@@ -333,14 +392,14 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="23" class="text-center" style="padding: 20px;">
+                    <td colspan="28" class="text-center" style="padding: 20px;">
                         No data found for the selected filters.
                     </td>
                 </tr>
                 @endforelse
             </tbody>
         </table>
-        
+
         <div class="footer" style="font-weight: bold;">
             QR-ADM-22-K017
         </div>

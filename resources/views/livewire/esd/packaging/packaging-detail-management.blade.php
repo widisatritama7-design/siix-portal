@@ -83,18 +83,6 @@
                             Clear All Filters
                         </button>
                         @endif
-                        
-                        @can('create packaging details')
-                        <flux:button 
-                            variant="primary" 
-                            icon="plus" 
-                            class="bg-blue-600 hover:bg-blue-700 whitespace-nowrap"
-                            wire:click="resetForm"
-                            x-on:click="$dispatch('open-modal', 'detail-form-modal')"
-                        >
-                            Add New Measurement
-                        </flux:button>
-                        @endcan
                     </div>
                 </div>
 
@@ -149,22 +137,31 @@
                         Print Report
                     </h3>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <!-- Filter Material -->
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+                        <!-- Filter SAP Code -->
                         <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Material</label>
+                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">SAP Code</label>
                             <input type="text" 
-                                wire:model.live="printMaterialFilter" 
-                                placeholder="Search by material..."
+                                wire:model.live="printSapCodeFilter" 
+                                placeholder="Search by SAP Code..."
                                 class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
                         </div>
                         
-                        <!-- Filter Category -->
+                        <!-- Filter Model -->
                         <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Category</label>
+                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Model</label>
                             <input type="text" 
-                                wire:model.live="printCategoryFilter" 
-                                placeholder="Search by category..."
+                                wire:model.live="printModelFilter" 
+                                placeholder="Search by Model..."
+                                class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                        </div>
+
+                        <!-- Filter Oracle -->
+                        <div>
+                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Oracle</label>
+                            <input type="text" 
+                                wire:model.live="printOracleFilter" 
+                                placeholder="Search by Oracle..."
                                 class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
                         </div>
                         
@@ -185,8 +182,8 @@
                         </div>
                     </div>
                     
-                    <!-- Print Buttons - Hanya muncul jika ada filter yang diisi -->
-                    @if($printMaterialFilter || $printCategoryFilter || $printDateFrom || $printDateUntil)
+                    <!-- Print Buttons -->
+                    @if($printSapCodeFilter || $printModelFilter || $printOracleFilter || $printDateFrom || $printDateUntil)
                     <div class="flex gap-2 mt-4">
                         <button wire:click="printPDF" 
                                 class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
@@ -225,11 +222,11 @@
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider w-20">F1 Judgement</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[120px]">F2 Result</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider w-20">F2 Judgement</th>
+                                <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">F3.1</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[150px]">Remarks</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Date</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Next Date</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[120px]">Checked By</th>
-                                <th class="px-4 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider w-24">Actions</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
@@ -241,11 +238,11 @@
                                 <td class="px-4 py-3">
                                     <div class="flex items-center gap-3">
                                         <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center text-white font-medium shadow-lg flex-shrink-0 text-xs">
-                                            {{ strtoupper(substr($detail->packaging->material ?? '', 0, 1)) }}
+                                            {{ strtoupper(substr($detail->packaging->sap_code ?? '', 0, 1)) }}
                                         </div>
                                         <div class="min-w-0">
                                             <span class="text-sm font-semibold text-zinc-800 dark:text-white block truncate max-w-[180px]" title="{{ $detail->packaging->material ?? '' }}">
-                                                {{ $detail->packaging->material ?? 'N/A' }}
+                                                {{ $detail->packaging->sap_code ?? 'N/A' }}
                                             </span>
                                             @if($detail->packaging->category)
                                             <div class="text-xs text-zinc-500 dark:text-zinc-400">
@@ -277,6 +274,16 @@
                                         {{ $detail->judgement_f2 }}
                                     </span>
                                 </td>
+                                {{-- F3.1 --}}
+                                <td class="px-4 py-3 text-center">
+                                    @if($detail->f3_1 !== null)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $detail->f3_1 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' }}">
+                                            {{ $detail->f3_1 ? 'Yes' : 'No' }}
+                                        </span>
+                                    @else
+                                        <span class="text-zinc-400">-</span>
+                                    @endif
+                                </td>
                                 <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300 truncate max-w-[150px]" title="{{ $detail->remarks }}">
                                     {{ $detail->remarks ?? '-' }}
                                 </td>
@@ -288,35 +295,6 @@
                                 </td>
                                 <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
                                     {{ $detail->creator->name ?? 'N/A' }}
-                                </td>
-                                <td class="px-4 py-3 text-right">
-                                    <div class="flex items-center justify-end gap-1 whitespace-nowrap">
-                                        @can('edit packaging details')
-                                        <flux:button 
-                                            wire:click="edit({{ $detail->id }})" 
-                                            x-on:click="$dispatch('open-modal', 'detail-form-modal')"
-                                            size="sm"
-                                            icon="pencil-square"
-                                            variant="primary"
-                                            color="yellow"
-                                            class="!p-2 flex-shrink-0"
-                                            title="Edit measurement"
-                                        />
-                                        @endcan
-
-                                        @can('delete packaging details')
-                                            <flux:button 
-                                                wire:click="confirmDelete({{ $detail->id }})" 
-                                                x-on:click="$dispatch('open-modal', 'delete-detail-modal')"
-                                                size="sm"
-                                                icon="trash"
-                                                variant="primary"
-                                                color="red"
-                                                class="!p-2 flex-shrink-0"
-                                                title="Delete measurement"
-                                            />
-                                        @endcan
-                                    </div>
                                 </td>
                             </tr>
                             @empty

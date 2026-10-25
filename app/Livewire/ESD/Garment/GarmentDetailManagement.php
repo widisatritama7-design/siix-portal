@@ -28,6 +28,10 @@ class GarmentDetailManagement extends Component
     public $d4;
     public $d4_scientific;
     public $judgement_d4;
+    public $d5;
+    public $d5_scientific;
+    public $judgement_d5;
+    public $d6_1;
     public $remarks;
     public $next_date;
 
@@ -63,6 +67,8 @@ class GarmentDetailManagement extends Component
             'd2' => 'nullable|numeric|min:0',
             'd3' => 'nullable|numeric|min:0',
             'd4' => 'nullable|numeric|min:0',
+            'd5' => 'nullable|numeric|min:0',      // ✅ baru
+            'd6_1' => 'nullable|boolean',          // ✅ baru
             'remarks' => 'nullable|string|max:500',
             'next_date' => 'nullable|date',
         ];
@@ -75,6 +81,8 @@ class GarmentDetailManagement extends Component
         'd2.numeric' => 'D2 measurement must be a number.',
         'd3.numeric' => 'D3 measurement must be a number.',
         'd4.numeric' => 'D4 measurement must be a number.',
+        'd5.numeric' => 'D5 measurement must be a number.',
+        'd6_1.boolean' => 'D6.1 must be Yes or No.',
         'next_date.date' => 'Next date must be a valid date.',
     ];
 
@@ -132,6 +140,15 @@ class GarmentDetailManagement extends Component
             $this->judgement_d4 = null;
             $this->d4_scientific = null;
         }
+
+        // Handle D5
+        if ($this->d5 !== null && $this->d5 !== '') {
+            $this->judgement_d5 = ($this->d5 >= $minStandard && $this->d5 < $maxStandard) ? 'OK' : 'NG';
+            $this->d5_scientific = sprintf('%.2E', floatval($this->d5));
+        } else {
+            $this->judgement_d5 = null;
+            $this->d5_scientific = null;
+        }
     }
 
     public function updatedD1()
@@ -150,6 +167,11 @@ class GarmentDetailManagement extends Component
     }
 
     public function updatedD4()
+    {
+        $this->resetJudgements();
+    }
+
+    public function updatedD5()
     {
         $this->resetJudgements();
     }
@@ -174,6 +196,8 @@ class GarmentDetailManagement extends Component
             'd2', 'd2_scientific', 'judgement_d2',
             'd3', 'd3_scientific', 'judgement_d3',
             'd4', 'd4_scientific', 'judgement_d4',
+            'd5', 'd5_scientific', 'judgement_d5',   // ✅ baru
+            'd6_1',                                   // ✅ baru
             'remarks', 'next_date'
         ]);
         $this->modalTitle = 'Add New Garment Measurement';
@@ -230,6 +254,10 @@ class GarmentDetailManagement extends Component
             'd4' => $this->d4,
             'd4_scientific' => $this->d4_scientific,
             'judgement_d4' => $this->judgement_d4,
+            'd5' => $this->d5,
+            'd5_scientific' => $this->d5_scientific,
+            'judgement_d5' => $this->judgement_d5,
+            'd6_1' => $this->d6_1,
             'remarks' => $this->remarks,
             'next_date' => $this->next_date,
         ];
@@ -282,6 +310,10 @@ class GarmentDetailManagement extends Component
         $this->d4 = $detail->d4;
         $this->d4_scientific = $detail->d4_scientific;
         $this->judgement_d4 = $detail->judgement_d4;
+        $this->d5 = $detail->d5;
+        $this->d5_scientific = $detail->d5_scientific;
+        $this->judgement_d5 = $detail->judgement_d5;
+        $this->d6_1 = $detail->d6_1;
         $this->remarks = $detail->remarks;
         $this->next_date = $detail->next_date ? Carbon::parse($detail->next_date)->format('Y-m-d') : null;
         $this->modalTitle = 'Edit Garment Measurement';

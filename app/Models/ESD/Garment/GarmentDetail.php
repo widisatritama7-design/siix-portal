@@ -17,26 +17,23 @@ class GarmentDetail extends Model
     protected $fillable = [
         'nik',
         'name',
-        'd1',
-        'd1_scientific',
-        'judgement_d1',
-        'd2',
-        'd2_scientific',
-        'judgement_d2',
-        'd3',
-        'd3_scientific',
-        'judgement_d3',
-        'd4',
-        'd4_scientific',
-        'judgement_d4',
+        'd1', 'd1_scientific', 'judgement_d1',
+        'd2', 'd2_scientific', 'judgement_d2',
+        'd3', 'd3_scientific', 'judgement_d3',
+        'd4', 'd4_scientific', 'judgement_d4',
+        'd5', 'd5_scientific', 'judgement_d5',   // ✅ baru
+        'd6_1',                                   // ✅ baru
         'next_date',
         'remarks',
         'created_by',
+        'updated_by',
         'photo_verification',
     ];
 
     protected $casts = [
         'photo_verification' => 'array',
+        'd6_1' => 'boolean',
+        'next_date' => 'date',
     ];
 
     public function garment()

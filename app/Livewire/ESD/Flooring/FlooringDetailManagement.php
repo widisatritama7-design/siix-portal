@@ -23,6 +23,9 @@ class FlooringDetailManagement extends Component
     public $judgement;
     public $remarks;
     public $next_date;
+    public $b2_1;
+    public $b2_2;
+    public $b2_3;
 
     public $search = '';
     public $filterFlooring = '';
@@ -47,7 +50,10 @@ class FlooringDetailManagement extends Component
     {
         return [
             'flooring_id' => 'required|exists:tb_esd_floorings,id',
-            'b1' => 'nullable|numeric|min:0', // Diubah jadi nullable
+            'b1' => 'nullable|numeric|min:0',
+            'b2_1' => 'nullable|boolean',   // ✅ baru
+            'b2_2' => 'nullable|boolean',   // ✅ baru
+            'b2_3' => 'nullable|boolean',   // ✅ baru
             'remarks' => 'nullable|string|max:500',
             'next_date' => 'nullable|date',
         ];
@@ -58,6 +64,9 @@ class FlooringDetailManagement extends Component
         'flooring_id.exists' => 'Selected flooring does not exist.',
         'b1.numeric' => 'B1 measurement result must be a number.',
         'b1.min' => 'B1 measurement result must be at least 0.',
+        'b2_1.boolean' => 'B2.1 must be Yes or No.',
+        'b2_2.boolean' => 'B2.2 must be Yes or No.',
+        'b2_3.boolean' => 'B2.3 must be Yes or No.',
         'next_date.date' => 'Next date must be a valid date.',
     ];
 
@@ -110,7 +119,9 @@ class FlooringDetailManagement extends Component
     {
         $this->reset([
             'detail_id', 'flooring_id', 'register_no', 'area', 'location',
-            'b1', 'b1_scientific', 'judgement', 'remarks', 'next_date'
+            'b1', 'b1_scientific', 'judgement',
+            'b2_1', 'b2_2', 'b2_3',   // ✅ baru
+            'remarks', 'next_date'
         ]);
         $this->modalTitle = 'Add New Flooring Measurement';
         $this->resetValidation();
@@ -155,6 +166,9 @@ class FlooringDetailManagement extends Component
             'b1' => $this->b1,
             'b1_scientific' => $this->b1_scientific,
             'judgement' => $this->judgement,
+            'b2_1' => $this->b2_1,   // ✅ baru
+            'b2_2' => $this->b2_2,   // ✅ baru
+            'b2_3' => $this->b2_3,   // ✅ baru
             'remarks' => $this->remarks,
             'next_date' => $this->next_date,
         ];
@@ -200,6 +214,9 @@ class FlooringDetailManagement extends Component
         $this->b1 = $detail->b1;
         $this->b1_scientific = $detail->b1_scientific;
         $this->judgement = $detail->judgement;
+        $this->b2_1 = $detail->b2_1;
+        $this->b2_2 = $detail->b2_2;
+        $this->b2_3 = $detail->b2_3;
         $this->remarks = $detail->remarks;
         $this->next_date = $detail->next_date;
         $this->modalTitle = 'Edit Flooring Measurement';

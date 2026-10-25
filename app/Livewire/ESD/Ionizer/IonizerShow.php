@@ -13,14 +13,14 @@ class IonizerShow extends Component
     use WithPagination;
 
     public $ionizer;
-    
+
     // Filter properties
     public $filterDateFrom;
     public $filterDateUntil;
     public $filterNextDateFrom;
     public $filterNextDateUntil;
     public $search = '';
-    
+
     // Form properties
     public $detail_id;
     public $ionizer_id;
@@ -42,11 +42,16 @@ class IonizerShow extends Component
     public $judgement_c2;
     public $c3;
     public $judgement_c3;
+    public $c4_1;
+    public $c4_2;
+    public $c4_3;
+    public $c4_4;
+    public $c4_5;
     public $remarks;
     public $next_date;
     public $modalTitle = 'Add New Measurement';
     public $detailToDelete = null;
-    
+
     // Ionizer list for dropdown
     public $ionizers;
 
@@ -63,11 +68,16 @@ class IonizerShow extends Component
             'c1' => 'required|numeric',
             'c2' => 'required|numeric',
             'c3' => 'required|numeric',
+            'c4_1' => 'nullable|boolean',
+            'c4_2' => 'nullable|boolean',
+            'c4_3' => 'nullable|boolean',
+            'c4_4' => 'nullable|boolean',
+            'c4_5' => 'nullable|boolean',
             'remarks' => 'nullable|string',
             'next_date' => 'nullable|date',
         ];
     }
-    
+
     protected function messages()
     {
         return [
@@ -91,6 +101,11 @@ class IonizerShow extends Component
             'c2.numeric' => 'C2 must be a number.',
             'c3.required' => 'C3 measurement is required.',
             'c3.numeric' => 'C3 must be a number.',
+            'c4_1.boolean' => 'C4.1 must be Yes or No.',
+            'c4_2.boolean' => 'C4.2 must be Yes or No.',
+            'c4_3.boolean' => 'C4.3 must be Yes or No.',
+            'c4_4.boolean' => 'C4.4 must be Yes or No.',
+            'c4_5.boolean' => 'C4.5 must be Yes or No.',
             'next_date.date' => 'Next date must be a valid date.',
         ];
     }
@@ -98,11 +113,11 @@ class IonizerShow extends Component
     public function mount($id)
     {
         $this->ionizer = Ionizer::with('creator')->findOrFail($id);
-        
+
         if (!auth()->user()->can('view ionizer')) {
             abort(403, 'Unauthorized access.');
         }
-        
+
         $this->loadIonizers();
         $this->resetJudgements();
     }
@@ -114,66 +129,32 @@ class IonizerShow extends Component
 
     public function resetJudgements()
     {
-        // C1 Before Judgement (< 8.0)
         if ($this->c1_before !== null && $this->c1_before !== '') {
             $this->judgement_c1_before = floatval($this->c1_before) >= 8.0 ? 'NG' : 'OK';
         }
-        
-        // C2 Before Judgement (< 8.0)
         if ($this->c2_before !== null && $this->c2_before !== '') {
             $this->judgement_c2_before = floatval($this->c2_before) >= 8.0 ? 'NG' : 'OK';
         }
-        
-        // C3 Before Judgement (± 35)
         if ($this->c3_before !== null && $this->c3_before !== '') {
             $this->judgement_c3_before = (floatval($this->c3_before) <= -35.0 || floatval($this->c3_before) >= 35.0) ? 'NG' : 'OK';
         }
-        
-        // C1 Judgement (< 8.0)
         if ($this->c1 !== null && $this->c1 !== '') {
             $this->judgement_c1 = floatval($this->c1) >= 8.0 ? 'NG' : 'OK';
         }
-        
-        // C2 Judgement (< 8.0)
         if ($this->c2 !== null && $this->c2 !== '') {
             $this->judgement_c2 = floatval($this->c2) >= 8.0 ? 'NG' : 'OK';
         }
-        
-        // C3 Judgement (± 35)
         if ($this->c3 !== null && $this->c3 !== '') {
             $this->judgement_c3 = (floatval($this->c3) <= -35.0 || floatval($this->c3) >= 35.0) ? 'NG' : 'OK';
         }
     }
 
-    public function updatedC1Before()
-    {
-        $this->resetJudgements();
-    }
-
-    public function updatedC2Before()
-    {
-        $this->resetJudgements();
-    }
-
-    public function updatedC3Before()
-    {
-        $this->resetJudgements();
-    }
-
-    public function updatedC1()
-    {
-        $this->resetJudgements();
-    }
-
-    public function updatedC2()
-    {
-        $this->resetJudgements();
-    }
-
-    public function updatedC3()
-    {
-        $this->resetJudgements();
-    }
+    public function updatedC1Before() { $this->resetJudgements(); }
+    public function updatedC2Before() { $this->resetJudgements(); }
+    public function updatedC3Before() { $this->resetJudgements(); }
+    public function updatedC1() { $this->resetJudgements(); }
+    public function updatedC2() { $this->resetJudgements(); }
+    public function updatedC3() { $this->resetJudgements(); }
 
     public function updatedIonizerId($value)
     {
@@ -202,6 +183,7 @@ class IonizerShow extends Component
             'c1', 'judgement_c1',
             'c2', 'judgement_c2',
             'c3', 'judgement_c3',
+            'c4_1', 'c4_2', 'c4_3', 'c4_4', 'c4_5',
             'remarks', 'next_date'
         ]);
         $this->modalTitle = 'Add New Measurement';
@@ -227,10 +209,9 @@ class IonizerShow extends Component
                 return;
             }
         }
-    
-        // Set ionizer_id from the current ionizer
+
         $this->ionizer_id = $this->ionizer->id;
-    
+
         $this->validate([
             'pm_1' => 'required|in:FLASH,NO',
             'pm_2' => 'required|in:OK,NO',
@@ -241,12 +222,17 @@ class IonizerShow extends Component
             'c1' => 'required|numeric',
             'c2' => 'required|numeric',
             'c3' => 'required|numeric',
+            'c4_1' => 'nullable|boolean',
+            'c4_2' => 'nullable|boolean',
+            'c4_3' => 'nullable|boolean',
+            'c4_4' => 'nullable|boolean',
+            'c4_5' => 'nullable|boolean',
             'remarks' => 'nullable|string',
             'next_date' => 'nullable|date',
         ]);
-    
+
         $this->resetJudgements();
-    
+
         $data = [
             'ionizer_id' => $this->ionizer_id,
             'pm_1' => $this->pm_1,
@@ -264,24 +250,28 @@ class IonizerShow extends Component
             'judgement_c2' => $this->judgement_c2,
             'c3' => $this->c3,
             'judgement_c3' => $this->judgement_c3,
+            'c4_1' => $this->c4_1,
+            'c4_2' => $this->c4_2,
+            'c4_3' => $this->c4_3,
+            'c4_4' => $this->c4_4,
+            'c4_5' => $this->c4_5,
             'remarks' => $this->remarks,
             'next_date' => $this->next_date,
         ];
-    
+
         if ($this->detail_id) {
             $detail = IonizerDetail::find($this->detail_id);
             if (!$detail) {
                 $this->dispatch('notify', message: 'Measurement record not found!', type: 'error');
                 return;
             }
-            
             $detail->update($data);
             $message = 'Measurement updated successfully!';
         } else {
             IonizerDetail::create($data);
             $message = 'Measurement created successfully!';
         }
-    
+
         $this->resetForm();
         $this->dispatch('notify', message: $message);
         $this->dispatch('close-modal', 'detail-form-modal');
@@ -293,41 +283,41 @@ class IonizerShow extends Component
             $this->dispatch('notify', message: 'You do not have permission!', type: 'error');
             return;
         }
-    
+
         $detail = IonizerDetail::with('ionizer')->find($id);
-    
+
         if (!$detail) {
             $this->dispatch('notify', message: 'Measurement record not found!', type: 'error');
             return;
         }
-    
+
         $this->detail_id = $detail->id;
         $this->ionizer_id = $detail->ionizer_id;
         $this->register_no = $detail->ionizer->register_no ?? '';
         $this->area = $detail->ionizer->area ?? '';
         $this->location = $detail->ionizer->location ?? '';
-        
         $this->pm_1 = $detail->pm_1;
         $this->pm_2 = $detail->pm_2;
         $this->pm_3 = $detail->pm_3;
-        
         $this->c1_before = $detail->c1_before;
         $this->judgement_c1_before = $detail->judgement_c1_before;
         $this->c2_before = $detail->c2_before;
         $this->judgement_c2_before = $detail->judgement_c2_before;
         $this->c3_before = $detail->c3_before;
         $this->judgement_c3_before = $detail->judgement_c3_before;
-        
         $this->c1 = $detail->c1;
         $this->judgement_c1 = $detail->judgement_c1;
         $this->c2 = $detail->c2;
         $this->judgement_c2 = $detail->judgement_c2;
         $this->c3 = $detail->c3;
         $this->judgement_c3 = $detail->judgement_c3;
-        
+        $this->c4_1 = $detail->c4_1;
+        $this->c4_2 = $detail->c4_2;
+        $this->c4_3 = $detail->c4_3;
+        $this->c4_4 = $detail->c4_4;
+        $this->c4_5 = $detail->c4_5;
         $this->remarks = $detail->remarks;
         $this->next_date = $detail->next_date ? Carbon::parse($detail->next_date)->format('Y-m-d') : null;
-        
         $this->modalTitle = 'Edit Measurement';
     }
 

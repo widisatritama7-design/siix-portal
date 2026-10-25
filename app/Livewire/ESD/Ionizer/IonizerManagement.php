@@ -25,7 +25,7 @@ class IonizerManagement extends Component
     {
         return [
             'register_no' => 'required|min:3|unique:tb_esd_ionizers,register_no,' . ($this->ionizer_id ?? 'NULL'),
-            'area' => 'required|min:2',
+            'area' => 'required|min:2|in:PRODUCTION 01,PRODUCTION 02,WH MATERIAL,WH FINISH GOOD',
             'location' => 'required|min:2',
             'gap' => 'nullable|string',
             'status' => 'required|in:In Use,Not In Use,Under Repair,Damage,Disposed',
@@ -37,6 +37,7 @@ class IonizerManagement extends Component
         'register_no.min' => 'Register number must be at least 3 characters.',
         'register_no.unique' => 'Register number already exists.',
         'area.required' => 'Area is required.',
+        'area.in' => 'Area must be one of: PRODUCTION 01, PRODUCTION 02, WH MATERIAL, WH FINISH GOOD.',
         'area.min' => 'Area must be at least 2 characters.',
         'location.required' => 'Location is required.',
         'location.min' => 'Location must be at least 2 characters.',

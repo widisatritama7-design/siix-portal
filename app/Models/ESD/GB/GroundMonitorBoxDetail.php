@@ -18,9 +18,18 @@ class GroundMonitorBoxDetail extends Model
         'ground_monitor_box_id',
         'g_3',
         'g_4',
+        'g_3_1',         // ✅ baru
+        'g_3_2',         // ✅ baru
         'remarks',
         'next_date',
         'created_by',
+        'updated_by',
+    ];
+
+    protected $casts = [
+        'g_3_1' => 'boolean',   // ✅ baru
+        'g_3_2' => 'boolean',   // ✅ baru
+        'next_date' => 'date',
     ];
 
     public function groundMonitorBox()

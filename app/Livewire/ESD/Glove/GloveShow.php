@@ -30,6 +30,7 @@ class GloveShow extends Component
     public $c1;
     public $c1_scientific;
     public $judgement;
+    public $c_2_1;
     public $remarks;
     public $next_date;
     public $modalTitle = 'Add New Measurement';
@@ -42,7 +43,8 @@ class GloveShow extends Component
     {
         return [
             'glove_id' => 'required|exists:tb_esd_gloves,id',
-            'c1' => 'nullable|numeric', // hapus required, min
+            'c1' => 'nullable|numeric',
+            'c_2_1' => 'nullable|boolean',
             'remarks' => 'nullable|string|max:255',
             'next_date' => 'nullable|date',
         ];
@@ -54,6 +56,7 @@ class GloveShow extends Component
             'glove_id.required' => 'SAP Code is required.',
             'glove_id.exists' => 'Selected glove does not exist.',
             'c1.numeric' => 'C1 measurement must be a number.',
+            'c_2_1.boolean' => 'C-2.1 must be Yes or No.',
             'remarks.max' => 'Remarks cannot exceed 255 characters.',
             'next_date.date' => 'Next date must be a valid date.',
         ];
@@ -83,12 +86,11 @@ class GloveShow extends Component
     public function resetJudgement()
     {
         if ($this->c1 !== null && $this->c1 !== '') {
-            // Standard: < 35,000,000 Ohm (3.5E+7 Ohm)
-            // OK if value < 35,000,000
-            // NG if value >= 35,000,000
             $this->judgement = floatval($this->c1) >= 35000000 ? 'NG' : 'OK';
-            // Convert to scientific notation with 2 decimal places
             $this->c1_scientific = sprintf('%.2E', floatval($this->c1));
+        } else {
+            $this->judgement = null;
+            $this->c1_scientific = null;
         }
     }
 
@@ -111,7 +113,7 @@ class GloveShow extends Component
     public function resetForm()
     {
         $this->reset(['detail_id', 'glove_id', 'sap_code', 'description', 'delivery', 
-                      'c1', 'c1_scientific', 'judgement', 'remarks', 'next_date']);
+                      'c1', 'c1_scientific', 'judgement', 'c_2_1', 'remarks', 'next_date']);
         $this->modalTitle = 'Add New Measurement';
         $this->resetValidation();
     }
@@ -136,11 +138,11 @@ class GloveShow extends Component
             }
         }
     
-        // Set glove_id from the current glove
         $this->glove_id = $this->glove->id;
     
         $this->validate([
             'c1' => 'required|numeric|min:0',
+            'c_2_1' => 'nullable|boolean',
             'remarks' => 'nullable|string|max:255',
             'next_date' => 'nullable|date',
         ]);
@@ -152,6 +154,7 @@ class GloveShow extends Component
             'c1' => $this->c1,
             'c1_scientific' => $this->c1_scientific,
             'judgement' => $this->judgement,
+            'c_2_1' => $this->c_2_1,
             'remarks' => $this->remarks,
             'next_date' => $this->next_date,
         ];
@@ -197,6 +200,7 @@ class GloveShow extends Component
         $this->c1 = $detail->c1;
         $this->c1_scientific = $detail->c1_scientific;
         $this->judgement = $detail->judgement;
+        $this->c_2_1 = $detail->c_2_1;
         $this->remarks = $detail->remarks;
         $this->next_date = $detail->next_date ? Carbon::parse($detail->next_date)->format('Y-m-d') : null;
         $this->modalTitle = 'Edit Measurement';

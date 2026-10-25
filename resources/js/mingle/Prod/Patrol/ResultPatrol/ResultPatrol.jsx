@@ -1130,7 +1130,7 @@ export default function ResultPatrol({ wire, mingleData }) {
                                                                     className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-white/20 hover:bg-white/30 text-white text-[11px] font-bold transition-colors"
                                                                     title="Lihat history revisi"
                                                                 >
-                                                                    📜 {f.history.length} revisi
+                                                                    {f.history.length} Revisi
                                                                 </button>
                                                             )}
                                                         </div>
@@ -1570,10 +1570,10 @@ export default function ResultPatrol({ wire, mingleData }) {
                                 return (
                                     <div className="mt-3 flex items-center gap-2 flex-wrap">
                                         <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-white/15 text-xs font-semibold">
-                                            📊 {totalRevisions} total revisi
+                                            {totalRevisions} total revisi
                                         </span>
                                         <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-white/15 text-xs font-semibold">
-                                            🔄 {findingsWithHistory} dari {totalFindings} finding
+                                            {findingsWithHistory} dari {totalFindings} finding
                                         </span>
                                     </div>
                                 )
@@ -1607,6 +1607,18 @@ export default function ResultPatrol({ wire, mingleData }) {
                                     const i = finding._originalIndex
                                     const catName = finding.category_name ||
                                         mingleData?.categories?.find(c => String(c.id) === String(finding.category_id))?.category_name || '-'
+                                    
+                                    // ✅ Deklarasi variabel yang hilang di dalam scope map
+                                    const empName = mingleData?.employees?.find(e => String(e.id) === String(finding.feedback_to))?.name
+                                        || mingleData?.employees?.find(e => String(e.nik) === String(finding.feedback_to))?.name
+                                        || finding.feedback_to
+                                        || '-'
+                                    const evidenceList = Array.isArray(finding.evidence) ? finding.evidence : (finding.evidence ? [finding.evidence] : [])
+                                    const evidenceActionList = Array.isArray(finding.evidence_action) ? finding.evidence_action : (finding.evidence_action ? [finding.evidence_action] : [])
+                                    const hasAction = finding.action && finding.action.replace(/<[^>]*>/g, '').trim() !== ''
+                                    const hasEvidenceAct = evidenceActionList.length > 0
+                                    const approved = isFindingApproved(finding)
+                                    const canVerifyHere = permissions.canVerify && !approved && hasAction && hasEvidenceAct
 
                                     return (
                                         <div key={i} className="border border-zinc-200 dark:border-zinc-700 rounded-xl overflow-hidden bg-white dark:bg-zinc-900 shadow-sm">
@@ -1636,98 +1648,90 @@ export default function ResultPatrol({ wire, mingleData }) {
                                                 />
                                             </div>
 
+                                            {/* ✅ LAYOUT KE BAWAH (VERTIKAL) */}
                                             <div className="p-4 space-y-4">
-                                                {/* Baris 1: Category | Finding Result | Feedback To */}
-                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                                    <div className="bg-zinc-50 dark:bg-zinc-800/50 p-3 rounded-lg border border-zinc-200 dark:border-zinc-700 min-w-0">
-                                                        <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide block mb-1">Category</span>
-                                                        <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-100 break-words">{catName}</span>
-                                                    </div>
-                                                    <div className="bg-zinc-50 dark:bg-zinc-800/50 p-3 rounded-lg border border-zinc-200 dark:border-zinc-700 min-w-0">
-                                                        <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide block mb-1">Finding Result</span>
-                                                        <div className="rte-content text-sm font-semibold text-zinc-800 dark:text-zinc-100 break-words" dangerouslySetInnerHTML={{ __html: f.finding_result || '-' }} />
-                                                    </div>
-                                                    <div className="bg-zinc-50 dark:bg-zinc-800/50 p-3 rounded-lg border border-zinc-200 dark:border-zinc-700 min-w-0">
-                                                        <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide block mb-1">Feedback To (User)</span>
-                                                        <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-100 break-words">{empName}</span>
-                                                    </div>
+                                                {/* Category */}
+                                                <div className="bg-zinc-50 dark:bg-zinc-800/50 p-3 rounded-lg border border-zinc-200 dark:border-zinc-700 min-w-0">
+                                                    <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide block mb-1">Category</span>
+                                                    <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-100 break-words">{catName}</span>
                                                 </div>
 
-                                                {/* Baris 2: Evidence | Reason | Evidence Action | Action Taken — semua sejajar */}
-                                                <div className="overflow-x-auto">
-                                                    <div className="grid grid-cols-4 gap-3 min-w-[900px]">
-                                                        {/* Evidence */}
-                                                        <div className="bg-zinc-50 dark:bg-zinc-800/50 p-3 rounded-lg border border-zinc-200 dark:border-zinc-700 min-w-0">
-                                                            <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide block mb-1">
-                                                                Evidence — {evidenceList.length} foto
-                                                            </span>
-                                                            {evidenceList.length === 0 ? (
-                                                                <div className="p-2 bg-zinc-100 dark:bg-zinc-800 rounded text-center text-[11px] text-zinc-400 dark:text-zinc-500 italic">No photo</div>
-                                                            ) : (
-                                                                <div className="grid grid-cols-3 gap-1.5">
-                                                                    {evidenceList.map((photo, pIdx) => (
-                                                                        <div
-                                                                            key={pIdx}
-                                                                            className="relative group cursor-pointer rounded overflow-hidden border border-zinc-200 dark:border-zinc-700 aspect-square bg-zinc-100 dark:bg-zinc-800"
-                                                                            onClick={() => setPhotoPreview({ url: photo, title: `Initial Evidence ${pIdx + 1}` })}
-                                                                        >
-                                                                            <img src={photo} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt={`Evidence ${pIdx + 1}`} />
-                                                                        </div>
-                                                                    ))}
-                                                                </div>
-                                                            )}
-                                                        </div>
-
-                                                        {/* Reason */}
-                                                        <div className="bg-zinc-50 dark:bg-zinc-800/50 p-3 rounded-lg border border-zinc-200 dark:border-zinc-700 min-w-0">
-                                                            <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide block mb-1">Reason</span>
-                                                            <div className="rte-content text-sm text-zinc-800 dark:text-zinc-100 h-[120px] overflow-y-auto break-words" dangerouslySetInnerHTML={{ __html: f.reason || '-' }} />
-                                                        </div>
-
-                                                        {/* Evidence Action */}
-                                                        <div className="bg-zinc-50 dark:bg-zinc-800/50 p-3 rounded-lg border border-zinc-200 dark:border-zinc-700 min-w-0">
-                                                            <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide block mb-1">
-                                                                Evidence Action — {evidenceActionList.length} foto
-                                                            </span>
-                                                            {evidenceActionList.length === 0 ? (
-                                                                <div className="p-2 bg-zinc-100 dark:bg-zinc-800 rounded text-center text-[11px] text-zinc-400 dark:text-zinc-500 italic">No photo</div>
-                                                            ) : (
-                                                                <div className="grid grid-cols-3 gap-1.5">
-                                                                    {evidenceActionList.map((photo, pIdx) => (
-                                                                        <div
-                                                                            key={pIdx}
-                                                                            className="relative group cursor-pointer rounded overflow-hidden border border-zinc-200 dark:border-zinc-700 aspect-square bg-zinc-100 dark:bg-zinc-800"
-                                                                            onClick={() => setPhotoPreview({ url: photo, title: `Action Evidence ${pIdx + 1}` })}
-                                                                        >
-                                                                            <img src={photo} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt={`Action Evidence ${pIdx + 1}`} />
-                                                                        </div>
-                                                                    ))}
-                                                                </div>
-                                                            )}
-                                                        </div>
-
-                                                        {/* Action Taken */}
-                                                        <div className="bg-zinc-50 dark:bg-zinc-800/50 p-3 rounded-lg border border-zinc-200 dark:border-zinc-700 min-w-0">
-                                                            <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide block mb-1">Action Taken</span>
-                                                            <div className="rte-content text-sm text-zinc-800 dark:text-zinc-100 h-[120px] overflow-y-auto break-words" dangerouslySetInnerHTML={{ __html: f.action || '-' }} />
-                                                        </div>
-                                                    </div>
+                                                {/* Feedback To */}
+                                                <div className="bg-zinc-50 dark:bg-zinc-800/50 p-3 rounded-lg border border-zinc-200 dark:border-zinc-700 min-w-0">
+                                                    <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide block mb-1">Feedback To (User)</span>
+                                                    <span className="text-sm font-semibold text-zinc-800 dark:text-zinc-100 break-words">{empName}</span>
                                                 </div>
 
-                                                {/* ✅ APPROVE / REJECT DI MODAL VIEW */}
+                                                {/* Evidence */}
+                                                <div className="bg-zinc-50 dark:bg-zinc-800/50 p-3 rounded-lg border border-zinc-200 dark:border-zinc-700 min-w-0">
+                                                    <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide block mb-1">
+                                                        Evidence — {evidenceList.length} foto
+                                                    </span>
+                                                    {evidenceList.length === 0 ? (
+                                                        <div className="p-2 bg-zinc-100 dark:bg-zinc-800 rounded text-center text-[11px] text-zinc-400 dark:text-zinc-500 italic">No photo</div>
+                                                    ) : (
+                                                        <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                                                            {evidenceList.map((photo, pIdx) => (
+                                                                <div
+                                                                    key={pIdx}
+                                                                    className="relative group cursor-pointer rounded overflow-hidden border border-zinc-200 dark:border-zinc-700 aspect-square bg-zinc-100 dark:bg-zinc-800"
+                                                                    onClick={() => setPhotoPreview({ url: photo, title: `Initial Evidence ${pIdx + 1}` })}
+                                                                >
+                                                                    <img src={photo} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt={`Evidence ${pIdx + 1}`} />
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                {/* Reason */}
+                                                <div className="bg-zinc-50 dark:bg-zinc-800/50 p-3 rounded-lg border border-zinc-200 dark:border-zinc-700 min-w-0">
+                                                    <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide block mb-1">Reason</span>
+                                                    <div className="rte-content text-sm text-zinc-800 dark:text-zinc-100 max-h-[120px] overflow-y-auto break-words" dangerouslySetInnerHTML={{ __html: finding.reason || '-' }} />
+                                                </div>
+
+                                                {/* Evidence Action */}
+                                                <div className="bg-zinc-50 dark:bg-zinc-800/50 p-3 rounded-lg border border-zinc-200 dark:border-zinc-700 min-w-0">
+                                                    <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide block mb-1">
+                                                        Evidence Action — {evidenceActionList.length} foto
+                                                    </span>
+                                                    {evidenceActionList.length === 0 ? (
+                                                        <div className="p-2 bg-zinc-100 dark:bg-zinc-800 rounded text-center text-[11px] text-zinc-400 dark:text-zinc-500 italic">No photo</div>
+                                                    ) : (
+                                                        <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                                                            {evidenceActionList.map((photo, pIdx) => (
+                                                                <div
+                                                                    key={pIdx}
+                                                                    className="relative group cursor-pointer rounded overflow-hidden border border-zinc-200 dark:border-zinc-700 aspect-square bg-zinc-100 dark:bg-zinc-800"
+                                                                    onClick={() => setPhotoPreview({ url: photo, title: `Action Evidence ${pIdx + 1}` })}
+                                                                >
+                                                                    <img src={photo} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" alt={`Action Evidence ${pIdx + 1}`} />
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                {/* Action Taken */}
+                                                <div className="bg-zinc-50 dark:bg-zinc-800/50 p-3 rounded-lg border border-zinc-200 dark:border-zinc-700 min-w-0">
+                                                    <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 uppercase tracking-wide block mb-1">Action Taken</span>
+                                                    <div className="rte-content text-sm text-zinc-800 dark:text-zinc-100 max-h-[120px] overflow-y-auto break-words" dangerouslySetInnerHTML={{ __html: finding.action || '-' }} />
+                                                </div>
+
+                                                {/* Approve / Reject */}
                                                 {permissions.canVerify && (
                                                     <div className="flex items-center justify-end gap-2 pt-3 border-t border-zinc-200 dark:border-zinc-700">
                                                         {!approved && canVerifyHere && (
                                                             <>
                                                                 <button
-                                                                    onClick={() => { setShowViewModal(false); openVerifyModal(selectedRow, f, i, 'approve') }}
+                                                                    onClick={() => { setShowViewModal(false); openVerifyModal(selectedRow, finding, i, 'approve') }}
                                                                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-sm transition-colors"
                                                                 >
                                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clipRule="evenodd" /></svg>
                                                                     Approve
                                                                 </button>
                                                                 <button
-                                                                    onClick={() => { setShowViewModal(false); openVerifyModal(selectedRow, f, i, 'reject') }}
+                                                                    onClick={() => { setShowViewModal(false); openVerifyModal(selectedRow, finding, i, 'reject') }}
                                                                     className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-red-600 hover:bg-red-700 text-white text-xs font-semibold shadow-sm transition-colors"
                                                                 >
                                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5"><path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z" clipRule="evenodd" /></svg>

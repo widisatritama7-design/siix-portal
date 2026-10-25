@@ -24,7 +24,7 @@ class GroundMonitorBoxManagement extends Component
     {
         return [
             'register_no' => 'required|min:3|unique:tb_esd_ground_monitor_boxs,register_no,' . ($this->ground_monitor_box_id ?? 'NULL'),
-            'area' => 'required|min:2',
+            'area' => 'required|in:PRODUCTION 01,PRODUCTION 02,WH MATERIAL,WH FINISH GOOD', // ✅ Diubah
             'location' => 'required|min:2',
             'status' => 'required|in:In Use,Not In Use,Under Repair,Damage,Disposed',
         ];
@@ -35,7 +35,7 @@ class GroundMonitorBoxManagement extends Component
         'register_no.min' => 'Register number must be at least 3 characters.',
         'register_no.unique' => 'Register number already exists.',
         'area.required' => 'Area is required.',
-        'area.min' => 'Area must be at least 2 characters.',
+        'area.in' => 'Area must be one of: PRODUCTION 01, PRODUCTION 02, WH MATERIAL, WH FINISH GOOD.', // ✅ Ditambah
         'location.required' => 'Location is required.',
         'location.min' => 'Location must be at least 2 characters.',
         'status.required' => 'Status is required.',

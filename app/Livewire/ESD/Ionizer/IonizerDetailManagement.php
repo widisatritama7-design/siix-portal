@@ -39,6 +39,11 @@ class IonizerDetailManagement extends Component
     public $judgement_c2;
     public $c3;
     public $judgement_c3;
+    public $c4_1;
+    public $c4_2;
+    public $c4_3;
+    public $c4_4;
+    public $c4_5;
     
     public $remarks;
     public $next_date;
@@ -76,6 +81,11 @@ class IonizerDetailManagement extends Component
             'c1' => 'required|numeric',
             'c2' => 'required|numeric',
             'c3' => 'required|numeric',
+            'c4_1' => 'nullable|boolean',   // ✅ baru
+            'c4_2' => 'nullable|boolean',   // ✅ baru
+            'c4_3' => 'nullable|boolean',   // ✅ baru
+            'c4_4' => 'nullable|boolean',   // ✅ baru
+            'c4_5' => 'nullable|boolean',   // ✅ baru
             'remarks' => 'nullable|string',
             'next_date' => 'nullable|date',
         ];
@@ -96,6 +106,11 @@ class IonizerDetailManagement extends Component
         'c2_before.numeric' => 'C2 Before must be a number.',
         'c3_before.required' => 'C3 Before measurement is required.',
         'c3_before.numeric' => 'C3 Before must be a number.',
+        'c4_1.boolean' => 'C4.1 must be Yes or No.',
+        'c4_2.boolean' => 'C4.2 must be Yes or No.',
+        'c4_3.boolean' => 'C4.3 must be Yes or No.',
+        'c4_4.boolean' => 'C4.4 must be Yes or No.',
+        'c4_5.boolean' => 'C4.5 must be Yes or No.',
         'c1.required' => 'C1 measurement is required.',
         'c1.numeric' => 'C1 must be a number.',
         'c2.required' => 'C2 measurement is required.',
@@ -212,6 +227,7 @@ class IonizerDetailManagement extends Component
             'c1', 'judgement_c1',
             'c2', 'judgement_c2',
             'c3', 'judgement_c3',
+            'c4_1', 'c4_2', 'c4_3', 'c4_4', 'c4_5',   // ✅ baru
             'remarks', 'next_date'
         ]);
         $this->modalTitle = 'Add New Ionizer Measurement';
@@ -267,6 +283,11 @@ class IonizerDetailManagement extends Component
             'judgement_c2' => $this->judgement_c2,
             'c3' => $this->c3,
             'judgement_c3' => $this->judgement_c3,
+            'c4_1' => $this->c4_1,
+            'c4_2' => $this->c4_2,
+            'c4_3' => $this->c4_3,
+            'c4_4' => $this->c4_4,
+            'c4_5' => $this->c4_5,
             'remarks' => $this->remarks,
             'next_date' => $this->next_date,
         ];
@@ -327,6 +348,12 @@ class IonizerDetailManagement extends Component
         $this->judgement_c2 = $detail->judgement_c2;
         $this->c3 = $detail->c3;
         $this->judgement_c3 = $detail->judgement_c3;
+
+        $this->c4_1 = $detail->c4_1;
+        $this->c4_2 = $detail->c4_2;
+        $this->c4_3 = $detail->c4_3;
+        $this->c4_4 = $detail->c4_4;
+        $this->c4_5 = $detail->c4_5;
         
         $this->remarks = $detail->remarks;
         $this->next_date = $detail->next_date ? Carbon::parse($detail->next_date)->format('Y-m-d') : null;

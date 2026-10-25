@@ -20,6 +20,8 @@ class GroundMonitorBoxDetailManagement extends Component
     public $location;
     public $g_3;
     public $g_4;
+    public $g_3_1;
+    public $g_3_2;
     public $remarks;
     public $next_date;
 
@@ -51,6 +53,8 @@ class GroundMonitorBoxDetailManagement extends Component
             'ground_monitor_box_id' => 'required|exists:tb_esd_ground_monitor_boxs,id',
             'g_3' => 'required|in:YES,NO',
             'g_4' => 'required|in:YES,NO',
+            'g_3_1' => 'nullable|boolean',   // ✅ baru
+            'g_3_2' => 'nullable|boolean',   // ✅ baru
             'remarks' => 'nullable|string|max:255',
             'next_date' => 'nullable|date',
         ];
@@ -63,6 +67,8 @@ class GroundMonitorBoxDetailManagement extends Component
         'g_3.in' => 'G1 must be YES or NO.',
         'g_4.required' => 'G2 measurement is required.',
         'g_4.in' => 'G2 must be YES or NO.',
+        'g_3_1.boolean' => 'G-3.1 must be Yes or No.',
+        'g_3_2.boolean' => 'G-3.2 must be Yes or No.',
         'remarks.max' => 'Remarks cannot exceed 255 characters.',
         'next_date.date' => 'Next date must be a valid date.',
     ];
@@ -87,7 +93,9 @@ class GroundMonitorBoxDetailManagement extends Component
     {
         $this->reset([
             'detail_id', 'ground_monitor_box_id', 'register_no', 'area', 'location',
-            'g_3', 'g_4', 'remarks', 'next_date'
+            'g_3', 'g_4',
+            'g_3_1', 'g_3_2',   // ✅ baru
+            'remarks', 'next_date'
         ]);
         $this->modalTitle = 'Add New Ground Monitor Box Measurement';
         $this->resetValidation();
@@ -128,6 +136,8 @@ class GroundMonitorBoxDetailManagement extends Component
             'ground_monitor_box_id' => $this->ground_monitor_box_id,
             'g_3' => $this->g_3,
             'g_4' => $this->g_4,
+            'g_3_1' => $this->g_3_1,   // ✅ baru
+            'g_3_2' => $this->g_3_2,   // ✅ baru
             'remarks' => $this->remarks,
             'next_date' => $this->next_date,
         ];
@@ -172,6 +182,8 @@ class GroundMonitorBoxDetailManagement extends Component
         $this->location = $detail->groundMonitorBox->location ?? '';
         $this->g_3 = $detail->g_3;
         $this->g_4 = $detail->g_4;
+        $this->g_3_1 = $detail->g_3_1;
+        $this->g_3_2 = $detail->g_3_2;
         $this->remarks = $detail->remarks;
         $this->next_date = $detail->next_date;
         $this->modalTitle = 'Edit Ground Monitor Box Measurement';

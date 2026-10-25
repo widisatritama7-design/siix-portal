@@ -613,11 +613,126 @@
                 </div>
 
                 @if($scans->hasPages())
-                    <div class="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-700 flex justify-between items-center">
-                        <div class="text-xs text-zinc-500 dark:text-zinc-400">
-                            
+                    <div class="mt-4 pt-4 border-t border-zinc-200 dark:border-zinc-700 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3">
+
+                        {{-- Info range data --}}
+                        <div class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 text-center lg:text-left whitespace-nowrap">
+                            Showing
+                            <strong class="text-zinc-700 dark:text-zinc-200">{{ $scans->firstItem() ?? 0 }}</strong>
+                            -
+                            <strong class="text-zinc-700 dark:text-zinc-200">{{ $scans->lastItem() ?? 0 }}</strong>
+                            of
+                            <strong class="text-zinc-700 dark:text-zinc-200">{{ $scans->total() }}</strong>
+                            data
                         </div>
-                        {{ $scans->links() }}
+
+                        {{-- Tombol navigasi --}}
+                        <div class="flex items-center justify-center lg:justify-end gap-1 flex-wrap">
+
+                            {{-- First --}}
+                            <button type="button" wire:click="gotoPage(1)" @disabled($scans->onFirstPage())
+                                class="inline-flex items-center justify-center w-8 h-8 text-sm rounded-lg border border-zinc-300 dark:border-zinc-600
+                                    hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300
+                                    disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                                title="First page">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                                    <path fill-rule="evenodd" d="M18.72 4.72a.75.75 0 0 1 0 1.06L12.56 12l6.16 6.22a.75.75 0 1 1-1.06 1.06l-6.25-6.25a1.5 1.5 0 0 1 0-2.06l6.25-6.25a.75.75 0 0 1 1.06 0Zm-6.44 0a.75.75 0 0 1 0 1.06L6.12 12l6.16 6.22a.75.75 0 1 1-1.06 1.06l-6.25-6.25a1.5 1.5 0 0 1 0-2.06l6.25-6.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+
+                            {{-- Prev --}}
+                            <button type="button" wire:click="previousPage" @disabled($scans->onFirstPage())
+                                class="inline-flex items-center justify-center gap-1 px-3 h-8 text-sm rounded-lg border border-zinc-300 dark:border-zinc-600
+                                    hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300
+                                    disabled:opacity-40 disabled:cursor-not-allowed transition-colors whitespace-nowrap">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5">
+                                    <path fill-rule="evenodd" d="M15.53 4.72a.75.75 0 0 1 0 1.06L9.31 12l6.22 6.22a.75.75 0 1 1-1.06 1.06l-6.25-6.25a1.5 1.5 0 0 1 0-2.06l6.25-6.25a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" />
+                                </svg>
+                                <span class="hidden sm:inline">Prev</span>
+                            </button>
+
+                            {{-- Page numbers --}}
+                            @php
+                                $current = $scans->currentPage();
+                                $last    = $scans->lastPage();
+                                $pages   = [];
+
+                                $showMax = 7;
+                                $start = max(2, $current - 2);
+                                $end   = min($last - 1, $current + 2);
+
+                                if ($current <= 4) {
+                                    $start = 2;
+                                    $end   = min($last - 1, $showMax - 1);
+                                } elseif ($current >= $last - 3) {
+                                    $start = max(2, $last - ($showMax - 2));
+                                    $end   = $last - 1;
+                                }
+                            @endphp
+
+                            {{-- Halaman pertama --}}
+                            <button type="button" wire:click="gotoPage(1)"
+                                class="min-w-[34px] h-8 px-2 text-sm rounded-lg border font-bold transition-colors
+                                    {{ $current === 1
+                                        ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
+                                        : 'border-zinc-300 dark:border-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300' }}">
+                                1
+                            </button>
+
+                            {{-- Ellipsis kiri --}}
+                            @if($start > 2)
+                                <span class="px-1 text-zinc-400 dark:text-zinc-500 select-none">…</span>
+                            @endif
+
+                            {{-- Halaman tengah --}}
+                            @for($i = $start; $i <= $end; $i++)
+                                <button type="button" wire:click="gotoPage({{ $i }})"
+                                    class="min-w-[34px] h-8 px-2 text-sm rounded-lg border font-bold transition-colors
+                                        {{ $current === $i
+                                            ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
+                                            : 'border-zinc-300 dark:border-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300' }}">
+                                    {{ $i }}
+                                </button>
+                            @endfor
+
+                            {{-- Ellipsis kanan --}}
+                            @if($end < $last - 1)
+                                <span class="px-1 text-zinc-400 dark:text-zinc-500 select-none">…</span>
+                            @endif
+
+                            {{-- Halaman terakhir --}}
+                            @if($last > 1)
+                                <button type="button" wire:click="gotoPage({{ $last }})"
+                                    class="min-w-[34px] h-8 px-2 text-sm rounded-lg border font-bold transition-colors
+                                        {{ $current === $last
+                                            ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
+                                            : 'border-zinc-300 dark:border-zinc-600 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300' }}">
+                                    {{ $last }}
+                                </button>
+                            @endif
+
+                            {{-- Next --}}
+                            <button type="button" wire:click="nextPage" @disabled(!$scans->hasMorePages())
+                                class="inline-flex items-center justify-center gap-1 px-3 h-8 text-sm rounded-lg border border-zinc-300 dark:border-zinc-600
+                                    hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300
+                                    disabled:opacity-40 disabled:cursor-not-allowed transition-colors whitespace-nowrap">
+                                <span class="hidden sm:inline">Next</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3.5 h-3.5">
+                                    <path fill-rule="evenodd" d="M8.47 4.72a.75.75 0 0 1 1.06 0l6.25 6.25a1.5 1.5 0 0 1 0 2.06l-6.25 6.25a.75.75 0 1 1-1.06-1.06L14.69 12 8.47 5.78a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+
+                            {{-- Last --}}
+                            <button type="button" wire:click="gotoPage({{ $scans->lastPage() }})" @disabled(!$scans->hasMorePages())
+                                class="inline-flex items-center justify-center w-8 h-8 text-sm rounded-lg border border-zinc-300 dark:border-zinc-600
+                                    hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-700 dark:text-zinc-300
+                                    disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                                title="Last page">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                                    <path fill-rule="evenodd" d="M5.28 4.72a.75.75 0 0 0 0 1.06L11.44 12l-6.16 6.22a.75.75 0 1 0 1.06 1.06l6.25-6.25a1.5 1.5 0 0 0 0-2.06L6.34 4.72a.75.75 0 0 0-1.06 0Zm6.44 0a.75.75 0 0 0 0 1.06L17.88 12l-6.16 6.22a.75.75 0 1 0 1.06 1.06l6.25-6.25a1.5 1.5 0 0 0 0-2.06L12.78 4.72a.75.75 0 0 0-1.06 0Z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 @endif
             @else

@@ -21,6 +21,7 @@ export default defineConfig({
                 'resources/js/mingle/Prod/Patrol/CategoryPatrol/index.js',
                 'resources/js/mingle/Prod/Patrol/ResultPatrol/index.js',
                 'resources/js/mingle/Prod/Patrol/ResultPatrol/form.js',
+                'resources/js/mingle/Inventory/FloorPlanBuilder/index.js',
             ],
             refresh: true,
         }),

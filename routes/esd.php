@@ -55,6 +55,9 @@ use App\Livewire\ESD\Worksurface\WorksurfaceShow;
 use App\Livewire\ESD\WS\WristStrapManagement;
 use App\Models\HR\Employee;
 use Illuminate\Support\Facades\Route;
+use App\Livewire\ESD\Scissors\ScissorsManagement;
+use App\Livewire\ESD\Scissors\ScissorsShow;
+use App\Livewire\ESD\Scissors\ScissorsDetailManagement;
 
 Route::middleware(['auth', 'verified'])->group(function () {
 
@@ -141,6 +144,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Patrol
     Route::livewire('esd/patrols', PatrolManagement::class)->name('esd.patrols');
+
+    Route::livewire('esd/scissors', ScissorsManagement::class)->name('esd.scissors');
+    Route::livewire('/esd/scissors/{id}', ScissorsShow::class)->name('esd.scissors.show');
+    Route::livewire('/esd/scissors-details', ScissorsDetailManagement::class)->name('esd.scissors-details');
 
     // Locker
     Route::livewire('esd/lockers', LockerStatusManagement::class)->name('esd.lockers');

@@ -26,6 +26,13 @@ class WorksurfaceDetailManagement extends Component
     public $judgement_a1;
     public $a2;
     public $judgement_a2;
+    public $a3;
+    public $judgement_a3;
+    public $a4_1;
+    public $a4_2;
+    public $a4_3;
+    public $a4_4;
+    public $a4_5;
     public $remarks;
     public $next_date;
 
@@ -36,6 +43,12 @@ class WorksurfaceDetailManagement extends Component
     public $filterItem = '';
     public $filterJudgementA1 = '';
     public $filterJudgementA2 = '';
+    public $filterJudgementA3 = '';
+    public $filterA4_1 = '';
+    public $filterA4_2 = '';
+    public $filterA4_3 = '';
+    public $filterA4_4 = '';
+    public $filterA4_5 = '';
     public $filterDateFrom = '';
     public $filterDateUntil = '';
     public $filterNextDateFrom = '';
@@ -50,6 +63,9 @@ class WorksurfaceDetailManagement extends Component
     public $printDateFrom = '';
     public $printDateUntil = '';
 
+    public $worksurfaceSearch = '';
+    public $showWorksurfaceDropdown = false;
+
     public $modalTitle = 'Add New Worksurface Measurement';
     public $detailToDelete = null;
 
@@ -57,9 +73,15 @@ class WorksurfaceDetailManagement extends Component
     {
         return [
             'worksurface_id' => 'required|exists:tb_esd_worksurfaces,id',
-            'item' => 'nullable|string|max:100', // diubah dari required
-            'a1' => 'nullable|numeric', // diubah dari required|numeric|min:0|max:999999999
-            'a2' => 'nullable|numeric', // diubah dari required|numeric|min:0|max:99
+            'item' => 'nullable|string|max:100',
+            'a1' => 'nullable|numeric',
+            'a2' => 'nullable|numeric',
+            'a3' => 'nullable|numeric',
+            'a4_1' => 'nullable|boolean',
+            'a4_2' => 'nullable|boolean',
+            'a4_3' => 'nullable|boolean',
+            'a4_4' => 'nullable|boolean',
+            'a4_5' => 'nullable|boolean',
             'remarks' => 'nullable|string|max:500',
             'next_date' => 'nullable|date',
         ];
@@ -72,9 +94,52 @@ class WorksurfaceDetailManagement extends Component
         'item.max' => 'Item cannot exceed 100 characters.',
         'a1.numeric' => 'A1 measurement result must be a number.',
         'a2.numeric' => 'A2 measurement result must be a number.',
+        'a3.numeric' => 'A3 measurement result must be a number.',
+        'a4_1.boolean' => 'A4.1 must be Yes or No.',
+        'a4_2.boolean' => 'A4.2 must be Yes or No.',
+        'a4_3.boolean' => 'A4.3 must be Yes or No.',
+        'a4_4.boolean' => 'A4.4 must be Yes or No.',
+        'a4_5.boolean' => 'A4.5 must be Yes or No.',
         'next_date.date' => 'Next date must be a valid date.',
     ];
 
+
+    public function selectWorksurface($id)
+    {
+        $this->worksurface_id = $id;
+        $this->showWorksurfaceDropdown = false;
+
+        // Trigger logika updatedWorksurfaceId
+        $this->updatedWorksurfaceId($id);
+    }
+
+    public function clearWorksurface()
+    {
+        $this->worksurface_id = null;
+        $this->worksurfaceSearch = '';
+        $this->register_no = null;
+        $this->area = null;
+        $this->location = null;
+        $this->layer_count = null;
+        $this->category = null;
+    }
+
+    public function getFilteredWorksurfacesProperty()
+    {
+        $query = Worksurface::query();
+
+        if (!empty($this->worksurfaceSearch)) {
+            $term = '%' . $this->worksurfaceSearch . '%';
+            $query->where(function ($q) use ($term) {
+                $q->where('register_no', 'like', $term)
+                    ->orWhere('area', 'like', $term)
+                    ->orWhere('location', 'like', $term)
+                    ->orWhere('category', 'like', $term);
+            });
+        }
+
+        return $query->orderBy('register_no')->limit(50)->get();
+    }
     /**
      * Generate PDF untuk print
      */
@@ -85,42 +150,39 @@ class WorksurfaceDetailManagement extends Component
             return;
         }
 
-        // Validasi minimal satu filter dipilih
-        if (empty($this->printRegisterFilter) && empty($this->printAreaFilter) && empty($this->printLocationFilter) && empty($this->printItemFilter) && empty($this->printDateFrom) && empty($this->printDateUntil)) {
+        if (
+            empty($this->printRegisterFilter) && empty($this->printAreaFilter) &&
+            empty($this->printLocationFilter) && empty($this->printItemFilter) &&
+            empty($this->printDateFrom) && empty($this->printDateUntil)
+        ) {
             $this->dispatch('notify', message: 'Please select at least one filter (Register No, Area, Location, Item, or Date Range)!', type: 'error');
             return;
         }
 
-        // Query data untuk print
         $query = WorksurfaceDetail::with(['worksurface', 'creator']);
 
-        // Filter by Register No
         if (!empty($this->printRegisterFilter)) {
             $query->whereHas('worksurface', function ($q) {
                 $q->where('register_no', 'like', '%' . $this->printRegisterFilter . '%');
             });
         }
 
-        // Filter by Area
         if (!empty($this->printAreaFilter)) {
             $query->whereHas('worksurface', function ($q) {
                 $q->where('area', 'like', '%' . $this->printAreaFilter . '%');
             });
         }
 
-        // Filter by Location
         if (!empty($this->printLocationFilter)) {
             $query->whereHas('worksurface', function ($q) {
                 $q->where('location', 'like', '%' . $this->printLocationFilter . '%');
             });
         }
 
-        // Filter by Item
         if (!empty($this->printItemFilter)) {
             $query->where('item', 'like', '%' . $this->printItemFilter . '%');
         }
 
-        // Filter by Date Range
         if (!empty($this->printDateFrom)) {
             $query->whereDate('created_at', '>=', $this->printDateFrom);
         }
@@ -136,7 +198,6 @@ class WorksurfaceDetailManagement extends Component
             return;
         }
 
-        // Data untuk PDF
         $data = [
             'details' => $details,
             'title' => 'ESD WORK SURFACE MAT MEASUREMENT REPORT',
@@ -153,10 +214,9 @@ class WorksurfaceDetailManagement extends Component
             'approved_by' => null,
         ];
 
-        // Generate PDF
         $pdf = Pdf::loadView('livewire.esd.worksurface.worksurface-detail-pdf', $data);
         $pdf->setPaper('A4', 'landscape');
-        
+
         return response()->streamDownload(
             function () use ($pdf) {
                 echo $pdf->output();
@@ -194,6 +254,11 @@ class WorksurfaceDetailManagement extends Component
         if ($this->a2 !== null && $this->a2 !== '') {
             $this->judgement_a2 = floatval($this->a2) < 100 ? 'OK' : 'NG';
         }
+
+        // A3 Judgement: < 100 is OK (Clear Acrylic Static Field Voltage)
+        if ($this->a3 !== null && $this->a3 !== '') {
+            $this->judgement_a3 = floatval($this->a3) < 100 ? 'OK' : 'NG';
+        }
     }
 
     public function updatedA1()
@@ -202,6 +267,11 @@ class WorksurfaceDetailManagement extends Component
     }
 
     public function updatedA2()
+    {
+        $this->resetJudgements();
+    }
+
+    public function updatedA3()
     {
         $this->resetJudgements();
     }
@@ -230,8 +300,15 @@ class WorksurfaceDetailManagement extends Component
     {
         $this->reset([
             'detail_id', 'worksurface_id', 'register_no', 'area', 'location', 'layer_count', 'category',
-            'item', 'a1', 'a1_scientific', 'judgement_a1', 'a2', 'judgement_a2', 'remarks', 'next_date'
+            'item', 'a1', 'a1_scientific', 'judgement_a1', 'a2', 'judgement_a2',
+            'a3', 'judgement_a3', 'a4_1', 'a4_2', 'a4_3', 'a4_4', 'a4_5',
+            'remarks', 'next_date'
         ]);
+
+        // ✅ Reset search dropdown
+        $this->worksurfaceSearch = '';
+        $this->showWorksurfaceDropdown = false;
+
         $this->modalTitle = 'Add New Worksurface Measurement';
         $this->resetValidation();
     }
@@ -240,7 +317,9 @@ class WorksurfaceDetailManagement extends Component
     {
         $this->reset([
             'search', 'filterWorksurface', 'filterArea', 'filterLocation', 'filterItem',
-            'filterJudgementA1', 'filterJudgementA2', 'filterDateFrom', 'filterDateUntil',
+            'filterJudgementA1', 'filterJudgementA2',
+            'filterJudgementA3', 'filterA4_1', 'filterA4_2', 'filterA4_3', 'filterA4_4', 'filterA4_5',
+            'filterDateFrom', 'filterDateUntil',
             'filterNextDateFrom', 'filterNextDateUntil'
         ]);
         $this->resetPage();
@@ -277,6 +356,13 @@ class WorksurfaceDetailManagement extends Component
             'judgement_a1' => $this->judgement_a1,
             'a2' => $this->a2,
             'judgement_a2' => $this->judgement_a2,
+            'a3' => $this->a3,
+            'judgement_a3' => $this->judgement_a3,
+            'a4_1' => $this->a4_1,
+            'a4_2' => $this->a4_2,
+            'a4_3' => $this->a4_3,
+            'a4_4' => $this->a4_4,
+            'a4_5' => $this->a4_5,
             'remarks' => $this->remarks,
             'next_date' => $this->next_date,
         ];
@@ -327,6 +413,13 @@ class WorksurfaceDetailManagement extends Component
         $this->judgement_a1 = $detail->judgement_a1;
         $this->a2 = $detail->a2;
         $this->judgement_a2 = $detail->judgement_a2;
+        $this->a3 = $detail->a3;
+        $this->judgement_a3 = $detail->judgement_a3;
+        $this->a4_1 = $detail->a4_1;
+        $this->a4_2 = $detail->a4_2;
+        $this->a4_3 = $detail->a4_3;
+        $this->a4_4 = $detail->a4_4;
+        $this->a4_5 = $detail->a4_5;
         $this->remarks = $detail->remarks;
         $this->next_date = $detail->next_date ? Carbon::parse($detail->next_date)->format('Y-m-d') : null;
         $this->modalTitle = 'Edit Worksurface Measurement';
@@ -386,11 +479,11 @@ class WorksurfaceDetailManagement extends Component
         }
 
         $worksurfaces = Worksurface::orderBy('register_no')->get();
-        
+
         $areas = Worksurface::select('area')->distinct()->orderBy('area')->pluck('area');
         $locations = Worksurface::select('location')->distinct()->orderBy('location')->pluck('location');
         $items = WorksurfaceDetail::select('item')->distinct()->orderBy('item')->pluck('item');
-        
+
         $details = WorksurfaceDetail::with(['worksurface', 'creator'])
             ->when($this->search, function ($query) {
                 $query->whereHas('worksurface', function ($q) {
@@ -421,6 +514,24 @@ class WorksurfaceDetailManagement extends Component
             })
             ->when($this->filterJudgementA2, function ($query) {
                 $query->where('judgement_a2', $this->filterJudgementA2);
+            })
+            ->when($this->filterJudgementA3, function ($query) {
+                $query->where('judgement_a3', $this->filterJudgementA3);
+            })
+            ->when($this->filterA4_1 !== '', function ($query) {
+                $query->where('a4_1', $this->filterA4_1);
+            })
+            ->when($this->filterA4_2 !== '', function ($query) {
+                $query->where('a4_2', $this->filterA4_2);
+            })
+            ->when($this->filterA4_3 !== '', function ($query) {
+                $query->where('a4_3', $this->filterA4_3);
+            })
+            ->when($this->filterA4_4 !== '', function ($query) {
+                $query->where('a4_4', $this->filterA4_4);
+            })
+            ->when($this->filterA4_5 !== '', function ($query) {
+                $query->where('a4_5', $this->filterA4_5);
             })
             ->when($this->filterDateFrom, function ($query) {
                 $query->whereDate('created_at', '>=', $this->filterDateFrom);

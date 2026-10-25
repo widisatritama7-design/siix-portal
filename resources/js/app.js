@@ -4,4 +4,11 @@
  * allow your team to quickly build robust real-time web applications.
  */
 
-import './echo';
+// resources/js/app.js
+// import './echo'; // Dimatikan sementara agar tidak error
+import { Passkeys } from '@laravel/passkeys';
+
+window.Passkeys = Passkeys;
+window.registerPasskey = async function (name) {
+    return await Passkeys.register({ name });
+};

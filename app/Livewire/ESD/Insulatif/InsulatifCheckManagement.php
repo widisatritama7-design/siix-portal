@@ -17,6 +17,9 @@ class InsulatifCheckManagement extends Component
     public $result;
     public $result_scientific;
     public $judgement;
+    public $c_3_1;
+    public $c_3_2;
+    public $c_3_3;
     public $remarks;
     public $next_date;
 
@@ -42,6 +45,9 @@ class InsulatifCheckManagement extends Component
         return [
             'register_no' => 'required|min:3|max:100',
             'result' => 'nullable|numeric',
+            'c_3_1' => 'nullable|boolean',   // ✅ baru
+            'c_3_2' => 'nullable|boolean',   // ✅ baru
+            'c_3_3' => 'nullable|boolean',   // ✅ baru
             'remarks' => 'nullable|string|max:500',
             'next_date' => 'nullable|date',
         ];
@@ -51,6 +57,9 @@ class InsulatifCheckManagement extends Component
         'register_no.required' => 'Register number is required.',
         'register_no.min' => 'Register number must be at least 3 characters.',
         'result.numeric' => 'Result measurement must be a number.',
+        'c_3_1.boolean' => '3.1 must be Yes or No.',
+        'c_3_2.boolean' => '3.2 must be Yes or No.',
+        'c_3_3.boolean' => '3.3 must be Yes or No.',
         'next_date.date' => 'Next date must be a valid date.',
     ];
 
@@ -163,7 +172,8 @@ class InsulatifCheckManagement extends Component
 
     public function resetForm()
     {
-        $this->reset(['check_id', 'register_no', 'result', 'result_scientific', 'judgement', 'remarks', 'next_date']);
+        $this->reset(['check_id', 'register_no', 'result', 'result_scientific', 'judgement', 
+                    'c_3_1', 'c_3_2', 'c_3_3', 'remarks', 'next_date']); // ✅ tambah c_3_x
         $this->resetJudgement();
         $this->register_no = 'ISP/2505-001';
         $this->modalTitle = 'Add New Insulatif Check';
@@ -229,6 +239,9 @@ class InsulatifCheckManagement extends Component
             'result' => $this->result,
             'result_scientific' => $this->result_scientific,
             'judgement' => $this->judgement,
+            'c_3_1' => $this->c_3_1,   // ✅ baru
+            'c_3_2' => $this->c_3_2,   // ✅ baru
+            'c_3_3' => $this->c_3_3,   // ✅ baru
             'remarks' => $this->remarks,
             'next_date' => $this->next_date,
         ];
@@ -271,6 +284,9 @@ class InsulatifCheckManagement extends Component
         $this->result = $check->result;
         $this->result_scientific = $check->result_scientific;
         $this->judgement = $check->judgement;
+        $this->c_3_1 = $check->c_3_1;
+        $this->c_3_2 = $check->c_3_2;
+        $this->c_3_3 = $check->c_3_3;
         $this->remarks = $check->remarks;
         $this->next_date = $check->next_date ? Carbon::parse($check->next_date)->format('Y-m-d') : null;
         $this->modalTitle = 'Edit Insulatif Check';

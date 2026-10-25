@@ -24,7 +24,7 @@ class EquipmentGroundManagement extends Component
     {
         return [
             'machine_name' => 'required|min:3',
-            'area' => 'required|min:2',
+            'area' => 'required|in:PRODUCTION 01,PRODUCTION 02,WH MATERIAL,WH FINISH GOOD', // ✅ Diubah
             'location' => 'required|min:2',
             'status' => 'required|in:In Use,Not In Use,Under Repair,Damage,Disposed',
         ];
@@ -34,7 +34,7 @@ class EquipmentGroundManagement extends Component
         'machine_name.required' => 'Machine name is required.',
         'machine_name.min' => 'Machine name must be at least 3 characters.',
         'area.required' => 'Area is required.',
-        'area.min' => 'Area must be at least 2 characters.',
+        'area.in' => 'Area must be one of: PRODUCTION 01, PRODUCTION 02, WH MATERIAL, WH FINISH GOOD.', // ✅ Ditambah
         'location.required' => 'Location is required.',
         'location.min' => 'Location must be at least 2 characters.',
         'status.required' => 'Status is required.',

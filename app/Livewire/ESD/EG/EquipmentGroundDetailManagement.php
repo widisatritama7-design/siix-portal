@@ -22,6 +22,8 @@ class EquipmentGroundDetailManagement extends Component
     public $judgement_ohm;
     public $measure_results_volts;
     public $judgement_volts;
+    public $eg_3_1;
+    public $eg_3_2;
     public $remarks;
     public $next_date;
 
@@ -50,10 +52,17 @@ class EquipmentGroundDetailManagement extends Component
             'equipment_ground_id' => 'required|exists:tb_esd_equipment_grounds,id',
             'measure_results_ohm' => 'required|numeric',
             'measure_results_volts' => 'required|numeric',
+            'eg_3_1' => 'nullable|boolean',   // ✅ baru
+            'eg_3_2' => 'nullable|boolean',   // ✅ baru
             'remarks' => 'nullable|string|max:500',
             'next_date' => 'nullable|date',
         ];
     }
+
+    protected $messages = [
+        'eg_3_1.boolean' => 'EG-3.1 must be Yes or No.',
+        'eg_3_2.boolean' => 'EG-3.2 must be Yes or No.',
+    ];
 
     public function resetJudgement()
     {
@@ -133,7 +142,9 @@ class EquipmentGroundDetailManagement extends Component
         $this->reset([
             'detail_id', 'equipment_ground_id', 'machine_name', 'area', 'location',
             'measure_results_ohm', 'judgement_ohm', 'measure_results_volts',
-            'judgement_volts', 'remarks', 'next_date'
+            'judgement_volts',
+            'eg_3_1', 'eg_3_2',   // ✅ baru
+            'remarks', 'next_date'
         ]);
         $this->modalTitle = 'Add New Measurement Detail';
         $this->resetValidation();
@@ -178,6 +189,8 @@ class EquipmentGroundDetailManagement extends Component
             'judgement_ohm' => $this->judgement_ohm,
             'measure_results_volts' => $this->measure_results_volts,
             'judgement_volts' => $this->judgement_volts,
+            'eg_3_1' => $this->eg_3_1,   // ✅ baru
+            'eg_3_2' => $this->eg_3_2,   // ✅ baru
             'remarks' => $this->remarks,
             'next_date' => $this->next_date,
         ];
@@ -223,6 +236,8 @@ class EquipmentGroundDetailManagement extends Component
         $this->judgement_ohm = $detail->judgement_ohm;
         $this->measure_results_volts = $detail->measure_results_volts;
         $this->judgement_volts = $detail->judgement_volts;
+        $this->eg_3_1 = $detail->eg_3_1;
+        $this->eg_3_2 = $detail->eg_3_2;
         $this->remarks = $detail->remarks;
         $this->next_date = $detail->next_date;
         $this->modalTitle = 'Edit Measurement Detail';

@@ -84,18 +84,6 @@
                             Clear All Filters
                         </button>
                         @endif
-                        
-                        @can('create ionizer details')
-                        <flux:button 
-                            variant="primary" 
-                            icon="plus" 
-                            class="bg-blue-600 hover:bg-blue-700 whitespace-nowrap"
-                            wire:click="resetForm"
-                            x-on:click="$dispatch('open-modal', 'detail-form-modal')"
-                        >
-                            Add New Measurement
-                        </flux:button>
-                        @endcan
                     </div>
                 </div>
 
@@ -230,11 +218,15 @@
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[80px]">Judge</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[120px]">C3</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[80px]">Judge</th>
+                                <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">C4.1</th>
+                                <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">C4.2</th>
+                                <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">C4.3</th>
+                                <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">C4.4</th>
+                                <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">C4.5</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[150px]">Remarks</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Date</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Next Date</th>
                                 <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[120px]">Checked By</th>
-                                <th class="px-4 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider w-24">Actions</th>
                             </>
                         </thead>
                         <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
@@ -349,6 +341,61 @@
                                         {{ $detail->judgement_c3 }}
                                     </span>
                                 </>
+
+                                {{-- C4.1 --}}
+                                <td class="px-4 py-3 text-center">
+                                    @if($detail->c4_1 !== null)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $detail->c4_1 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' }}">
+                                            {{ $detail->c4_1 ? 'Yes' : 'No' }}
+                                        </span>
+                                    @else
+                                        <span class="text-zinc-400">-</span>
+                                    @endif
+                                </td>
+
+                                {{-- C4.2 --}}
+                                <td class="px-4 py-3 text-center">
+                                    @if($detail->c4_2 !== null)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $detail->c4_2 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' }}">
+                                            {{ $detail->c4_2 ? 'Yes' : 'No' }}
+                                        </span>
+                                    @else
+                                        <span class="text-zinc-400">-</span>
+                                    @endif
+                                </td>
+
+                                {{-- C4.3 --}}
+                                <td class="px-4 py-3 text-center">
+                                    @if($detail->c4_3 !== null)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $detail->c4_3 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' }}">
+                                            {{ $detail->c4_3 ? 'Yes' : 'No' }}
+                                        </span>
+                                    @else
+                                        <span class="text-zinc-400">-</span>
+                                    @endif
+                                </td>
+
+                                {{-- C4.4 --}}
+                                <td class="px-4 py-3 text-center">
+                                    @if($detail->c4_4 !== null)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $detail->c4_4 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' }}">
+                                            {{ $detail->c4_4 ? 'Yes' : 'No' }}
+                                        </span>
+                                    @else
+                                        <span class="text-zinc-400">-</span>
+                                    @endif
+                                </td>
+
+                                {{-- C4.5 --}}
+                                <td class="px-4 py-3 text-center">
+                                    @if($detail->c4_5 !== null)
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $detail->c4_5 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' }}">
+                                            {{ $detail->c4_5 ? 'Yes' : 'No' }}
+                                        </span>
+                                    @else
+                                        <span class="text-zinc-400">-</span>
+                                    @endif
+                                </td>
                                 <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300 truncate max-w-[150px]" title="{{ $detail->remarks }}">
                                     {{ $detail->remarks ?? '-' }}
                                 </>
@@ -360,35 +407,6 @@
                                 </>
                                 <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
                                     {{ $detail->creator->name ?? 'N/A' }}
-                                </>
-                                <td class="px-4 py-3 text-right">
-                                    <div class="flex items-center justify-end gap-1 whitespace-nowrap">
-                                        @can('edit ionizer details')
-                                        <flux:button 
-                                            wire:click="edit({{ $detail->id }})" 
-                                            x-on:click="$dispatch('open-modal', 'detail-form-modal')"
-                                            size="sm"
-                                            icon="pencil-square"
-                                            variant="primary"
-                                            color="yellow"
-                                            class="!p-2 flex-shrink-0"
-                                            title="Edit measurement"
-                                        />
-                                        @endcan
-
-                                        @can('delete ionizer details')
-                                            <flux:button 
-                                                wire:click="confirmDelete({{ $detail->id }})" 
-                                                x-on:click="$dispatch('open-modal', 'delete-detail-modal')"
-                                                size="sm"
-                                                icon="trash"
-                                                variant="primary"
-                                                color="red"
-                                                class="!p-2 flex-shrink-0"
-                                                title="Delete measurement"
-                                            />
-                                        @endcan
-                                    </div>
                                 </>
                             </>
                             @empty

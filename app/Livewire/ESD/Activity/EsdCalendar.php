@@ -17,6 +17,8 @@ use App\Models\ESD\Shower\ShowerDetail;
 use App\Models\ESD\Soldering\SolderingDetail;
 use App\Models\ESD\Worksurface\WorksurfaceDetail;
 use App\Models\ESD\WS\WristStrap;
+use App\Models\ESD\Scissors\Scissors;
+use App\Models\ESD\Scissors\ScissorsDetail;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Log;
 use Livewire\Component;
@@ -46,6 +48,8 @@ class EsdCalendar extends Component
         'patrol' => [Patrol::class, null, 'location', 'location'],
         'shower' => [ShowerDetail::class, 'shower', 'register_no', 'shower_id'],
         'wriststrap' => [WristStrap::class, null, 'register_no', 'register_no'],
+        // TAMBAHKAN INI
+        'scissors' => [ScissorsDetail::class, 'scissors', 'register_no', 'scissors_id'],
     ];
 
     public $typeCodes = [
@@ -63,7 +67,8 @@ class EsdCalendar extends Component
         'insulatif' => '-',
         'patrol' => '-',
         'shower' => '-',
-        'wriststrap' => '-'
+        'wriststrap' => '-',
+        'scissors' => 'QR-ENG-26-K009',
     ];
 
     public $displayNames = [
@@ -81,7 +86,9 @@ class EsdCalendar extends Component
         'insulatif' => 'Insulatif Check',
         'patrol' => 'Patrol',
         'shower' => 'Shower',
-        'wriststrap' => 'Wrist Strap'
+        'wriststrap' => 'Wrist Strap',
+        // TAMBAHKAN INI
+        'scissors' => 'Scissors',
     ];
 
     public $slugMap = [
@@ -99,7 +106,8 @@ class EsdCalendar extends Component
         'insulatif' => 'insulatifs',
         'patrol' => 'patrols',
         'shower' => 'showers',
-        'wriststrap' => 'wrist-straps'
+        'wriststrap' => 'wrist-straps',
+        'scissors' => 'scissors',
     ];
 
     public function mount()
@@ -435,12 +443,31 @@ class EsdCalendar extends Component
     public function getSortedTypesProperty()
     {
         $types = array_keys($this->modelMap);
-        
+
         return collect($types)
-            ->filter(fn($type) => ($this->typeCodes[$type] ?? '-') !== '-')
-            ->sortBy(fn($type) => intval(explode('-K', $this->typeCodes[$type] ?? '0')[1] ?? 0))
+            ->sortBy(function ($type) {
+                $code = $this->typeCodes[$type] ?? '-';
+
+                // Tanpa kode → paling bawah
+                if ($code === '-' || $code === null || $code === '') {
+                    return [3, 0]; // group 3 = paling akhir
+                }
+
+                // Extract prefix (QR-ADM / QR-ENG / dst) dan nomor K
+                if (preg_match('/^(QR-[A-Z]+)-.*-K(\d+)$/', $code, $m)) {
+                    $prefix = $m[1];          // QR-ADM / QR-ENG
+                    $number = (int) $m[2];    // 24, 26, ...
+
+                    // Group: ADM = 1, ENG = 2, lainnya = 2
+                    $group = $prefix === 'QR-ADM' ? 1 : 2;
+
+                    return [$group, $number];
+                }
+
+                // Fallback kalau format aneh → group 2, number 0
+                return [2, 0];
+            })
             ->values()
-            ->concat(collect($types)->filter(fn($type) => ($this->typeCodes[$type] ?? '-') === '-'))
             ->toArray();
     }
 

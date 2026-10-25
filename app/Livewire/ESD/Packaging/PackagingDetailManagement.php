@@ -24,6 +24,7 @@ class PackagingDetailManagement extends Component
     public $judgement_f1;
     public $f2;
     public $judgement_f2;
+    public $f3_1;
     public $remarks;
     public $next_date;
 
@@ -38,8 +39,9 @@ class PackagingDetailManagement extends Component
 
     // Properti untuk print
     public $printPreview = false;
-    public $printMaterialFilter = '';
-    public $printCategoryFilter = '';
+    public $printSapCodeFilter = '';
+    public $printModelFilter = '';
+    public $printOracleFilter = '';
     public $printDateFrom = '';
     public $printDateUntil = '';
 
@@ -50,8 +52,9 @@ class PackagingDetailManagement extends Component
     {
         return [
             'packaging_id' => 'required|exists:tb_esd_packagings,id',
-            'f1' => 'nullable|numeric', // diubah
-            'f2' => 'nullable|numeric', // diubah
+            'f1' => 'nullable|numeric',
+            'f2' => 'nullable|numeric',
+            'f3_1' => 'nullable|boolean',   // ✅ baru
             'remarks' => 'nullable|string|max:500',
             'next_date' => 'nullable|date',
         ];
@@ -62,6 +65,7 @@ class PackagingDetailManagement extends Component
         'packaging_id.exists' => 'Selected packaging does not exist.',
         'f1.numeric' => 'F1 measurement result must be a number.',
         'f2.numeric' => 'F2 measurement result must be a number.',
+        'f3_1.boolean' => 'F3.1 must be Yes or No.',
         'next_date.date' => 'Next date must be a valid date.',
     ];
 
@@ -76,25 +80,32 @@ class PackagingDetailManagement extends Component
         }
 
         // Validasi minimal satu filter dipilih
-        if (empty($this->printMaterialFilter) && empty($this->printCategoryFilter) && empty($this->printDateFrom) && empty($this->printDateUntil)) {
-            $this->dispatch('notify', message: 'Please select at least one filter (Material, Category, or Date Range)!', type: 'error');
+        if (empty($this->printSapCodeFilter) && empty($this->printModelFilter) && empty($this->printOracleFilter) && empty($this->printDateFrom) && empty($this->printDateUntil)) {
+            $this->dispatch('notify', message: 'Please select at least one filter (SAP Code, Model, Oracle, or Date Range)!', type: 'error');
             return;
         }
 
         // Query data untuk print
         $query = PackagingDetail::with(['packaging', 'creator']);
 
-        // Filter by Material
-        if (!empty($this->printMaterialFilter)) {
+        // Filter by SAP Code
+        if (!empty($this->printSapCodeFilter)) {
             $query->whereHas('packaging', function ($q) {
-                $q->where('material', 'like', '%' . $this->printMaterialFilter . '%');
+                $q->where('sap_code', 'like', '%' . $this->printSapCodeFilter . '%');
             });
         }
 
-        // Filter by Category
-        if (!empty($this->printCategoryFilter)) {
+        // Filter by Model
+        if (!empty($this->printModelFilter)) {
             $query->whereHas('packaging', function ($q) {
-                $q->where('category', 'like', '%' . $this->printCategoryFilter . '%');
+                $q->where('model', 'like', '%' . $this->printModelFilter . '%');
+            });
+        }
+
+        // Filter by Oracle
+        if (!empty($this->printOracleFilter)) {
+            $query->whereHas('packaging', function ($q) {
+                $q->where('oracle', 'like', '%' . $this->printOracleFilter . '%');
             });
         }
 
@@ -120,8 +131,9 @@ class PackagingDetailManagement extends Component
             'title' => 'ESD PACKAGING MEASUREMENT REPORT',
             'date_from' => $this->printDateFrom,
             'date_until' => $this->printDateUntil,
-            'material_filter' => $this->printMaterialFilter,
-            'category_filter' => $this->printCategoryFilter,
+            'sap_code_filter' => $this->printSapCodeFilter,
+            'model_filter' => $this->printModelFilter,
+            'oracle_filter' => $this->printOracleFilter,
             'generated_by' => auth()->user()->name,
             'generated_at' => Carbon::now()->format('d M Y H:i:s'),
             'prepared_by' => auth()->user()->name,
@@ -143,8 +155,9 @@ class PackagingDetailManagement extends Component
 
     public function resetPrintFilters()
     {
-        $this->printMaterialFilter = '';
-        $this->printCategoryFilter = '';
+        $this->printSapCodeFilter = '';
+        $this->printModelFilter = '';
+        $this->printOracleFilter = '';
         $this->printDateFrom = '';
         $this->printDateUntil = '';
         $this->printPreview = false;
@@ -203,7 +216,9 @@ class PackagingDetailManagement extends Component
         $this->reset([
             'detail_id', 'packaging_id', 'category', 'project', 'model', 'material',
             'f1', 'f1_scientific', 'judgement_f1',
-            'f2', 'judgement_f2', 'remarks', 'next_date'
+            'f2', 'judgement_f2',
+            'f3_1',                     // ✅ baru
+            'remarks', 'next_date'
         ]);
         $this->modalTitle = 'Add New Packaging Measurement';
         $this->resetValidation();
@@ -247,6 +262,7 @@ class PackagingDetailManagement extends Component
             'judgement_f1' => $this->judgement_f1,
             'f2' => $this->f2,
             'judgement_f2' => $this->judgement_f2,
+            'f3_1' => $this->f3_1,          // ✅ baru
             'remarks' => $this->remarks,
             'next_date' => $this->next_date,
         ];
@@ -295,6 +311,7 @@ class PackagingDetailManagement extends Component
         $this->judgement_f1 = $detail->judgement_f1;
         $this->f2 = $detail->f2;
         $this->judgement_f2 = $detail->judgement_f2;
+        $this->f3_1 = $detail->f3_1;
         $this->remarks = $detail->remarks;
         $this->next_date = $detail->next_date ? Carbon::parse($detail->next_date)->format('Y-m-d') : null;
         $this->modalTitle = 'Edit Packaging Measurement';

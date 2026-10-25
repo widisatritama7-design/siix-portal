@@ -21,11 +21,16 @@ class JigDetail extends Model
         'judgement_j1',
         'j2',
         'judgement_j2',
+        'j_3_1',         // ✅ baru
         'next_date',
         'created_by',
         'updated_by',
         'remarks',
-        'created_by',
+    ];
+
+    protected $casts = [
+        'j_3_1' => 'boolean',   // ✅ baru
+        'next_date' => 'date',
     ];
 
     public function jig()

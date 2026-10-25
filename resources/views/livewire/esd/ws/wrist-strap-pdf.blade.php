@@ -9,86 +9,82 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
-        /* Font utama dengan dukungan Unicode penuh */
+
         body {
             font-family: 'DejaVu Sans', 'Arial', 'Segoe UI', 'Helvetica', sans-serif;
-            font-size: 9pt;
-            line-height: 1.3;
-            margin: 15px;
+            font-size: 8pt;
+            line-height: 1.25;
+            margin: 12px;
             padding: 0;
         }
-        
+
         .container {
             width: 100%;
             margin: 0 auto;
         }
-        
+
         .header {
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             border-bottom: 2px solid #333;
             padding-bottom: 8px;
         }
-        
+
         .header h1 {
             margin: 0;
-            font-size: 16pt;
+            font-size: 15pt;
             color: #1a56db;
-            font-family: 'DejaVu Sans', 'Arial', sans-serif;
         }
-        
+
         .report-info {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             padding: 8px;
             background: #f3f4f6;
             border-radius: 5px;
-            font-size: 8pt;
-            font-family: 'DejaVu Sans', 'Arial', sans-serif;
+            font-size: 7.5pt;
         }
-        
+
         .report-info table {
             width: 100%;
         }
-        
+
         .report-info td {
             padding: 2px 5px;
         }
-        
+
         .report-info td:first-child {
             font-weight: bold;
             width: 100px;
         }
-        
+
         table.data-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
-            font-size: 8pt;
-            font-family: 'DejaVu Sans', 'Arial', sans-serif;
+            margin-top: 8px;
+            font-size: 6.5pt;
         }
-        
+
         table.data-table th {
             background: #1a56db;
             color: white;
-            padding: 6px 4px;
+            padding: 5px 3px;
             text-align: center;
             border: 1px solid #ddd;
             font-weight: bold;
-            font-family: 'DejaVu Sans', 'Arial', sans-serif;
+            font-size: 6pt;
+            line-height: 1.15;
         }
-        
+
         table.data-table td {
-            padding: 5px 4px;
+            padding: 4px 3px;
             border: 1px solid #ddd;
-            vertical-align: top;
-            font-family: 'DejaVu Sans', 'Arial', sans-serif;
+            vertical-align: middle;
         }
-        
+
         table.data-table tr:nth-child(even) {
             background: #f9fafb;
         }
-        
+
         .footer {
             margin-top: 15px;
             text-align: center;
@@ -100,52 +96,40 @@
             bottom: 10px;
             left: 0;
             right: 0;
-            font-family: 'DejaVu Sans', 'Arial', sans-serif;
         }
-        
-        .badge-ok {
-            color: #059669;
-            font-weight: bold;
-        }
-        
-        .badge-ng {
-            color: #dc2626;
-            font-weight: bold;
-        }
-        
-        .text-center {
-            text-align: center;
-        }
-        
-        .text-left {
-            text-align: left;
-        }
-        
-        .text-uppercase {
-            text-transform: uppercase;
-        }
-        
+
+        .badge-ok { color: #059669; font-weight: bold; }
+        .badge-ng { color: #dc2626; font-weight: bold; }
+        .badge-yes { color: #059669; font-weight: bold; }
+        .badge-no  { color: #dc2626; font-weight: bold; }
+        .badge-na  { color: #9ca3af; }
+
+        .text-center { text-align: center; }
+        .text-left { text-align: left; }
+        .text-uppercase { text-transform: uppercase; }
+
         .wrap-text {
             word-wrap: break-word;
             word-break: break-all;
             white-space: normal;
         }
-        
-        .col-no { width: 5%; }
-        .col-register { width: 18%; }
-        .col-type { width: 10%; }
-        .col-result { width: 15%; }
-        .col-judge { width: 8%; }
-        .col-remarks { width: 18%; }
-        .col-date { width: 10%; }
-        .col-next-date { width: 10%; }
-        .col-created-by { width: 12%; }
-        
+
+        .col-no { width: 3%; }
+        .col-register { width: 14%; }
+        .col-type { width: 8%; }
+        .col-result { width: 10%; }
+        .col-judge { width: 5%; }
+        .col-c3 { width: 4.5%; }
+        .col-remarks { width: 15%; }
+        .col-date { width: 8%; }
+        .col-next-date { width: 8%; }
+        .col-created-by { width: 10%; }
+
         @page {
             size: A4 landscape;
-            margin: 15px;
+            margin: 12px;
         }
-        
+
         @media print {
             body {
                 margin: 0;
@@ -175,7 +159,7 @@
                 </tr>
             </table>
         </div>
-        
+
         <div class="report-info">
             <table style="width: 100%;">
                 <tr>
@@ -198,9 +182,9 @@
                             @if($date_from || $date_until)
                             <tr>
                                 <td>Date Range</td>
-                                <td colspan="3">: 
-                                    {{ $date_from ? \Carbon\Carbon::parse($date_from)->format('d M Y') : 'Start' }} 
-                                    to 
+                                <td colspan="3">:
+                                    {{ $date_from ? \Carbon\Carbon::parse($date_from)->format('d M Y') : 'Start' }}
+                                    to
                                     {{ $date_until ? \Carbon\Carbon::parse($date_until)->format('d M Y') : 'End' }}
                                 </td>
                             </tr>
@@ -219,35 +203,39 @@
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
-                                    <span style="font-size: 7pt;">( {{ '_________________' }} )</span>
+                                    <span style="font-size: 7pt;">( _________________ )</span>
                                 </td>
                                 <td style="text-align: center; padding: 0 10px; width: 33%;">
                                     <strong>CHECKED BY</strong><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
-                                    <span style="font-size: 7pt;">( {{ '_________________' }} )</span>
+                                    <span style="font-size: 7pt;">( _________________ )</span>
                                 </td>
                                 <td style="text-align: center; padding: 0 10px; width: 33%;">
                                     <strong>APPROVED BY</strong><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
-                                    <span style="font-size: 7pt;">( {{ '_________________' }} )</span>
+                                    <span style="font-size: 7pt;">( _________________ )</span>
                                 </td>
                             </tr>
                         </table>
                     </td>
                 </tr>
             </table>
-            <div style="margin-top: 10px; padding: 6px 8px; background: #e8f0fe; border-radius: 4px; font-size: 8pt; text-align: left; border-top: 1px solid #ddd;">
-                <strong>STANDARD ESD OF WRIST STRAP MASTER SAMPLE</strong><br>
+
+            <div style="margin-top: 10px; padding: 6px 8px; background: #e8f0fe; border-radius: 4px; font-size: 7pt; text-align: left; border-top: 1px solid #ddd;">
+                <strong>STANDARD ESD OF WRIST STRAP MASTER SAMPLE</strong>
                 <div style="margin-top: 4px;">
                     <div>• Point To Resistance Test : &lt; 3.50E+7 Ohm</div>
+                    <div style="margin-top: 3px;"><strong>• Visual Inspection Checklist</strong></div>
+                    <div style="padding-left: 12px;">(3.1) Plug Banana Wrist strap tidak rusak, tidak putus dan tidak pipih</div>
+                    <div style="padding-left: 12px;">(3.2) Wristband dalam kondisi bersih</div>
                 </div>
             </div>
         </div>
-        
+
         <table class="data-table">
             <thead>
                 <tr>
@@ -255,7 +243,9 @@
                     <th class="col-register">Register No</th>
                     <th class="col-type">Type</th>
                     <th class="col-result">Result</th>
-                    <th class="col-judge">Judgement</th>
+                    <th class="col-judge">Judg</th>
+                    <th class="col-c3">3.1</th>
+                    <th class="col-c3">3.2</th>
                     <th class="col-remarks">Remarks</th>
                     <th class="col-date">Date</th>
                     <th class="col-next-date">Next Date</th>
@@ -274,6 +264,29 @@
                             {{ $strap->judgement ?? '-' }}
                         </span>
                     </td>
+
+                    {{-- 3.1 --}}
+                    <td class="text-center">
+                        @if($strap->c_3_1 !== null)
+                            <span class="{{ $strap->c_3_1 ? 'badge-yes' : 'badge-no' }}">
+                                {{ $strap->c_3_1 ? 'Yes' : 'No' }}
+                            </span>
+                        @else
+                            <span class="badge-na">-</span>
+                        @endif
+                    </td>
+
+                    {{-- 3.2 --}}
+                    <td class="text-center">
+                        @if($strap->c_3_2 !== null)
+                            <span class="{{ $strap->c_3_2 ? 'badge-yes' : 'badge-no' }}">
+                                {{ $strap->c_3_2 ? 'Yes' : 'No' }}
+                            </span>
+                        @else
+                            <span class="badge-na">-</span>
+                        @endif
+                    </td>
+
                     <td class="wrap-text">{{ $strap->remarks ?? '-' }}</td>
                     <td class="text-center">{{ $strap->created_at ? $strap->created_at->format('d M Y') : '-' }}</td>
                     <td class="text-center">{{ $strap->next_date ? \Carbon\Carbon::parse($strap->next_date)->format('d M Y') : '-' }}</td>
@@ -281,14 +294,14 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="9" class="text-center" style="padding: 20px;">
+                    <td colspan="11" class="text-center" style="padding: 20px;">
                         No data found for the selected filters.
                     </td>
                 </tr>
                 @endforelse
             </tbody>
         </table>
-        
+
         <div class="footer" style="font-weight: bold;">
             QR-ADM-24-K002
         </div>

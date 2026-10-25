@@ -9,86 +9,82 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
-        /* Font utama dengan dukungan Unicode penuh */
+
         body {
             font-family: 'DejaVu Sans', 'Arial', 'Segoe UI', 'Helvetica', sans-serif;
-            font-size: 9pt;
-            line-height: 1.3;
-            margin: 15px;
+            font-size: 8pt;
+            line-height: 1.25;
+            margin: 12px;
             padding: 0;
         }
-        
+
         .container {
             width: 100%;
             margin: 0 auto;
         }
-        
+
         .header {
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             border-bottom: 2px solid #333;
             padding-bottom: 8px;
         }
-        
+
         .header h1 {
             margin: 0;
-            font-size: 16pt;
+            font-size: 15pt;
             color: #1a56db;
-            font-family: 'DejaVu Sans', 'Arial', sans-serif;
         }
-        
+
         .report-info {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             padding: 8px;
             background: #f3f4f6;
             border-radius: 5px;
-            font-size: 8pt;
-            font-family: 'DejaVu Sans', 'Arial', sans-serif;
+            font-size: 7.5pt;
         }
-        
+
         .report-info table {
             width: 100%;
         }
-        
+
         .report-info td {
             padding: 2px 5px;
         }
-        
+
         .report-info td:first-child {
             font-weight: bold;
             width: 100px;
         }
-        
+
         table.data-table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
-            font-size: 8pt;
-            font-family: 'DejaVu Sans', 'Arial', sans-serif;
+            margin-top: 8px;
+            font-size: 6.5pt;
         }
-        
+
         table.data-table th {
             background: #1a56db;
             color: white;
-            padding: 6px 4px;
+            padding: 5px 3px;
             text-align: center;
             border: 1px solid #ddd;
             font-weight: bold;
-            font-family: 'DejaVu Sans', 'Arial', sans-serif;
+            font-size: 6pt;
+            line-height: 1.15;
         }
-        
+
         table.data-table td {
-            padding: 5px 4px;
+            padding: 4px 3px;
             border: 1px solid #ddd;
-            vertical-align: top;
-            font-family: 'DejaVu Sans', 'Arial', sans-serif;
+            vertical-align: middle;
         }
-        
+
         table.data-table tr:nth-child(even) {
             background: #f9fafb;
         }
-        
+
         .footer {
             margin-top: 15px;
             text-align: center;
@@ -100,53 +96,43 @@
             bottom: 10px;
             left: 0;
             right: 0;
-            font-family: 'DejaVu Sans', 'Arial', sans-serif;
         }
-        
-        .badge-ok {
-            color: #059669;
-            font-weight: bold;
-        }
-        
-        .badge-ng {
-            color: #dc2626;
-            font-weight: bold;
-        }
-        
-        .text-center {
-            text-align: center;
-        }
-        
-        .text-left {
-            text-align: left;
-        }
-        
+
+        .badge-ok { color: #059669; font-weight: bold; }
+        .badge-ng { color: #dc2626; font-weight: bold; }
+        .badge-yes { color: #059669; font-weight: bold; }
+        .badge-no  { color: #dc2626; font-weight: bold; }
+        .badge-na  { color: #9ca3af; }
+
+        .text-center { text-align: center; }
+        .text-left { text-align: left; }
+
         .wrap-text {
             word-wrap: break-word;
             word-break: break-all;
             white-space: normal;
         }
-        
-        .col-no { width: 3%; }
-        .col-material { width: 15%; }
-        .col-category { width: 10%; }
-        .col-project { width: 10%; }
-        .col-model { width: 10%; }
-        .col-f1 { width: 10%; }
-        .col-f1-sci { width: 10%; }
-        .col-judge1 { width: 5%; }
-        .col-f2 { width: 8%; }
-        .col-judge2 { width: 5%; }
-        .col-remarks { width: 12%; }
-        .col-date { width: 8%; }
-        .col-next-date { width: 8%; }
-        .col-checked { width: 10%; }
-        
+
+        .col-no { width: 2.5%; }
+        .col-material { width: 12%; }
+        .col-category { width: 8%; }
+        .col-project { width: 8%; }
+        .col-model { width: 8%; }
+        .col-f1-sci { width: 8%; }
+        .col-judge1 { width: 4%; }
+        .col-f2 { width: 6%; }
+        .col-judge2 { width: 4%; }
+        .col-f3 { width: 5%; }
+        .col-remarks { width: 11%; }
+        .col-date { width: 7%; }
+        .col-next-date { width: 7%; }
+        .col-checked { width: 9%; }
+
         @page {
             size: A4 landscape;
-            margin: 15px;
+            margin: 12px;
         }
-        
+
         @media print {
             body {
                 margin: 0;
@@ -176,7 +162,7 @@
                 </tr>
             </table>
         </div>
-        
+
         <div class="report-info">
             <table style="width: 100%;">
                 <tr>
@@ -190,24 +176,30 @@
                                 <td>Print Date</td>
                                 <td>: {{ $generated_at }}</td>
                             </tr>
-                            @if($material_filter)
+                            @if($sap_code_filter)
                             <tr>
-                                <td>Material Filter</td>
-                                <td colspan="3">: {{ $material_filter }}</td>
+                                <td>SAP Code Filter</td>
+                                <td colspan="3">: {{ $sap_code_filter }}</td>
                             </tr>
                             @endif
-                            @if($category_filter)
+                            @if($model_filter)
                             <tr>
-                                <td>Category Filter</td>
-                                <td colspan="3">: {{ $category_filter }}</td>
+                                <td>Model Filter</td>
+                                <td colspan="3">: {{ $model_filter }}</td>
+                            </tr>
+                            @endif
+                            @if($oracle_filter)
+                            <tr>
+                                <td>Oracle Filter</td>
+                                <td colspan="3">: {{ $oracle_filter }}</td>
                             </tr>
                             @endif
                             @if($date_from || $date_until)
                             <tr>
                                 <td>Date Range</td>
-                                <td colspan="3">: 
-                                    {{ $date_from ? \Carbon\Carbon::parse($date_from)->format('d M Y') : 'Start' }} 
-                                    to 
+                                <td colspan="3">:
+                                    {{ $date_from ? \Carbon\Carbon::parse($date_from)->format('d M Y') : 'Start' }}
+                                    to
                                     {{ $date_until ? \Carbon\Carbon::parse($date_until)->format('d M Y') : 'End' }}
                                 </td>
                             </tr>
@@ -226,36 +218,39 @@
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
-                                    <span style="font-size: 7pt;">( {{ '_________________' }} )</span>
+                                    <span style="font-size: 7pt;">( _________________ )</span>
                                 </td>
                                 <td style="text-align: center; padding: 0 10px; width: 33%;">
                                     <strong>CHECKED BY</strong><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
-                                    <span style="font-size: 7pt;">( {{ '_________________' }} )</span>
+                                    <span style="font-size: 7pt;">( _________________ )</span>
                                 </td>
                                 <td style="text-align: center; padding: 0 10px; width: 33%;">
                                     <strong>APPROVED BY</strong><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
                                     <span style="font-size: 7pt;">&nbsp;</span><br>
-                                    <span style="font-size: 7pt;">( {{ '_________________' }} )</span>
+                                    <span style="font-size: 7pt;">( _________________ )</span>
                                 </td>
                             </tr>
                         </table>
                     </td>
                 </tr>
             </table>
-            <div style="margin-top: 10px; padding: 6px 8px; background: #e8f0fe; border-radius: 4px; font-size: 8pt; text-align: left; border-top: 1px solid #ddd;">
-                <strong>STANDARD ESD OF PACKAGING</strong><br>
+
+            <div style="margin-top: 10px; padding: 6px 8px; background: #e8f0fe; border-radius: 4px; font-size: 7pt; text-align: left; border-top: 1px solid #ddd;">
+                <strong>STANDARD ESD OF PACKAGING</strong>
                 <div style="margin-top: 4px;">
                     <div>• (F1) Dissipative Packaging : ≥ 1.00E+4 - &lt; 1.00E+11 Ohm</div>
-                    <div>• (F2) Surface static field voltage : < +/- 100 Volts</div>
+                    <div>• (F2) Surface static field voltage : &lt; +/- 100 Volts</div>
+                    <div style="margin-top: 3px;"><strong>• (F3) Visual Inspection Checklist</strong></div>
+                    <div style="padding-left: 12px;">(F-3.1) Packaging tidak rusak, robek, atau berlubang</div>
                 </div>
             </div>
         </div>
-        
+
         <table class="data-table">
             <thead>
                 <tr>
@@ -268,6 +263,7 @@
                     <th class="col-judge1">Judg</th>
                     <th class="col-f2">F2 Result</th>
                     <th class="col-judge2">Judg</th>
+                    <th class="col-f3">F3.1</th>
                     <th class="col-remarks">Remarks</th>
                     <th class="col-date">Date</th>
                     <th class="col-next-date">Next Date</th>
@@ -303,6 +299,18 @@
                             {{ $detail->judgement_f2 ?? '-' }}
                         </span>
                     </td>
+
+                    {{-- F3.1 --}}
+                    <td class="text-center">
+                        @if($detail->f3_1 !== null)
+                            <span class="{{ $detail->f3_1 ? 'badge-yes' : 'badge-no' }}">
+                                {{ $detail->f3_1 ? 'Yes' : 'No' }}
+                            </span>
+                        @else
+                            <span class="badge-na">-</span>
+                        @endif
+                    </td>
+
                     <td class="wrap-text">{{ $detail->remarks ?? '-' }}</td>
                     <td class="text-center">{{ $detail->created_at ? $detail->created_at->format('d M Y') : '-' }}</td>
                     <td class="text-center">{{ $detail->next_date ? \Carbon\Carbon::parse($detail->next_date)->format('d M Y') : '-' }}</td>
@@ -317,7 +325,7 @@
                 @endforelse
             </tbody>
         </table>
-        
+
         <div class="footer" style="font-weight: bold;">
             QR-ADM-22-K023
         </div>

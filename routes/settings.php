@@ -5,14 +5,19 @@ use App\Livewire\Settings\Profile;
 use App\Livewire\Settings\Security;
 use Illuminate\Support\Facades\Route;
 use Laravel\Fortify\Features;
+use App\Livewire\Settings\Passkeys;
 
 Route::middleware(['auth'])->group(function () {
+
     Route::redirect('settings', 'settings/profile');
 
     Route::livewire('settings/profile', Profile::class)->name('profile.edit');
+
+    Route::get('/settings/passkeys', Passkeys::class)->name('settings.passkeys');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
+
     Route::livewire('settings/appearance', Appearance::class)->name('appearance.edit');
 
     Route::livewire('settings/security', Security::class)

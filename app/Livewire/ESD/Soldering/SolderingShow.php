@@ -13,14 +13,14 @@ class SolderingShow extends Component
     use WithPagination;
 
     public $soldering;
-    
+
     // Filter properties
     public $filterDateFrom;
     public $filterDateUntil;
     public $filterNextDateFrom;
     public $filterNextDateUntil;
     public $search = '';
-    
+
     // Form properties
     public $detail_id;
     public $soldering_id;
@@ -32,10 +32,13 @@ class SolderingShow extends Component
     public $line;
     public $e1;
     public $judgement;
+    public $e2_1;
+    public $e2_2;
+    public $e2_3;
     public $next_date;
     public $modalTitle = 'Add New Measurement';
     public $detailToDelete = null;
-    
+
     // Soldering list for dropdown
     public $solderings;
 
@@ -43,17 +46,23 @@ class SolderingShow extends Component
     {
         return [
             'soldering_id' => 'required|exists:tb_esd_solderings,id',
-            'e1' => 'nullable|numeric', // diubah dari required|numeric|min:0|max:9.99
+            'e1' => 'nullable|numeric',
+            'e2_1' => 'nullable|boolean',
+            'e2_2' => 'nullable|boolean',
+            'e2_3' => 'nullable|boolean',
             'next_date' => 'nullable|date',
         ];
     }
-    
+
     protected function messages()
     {
         return [
             'soldering_id.required' => 'Soldering equipment is required.',
             'soldering_id.exists' => 'Selected soldering does not exist.',
             'e1.numeric' => 'E1 measurement must be a number.',
+            'e2_1.boolean' => 'E2.1 must be Yes or No.',
+            'e2_2.boolean' => 'E2.2 must be Yes or No.',
+            'e2_3.boolean' => 'E2.3 must be Yes or No.',
             'next_date.date' => 'Next date must be a valid date.',
         ];
     }
@@ -61,11 +70,11 @@ class SolderingShow extends Component
     public function mount($id)
     {
         $this->soldering = Soldering::with('creator')->findOrFail($id);
-        
+
         if (!auth()->user()->can('view soldering')) {
             abort(403, 'Unauthorized access.');
         }
-        
+
         $this->loadSolderings();
     }
 
@@ -81,9 +90,10 @@ class SolderingShow extends Component
 
     public function resetJudgement()
     {
-        // E1 Judgement: < 10 is OK
         if ($this->e1 !== null && $this->e1 !== '') {
             $this->judgement = floatval($this->e1) < 10 ? 'OK' : 'NG';
+        } else {
+            $this->judgement = null;
         }
     }
 
@@ -111,8 +121,12 @@ class SolderingShow extends Component
 
     public function resetForm()
     {
-        $this->reset(['detail_id', 'soldering_id', 'register_no', 'area', 'location', 'type', 'spec', 'line', 
-                      'e1', 'judgement', 'next_date']);
+        $this->reset([
+            'detail_id', 'soldering_id', 'register_no', 'area', 'location', 'type', 'spec', 'line',
+            'e1', 'judgement',
+            'e2_1', 'e2_2', 'e2_3',
+            'next_date'
+        ]);
         $this->modalTitle = 'Add New Measurement';
         $this->resetValidation();
     }
@@ -136,35 +150,37 @@ class SolderingShow extends Component
                 return;
             }
         }
-    
-        // Set soldering_id from the current soldering
+
         $this->soldering_id = $this->soldering->id;
-    
+
         $this->validate();
-    
+
         $this->resetJudgement();
-    
+
         $data = [
             'soldering_id' => $this->soldering_id,
             'e1' => $this->e1,
             'judgement' => $this->judgement,
+            'e2_1' => $this->e2_1,
+            'e2_2' => $this->e2_2,
+            'e2_3' => $this->e2_3,
             'next_date' => $this->next_date,
         ];
-    
+
         if ($this->detail_id) {
             $detail = SolderingDetail::find($this->detail_id);
             if (!$detail) {
                 $this->dispatch('notify', message: 'Measurement record not found!', type: 'error');
                 return;
             }
-            
+
             $detail->update($data);
             $message = 'Measurement updated successfully!';
         } else {
             SolderingDetail::create($data);
             $message = 'Measurement created successfully!';
         }
-    
+
         $this->resetForm();
         $this->dispatch('notify', message: $message);
         $this->dispatch('close-modal', 'detail-form-modal');
@@ -176,14 +192,14 @@ class SolderingShow extends Component
             $this->dispatch('notify', message: 'You do not have permission!', type: 'error');
             return;
         }
-    
+
         $detail = SolderingDetail::with('soldering')->find($id);
-    
+
         if (!$detail) {
             $this->dispatch('notify', message: 'Measurement record not found!', type: 'error');
             return;
         }
-    
+
         $this->detail_id = $detail->id;
         $this->soldering_id = $detail->soldering_id;
         $this->register_no = $detail->soldering->register_no ?? '';
@@ -194,6 +210,9 @@ class SolderingShow extends Component
         $this->line = $detail->soldering->line ?? '';
         $this->e1 = $detail->e1;
         $this->judgement = $detail->judgement;
+        $this->e2_1 = $detail->e2_1;
+        $this->e2_2 = $detail->e2_2;
+        $this->e2_3 = $detail->e2_3;
         $this->next_date = $detail->next_date ? Carbon::parse($detail->next_date)->format('Y-m-d') : null;
         $this->modalTitle = 'Edit Measurement';
     }

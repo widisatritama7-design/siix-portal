@@ -33,6 +33,7 @@ class PackagingShow extends Component
     public $judgement_f1;
     public $f2;
     public $judgement_f2;
+    public $f3_1;
     public $remarks;
     public $next_date;
     public $modalTitle = 'Add New Measurement';
@@ -45,8 +46,9 @@ class PackagingShow extends Component
     {
         return [
             'packaging_id' => 'required|exists:tb_esd_packagings,id',
-            'f1' => 'nullable|numeric', // diubah dari required|numeric|min:10000|max:99999999999
-            'f2' => 'nullable|numeric', // diubah dari required|numeric|min:0|max:99
+            'f1' => 'nullable|numeric',
+            'f2' => 'nullable|numeric',
+            'f3_1' => 'nullable|boolean',
             'remarks' => 'nullable|string',
             'next_date' => 'nullable|date',
         ];
@@ -59,6 +61,7 @@ class PackagingShow extends Component
             'packaging_id.exists' => 'Selected packaging does not exist.',
             'f1.numeric' => 'F1 measurement must be a number.',
             'f2.numeric' => 'F2 measurement must be a number.',
+            'f3_1.boolean' => 'F3.1 must be Yes or No.',
             'next_date.date' => 'Next date must be a valid date.',
         ];
     }
@@ -91,15 +94,18 @@ class PackagingShow extends Component
 
     public function resetJudgements()
     {
-        // F1 Judgement: >= 10,000 and < 100,000,000,000 is OK
         if ($this->f1 !== null && $this->f1 !== '') {
             $this->judgement_f1 = (floatval($this->f1) >= 10000 && floatval($this->f1) < 100000000000) ? 'OK' : 'NG';
             $this->f1_scientific = sprintf('%.2E', floatval($this->f1));
+        } else {
+            $this->judgement_f1 = null;
+            $this->f1_scientific = null;
         }
 
-        // F2 Judgement: < 100 is OK
         if ($this->f2 !== null && $this->f2 !== '') {
             $this->judgement_f2 = floatval($this->f2) < 100 ? 'OK' : 'NG';
+        } else {
+            $this->judgement_f2 = null;
         }
     }
 
@@ -123,8 +129,12 @@ class PackagingShow extends Component
 
     public function resetForm()
     {
-        $this->reset(['detail_id', 'packaging_id', 'category', 'project', 'model', 'material', 
-                      'f1', 'f1_scientific', 'judgement_f1', 'f2', 'judgement_f2', 'remarks', 'next_date']);
+        $this->reset([
+            'detail_id', 'packaging_id', 'category', 'project', 'model', 'material', 
+            'f1', 'f1_scientific', 'judgement_f1', 'f2', 'judgement_f2',
+            'f3_1',
+            'remarks', 'next_date'
+        ]);
         $this->modalTitle = 'Add New Measurement';
         $this->resetValidation();
     }
@@ -149,7 +159,6 @@ class PackagingShow extends Component
             }
         }
     
-        // Set packaging_id from the current packaging
         $this->packaging_id = $this->packaging->id;
     
         $this->validate();
@@ -163,6 +172,7 @@ class PackagingShow extends Component
             'judgement_f1' => $this->judgement_f1,
             'f2' => $this->f2,
             'judgement_f2' => $this->judgement_f2,
+            'f3_1' => $this->f3_1,
             'remarks' => $this->remarks,
             'next_date' => $this->next_date,
         ];
@@ -211,6 +221,7 @@ class PackagingShow extends Component
         $this->judgement_f1 = $detail->judgement_f1;
         $this->f2 = $detail->f2;
         $this->judgement_f2 = $detail->judgement_f2;
+        $this->f3_1 = $detail->f3_1;
         $this->remarks = $detail->remarks;
         $this->next_date = $detail->next_date ? Carbon::parse($detail->next_date)->format('Y-m-d') : null;
         $this->modalTitle = 'Edit Measurement';

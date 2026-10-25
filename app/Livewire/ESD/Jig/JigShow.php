@@ -29,6 +29,7 @@ class JigShow extends Component
     public $judgement_j1;
     public $j2;
     public $judgement_j2;
+    public $j_3_1;
     public $remarks;
     public $next_date;
     public $modalTitle = 'Add New Measurement';
@@ -43,6 +44,7 @@ class JigShow extends Component
             'jigs_id' => 'required|exists:tb_esd_jigs,id',
             'j1' => 'nullable|numeric|min:0',
             'j2' => 'required|numeric|min:0',
+            'j_3_1' => 'nullable|boolean',  // ✅ baru
             'remarks' => 'nullable|string',
             'next_date' => 'nullable|date',
         ];
@@ -58,6 +60,7 @@ class JigShow extends Component
             'j2.min' => 'J2 measurement must be at least 0.',
             'j1.numeric' => 'J1 measurement must be a number.',
             'j1.min' => 'J1 measurement must be at least 0.',
+            'j_3_1.boolean' => 'J-3.1 must be Yes or No.',  // ✅ baru
             'next_date.date' => 'Next date must be a valid date.',
         ];
     }
@@ -91,16 +94,18 @@ class JigShow extends Component
     public function resetJudgementJ1()
     {
         if ($this->j1 !== null && $this->j1 !== '') {
-            // Standard: > 1.00 is NG
             $this->judgement_j1 = floatval($this->j1) >= 1.00 ? 'NG' : 'OK';
+        } else {
+            $this->judgement_j1 = null;
         }
     }
 
     public function resetJudgementJ2()
     {
         if ($this->j2 !== null && $this->j2 !== '') {
-            // Standard: > 100 is NG
             $this->judgement_j2 = floatval($this->j2) >= 100 ? 'NG' : 'OK';
+        } else {
+            $this->judgement_j2 = null;
         }
     }
 
@@ -119,7 +124,7 @@ class JigShow extends Component
     public function resetForm()
     {
         $this->reset(['detail_id', 'jigs_id', 'location', 'j1', 'judgement_j1', 
-                      'j2', 'judgement_j2', 'remarks', 'next_date']);
+                      'j2', 'judgement_j2', 'j_3_1', 'remarks', 'next_date']); // ✅ tambah j_3_1
         $this->modalTitle = 'Add New Measurement';
         $this->resetValidation();
     }
@@ -144,12 +149,12 @@ class JigShow extends Component
             }
         }
     
-        // Set jigs_id from the current jig
         $this->jigs_id = $this->jig->id;
     
         $this->validate([
             'j1' => 'nullable|numeric|min:0',
             'j2' => 'required|numeric|min:0',
+            'j_3_1' => 'nullable|boolean',   // ✅ baru
             'remarks' => 'nullable|string',
             'next_date' => 'nullable|date',
         ]);
@@ -163,6 +168,7 @@ class JigShow extends Component
             'judgement_j1' => $this->judgement_j1,
             'j2' => $this->j2,
             'judgement_j2' => $this->judgement_j2,
+            'j_3_1' => $this->j_3_1,      // ✅ baru
             'remarks' => $this->remarks,
             'next_date' => $this->next_date,
         ];
@@ -207,6 +213,7 @@ class JigShow extends Component
         $this->judgement_j1 = $detail->judgement_j1;
         $this->j2 = $detail->j2;
         $this->judgement_j2 = $detail->judgement_j2;
+        $this->j_3_1 = $detail->j_3_1;    // ✅ baru
         $this->remarks = $detail->remarks;
         $this->next_date = $detail->next_date ? Carbon::parse($detail->next_date)->format('Y-m-d') : null;
         $this->modalTitle = 'Edit Measurement';

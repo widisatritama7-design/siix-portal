@@ -13,14 +13,14 @@ class WorksurfaceShow extends Component
     use WithPagination;
 
     public $worksurface;
-    
+
     // Filter properties
     public $filterDateFrom;
     public $filterDateUntil;
     public $filterNextDateFrom;
     public $filterNextDateUntil;
     public $search = '';
-    
+
     // Form properties
     public $detail_id;
     public $worksurface_id;
@@ -35,26 +35,41 @@ class WorksurfaceShow extends Component
     public $judgement_a1;
     public $a2;
     public $judgement_a2;
+    public $a3;
+    public $judgement_a3;
+    public $a4_1;
+    public $a4_2;
+    public $a4_3;
+    public $a4_4;
+    public $a4_5;
     public $remarks;
     public $next_date;
     public $modalTitle = 'Add New Measurement';
     public $detailToDelete = null;
-    
+
     // Worksurface list for dropdown
     public $worksurfaces;
+    public $itemSearch = '';
+    public $showItemDropdown = false;
 
     protected function rules()
     {
         return [
             'worksurface_id' => 'required|exists:tb_esd_worksurfaces,id',
-            'item' => 'nullable|string|max:100', // required -> nullable
-            'a1' => 'nullable|numeric', // hapus required, min, max
-            'a2' => 'nullable|numeric', // hapus required, min, max
+            'item' => 'nullable|string|max:100',
+            'a1' => 'nullable|numeric',
+            'a2' => 'nullable|numeric',
+            'a3' => 'nullable|numeric',
+            'a4_1' => 'nullable|boolean',
+            'a4_2' => 'nullable|boolean',
+            'a4_3' => 'nullable|boolean',
+            'a4_4' => 'nullable|boolean',
+            'a4_5' => 'nullable|boolean',
             'remarks' => 'nullable|string',
             'next_date' => 'nullable|date',
         ];
     }
-    
+
     protected function messages()
     {
         return [
@@ -64,6 +79,12 @@ class WorksurfaceShow extends Component
             'item.max' => 'Item cannot exceed 100 characters.',
             'a1.numeric' => 'A1 measurement must be a number.',
             'a2.numeric' => 'A2 measurement must be a number.',
+            'a3.numeric' => 'A3 measurement must be a number.',
+            'a4_1.boolean' => 'A4.1 must be Yes or No.',
+            'a4_2.boolean' => 'A4.2 must be Yes or No.',
+            'a4_3.boolean' => 'A4.3 must be Yes or No.',
+            'a4_4.boolean' => 'A4.4 must be Yes or No.',
+            'a4_5.boolean' => 'A4.5 must be Yes or No.',
             'next_date.date' => 'Next date must be a valid date.',
         ];
     }
@@ -71,11 +92,11 @@ class WorksurfaceShow extends Component
     public function mount($id)
     {
         $this->worksurface = Worksurface::with('creator')->findOrFail($id);
-        
+
         if (!auth()->user()->can('view worksurface')) {
             abort(403, 'Unauthorized access.');
         }
-        
+
         $this->loadWorksurfaces();
     }
 
@@ -94,6 +115,11 @@ class WorksurfaceShow extends Component
         $this->resetJudgements();
     }
 
+    public function updatedA3()
+    {
+        $this->resetJudgements();
+    }
+
     public function resetJudgements()
     {
         // A1 Judgement: < 1,000,000,000 is OK
@@ -105,6 +131,11 @@ class WorksurfaceShow extends Component
         // A2 Judgement: < 100 is OK
         if ($this->a2 !== null && $this->a2 !== '') {
             $this->judgement_a2 = floatval($this->a2) < 100 ? 'OK' : 'NG';
+        }
+
+        // A3 Judgement: < 100 is OK (Clear Acrylic Static Field Voltage)
+        if ($this->a3 !== null && $this->a3 !== '') {
+            $this->judgement_a3 = floatval($this->a3) < 100 ? 'OK' : 'NG';
         }
     }
 
@@ -130,8 +161,15 @@ class WorksurfaceShow extends Component
 
     public function resetForm()
     {
-        $this->reset(['detail_id', 'worksurface_id', 'register_no', 'area', 'location', 'layer_count', 'category',
-                      'item', 'a1', 'a1_scientific', 'judgement_a1', 'a2', 'judgement_a2', 'remarks', 'next_date']);
+        $this->reset([
+            'detail_id', 'worksurface_id', 'register_no', 'area', 'location', 'layer_count', 'category',
+            'item', 'a1', 'a1_scientific', 'judgement_a1', 'a2', 'judgement_a2',
+            'a3', 'judgement_a3', 'a4_1', 'a4_2', 'a4_3', 'a4_4', 'a4_5',
+            'remarks', 'next_date'
+        ]);
+        // ✅ Reset item dropdown
+        $this->itemSearch = '';
+        $this->showItemDropdown = false;
         $this->modalTitle = 'Add New Measurement';
         $this->resetValidation();
     }
@@ -140,6 +178,48 @@ class WorksurfaceShow extends Component
     {
         $this->reset(['filterDateFrom', 'filterDateUntil', 'filterNextDateFrom', 'filterNextDateUntil', 'search']);
         $this->resetPage();
+    }
+
+    public function selectItem($value)
+    {
+        $this->item = strtoupper($value);
+        $this->itemSearch = strtoupper($value);
+        $this->showItemDropdown = false;
+    }
+
+    public function clearItem()
+    {
+        $this->item = null;
+        $this->itemSearch = '';
+        $this->showItemDropdown = false;
+    }
+
+    public function getItemOptionsProperty()
+    {
+        $options = [];
+
+        foreach (['TABLE', 'RACK', 'TROLLEY'] as $type) {
+            for ($i = 1; $i <= 5; $i++) {
+                $options[] = "{$type} LAYER {$i}";
+            }
+        }
+
+        return $options;
+    }
+
+    public function getFilteredItemOptionsProperty()
+    {
+        $all = $this->itemOptions;
+
+        if (empty($this->itemSearch)) {
+            return $all;
+        }
+
+        $term = strtolower($this->itemSearch);
+
+        return array_values(array_filter($all, function ($opt) use ($term) {
+            return str_contains(strtolower($opt), $term);
+        }));
     }
 
     public function save()
@@ -155,14 +235,14 @@ class WorksurfaceShow extends Component
                 return;
             }
         }
-    
+
         // Set worksurface_id from the current worksurface
         $this->worksurface_id = $this->worksurface->id;
-    
+
         $this->validate();
-    
+
         $this->resetJudgements();
-    
+
         $data = [
             'worksurface_id' => $this->worksurface_id,
             'item' => strtoupper($this->item),
@@ -171,24 +251,31 @@ class WorksurfaceShow extends Component
             'judgement_a1' => $this->judgement_a1,
             'a2' => $this->a2,
             'judgement_a2' => $this->judgement_a2,
+            'a3' => $this->a3,
+            'judgement_a3' => $this->judgement_a3,
+            'a4_1' => $this->a4_1,
+            'a4_2' => $this->a4_2,
+            'a4_3' => $this->a4_3,
+            'a4_4' => $this->a4_4,
+            'a4_5' => $this->a4_5,
             'remarks' => $this->remarks,
             'next_date' => $this->next_date,
         ];
-    
+
         if ($this->detail_id) {
             $detail = WorksurfaceDetail::find($this->detail_id);
             if (!$detail) {
                 $this->dispatch('notify', message: 'Measurement record not found!', type: 'error');
                 return;
             }
-            
+
             $detail->update($data);
             $message = 'Measurement updated successfully!';
         } else {
             WorksurfaceDetail::create($data);
             $message = 'Measurement created successfully!';
         }
-    
+
         $this->resetForm();
         $this->dispatch('notify', message: $message);
         $this->dispatch('close-modal', 'detail-form-modal');
@@ -200,14 +287,14 @@ class WorksurfaceShow extends Component
             $this->dispatch('notify', message: 'You do not have permission!', type: 'error');
             return;
         }
-    
+
         $detail = WorksurfaceDetail::with('worksurface')->find($id);
-    
+
         if (!$detail) {
             $this->dispatch('notify', message: 'Measurement record not found!', type: 'error');
             return;
         }
-    
+
         $this->detail_id = $detail->id;
         $this->worksurface_id = $detail->worksurface_id;
         $this->register_no = $detail->worksurface->register_no ?? '';
@@ -216,11 +303,19 @@ class WorksurfaceShow extends Component
         $this->layer_count = $detail->worksurface->layer_count ?? '';
         $this->category = $detail->worksurface->category ?? '';
         $this->item = $detail->item;
+        $this->itemSearch = $detail->item;
         $this->a1 = $detail->a1;
         $this->a1_scientific = $detail->a1_scientific;
         $this->judgement_a1 = $detail->judgement_a1;
         $this->a2 = $detail->a2;
         $this->judgement_a2 = $detail->judgement_a2;
+        $this->a3 = $detail->a3;
+        $this->judgement_a3 = $detail->judgement_a3;
+        $this->a4_1 = $detail->a4_1;
+        $this->a4_2 = $detail->a4_2;
+        $this->a4_3 = $detail->a4_3;
+        $this->a4_4 = $detail->a4_4;
+        $this->a4_5 = $detail->a4_5;
         $this->remarks = $detail->remarks;
         $this->next_date = $detail->next_date ? Carbon::parse($detail->next_date)->format('Y-m-d') : null;
         $this->modalTitle = 'Edit Measurement';

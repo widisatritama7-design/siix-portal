@@ -29,6 +29,8 @@ class GroundMonitorBoxShow extends Component
     public $location;
     public $g_3;
     public $g_4;
+    public $g_3_1;
+    public $g_3_2;
     public $remarks;
     public $next_date;
     public $modalTitle = 'Add New Measurement';
@@ -43,6 +45,8 @@ class GroundMonitorBoxShow extends Component
             'ground_monitor_box_id' => 'required|exists:tb_esd_ground_monitor_boxes,id',
             'g_3' => 'required|in:YES,NO',
             'g_4' => 'required|in:YES,NO',
+            'g_3_1' => 'nullable|boolean',
+            'g_3_2' => 'nullable|boolean',
             'remarks' => 'nullable|string|max:255',
             'next_date' => 'nullable|date',
         ];
@@ -57,6 +61,8 @@ class GroundMonitorBoxShow extends Component
             'g_3.in' => 'G1 must be YES or NO.',
             'g_4.required' => 'G2 measurement is required.',
             'g_4.in' => 'G2 must be YES or NO.',
+            'g_3_1.boolean' => 'G-3.1 must be Yes or No.',
+            'g_3_2.boolean' => 'G-3.2 must be Yes or No.',
             'remarks.max' => 'Remarks cannot exceed 255 characters.',
             'next_date.date' => 'Next date must be a valid date.',
         ];
@@ -97,7 +103,7 @@ class GroundMonitorBoxShow extends Component
     public function resetForm()
     {
         $this->reset(['detail_id', 'ground_monitor_box_id', 'register_no', 'area', 'location', 
-                      'g_3', 'g_4', 'remarks', 'next_date']);
+                      'g_3', 'g_4', 'g_3_1', 'g_3_2', 'remarks', 'next_date']);
         $this->modalTitle = 'Add New Measurement';
         $this->resetValidation();
     }
@@ -122,12 +128,13 @@ class GroundMonitorBoxShow extends Component
             }
         }
     
-        // Set ground_monitor_box_id from the current Ground Monitor Box
         $this->ground_monitor_box_id = $this->groundMonitorBox->id;
     
         $this->validate([
             'g_3' => 'required|in:YES,NO',
             'g_4' => 'required|in:YES,NO',
+            'g_3_1' => 'nullable|boolean',
+            'g_3_2' => 'nullable|boolean',
             'remarks' => 'nullable|string|max:255',
             'next_date' => 'nullable|date',
         ]);
@@ -136,6 +143,8 @@ class GroundMonitorBoxShow extends Component
             'ground_monitor_box_id' => $this->ground_monitor_box_id,
             'g_3' => $this->g_3,
             'g_4' => $this->g_4,
+            'g_3_1' => $this->g_3_1,
+            'g_3_2' => $this->g_3_2,
             'remarks' => $this->remarks,
             'next_date' => $this->next_date,
         ];
@@ -180,6 +189,8 @@ class GroundMonitorBoxShow extends Component
         $this->location = $detail->groundMonitorBox->location ?? '';
         $this->g_3 = $detail->g_3;
         $this->g_4 = $detail->g_4;
+        $this->g_3_1 = $detail->g_3_1;
+        $this->g_3_2 = $detail->g_3_2;
         $this->remarks = $detail->remarks;
         $this->next_date = $detail->next_date ? Carbon::parse($detail->next_date)->format('Y-m-d') : null;
         $this->modalTitle = 'Edit Measurement';

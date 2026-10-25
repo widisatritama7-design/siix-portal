@@ -17,6 +17,8 @@ class WristStrapManagement extends Component
     public $result;
     public $result_scientific;
     public $judgement;
+    public $c_3_1;
+    public $c_3_2;
     public $remarks;
     public $type;
     public $next_date;
@@ -43,9 +45,11 @@ class WristStrapManagement extends Component
     protected function rules()
     {
         return [
-            'register_no' => 'required|min:3|max:100', // Hapus unique
-            'result' => 'nullable|numeric', // Diubah jadi nullable, hapus min/max
+            'register_no' => 'required|min:3|max:100',
+            'result' => 'nullable|numeric',
             'type' => 'nullable|string|max:50',
+            'c_3_1' => 'nullable|boolean',   // ✅ baru
+            'c_3_2' => 'nullable|boolean',   // ✅ baru
             'remarks' => 'nullable|string|max:500',
             'next_date' => 'nullable|date',
         ];
@@ -55,6 +59,8 @@ class WristStrapManagement extends Component
         'register_no.required' => 'Register number is required.',
         'register_no.min' => 'Register number must be at least 3 characters.',
         'result.numeric' => 'Result measurement must be a number.',
+        'c_3_1.boolean' => '3.1 must be Yes or No.',
+        'c_3_2.boolean' => '3.2 must be Yes or No.',
         'next_date.date' => 'Next date must be a valid date.',
     ];
 
@@ -168,7 +174,8 @@ class WristStrapManagement extends Component
 
     public function resetForm()
     {
-        $this->reset(['strap_id', 'register_no', 'result', 'result_scientific', 'judgement', 'remarks', 'type', 'next_date']);
+        $this->reset(['strap_id', 'register_no', 'result', 'result_scientific', 'judgement', 
+                    'c_3_1', 'c_3_2', 'remarks', 'type', 'next_date']); // ✅ tambah c_3_x
         $this->modalTitle = 'Add New Wrist Strap';
         $this->resetValidation();
     }
@@ -237,6 +244,8 @@ class WristStrapManagement extends Component
             'result' => $this->result,
             'result_scientific' => $this->result_scientific,
             'judgement' => $this->judgement,
+            'c_3_1' => $this->c_3_1,   // ✅ baru
+            'c_3_2' => $this->c_3_2,   // ✅ baru
             'remarks' => $this->remarks,
             'type' => $this->type,
             'next_date' => $this->next_date,
@@ -280,6 +289,8 @@ class WristStrapManagement extends Component
         $this->result = $strap->result;
         $this->result_scientific = $strap->result_scientific;
         $this->judgement = $strap->judgement;
+        $this->c_3_1 = $strap->c_3_1;
+        $this->c_3_2 = $strap->c_3_2;
         $this->remarks = $strap->remarks;
         $this->type = $strap->type;
         $this->next_date = $strap->next_date ? Carbon::parse($strap->next_date)->format('Y-m-d') : null;
