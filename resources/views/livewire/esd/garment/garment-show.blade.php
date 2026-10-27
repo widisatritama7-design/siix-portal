@@ -262,19 +262,40 @@
 
                             {{-- SECTION 3: FREQUENCY --}}
                             <div class="mb-6">
-                                <div class="bg-green-50 dark:bg-green-950/30 rounded-lg p-5 border border-green-100 dark:border-green-900/50 text-center">
-                                    <div class="flex items-center justify-center gap-2 mb-2">
-                                        <flux:icon name="calendar" class="w-5 h-5 text-green-600 dark:text-green-400" />
-                                        <p class="text-xs font-semibold text-green-600 dark:text-green-400 uppercase tracking-wider">
-                                            Frequency
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+                                    {{-- Employee Frequency --}}
+                                    <div class="bg-green-50 dark:bg-green-950/30 rounded-lg p-5 border border-green-100 dark:border-green-900/50 text-center">
+                                        <div class="flex items-center justify-center gap-2 mb-2">
+                                            <flux:icon name="calendar" class="w-5 h-5 text-green-600 dark:text-green-400" />
+                                            <p class="text-xs font-semibold text-green-600 dark:text-green-400 uppercase tracking-wider">
+                                                Frequency
+                                            </p>
+                                        </div>
+                                        <p class="text-3xl font-bold text-green-700 dark:text-green-400">
+                                            Yearly
+                                        </p>
+                                        <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+                                            Employee · Measurement interval
                                         </p>
                                     </div>
-                                    <p class="text-3xl font-bold text-green-700 dark:text-green-400">
-                                        Yearly
-                                    </p>
-                                    <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-                                        Measurement interval
-                                    </p>
+
+                                    {{-- Smock & Cap Customer Frequency --}}
+                                    <div class="bg-green-50 dark:bg-green-950/30 rounded-lg p-5 border border-green-100 dark:border-green-900/50 text-center">
+                                        <div class="flex items-center justify-center gap-2 mb-2">
+                                            <flux:icon name="calendar" class="w-5 h-5 text-green-600 dark:text-green-400" />
+                                            <p class="text-xs font-semibold text-green-600 dark:text-green-400 uppercase tracking-wider">
+                                                Frequency
+                                            </p>
+                                        </div>
+                                        <p class="text-3xl font-bold text-green-700 dark:text-green-400">
+                                            Weekly
+                                        </p>
+                                        <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+                                            Smock &amp; Cap Customer · Measurement interval
+                                        </p>
+                                    </div>
+
                                 </div>
                             </div>
 
@@ -377,7 +398,7 @@
                                     <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Date</th>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Next Date</th>
                                     <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[120px]">Checked By</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Photos</th>
+                                    {{--  <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Photos</th> --}}
                                     <th class="px-4 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider w-24">Actions</th>
                                 </tr>
                             </thead>
@@ -470,7 +491,7 @@
                                     <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
                                         {{ $detail->creator->name ?? 'N/A' }}
                                     </td>
-                                    <td class="px-4 py-3">
+                                    {{-- <td class="px-4 py-3">
                                         @php
                                             $photos = is_string($detail->photo_verification) ? json_decode($detail->photo_verification, true) : $detail->photo_verification;
                                             $photos = is_array($photos) ? $photos : [];
@@ -488,7 +509,7 @@
                                         @else
                                             <span class="text-xs text-zinc-400">-</span>
                                         @endif
-                                    </td>
+                                    </td> --}}
                                     <td class="px-4 py-3 text-right"
                                         x-data="{
                                             canModify: false,

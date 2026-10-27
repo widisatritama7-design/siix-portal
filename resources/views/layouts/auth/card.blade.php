@@ -16,7 +16,7 @@
                 src="{{ asset('images/bg.png') }}"
                 alt="Login illustration"
                 class="w-full h-full object-contain"
-                style="transform: scale(0.93);"
+                style="transform: scale(1.1);"
             >
         </div>
 
