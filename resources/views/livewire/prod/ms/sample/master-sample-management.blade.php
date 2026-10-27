@@ -50,6 +50,20 @@
                 Add New Master Sample
             </flux:button>
             @endcan
+
+            {{-- Tombol Export Excel --}}
+            @can('view master sample')
+            <flux:button 
+                variant="primary" 
+                icon="arrow-down-tray" 
+                color="emerald"
+                wire:click="openExportModal"
+                x-on:click="$dispatch('open-modal', 'export-modal')"
+                class="bg-emerald-600 hover:bg-emerald-700"
+            >
+                Export Excel
+            </flux:button>
+            @endcan
         </div>
     </div>
 
@@ -1049,6 +1063,230 @@
             </div>
         </div>
     </div>
+
+    <!-- ============================================================ -->
+    <!-- MODAL EXPORT EXCEL                                            -->
+    <!-- ============================================================ -->
+    <div x-data="{ open: false }" 
+        x-show="open" 
+        @open-modal.window="if ($event.detail === 'export-modal') open = true"
+        @close-modal.window="if ($event.detail === 'export-modal') open = false"
+        x-cloak>
+
+        <div class="fixed inset-0 bg-black/50 z-40" @click="open = false"></div>
+
+        <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-xl w-full max-w-md">
+
+                {{-- HEADER --}}
+                <div class="px-6 py-4 border-b border-zinc-200 dark:border-zinc-700 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+                            <svg class="w-5 h-5 text-emerald-600 dark:text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-zinc-800 dark:text-white">Export Master Sample</h3>
+                            <p class="text-xs text-zinc-500 dark:text-zinc-400">Download data ke format Excel (.xlsx)</p>
+                        </div>
+                    </div>
+                    <button @click="open = false" class="text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                {{-- BODY --}}
+                <div class="p-6 space-y-4 max-h-[calc(90vh-220px)] overflow-y-auto">
+
+                    {{-- Info --}}
+                    <div class="flex items-start gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                        <svg class="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <p class="text-xs text-blue-700 dark:text-blue-300 leading-relaxed">
+                            Pilih <strong>bulan</strong> dan <strong>tahun</strong> untuk mengekspor sample yang
+                            <em>expired</em> pada periode tersebut. Hanya sample dengan status <strong>ACTIVE</strong>
+                            yang akan di-export.
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        {{-- YEAR --}}
+                        <div>
+                            <label class="block text-sm font-medium mb-1 text-zinc-700 dark:text-zinc-300">
+                                Year
+                            </label>
+                            <div class="relative">
+                                <select wire:model.live="exportYear"
+                                        wire:loading.attr="disabled"
+                                        wire:target="exportYear"
+                                        class="w-full px-3 py-2 pr-10 border rounded-lg bg-white dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-emerald-500 focus:border-transparent appearance-none cursor-pointer transition-colors">
+                                    <option value="">All Years</option>
+                                    @for($y = now()->year + 1; $y >= 2020; $y--)
+                                        <option value="{{ $y }}">{{ $y }}</option>
+                                    @endfor
+                                </select>
+                                {{-- Custom arrow --}}
+                                <div class="pointer-events-none absolute inset-y-0 right-2 flex items-center text-zinc-500 dark:text-zinc-400">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            @error('exportYear') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                        </div>
+
+                        {{-- MONTH --}}
+                        <div>
+                            <label class="block text-sm font-medium mb-1 text-zinc-700 dark:text-zinc-300">
+                                Month
+                            </label>
+                            <div class="relative">
+                                <select wire:model.live="exportMonth"
+                                        wire:loading.attr="disabled"
+                                        wire:target="exportMonth"
+                                        class="w-full px-3 py-2 pr-10 border rounded-lg bg-white dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-emerald-500 focus:border-transparent appearance-none cursor-pointer transition-colors">
+                                    <option value="">All Months</option>
+                                    @foreach(range(1, 12) as $m)
+                                        <option value="{{ $m }}">{{ \Carbon\Carbon::create()->month($m)->format('F') }}</option>
+                                    @endforeach
+                                </select>
+                                {{-- Custom arrow --}}
+                                <div class="pointer-events-none absolute inset-y-0 right-2 flex items-center text-zinc-500 dark:text-zinc-400">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                            @error('exportMonth') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                        </div>
+                    </div>
+
+                    {{-- Info Filter Aktif --}}
+                    <div class="p-3 bg-zinc-50 dark:bg-zinc-800/50 rounded-lg border border-zinc-200 dark:border-zinc-700">
+                        <div class="flex items-center gap-2 mb-2">
+                            <svg class="w-4 h-4 text-zinc-500 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"></path>
+                            </svg>
+                            <span class="text-xs font-semibold text-zinc-700 dark:text-zinc-300 uppercase tracking-wide">
+                                Filter Aktif
+                            </span>
+                        </div>
+                        <div class="space-y-1.5 text-xs text-zinc-600 dark:text-zinc-400">
+                            <div class="flex justify-between items-center">
+                                <span>Tab:</span>
+                                <span class="px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 font-semibold">
+                                    {{ strtoupper($activeTab) }}
+                                </span>
+                            </div>
+                            @if($search)
+                            <div class="flex justify-between items-center">
+                                <span>Search:</span>
+                                <span class="font-semibold text-zinc-800 dark:text-zinc-200 truncate max-w-[200px]">"{{ $search }}"</span>
+                            </div>
+                            @endif
+                            @if($filterCustomer)
+                            <div class="flex justify-between items-center">
+                                <span>Customer:</span>
+                                <span class="font-semibold text-zinc-800 dark:text-zinc-200">{{ $filterCustomer }}</span>
+                            </div>
+                            @endif
+                            @if($filterNameOrMc)
+                            <div class="flex justify-between items-center">
+                                <span>Name/MC:</span>
+                                <span class="font-semibold text-zinc-800 dark:text-zinc-200">{{ $filterNameOrMc }}</span>
+                            </div>
+                            @endif
+                            <div class="flex justify-between items-center">
+                                <span>Columns:</span>
+                                <span class="font-semibold text-zinc-800 dark:text-zinc-200">29 (Full)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{-- Preview Jumlah Data --}}
+                    <div wire:loading.class="opacity-60"
+                        wire:target="exportYear,exportMonth"
+                        class="p-3 rounded-lg border-2 transition-all duration-200 {{ $this->previewCount > 0 ? 'bg-emerald-50 dark:bg-emerald-900/10 border-emerald-200 dark:border-emerald-800' : 'bg-red-50 dark:bg-red-900/10 border-red-200 dark:border-red-800' }}">
+
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <svg wire:loading wire:target="exportYear,exportMonth"
+                                    class="w-5 h-5 text-emerald-600 animate-spin" fill="none" viewBox="0 0 24 24">
+                                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                                </svg>
+
+                                <svg wire:loading.remove wire:target="exportYear,exportMonth"
+                                    class="w-5 h-5 {{ $this->previewCount > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400' }}"
+                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    @if($this->previewCount > 0)
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    @else
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                    @endif
+                                </svg>
+
+                                <span wire:loading.remove wire:target="exportYear,exportMonth"
+                                    class="text-sm font-medium {{ $this->previewCount > 0 ? 'text-emerald-700 dark:text-emerald-300' : 'text-red-700 dark:text-red-300' }}">
+                                    {{ $this->previewCount > 0 ? 'Data ditemukan' : 'Tidak ada data' }}
+                                </span>
+                                <span wire:loading wire:target="exportYear,exportMonth"
+                                    class="text-sm font-medium text-zinc-500">
+                                    Menghitung...
+                                </span>
+                            </div>
+
+                            <span wire:loading.remove wire:target="exportYear,exportMonth"
+                                class="px-3 py-1 rounded-full font-bold text-sm {{ $this->previewCount > 0 ? 'bg-emerald-600 text-white' : 'bg-red-600 text-white' }}">
+                                {{ $this->previewCount }} records
+                            </span>
+                        </div>
+
+                        @if($this->previewCount === 0)
+                            <p class="text-xs text-red-600 dark:text-red-400 mt-2">
+                                Tidak ada sample yang expired pada periode & filter yang dipilih. Export tidak dapat dilakukan.
+                            </p>
+                        @endif
+                    </div>
+
+                </div>
+
+                {{-- FOOTER --}}
+                <div class="px-6 py-4 border-t border-zinc-200 dark:border-zinc-700 flex justify-end gap-2">
+                    <button type="button" 
+                            @click="open = false"
+                            class="px-4 py-2 border border-zinc-300 dark:border-zinc-600 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-sm font-medium">
+                        Cancel
+                    </button>
+                    <button type="button" 
+                            wire:click="exportExcel"
+                            wire:loading.attr="disabled"
+                            wire:target="exportExcel"
+                            @if($this->previewCount === 0) disabled @endif
+                            @click="{{ $this->previewCount > 0 ? 'open = false' : '' }}"
+                            class="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors flex items-center gap-2 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-emerald-600">
+                        <svg wire:loading wire:target="exportExcel" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
+                        </svg>
+                        <svg wire:loading.remove wire:target="exportExcel" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                        </svg>
+                        <span wire:loading.remove wire:target="exportExcel">Download Excel</span>
+                        <span wire:loading wire:target="exportExcel">Exporting...</span>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!-- ============================================================ -->
+    <!-- END MODAL EXPORT EXCEL                                        -->
+    <!-- ============================================================ -->
 
     <!-- Notifikasi -->
     <div x-data="{ show: false, message: '', type: 'success' }" 

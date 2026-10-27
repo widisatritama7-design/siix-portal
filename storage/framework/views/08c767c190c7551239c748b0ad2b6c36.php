@@ -71,7 +71,7 @@
             </div>
         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
 
-        <form id="login-form" method="POST" action="<?php echo e(route('login.store')); ?>" class="flex flex-col gap-6">
+        <form id="login-form" method="POST" action="<?php echo e(route('login.store')); ?>" class="flex flex-col gap-6" novalidate>
             <?php echo csrf_field(); ?>
 
             <div class="relative">
@@ -84,7 +84,11 @@
                     id="nik" name="nik" type="text" inputmode="numeric"
                     value="<?php echo e(old('nik')); ?>" required autofocus
                     autocomplete="username webauthn"
-                    placeholder="Enter your NIK"
+                    placeholder="<?php echo e(__('Enter your NIK')); ?>"
+                    pattern="[0-9]+"
+                    maxlength="16"
+                    title="<?php echo e(__('NIK hanya boleh berisi angka')); ?>"
+                    aria-describedby="nik-help nik-error"
                     class="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 pt-3 pb-2 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                 />
                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['nik'];
@@ -92,7 +96,7 @@ $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :
 if (isset($message)) { $__messageOriginal = $message; }
 $message = $__bag->first($__errorArgs[0]); ?>
-                    <p class="mt-1 text-sm text-red-600 dark:text-red-400"><?php echo e($message); ?></p>
+                    <p id="nik-error" class="mt-1 text-sm text-red-600 dark:text-red-400"><?php echo e($message); ?></p>
                 <?php unset($message);
 if (isset($__messageOriginal)) { $message = $__messageOriginal; }
 endif;
@@ -108,7 +112,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                 <input
                     id="password" name="password" type="password" required
                     autocomplete="current-password"
-                    placeholder="<?php echo e(__('Password')); ?>"
+                    placeholder="<?php echo e(__('Enter your Password')); ?>"
                     class="w-full rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-900 px-3 pt-3 pb-2 pr-10 text-sm text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
                 <button type="button" id="toggle-password" aria-label="<?php echo e(__('Show password')); ?>" aria-pressed="false"
@@ -131,17 +135,35 @@ endif;
 unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
             </div>
 
-            <label class="inline-flex items-center gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                <input type="checkbox" name="remember" value="1" <?php if(old('remember')): echo 'checked'; endif; ?>
-                    class="rounded border-zinc-300 dark:border-zinc-700 text-blue-600 focus:ring-blue-500" />
+            <label class="inline-flex items-center gap-2 cursor-pointer select-none text-sm text-zinc-700 dark:text-zinc-300">
+                <span class="relative inline-flex items-center justify-center h-4 w-4">
+                    <input type="checkbox" name="remember" value="1" <?php if(old('remember')): echo 'checked'; endif; ?>
+                        class="peer sr-only" />
+
+                    <span class="absolute inset-0 rounded-full border border-zinc-300 dark:border-zinc-600 bg-white dark:bg-zinc-900
+                                transition-all duration-150
+                                peer-checked:opacity-0 peer-checked:scale-75
+                                peer-focus-visible:ring-2 peer-focus-visible:ring-blue-500 peer-focus-visible:ring-offset-2
+                                dark:peer-focus-visible:ring-offset-zinc-900"></span>
+
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"
+                        class="absolute inset-0 h-4 w-4 text-blue-600 dark:text-blue-500
+                                opacity-0 scale-50 transition-all duration-150
+                                peer-checked:opacity-100 peer-checked:scale-100">
+                        <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
+                    </svg>
+                </span>
                 <span><?php echo e(__('Remember me')); ?></span>
             </label>
 
             <button type="submit" id="login-submit"
-                class="w-full inline-flex items-center justify-center rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition disabled:opacity-60 disabled:cursor-not-allowed"
+                class="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition disabled:opacity-60 disabled:cursor-not-allowed"
                 data-test="login-button">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4" aria-hidden="true">
+                    <path fill-rule="evenodd" d="M16.5 3.75a1.5 1.5 0 0 1 1.5 1.5v13.5a1.5 1.5 0 0 1-1.5 1.5h-6a1.5 1.5 0 0 1-1.5-1.5V15a.75.75 0 0 0-1.5 0v3.75a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V5.25a3 3 0 0 0-3-3h-6a3 3 0 0 0-3 3V9A.75.75 0 1 0 9 9V5.25a1.5 1.5 0 0 1 1.5-1.5h6Zm-5.03 4.72a.75.75 0 0 0 0 1.06l1.72 1.72H2.25a.75.75 0 0 0 0 1.5h10.94l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3a.75.75 0 0 0 0-1.06l-3-3a.75.75 0 0 0-1.06 0Z" clip-rule="evenodd" />
+                </svg>
                 <span id="login-submit-text"><?php echo e(__('Log in')); ?></span>
-                <svg id="login-spinner" class="hidden ml-2 w-4 h-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <svg id="login-spinner" class="hidden w-4 h-4 animate-spin" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
                 </svg>
@@ -150,7 +172,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
 
         <div class="relative flex items-center">
             <div class="flex-grow border-t border-zinc-200 dark:border-zinc-700"></div>
-            <span class="px-3 text-xs text-zinc-500">OR</span>
+            <span class="px-3 text-xs font-bold text-zinc-500 dark:text-zinc-400">OR</span>
             <div class="flex-grow border-t border-zinc-200 dark:border-zinc-700"></div>
         </div>
 
@@ -173,7 +195,6 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
         <div id="login-success-card"
              class="w-full max-w-sm rounded-2xl bg-white dark:bg-zinc-900 p-6 shadow-xl text-center
                     scale-90 opacity-0 translate-y-3 transition-all duration-300">
-            
             
             <div class="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/40 relative">
                 <svg id="success-check" class="w-14 h-14 text-green-600 dark:text-green-400" viewBox="0 0 52 52" fill="none">
@@ -199,10 +220,95 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                 </button>
                 <p class="text-xs text-zinc-500"><?php echo e(__('Dialihkan otomatis dalam')); ?> <span id="countdown">3</span>s</p>
             </div>
+
+            
+            <div class="mt-3 h-1 w-full rounded-full bg-green-100 dark:bg-green-900/30 overflow-hidden">
+                <div id="success-countdown-bar"
+                    class="h-full w-full rounded-full bg-green-600 dark:bg-green-500 origin-left"
+                    style="transform: scaleX(1);"></div>
+            </div>
         </div>
     </div>
 
-    <style>
+    
+    <div id="login-error-modal"
+        class="hidden fixed inset-0 z-50 items-center justify-center bg-black/50 backdrop-blur-sm p-4 opacity-0 transition-opacity duration-300"
+        role="dialog" aria-modal="true" aria-labelledby="login-error-title">
+        <div id="login-error-card"
+            class="w-full max-w-sm rounded-2xl bg-white dark:bg-zinc-900 p-6 shadow-xl text-center
+                    scale-90 opacity-0 translate-y-3 transition-all duration-300">
+
+            
+            <div class="mx-auto flex h-24 w-24 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/40 relative">
+                <svg id="error-x" class="w-14 h-14 text-red-600 dark:text-red-400" viewBox="0 0 52 52" fill="none">
+                    <circle id="error-circle" cx="26" cy="26" r="22"
+                            stroke="currentColor" stroke-width="4"
+                            stroke-dasharray="138" stroke-dashoffset="138"
+                            transform="rotate(-90 26 26)" />
+                    <path id="error-line-1" d="M17 17 L35 35"
+                        stroke="currentColor" stroke-width="5"
+                        stroke-linecap="round"
+                        stroke-dasharray="26" stroke-dashoffset="26" />
+                    <path id="error-line-2" d="M35 17 L17 35"
+                        stroke="currentColor" stroke-width="5"
+                        stroke-linecap="round"
+                        stroke-dasharray="26" stroke-dashoffset="26" />
+                </svg>
+            </div>
+
+            <h3 id="login-error-title" class="mt-4 text-lg font-semibold text-zinc-900 dark:text-zinc-100"><?php echo e(__('Login Gagal')); ?></h3>
+            <p id="login-error-message" class="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+                <?php echo e(__('NIK atau password yang Anda masukkan salah.')); ?>
+
+            </p>
+
+            
+            <div class="mt-5 flex flex-col gap-2">
+                <button type="button" id="error-close"
+                    class="w-full inline-flex items-center justify-center rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition">
+                    <?php echo e(__('Coba Lagi')); ?>
+
+                </button>
+
+                
+                <p class="text-xs text-zinc-500 dark:text-zinc-400">
+                    <?php echo e(__('Menutup otomatis dalam')); ?>
+
+                    <span id="error-countdown-number" class="inline-block min-w-[1ch] font-semibold text-red-600 dark:text-red-400 tabular-nums">3</span>s
+                </p>
+            </div>
+
+            
+            <div class="mt-3 h-1 w-full rounded-full bg-red-100 dark:bg-red-900/30 overflow-hidden">
+                <div id="error-countdown-bar"
+                    class="h-full w-full rounded-full bg-red-600 dark:bg-red-500 origin-left"
+                    style="transform: scaleX(1);"></div>
+            </div>
+        </div>
+    </div>
+
+        <style>
+        /* ===== Countdown bar (pakai keyframes agar tidak di-skip / stack) ===== */
+        #error-countdown-bar, #success-countdown-bar {
+            transform: scaleX(1);
+            transform-origin: left center;
+            will-change: transform;
+        }
+
+        @keyframes countdownShrink {
+            from { transform: scaleX(1); }
+            to   { transform: scaleX(0); }
+        }
+
+        /* Gunakan 'both' agar state awal (scaleX(1)) langsung dikunci browser sebelum animasi dimulai */
+        #login-error-modal.is-counting #error-countdown-bar {
+            animation: countdownShrink 3s linear both;
+        }
+
+        #login-success-modal.is-counting #success-countdown-bar {
+            animation: countdownShrink 3s linear both;
+        }
+
         /* Sembunyikan ikon mata bawaan browser */
         input[type="password"]::-ms-reveal,
         input[type="password"]::-ms-clear { display: none; }
@@ -211,7 +317,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
             visibility: hidden; display: none !important; pointer-events: none; position: absolute; right: 0;
         }
 
-        /* ===== Animasi Checkmark ===== */
+        /* ===== Animasi Checkmark (sukses) ===== */
         @keyframes drawCircle { to { stroke-dashoffset: 0; } }
         @keyframes drawCheck  { to { stroke-dashoffset: 0; } }
 
@@ -222,7 +328,18 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
             animation: drawCheck 0.4s ease-in-out 0.55s forwards;
         }
 
-        /* ===== Countdown ===== */
+        /* ===== Animasi X (error) ===== */
+        #login-error-modal.is-visible #error-circle {
+            animation: drawCircle 0.6s ease-in-out forwards;
+        }
+        #login-error-modal.is-visible #error-line-1 {
+            animation: drawCheck 0.3s ease-in-out 0.5s forwards;
+        }
+        #login-error-modal.is-visible #error-line-2 {
+            animation: drawCheck 0.3s ease-in-out 0.75s forwards;
+        }
+
+        /* ===== Countdown teks sukses (angka) ===== */
         #countdown {
             display: inline-block;
             min-width: 1ch;
@@ -238,24 +355,99 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // ============================================================
+            // ELEMEN
+            // ============================================================
             const form = document.getElementById('login-form');
             const submitBtn = document.getElementById('login-submit');
             const submitText = document.getElementById('login-submit-text');
             const spinner = document.getElementById('login-spinner');
 
+            // Modal sukses
             const modal = document.getElementById('login-success-modal');
             const card = document.getElementById('login-success-card');
             const circle = document.getElementById('success-circle');
             const path = document.getElementById('success-path');
             const goDashboardBtn = document.getElementById('go-dashboard');
             const countdownEl = document.getElementById('countdown');
+            const successCountdownBar = document.getElementById('success-countdown-bar');
 
+            // Modal error
+            const errorModal = document.getElementById('login-error-modal');
+            const errorCard = document.getElementById('login-error-card');
+            const errorCircle = document.getElementById('error-circle');
+            const errorLine1 = document.getElementById('error-line-1');
+            const errorLine2 = document.getElementById('error-line-2');
+            const errorMessageEl = document.getElementById('login-error-message');
+            const errorCloseBtn = document.getElementById('error-close');
+            const errorCountdownBar = document.getElementById('error-countdown-bar');
+            const errorCountdownNumber = document.getElementById('error-countdown-number');
+
+            // ============================================================
+            // KONSTANTA
+            // ============================================================
             const DASHBOARD_URL = '/main-dashboard';
             const COUNTDOWN_SECONDS = 3;
+            const ERROR_AUTO_CLOSE_SECONDS = 3;
+            const NIK_MAX_LENGTH = 16;
+
             let countdownRaf = null;
             let countdownStarted = false;
 
-            // ---------- Toggle password ----------
+            // Timer modal error
+            let errorAutoCloseTimer = null;
+            let errorCountdownRaf = null;
+
+            // ============================================================
+            // NIK: sanitasi hanya digit
+            // ============================================================
+            const nikInput = document.getElementById('nik');
+
+            if (nikInput) {
+                nikInput.addEventListener('keydown', (e) => {
+                    if (e.ctrlKey || e.metaKey || e.altKey) return;
+                    const allowedKeys = [
+                        'Backspace', 'Delete', 'ArrowLeft', 'ArrowRight',
+                        'ArrowUp', 'ArrowDown', 'Home', 'End', 'Tab', 'Enter'
+                    ];
+                    if (allowedKeys.includes(e.key)) return;
+                    if (!/^[0-9]$/.test(e.key)) {
+                        e.preventDefault();
+                    }
+                });
+
+                nikInput.addEventListener('input', () => {
+                    const cleaned = nikInput.value.replace(/\D+/g, '').slice(0, NIK_MAX_LENGTH);
+                    if (cleaned !== nikInput.value) {
+                        const pos = nikInput.selectionStart ?? cleaned.length;
+                        nikInput.value = cleaned;
+                        const newPos = Math.min(pos, cleaned.length);
+                        try { nikInput.setSelectionRange(newPos, newPos); } catch (_) {}
+                    }
+                });
+
+                nikInput.addEventListener('paste', (e) => {
+                    const text = (e.clipboardData || window.clipboardData)?.getData('text') ?? '';
+                    const cleaned = text.replace(/\D+/g, '').slice(0, NIK_MAX_LENGTH);
+                    e.preventDefault();
+                    const start = nikInput.selectionStart ?? nikInput.value.length;
+                    const end = nikInput.selectionEnd ?? nikInput.value.length;
+                    const before = nikInput.value.slice(0, start);
+                    const after = nikInput.value.slice(end);
+                    const merged = (before + cleaned + after).replace(/\D+/g, '').slice(0, NIK_MAX_LENGTH);
+                    nikInput.value = merged;
+                    const newPos = Math.min(before.length + cleaned.length, merged.length);
+                    try { nikInput.setSelectionRange(newPos, newPos); } catch (_) {}
+                });
+
+                if (nikInput.value) {
+                    nikInput.value = nikInput.value.replace(/\D+/g, '').slice(0, NIK_MAX_LENGTH);
+                }
+            }
+
+            // ============================================================
+            // Toggle password
+            // ============================================================
             const passwordInput = document.getElementById('password');
             const togglePassword = document.getElementById('toggle-password');
             const slash = document.getElementById('password-slash');
@@ -269,8 +461,10 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                 });
             }
 
-            // ---------- Countdown halus ----------
-            const startCountdown = () => {
+            // ============================================================
+            // Countdown halus (modal sukses)
+            // ============================================================
+            const startSuccessNumberCountdown = () => {
                 if (countdownRaf) cancelAnimationFrame(countdownRaf);
 
                 const totalMs = COUNTDOWN_SECONDS * 1000;
@@ -304,13 +498,35 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                 countdownRaf = requestAnimationFrame(frame);
             };
 
-            // ---------- Modal sukses + animasi checkmark ----------
+            const resetSuccessCountdownBar = () => {
+                if (!successCountdownBar || !modal) return;
+                modal.classList.remove('is-counting');
+                void successCountdownBar.offsetWidth;
+            };
+
+            const startSuccessCountdownVisual = () => {
+                if (!successCountdownBar || !modal) return;
+                modal.classList.remove('is-counting');
+                void successCountdownBar.offsetWidth;
+                modal.classList.add('is-counting');
+            };
+
+            // ============================================================
+            // Modal sukses + animasi checkmark
+            // ============================================================
             const showSuccessModal = () => {
+                clearErrorTimers();
+                hideErrorModal();
+
                 modal.classList.remove('is-visible');
                 circle.style.animation = 'none';
                 path.style.animation = 'none';
                 circle.style.strokeDashoffset = '138';
                 path.style.strokeDashoffset = '35';
+
+                // Reset bar
+                resetSuccessCountdownBar();
+                if (countdownEl) countdownEl.textContent = COUNTDOWN_SECONDS;
 
                 modal.classList.remove('hidden');
                 modal.classList.add('flex');
@@ -323,7 +539,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                     });
                 });
 
-                // Trigger animasi centang setelah card muncul
+                // 1. Trigger animasi centang
                 setTimeout(() => {
                     circle.style.animation = '';
                     path.style.animation = '';
@@ -332,13 +548,15 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                     modal.classList.add('is-visible');
                 }, 350);
 
-                // Mulai countdown setelah centang selesai digambar
+                // 2. Mulai countdown bar & angka secara instan (0ms)
+                // Jangan diberi delay agar bar langsung menyusut (tidak stack diam)
                 setTimeout(() => {
                     if (!countdownStarted) {
                         countdownStarted = true;
-                        startCountdown();
+                        startSuccessCountdownVisual();
+                        startSuccessNumberCountdown();
                     }
-                }, 1400); 
+                }, 0); 
             };
 
             goDashboardBtn?.addEventListener('click', () => {
@@ -346,9 +564,200 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                 window.location.assign(DASHBOARD_URL);
             });
 
-            // ---------- Submit via fetch ----------
+            // ============================================================
+            // Modal error + animasi X + countdown bar & angka
+            // ============================================================
+            const clearErrorTimers = () => {
+                if (errorAutoCloseTimer) {
+                    clearTimeout(errorAutoCloseTimer);
+                    errorAutoCloseTimer = null;
+                }
+                if (errorCountdownRaf) {
+                    cancelAnimationFrame(errorCountdownRaf);
+                    errorCountdownRaf = null;
+                }
+            };
+
+            const resetErrorCountdownBar = () => {
+                if (!errorCountdownBar || !errorModal) return;
+                errorModal.classList.remove('is-counting');
+                void errorCountdownBar.offsetWidth;
+            };
+
+            const startErrorCountdownVisual = () => {
+                if (!errorCountdownBar || !errorModal) return;
+                errorModal.classList.remove('is-counting');
+                void errorCountdownBar.offsetWidth;
+                errorModal.classList.add('is-counting');
+            };
+
+            const startErrorNumberCountdown = () => {
+                if (!errorCountdownNumber) return;
+
+                const totalMs = ERROR_AUTO_CLOSE_SECONDS * 1000;
+                const start = performance.now();
+                let lastShown = null;
+
+                errorCountdownNumber.textContent = ERROR_AUTO_CLOSE_SECONDS;
+
+                const frame = (now) => {
+                    const elapsed = now - start;
+                    const remainingMs = Math.max(0, totalMs - elapsed);
+                    const shown = Math.ceil(remainingMs / 1000);
+
+                    if (shown !== lastShown) {
+                        lastShown = shown;
+                        errorCountdownNumber.textContent = shown;
+                    }
+
+                    if (remainingMs > 0) {
+                        errorCountdownRaf = requestAnimationFrame(frame);
+                    }
+                };
+
+                errorCountdownRaf = requestAnimationFrame(frame);
+            };
+
+            const hideErrorModal = () => {
+                clearErrorTimers();
+
+                if (!errorModal || errorModal.classList.contains('hidden')) {
+                    return;
+                }
+
+                errorModal.classList.add('opacity-0');
+                errorCard.classList.remove('scale-100', 'opacity-100', 'translate-y-0');
+                errorCard.classList.add('scale-90', 'opacity-0', 'translate-y-3');
+                errorModal.classList.remove('is-visible');
+
+                setTimeout(() => {
+                    errorModal.classList.add('hidden');
+                    errorModal.classList.remove('flex');
+                    resetErrorCountdownBar();
+                }, 300);
+            };
+
+            const showErrorModal = (message) => {
+                if (!errorModal) return;
+
+                clearErrorTimers();
+
+                if (message) {
+                    errorMessageEl.textContent = message;
+                }
+
+                // Reset animasi X
+                errorModal.classList.remove('is-visible');
+                errorCircle.style.animation = 'none';
+                errorLine1.style.animation = 'none';
+                errorLine2.style.animation = 'none';
+                errorCircle.style.strokeDashoffset = '138';
+                errorLine1.style.strokeDashoffset = '26';
+                errorLine2.style.strokeDashoffset = '26';
+
+                // Reset bar dan angka
+                resetErrorCountdownBar();
+                if (errorCountdownNumber) {
+                    errorCountdownNumber.textContent = ERROR_AUTO_CLOSE_SECONDS;
+                }
+
+                // Reset posisi card
+                errorCard.classList.remove('scale-100', 'opacity-100', 'translate-y-0');
+                errorCard.classList.add('scale-90', 'opacity-0', 'translate-y-3');
+
+                // Tampilkan modal
+                errorModal.classList.remove('hidden');
+                errorModal.classList.add('flex');
+                errorModal.classList.remove('opacity-0');
+
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => {
+                        errorCard.classList.remove('scale-90', 'opacity-0', 'translate-y-3');
+                        errorCard.classList.add('scale-100', 'opacity-100', 'translate-y-0');
+                    });
+                });
+
+                // Animasi ikon X
+                setTimeout(() => {
+                    errorCircle.style.animation = '';
+                    errorLine1.style.animation = '';
+                    errorLine2.style.animation = '';
+                    void errorCircle.getBoundingClientRect();
+                    void errorLine1.getBoundingClientRect();
+                    void errorLine2.getBoundingClientRect();
+                    errorModal.classList.add('is-visible');
+                }, 300);
+
+                // Mulai countdown (bar + angka) secara instan
+                setTimeout(() => {
+                    startErrorCountdownVisual();
+                    startErrorNumberCountdown();
+                }, 0); // <--- Diubah menjadi 0ms agar tidak stack
+
+                // Auto close setelah 3 detik (dihitung presisi dari 0ms)
+                errorAutoCloseTimer = setTimeout(() => {
+                    hideErrorModal();
+                }, ERROR_AUTO_CLOSE_SECONDS * 1000);
+            };
+
+            errorCloseBtn?.addEventListener('click', () => {
+                hideErrorModal();
+                passwordInput?.focus();
+                passwordInput?.select();
+            });
+
+            errorModal?.addEventListener('click', (e) => {
+                if (e.target === errorModal) hideErrorModal();
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && errorModal && !errorModal.classList.contains('hidden')) {
+                    hideErrorModal();
+                }
+            });
+
+            // ============================================================
+            // Validasi NIK sebelum submit
+            // ============================================================
+            const validateNik = () => {
+                if (!nikInput) return true;
+                const val = nikInput.value.trim();
+                if (!/^[0-9]+$/.test(val)) {
+                    nikInput.focus();
+                    return false;
+                }
+                return true;
+            };
+
+            // ============================================================
+            // Ambil pesan error dari respons server
+            // ============================================================
+            const extractErrorMessage = async (response) => {
+                try {
+                    const contentType = response.headers.get('content-type') || '';
+                    if (contentType.includes('application/json')) {
+                        const data = await response.json();
+                        if (data?.errors) {
+                            const firstField = Object.keys(data.errors)[0];
+                            if (firstField && Array.isArray(data.errors[firstField]) && data.errors[firstField].length) {
+                                return data.errors[firstField][0];
+                            }
+                        }
+                        if (data?.message) return data.message;
+                    }
+                } catch (_) {}
+                return 'NIK atau password yang Anda masukkan salah. Silakan coba lagi.';
+            };
+
+            // ============================================================
+            // Submit via fetch
+            // ============================================================
             form?.addEventListener('submit', async (e) => {
                 e.preventDefault();
+
+                if (!validateNik()) {
+                    return;
+                }
 
                 submitBtn.disabled = true;
                 spinner.classList.remove('hidden');
@@ -372,7 +781,8 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                         return;
                     }
 
-                    window.location.reload();
+                    const msg = await extractErrorMessage(response);
+                    showErrorModal(msg);
                 } catch (err) {
                     console.error(err);
                     form.submit();
@@ -383,11 +793,13 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                 }
             });
 
-            // ---------- Passkey ----------
+            // ============================================================
+            // Passkey
+            // ============================================================
             const passkeyBtn = document.getElementById('passkey-login-button');
             const errorBox = document.getElementById('passkey-login-error');
 
-            const showError = (msg) => {
+            const showInlineError = (msg) => {
                 errorBox.textContent = msg;
                 errorBox.classList.remove('hidden');
             };
@@ -397,7 +809,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
 
             if (!window.Passkeys) {
                 passkeyBtn.disabled = true;
-                showError('Passkey belum siap. Muat ulang halaman atau periksa build Vite.');
+                showInlineError('Passkey belum siap. Muat ulang halaman atau periksa build Vite.');
                 return;
             }
 
@@ -411,7 +823,7 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                     showSuccessModal();
                 } catch (error) {
                     console.error('Passkey login error:', error);
-                    showError(error?.message || 'Login passkey gagal atau dibatalkan. Silakan coba lagi.');
+                    showErrorModal(error?.message || 'Login passkey gagal atau dibatalkan. Silakan coba lagi.');
                     passkeyBtn.disabled = false;
                     passkeyBtn.textContent = 'Login dengan Passkey';
                 }

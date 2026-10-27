@@ -2,6 +2,7 @@
 
 namespace App\Livewire\PROD\MS\Sample;
 
+use App\Exports\MasterSampleExport;
 use App\Models\PROD\MS\DetailMasterSample;
 use App\Models\PROD\MS\MasterRackSample;
 use App\Models\PROD\MS\MasterSample;
@@ -67,6 +68,12 @@ class MasterSampleManagement extends Component
     public $newCustomerCode = '';
     public $newCustomerName = '';
 
+    // ---- Property baru ----
+    public $exportYear;
+    public $exportMonth;
+    public $expireCategory = 'expired';   // expired | overdue | will_expire | all
+    public $willExpireDays = 30;
+
     protected function rules()
     {
         return [
@@ -105,6 +112,99 @@ class MasterSampleManagement extends Component
         $this->loadOptions();
         $this->initDetail();
         $this->updateTabCounts();
+
+        // Default: bulan & tahun sekarang
+        $this->exportYear  = now()->year;
+        $this->exportMonth = now()->month;
+    }
+
+    public function openExportModal()
+    {
+        if (!auth()->user()->can('view master sample')) {
+            $this->dispatch('notify', message: 'You do not have permission to export!', type: 'error');
+            return;
+        }
+
+        $this->exportYear  = now()->year;
+        $this->exportMonth = now()->month;
+        $this->resetValidation();
+        $this->dispatch('open-modal', 'export-modal');
+    }
+
+    public function exportExcel()
+    {
+        if (!auth()->user()->can('view master sample')) {
+            $this->dispatch('notify', message: 'You do not have permission to export!', type: 'error');
+            return;
+        }
+
+        $this->validate([
+            'exportYear'  => 'nullable|integer|min:2000|max:' . (now()->year + 1),
+            'exportMonth' => 'nullable|integer|min:1|max:12',
+        ], [
+            'exportYear.integer'  => 'Year must be a valid number.',
+            'exportMonth.integer' => 'Month must be a valid number.',
+        ]);
+
+        $exporter = new MasterSampleExport(
+            $this->exportYear,
+            $this->exportMonth,
+            $this->activeTab,
+            $this->search,
+            $this->filterCustomer,
+            $this->filterNameOrMc
+        );
+
+        $total = $exporter->count();
+
+        if ($total === 0) {
+            $period = '';
+            if ($this->exportMonth && $this->exportYear) {
+                $period = ' pada periode ' . Carbon::createFromDate($this->exportYear, $this->exportMonth, 1)->format('F Y');
+            } elseif ($this->exportYear) {
+                $period = ' pada tahun ' . $this->exportYear;
+            } elseif ($this->exportMonth) {
+                $period = ' pada bulan ' . Carbon::create()->month($this->exportMonth)->format('F');
+            }
+
+            $this->dispatch(
+                'notify',
+                message: 'Tidak ada sample yang expired' . $period . ' dengan filter/tab yang dipilih. Export dibatalkan.',
+                type: 'error'
+            );
+            return;
+        }
+
+        $fileName = 'master-sample-expired';
+        if ($this->exportYear && $this->exportMonth) {
+            $fileName .= '-' . Carbon::createFromDate($this->exportYear, $this->exportMonth, 1)->format('Y-m');
+        } elseif ($this->exportYear) {
+            $fileName .= '-' . $this->exportYear;
+        }
+        $fileName .= '-' . now()->format('His') . '.xlsx';
+
+        $this->dispatch('close-modal', 'export-modal');
+        $this->dispatch('notify', message: "Exporting {$total} records...", type: 'success');
+
+        return $exporter->download($fileName);
+    }
+
+    public function updatedExportYear()  { $this->dispatch('refresh-export-count'); }
+    public function updatedExportMonth() { $this->dispatch('refresh-export-count'); }
+
+    /**
+     * Dipakai di blade untuk preview total data
+     */
+    public function getPreviewCountProperty(): int
+    {
+        return (new MasterSampleExport(
+            $this->exportYear,
+            $this->exportMonth,
+            $this->activeTab,
+            $this->search,
+            $this->filterCustomer,
+            $this->filterNameOrMc
+        ))->count();
     }
 
     // Tambahkan method untuk menambah customer baru
