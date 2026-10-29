@@ -16,10 +16,10 @@ class StencilDashboard extends Component
             ->get()
             ->groupBy('line_name');
 
-        $jigs = collect();
+        $jigs = [];
         for ($i = 1; $i <= 17; $i++) {
             $line = "SMT $i";
-            $jigs[$line] = $allJigs[$line] ?? collect();
+            $jigs[$line] = ($allJigs[$line] ?? collect())->values()->toArray();
         }
 
         return $jigs;
