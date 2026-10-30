@@ -26,6 +26,7 @@ use App\Livewire\HR\Violation\ViolationEmployeeCreate;
 use App\Livewire\HR\Violation\ViolationEmployeeEdit;
 use App\Livewire\HR\Violation\ViolationEmployeeManagement;
 use App\Livewire\HR\Violation\ViolationReport;
+use App\Livewire\Inventory\FloorPlanBuilder;
 use App\Livewire\NotificationManager;
 use App\Livewire\PROD\Absence\AbsenceControlGenerate;
 use App\Livewire\PROD\Absence\AbsenceControlIndex;
@@ -86,11 +87,11 @@ use App\Livewire\Ticket\TicketView;
 use App\Livewire\User\Permission\PermissionManagement;
 use App\Livewire\User\Role\RoleManagement;
 use App\Livewire\User\UserManagement;
+use App\Livewire\UTY\DailyReportUtilityManagement;
 use App\Models\ESD\Locker\UniformTransaction;
 use App\Services\MicrosoftGraphService;
 use App\Services\WhatsAppService;
 use Illuminate\Support\Facades\Route;
-use App\Livewire\Inventory\FloorPlanBuilder;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -257,7 +258,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/prod/patrol/result-patrol/create', ResultPatrolForm::class)->name('prod.patrol.result-patrol.create');
     Route::get('/prod/patrol/result-patrol/{id}/edit', ResultPatrolForm::class)->name('prod.patrol.result-patrol.edit');
 
+    // Floor Plan
     Route::get('/floor-plan', FloorPlanBuilder::class);
+
+    // Utility
+    Route::get('/uty/daily-report-utility', DailyReportUtilityManagement::class)->name('uty.daily-report-utility');
+
 });
 
 // Microsoft Approvall
