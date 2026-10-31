@@ -27,6 +27,8 @@
 <?php # [BlazeFolded]:{flux::label}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/label.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::label}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/label.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::label}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/label.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::textarea}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/textarea.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::textarea}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/textarea.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::label}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/label.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::select.option}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/select/option/index.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::select}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/select/index.blade.php}:{1776985208} ?>
@@ -34,7 +36,9 @@
 <?php # [BlazeFolded]:{flux::label}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/label.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::label}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/label.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::label}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/label.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::textarea}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/textarea.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::label}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/label.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::textarea}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/textarea.blade.php}:{1776985208} ?>
 <div class="p-1 space-y-2">
     <!-- Breadcrumbs -->
     <?php ob_start(); ?><div class="flex" data-flux-breadcrumbs>
@@ -943,10 +947,22 @@
     
     </ui-label>
 <?php echo ltrim(ob_get_clean()); ?>
-                                        <?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/textarea.blade.php', $__blaze->compiledPath.'/94345100219c384088bc615bcd8fde6c.php'); ?>
-<?php $__blaze->pushData(['wire:model' => 'remarks','rows' => '3','placeholder' => 'Enter remarks...']); ?>
-<?php _94345100219c384088bc615bcd8fde6c($__blaze, ['wire:model' => 'remarks','rows' => '3','placeholder' => 'Enter remarks...'], [], [], [], $__this ?? (isset($this) ? $this : null)); ?>
-<?php $__blaze->popData(); ?>
+                                        <?php ob_start(); ?><textarea
+        class="block p-3 w-full shadow-xs disabled:shadow-none border rounded-lg bg-white dark:bg-white/10 dark:disabled:bg-white/[7%] resize-y text-base sm:text-sm text-zinc-700 disabled:text-zinc-500 placeholder-zinc-400 disabled:placeholder-zinc-400/70 dark:text-zinc-300 dark:disabled:text-zinc-400 dark:placeholder-zinc-400 dark:disabled:placeholder-zinc-500 border-zinc-200 border-b-zinc-300/80 dark:border-white/10 data-invalid:shadow-none data-invalid:border-red-500 dark:data-invalid:border-red-500" wire:model="remarks" placeholder="Enter remarks..."
+        rows="3"
+        style="resize: vertical; "
+         name="remarks"         <?php if (isset($scope)) $__scope = $scope; ?><?php $scope = array (
+  'name' => 'remarks',
+  'invalid' => false,
+); ?>
+        <?php if ($scope['invalid'] || ($scope['name'] && $errors->has($scope['name']))): ?>
+        aria-invalid="true" data-invalid
+        <?php endif; ?>
+        <?php if (isset($__scope)) { $scope = $__scope; unset($__scope); } ?>
+        data-flux-control
+        data-flux-textarea
+    ></textarea>
+<?php echo ltrim(ob_get_clean()); ?>
                                     </div>
                                 </div>
                             </div>
@@ -981,10 +997,21 @@
                                             <div x-show="Array.from($wire.disposition || []).includes('<?php echo e($option); ?>')" 
                                                 x-cloak 
                                                 class="ml-6 mt-2 transition-all duration-200">
-                                                <?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/textarea.blade.php', $__blaze->compiledPath.'/94345100219c384088bc615bcd8fde6c.php'); ?>
-<?php $__blaze->pushData(['wire:model' => 'disposition_details.'.e($option),'rows' => '2','placeholder' => 'Additional details for \''.e($option).'\' (optional)...','class' => 'text-sm']); ?>
-<?php _94345100219c384088bc615bcd8fde6c($__blaze, ['wire:model' => 'disposition_details.'.e($option),'rows' => '2','placeholder' => 'Additional details for \''.e($option).'\' (optional)...','class' => 'text-sm'], [], [], [], $__this ?? (isset($this) ? $this : null)); ?>
-<?php $__blaze->popData(); ?>
+                                                <?php ob_start(); ?><textarea
+        class="block p-3 w-full shadow-xs disabled:shadow-none border rounded-lg bg-white dark:bg-white/10 dark:disabled:bg-white/[7%] resize-y text-base sm:text-sm text-zinc-700 disabled:text-zinc-500 placeholder-zinc-400 disabled:placeholder-zinc-400/70 dark:text-zinc-300 dark:disabled:text-zinc-400 dark:placeholder-zinc-400 dark:disabled:placeholder-zinc-500 border-zinc-200 border-b-zinc-300/80 dark:border-white/10 data-invalid:shadow-none data-invalid:border-red-500 dark:data-invalid:border-red-500 text-sm" wire:model="disposition_details.<?php echo e($option); ?>" placeholder="Additional details for '<?php echo e($option); ?>' (optional)..."        rows="2"
+        style="resize: vertical; "
+         name="disposition_details.<?php echo e($option); ?>"         <?php if (isset($scope)) $__scope = $scope; ?><?php $scope = array (
+  'name' => 'disposition_details.'.e($option),
+  'invalid' => false,
+); ?>
+        <?php if ($scope['invalid'] || ($scope['name'] && $errors->has($scope['name']))): ?>
+        aria-invalid="true" data-invalid
+        <?php endif; ?>
+        <?php if (isset($__scope)) { $scope = $__scope; unset($__scope); } ?>
+        data-flux-control
+        data-flux-textarea
+    ></textarea>
+<?php echo ltrim(ob_get_clean()); ?>
                                             </div>
                                         </div>
                                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::endLoop(); ?><?php endif; ?><?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::closeLoop(); ?><?php endif; ?>
@@ -1313,10 +1340,22 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
     
     </ui-label>
 <?php echo ltrim(ob_get_clean()); ?>
-                                                    <?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/textarea.blade.php', $__blaze->compiledPath.'/94345100219c384088bc615bcd8fde6c.php'); ?>
-<?php $__blaze->pushData(['wire:model' => 'remarks','rows' => '3','placeholder' => 'Enter remarks...']); ?>
-<?php _94345100219c384088bc615bcd8fde6c($__blaze, ['wire:model' => 'remarks','rows' => '3','placeholder' => 'Enter remarks...'], [], [], [], $__this ?? (isset($this) ? $this : null)); ?>
-<?php $__blaze->popData(); ?>
+                                                    <?php ob_start(); ?><textarea
+        class="block p-3 w-full shadow-xs disabled:shadow-none border rounded-lg bg-white dark:bg-white/10 dark:disabled:bg-white/[7%] resize-y text-base sm:text-sm text-zinc-700 disabled:text-zinc-500 placeholder-zinc-400 disabled:placeholder-zinc-400/70 dark:text-zinc-300 dark:disabled:text-zinc-400 dark:placeholder-zinc-400 dark:disabled:placeholder-zinc-500 border-zinc-200 border-b-zinc-300/80 dark:border-white/10 data-invalid:shadow-none data-invalid:border-red-500 dark:data-invalid:border-red-500" wire:model="remarks" placeholder="Enter remarks..."
+        rows="3"
+        style="resize: vertical; "
+         name="remarks"         <?php if (isset($scope)) $__scope = $scope; ?><?php $scope = array (
+  'name' => 'remarks',
+  'invalid' => false,
+); ?>
+        <?php if ($scope['invalid'] || ($scope['name'] && $errors->has($scope['name']))): ?>
+        aria-invalid="true" data-invalid
+        <?php endif; ?>
+        <?php if (isset($__scope)) { $scope = $__scope; unset($__scope); } ?>
+        data-flux-control
+        data-flux-textarea
+    ></textarea>
+<?php echo ltrim(ob_get_clean()); ?>
                                                 </div>
                                             </div>
                                         </template>
@@ -1757,10 +1796,22 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
     
     </ui-label>
 <?php echo ltrim(ob_get_clean()); ?>
-                    <?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/textarea.blade.php', $__blaze->compiledPath.'/94345100219c384088bc615bcd8fde6c.php'); ?>
-<?php $__blaze->pushData(['wire:model' => 'deleteReason','rows' => '3','placeholder' => 'Please provide a reason why this NCP is being deleted...','class' => 'w-full']); ?>
-<?php _94345100219c384088bc615bcd8fde6c($__blaze, ['wire:model' => 'deleteReason','rows' => '3','placeholder' => 'Please provide a reason why this NCP is being deleted...','class' => 'w-full'], [], [], [], $__this ?? (isset($this) ? $this : null)); ?>
-<?php $__blaze->popData(); ?>
+                    <?php ob_start(); ?><textarea
+        class="block p-3 w-full shadow-xs disabled:shadow-none border rounded-lg bg-white dark:bg-white/10 dark:disabled:bg-white/[7%] resize-y text-base sm:text-sm text-zinc-700 disabled:text-zinc-500 placeholder-zinc-400 disabled:placeholder-zinc-400/70 dark:text-zinc-300 dark:disabled:text-zinc-400 dark:placeholder-zinc-400 dark:disabled:placeholder-zinc-500 border-zinc-200 border-b-zinc-300/80 dark:border-white/10 data-invalid:shadow-none data-invalid:border-red-500 dark:data-invalid:border-red-500 w-full" wire:model="deleteReason" placeholder="Please provide a reason why this NCP is being deleted..."
+        rows="3"
+        style="resize: vertical; "
+         name="deleteReason"         <?php if (isset($scope)) $__scope = $scope; ?><?php $scope = array (
+  'name' => 'deleteReason',
+  'invalid' => false,
+); ?>
+        <?php if ($scope['invalid'] || ($scope['name'] && $errors->has($scope['name']))): ?>
+        aria-invalid="true" data-invalid
+        <?php endif; ?>
+        <?php if (isset($__scope)) { $scope = $__scope; unset($__scope); } ?>
+        data-flux-control
+        data-flux-textarea
+    ></textarea>
+<?php echo ltrim(ob_get_clean()); ?>
                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['deleteReason'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :

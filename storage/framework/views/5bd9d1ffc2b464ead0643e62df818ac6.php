@@ -1,6 +1,7 @@
 <?php # [BlazeFolded]:{flux::breadcrumbs.item}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/breadcrumbs/item.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::breadcrumbs.item}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/breadcrumbs/item.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::breadcrumbs}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/breadcrumbs/index.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::input}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/input/index.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::tooltip}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/tooltip/index.blade.php}:{1776985208} ?>
@@ -18,6 +19,7 @@
 <?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
+<?php # [BlazeFolded]:{flux::modal}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/modal/index.blade.php}:{1776985208} ?>
 <section class="w-full">
     <?php if (isset($component)) { $__componentOriginal2991782b15caf2333143ee45e5bacc85 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal2991782b15caf2333143ee45e5bacc85 = $attributes; } ?>
@@ -99,10 +101,50 @@
                     <div class="flex items-center gap-4">
                         <!-- Search Bar -->
                         <div class="w-64">
-                            <?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/input/index.blade.php', $__blaze->compiledPath.'/f9ce25dced5c86c906351e8ca96b9cbb.php'); ?>
-<?php $__blaze->pushData(['wire:model.live.debounce.300ms' => 'search','placeholder' => 'Search by Register No...','icon' => 'magnifying-glass','clearable' => true]); ?>
-<?php _f9ce25dced5c86c906351e8ca96b9cbb($__blaze, ['wire:model.live.debounce.300ms' => 'search','placeholder' => 'Search by Register No...','icon' => 'magnifying-glass','clearable' => true], [], ['clearable'], [], $__this ?? (isset($this) ? $this : null)); ?>
-<?php $__blaze->popData(); ?>
+                            <?php ob_start(); ?><div class="w-full relative block group/input" data-flux-input>
+                            <div class="pointer-events-none absolute top-0 bottom-0 border-s border-transparent flex items-center justify-center text-xs text-zinc-400/75 dark:text-white/60 ps-3 start-0">
+                    <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd"/>
+</svg>
+
+                        </div>
+            
+            <input
+                type="text"
+                
+                class="w-full border rounded-lg block disabled:shadow-none dark:shadow-none appearance-none text-base sm:text-sm py-2 h-10 leading-[1.375rem] ps-10 pe-10 bg-white dark:bg-white/10 dark:disabled:bg-white/[7%] text-zinc-700 disabled:text-zinc-500 placeholder-zinc-400 disabled:placeholder-zinc-400/70 dark:text-zinc-300 dark:disabled:text-zinc-400 dark:placeholder-zinc-400 dark:disabled:placeholder-zinc-500 shadow-xs border-zinc-200 border-b-zinc-300/80 disabled:border-b-zinc-200 dark:border-white/10 dark:disabled:border-white/5 data-invalid:shadow-none data-invalid:border-red-500 dark:data-invalid:border-red-500 disabled:data-invalid:border-red-500 dark:disabled:data-invalid:border-red-500" wire:model.live.debounce.300ms="search" placeholder="Search by Register No..."
+                 name="search"                                                 <?php if (isset($scope)) $__scope = $scope; ?><?php $scope = array (
+  'name' => 'search',
+  'invalid' => false,
+); ?>
+                <?php if ($scope['invalid'] || ($scope['name'] && $errors->has($scope['name']))): ?>
+                aria-invalid="true" data-invalid
+                <?php endif; ?>
+                <?php if (isset($__scope)) { $scope = $__scope; unset($__scope); } ?>
+                data-flux-control
+                data-flux-group-target
+                 wire:loading.class="pe-16"                  wire:target="search"             >
+
+                            <div class="absolute top-0 bottom-0 flex items-center gap-x-1.5 pe-2 border-e border-transparent end-0 text-xs text-zinc-400">
+                    
+                                            <svg class="shrink-0 [:where(&amp;)]:size-5 animate-spin" wire:loading="" wire:target="search" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true" data-slot="icon">
+    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+</svg>
+                            
+                                            <button type="button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-8 text-sm rounded-md w-8 inline-flex -ms-1.5 -me-1.5 bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white      -me-1 [[data-flux-input]:has(input:placeholder-shown)_&amp;]:hidden [[data-flux-input]:has(input[disabled])_&amp;]:hidden" data-flux-button="data-flux-button" x-data="fluxInputClearable" x-on:click="clear()" tabindex="-1" aria-label="Clear input" data-flux-clear-button="data-flux-clear-button">
+        <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"/>
+</svg>
+    </button>
+                    
+                    
+                    
+                    
+                    
+                                    </div>
+                    </div>
+<?php echo ltrim(ob_get_clean()); ?>
                         </div>
                         
                         <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('create stencil')): ?>
@@ -449,13 +491,20 @@
 <?php endif; ?>
 
     <!-- MODAL ACTIVITY LOG -->
-    <?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/modal/index.blade.php', $__blaze->compiledPath.'/7a1a584bff1c48ca2ab445608144ce83.php'); ?>
-<?php if (isset($__slots7a1a584bff1c48ca2ab445608144ce83)) { $__slotsStack7a1a584bff1c48ca2ab445608144ce83[] = $__slots7a1a584bff1c48ca2ab445608144ce83; } ?>
-<?php if (isset($__attrs7a1a584bff1c48ca2ab445608144ce83)) { $__attrsStack7a1a584bff1c48ca2ab445608144ce83[] = $__attrs7a1a584bff1c48ca2ab445608144ce83; } ?>
-<?php $__attrs7a1a584bff1c48ca2ab445608144ce83 = ['wire:model' => 'showActivityModal','class' => 'w-full max-w-5xl']; ?>
-<?php $__slots7a1a584bff1c48ca2ab445608144ce83 = []; ?>
-<?php $__blaze->pushData($__attrs7a1a584bff1c48ca2ab445608144ce83); ?>
-<?php ob_start(); ?>
+    <?php ob_start(); ?><ui-modal wire:model.self="showActivityModal" data-flux-modal>
+    
+    <dialog
+        wire:ignore.self 
+        class="p-6 [:where(&amp;)]:max-w-xl [:where(&amp;)]:min-w-xs shadow-lg rounded-xl bg-white dark:bg-zinc-800 ring ring-black/5 dark:ring-zinc-700 shadow-lg rounded-xl w-full max-w-5xl"
+                                <?php if (isset($scope)) $__scope = $scope; ?><?php $scope = array (
+  'name' => NULL,
+); ?>
+        x-data="fluxModal(<?php echo \Illuminate\Support\Js::from($scope['name'])->toHtml() ?>, <?php echo \Illuminate\Support\Js::from(isset($__livewire) ? $__livewire->getId() : null)->toHtml() ?>)"
+        <?php if (isset($__scope)) { $scope = $__scope; unset($__scope); } ?>
+        x-on:modal-show.document="handleShow($event)"
+        x-on:modal-close.document="handleClose($event)"
+    >
+                    <?php ob_start(); ?>
         <div class="flex flex-col" style="height: auto; max-height: 85vh; overflow: hidden;">
             <!-- Modal Header -->
             <div class="flex justify-between items-center px-6 py-4 border-b border-zinc-200 dark:border-zinc-700 flex-shrink-0">
@@ -738,12 +787,21 @@
             </div>
             <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
         </div>
-    <?php $__slots7a1a584bff1c48ca2ab445608144ce83['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
-<?php $__blaze->pushSlots($__slots7a1a584bff1c48ca2ab445608144ce83); ?>
-<?php _7a1a584bff1c48ca2ab445608144ce83($__blaze, $__attrs7a1a584bff1c48ca2ab445608144ce83, $__slots7a1a584bff1c48ca2ab445608144ce83, [], [], $__this ?? (isset($this) ? $this : null)); ?>
-<?php if (! empty($__slotsStack7a1a584bff1c48ca2ab445608144ce83)) { $__slots7a1a584bff1c48ca2ab445608144ce83 = array_pop($__slotsStack7a1a584bff1c48ca2ab445608144ce83); } ?>
-<?php if (! empty($__attrsStack7a1a584bff1c48ca2ab445608144ce83)) { $__attrs7a1a584bff1c48ca2ab445608144ce83 = array_pop($__attrsStack7a1a584bff1c48ca2ab445608144ce83); } ?>
-<?php $__blaze->popData(); ?>
+    <?php echo trim(ob_get_clean()); ?>
+
+
+                            <div class="absolute top-0 end-0 mt-4 me-4">
+                    <ui-close data-flux-modal-close >
+    <button type="button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-8 text-sm rounded-md w-8 inline-flex  bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-800 dark:text-white      text-zinc-400! hover:text-zinc-800! dark:text-zinc-500! dark:hover:text-white!" data-flux-button="data-flux-button" aria-label="Close modal">
+        <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"/>
+</svg>
+    </button>
+</ui-close>
+                </div>
+                        </dialog>
+</ui-modal>
+<?php echo ltrim(ob_get_clean()); ?>
 
     <!-- MODAL DELETE STENCIL -->
     <div x-data="{ open: false, stencilId: null }" 

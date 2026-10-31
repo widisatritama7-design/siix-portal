@@ -49,7 +49,9 @@ class DailyReportUtilityManagement extends Component implements HasMingles
         ];
 
         $paginator = DailyReportUtility::query()
-            ->select('id', 'shift', 'report_category', 'problem_desc', 'photo_before', 'action_desc', 'photo_after', 'status', 'created_at', 'updated_at')
+            ->with('creator')
+            // TAMBAHKAN 'created_by' DI BAWAH INI
+            ->select('id', 'shift', 'report_category', 'problem_desc', 'photo_before', 'action_desc', 'photo_after', 'status', 'created_by', 'created_at', 'updated_at')
             ->orderBy('id', 'desc')
             ->paginate($this->perPage, ['*'], 'page', $this->page);
 
@@ -59,6 +61,7 @@ class DailyReportUtilityManagement extends Component implements HasMingles
                     'id'              => $r->id,
                     'shift'           => $r->shift,
                     'report_category' => $r->report_category,
+                    'pic_name' => $r->creator ? $r->creator->name : '-',
                     'problem_desc'    => $r->problem_desc,
                     'photo_before'       => collect($r->photo_before ?? [])->map(fn ($p) => Storage::url($p))->toArray(),
                     'photo_before_paths' => $r->photo_before ?? [],
@@ -84,7 +87,7 @@ class DailyReportUtilityManagement extends Component implements HasMingles
 
             'options' => [
                 'shifts'     => [1, 2, 3],
-                'categories' => ['Schedule PM', 'Abnormality'],
+                'categories' => ['Schedule PM', 'Abnormality', 'Routine Check'],
                 'statuses'   => ['Open', 'Under Maintenance', 'On Progress', 'Closed'],
             ],
         ];
@@ -113,8 +116,14 @@ class DailyReportUtilityManagement extends Component implements HasMingles
         if (!in_array($shift, [1, 2, 3], true)) {
             return ['success' => false, 'message' => 'Invalid shift'];
         }
-        if (!in_array($reportCategory, ['Schedule PM', 'Abnormality'], true)) {
+        if (!in_array($reportCategory, ['Schedule PM', 'Abnormality', 'Routine Check'], true)) {
             return ['success' => false, 'message' => 'Invalid report category'];
+        }
+
+        // --- TAMBAHKAN VALIDASI INI ---
+        $cleanProblemCheck = trim(strip_tags($payload['problem_desc'] ?? ''));
+        if ($cleanProblemCheck === '') {
+            return ['success' => false, 'message' => 'Problem Description is required.'];
         }
 
         // Store new uploaded files

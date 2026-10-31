@@ -87,6 +87,7 @@ use App\Livewire\Ticket\TicketView;
 use App\Livewire\User\Permission\PermissionManagement;
 use App\Livewire\User\Role\RoleManagement;
 use App\Livewire\User\UserManagement;
+use App\Livewire\UTY\DailyReportDashboard;
 use App\Livewire\UTY\DailyReportUtilityManagement;
 use App\Models\ESD\Locker\UniformTransaction;
 use App\Services\MicrosoftGraphService;
@@ -263,6 +264,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Utility
     Route::get('/uty/daily-report-utility', DailyReportUtilityManagement::class)->name('uty.daily-report-utility');
+    Route::get('/uty/daily-report-dashboard', DailyReportDashboard::class)->name('uty.daily-report-dashboard');
 
 });
 

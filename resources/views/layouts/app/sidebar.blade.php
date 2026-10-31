@@ -423,6 +423,16 @@
                             <span class="truncate">Ticket Dashboard</span>
                         </a>
                         @endcan
+                        @can('view daily report utility')
+                        <a href="{{ route('uty.daily-report-dashboard') }}" wire:navigate
+                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('uty.daily-report-dashboard') ? 'menu-active' : '' }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gauge-icon lucide-gauge w-4 h-4">
+                                <path d="m12 14 4-4"/>
+                                <path d="M3.34 19a10 10 0 1 1 17.32 0"/>
+                            </svg>
+                            <span class="truncate">Utility Dashboard</span>
+                        </a>
+                        @endcan
                         @can('view inbox')
                         <a href="{{ route('inbox') }}" wire:navigate
                         class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('inbox') ? 'menu-active' : '' }}">

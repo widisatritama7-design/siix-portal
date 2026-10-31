@@ -57,7 +57,7 @@ class DailyReportUtilityExport
             if ($aCount > $maxAfter) $maxAfter = $aCount;
         }
 
-        // 3. Set Header Dinamis (Ubah 'Created By' jadi 'PIC')
+        // 3. Set Header Dinamis
         $headers = [
             'ID', 'Date', 'PIC', 'Shift', 'Category', 'Problem', 'Action', 'Status'
         ];
@@ -116,9 +116,10 @@ class DailyReportUtilityExport
             $sheet->getStyle('F' . $row)->getAlignment()->setWrapText(true);
             $sheet->getStyle('G' . $row)->getAlignment()->setWrapText(true);
 
-            // --- INSERT GAMBAR BEFORE (Mulai Kolom I) ---
+            // --- INSERT GAMBAR BEFORE ---
+            // Karena kolom teks ada 8 (A-H), maka gambar mulai dari kolom ke-9 (I)
             $beforePhotos = is_array($item->photo_before) ? $item->photo_before : [];
-            $currentCol = 9; // Mulai dari kolom I (karena kolom A-H sudah terisi teks)
+            $currentCol = 9; 
             for ($i = 0; $i < $maxBefore; $i++) {
                 $colLetter = Coordinate::stringFromColumnIndex($currentCol);
                 if (isset($beforePhotos[$i])) {
@@ -138,7 +139,7 @@ class DailyReportUtilityExport
                 $currentCol++;
             }
 
-            // --- INSERT GAMBAR AFTER (Lanjut setelah Before) ---
+            // --- INSERT GAMBAR AFTER ---
             $afterPhotos = is_array($item->photo_after) ? $item->photo_after : [];
             for ($i = 0; $i < $maxAfter; $i++) {
                 $colLetter = Coordinate::stringFromColumnIndex($currentCol);
@@ -168,7 +169,7 @@ class DailyReportUtilityExport
             $sheet->getColumnDimension($colLetter)->setAutoSize(true);
         }
         
-        // Batasi lebar kolom teks
+        // Batasi lebar kolom teks Problem & Action
         $sheet->getColumnDimension('F')->setWidth(35);
         $sheet->getColumnDimension('G')->setWidth(35);
 

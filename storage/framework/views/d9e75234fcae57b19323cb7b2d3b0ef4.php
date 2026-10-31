@@ -427,6 +427,16 @@
                             <span class="truncate">Ticket Dashboard</span>
                         </a>
                         <?php endif; ?>
+                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view daily report utility')): ?>
+                        <a href="<?php echo e(route('uty.daily-report-dashboard')); ?>" wire:navigate
+                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('uty.daily-report-dashboard') ? 'menu-active' : ''); ?>">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-gauge-icon lucide-gauge w-4 h-4">
+                                <path d="m12 14 4-4"/>
+                                <path d="M3.34 19a10 10 0 1 1 17.32 0"/>
+                            </svg>
+                            <span class="truncate">Utility Dashboard</span>
+                        </a>
+                        <?php endif; ?>
                         <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view inbox')): ?>
                         <a href="<?php echo e(route('inbox')); ?>" wire:navigate
                         class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('inbox') ? 'menu-active' : ''); ?>">
@@ -514,6 +524,79 @@
                                 </svg>
                                 <span class="truncate">MTC Monitoring</span>
                             </a>
+                            <?php endif; ?>
+
+                            <!-- ========== SUB GROUP: UTILITY MONITORING ========== -->
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->any(['view daily report utility'])): ?>
+                            <div class="relative w-full">
+                                <button @click="toggleGroup('utilityMonitoring')"
+                                        class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                    <div class="flex items-center gap-2">
+                                        <!-- Icon Utility (bolt) -->
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                            <path fill-rule="evenodd" d="M14.615 1.595a.75.75 0 0 1 .359.852L12.982 9.75h7.268a.75.75 0 0 1 .548 1.262l-10.5 11.25a.75.75 0 0 1-1.272-.71l1.992-7.302H3.75a.75.75 0 0 1-.548-1.262l10.5-11.25a.75.75 0 0 1 .913-.143Z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                            class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">Utility Monitoring</span>
+                                    </div>
+                                    <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                        class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0"
+                                        :class="{'rotate-180': groups.utilityMonitoring.open}"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </button>
+
+                                <!-- Sub-group: Daily Report -->
+                                <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.utilityMonitoring.open"
+                                    x-collapse
+                                    class="mt-1 relative">
+                                    <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+
+                                    <div class="space-y-1 ml-[24px]">
+                                        <div class="relative w-full">
+                                            <button @click="toggleGroup('dailyReportUtility')"
+                                                    class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                                <div class="flex items-center gap-2">
+                                                    <!-- Icon Daily Report (clipboard) -->
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                        <path fill-rule="evenodd" d="M7.502 6h7.128A3.375 3.375 0 0 1 18 9.375v9.375a3 3 0 0 0 3-3V6.108c0-1.505-1.125-2.811-2.664-2.94a48.972 48.972 0 0 0-.673-.05A3 3 0 0 0 15 1.5h-1.5a3 3 0 0 0-2.663 1.618c-.225.015-.45.032-.673.05C8.662 3.295 7.554 4.542 7.502 6ZM13.5 3A1.5 1.5 0 0 0 12 4.5h4.5A1.5 1.5 0 0 0 15 3h-1.5Z" clip-rule="evenodd" />
+                                                        <path fill-rule="evenodd" d="M3 9.375C3 8.339 3.84 7.5 4.875 7.5h9.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 0 1 3 20.625V9.375Zm9.586 4.594a.75.75 0 0 0-1.172-.938l-2.476 3.096-.908-.907a.75.75 0 0 0-1.06 1.06l1.5 1.5a.75.75 0 0 0 1.116-.062l3-3.75Z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    <span x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                        class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">Daily Report</span>
+                                                </div>
+                                                <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                    class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0"
+                                                    :class="{'rotate-180': groups.dailyReportUtility.open}"
+                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                </svg>
+                                            </button>
+
+                                            <!-- Sub-group items: Report -->
+                                            <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.dailyReportUtility.open"
+                                                x-collapse
+                                                class="mt-1 relative">
+                                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+
+                                                <div class="space-y-1 ml-[24px]">
+                                                    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view daily report utility')): ?>
+                                                    <a href="<?php echo e(route('uty.daily-report-utility')); ?>" wire:navigate
+                                                    class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('uty.daily-report-utility') ? 'menu-active' : ''); ?>">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                            <path fill-rule="evenodd" d="M7.502 6h7.128A3.375 3.375 0 0 1 18 9.375v9.375a3 3 0 0 0 3-3V6.108c0-1.505-1.125-2.811-2.664-2.94a48.972 48.972 0 0 0-.673-.05A3 3 0 0 0 15 1.5h-1.5a3 3 0 0 0-2.663 1.618c-.225.015-.45.032-.673.05C8.662 3.295 7.554 4.542 7.502 6ZM13.5 3A1.5 1.5 0 0 0 12 4.5h4.5A1.5 1.5 0 0 0 15 3h-1.5Z" clip-rule="evenodd" />
+                                                            <path fill-rule="evenodd" d="M3 9.375C3 8.339 3.84 7.5 4.875 7.5h9.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 0 1 3 20.625V9.375Zm9.586 4.594a.75.75 0 0 0-1.172-.938l-2.476 3.096-.908-.907a.75.75 0 0 0-1.06 1.06l1.5 1.5a.75.75 0 0 0 1.116-.062l3-3.75Z" clip-rule="evenodd" />
+                                                        </svg>
+                                                        <span class="truncate">Report</span>
+                                                    </a>
+                                                    <?php endif; ?>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <?php endif; ?>
                             
                             <!-- Locker Monitoring - Hanya untuk yang punya view locker -->
@@ -1841,6 +1924,8 @@ unset($__split);
                     absenceMonitoring: { open: false },
                     lockerMonitoring: { open: false },
                     patrolMonitoring: { open: false },
+                    utilityMonitoring: { open: false },
+                    dailyReportUtility: { open: false },
                 },
                 
                 init() {
@@ -1897,7 +1982,7 @@ unset($__split);
                     });
 
                     // 5. Load state group menu (accordion)
-                    const groupNames = ['home', 'maintenance', 'production', 'dcc', 'hr', 'hrMaster', 'hrForm', 'hrReport', 'ticketing', 'settings', 'auth', 'wipMonitoring', 'msMonitoring', 'fctMonitoring', 'qaqc', 'qaqcMaster', 'qaqcForm', 'qaqcReport', 'uniformMonitoring', 'absenceMonitoring', 'lockerMonitoring', 'patrolMonitoring'];
+                    const groupNames = ['home', 'maintenance', 'production', 'dcc', 'hr', 'hrMaster', 'hrForm', 'hrReport', 'ticketing', 'settings', 'auth', 'wipMonitoring', 'msMonitoring', 'fctMonitoring', 'qaqc', 'qaqcMaster', 'qaqcForm', 'qaqcReport', 'uniformMonitoring', 'absenceMonitoring', 'lockerMonitoring', 'patrolMonitoring', 'utilityMonitoring', 'dailyReportUtility'];
                     groupNames.forEach(groupName => {
                         const saved = localStorage.getItem(`sidebar_group_${groupName}`);
                         if (saved !== null) {

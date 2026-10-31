@@ -441,6 +441,11 @@ export default function DailyReportUtility({ wire, mingleData }) {
     const canEditRow   = (row) => permissions.canEdit && row.status !== 'Closed'
     const canDeleteRow = (row) => permissions.canDelete && row.status === 'Open'
     const canUpdateStatusRow = (row) => row.status !== 'Closed'
+    const isFormValid = () => {
+        // Shift & Category ada default, cek Problem Description
+        const isProblemEmpty = !form.problem_desc || form.problem_desc === '<p></p>' || form.problem_desc.trim() === ''
+        return form.shift && form.report_category && !isProblemEmpty
+    }
 
     return (
         <div className="p-1 space-y-2">
@@ -613,6 +618,7 @@ export default function DailyReportUtility({ wire, mingleData }) {
                                 <tr>
                                     <th className="px-3 py-3 text-left text-xs uppercase tracking-wider font-semibold text-zinc-500">#</th>
                                     <th className="px-3 py-3 text-left text-xs uppercase tracking-wider font-semibold text-zinc-500">Date</th>
+                                    <th className="px-3 py-3 text-left text-xs uppercase tracking-wider font-semibold text-zinc-500">PIC</th>
                                     <th className="px-3 py-3 text-left text-xs uppercase tracking-wider font-semibold text-zinc-500">Shift</th>
                                     <th className="px-3 py-3 text-left text-xs uppercase tracking-wider font-semibold text-zinc-500">Category</th>
                                     <th className="px-3 py-3 text-left text-xs uppercase tracking-wider font-semibold text-zinc-500">Problem</th>
@@ -628,29 +634,45 @@ export default function DailyReportUtility({ wire, mingleData }) {
                                             {(pagination.current_page - 1) * pagination.per_page + idx + 1}
                                         </td>
                                         <td className="px-3 py-3 text-zinc-600 dark:text-zinc-400 text-xs whitespace-nowrap">{row.created_at}</td>
-                                        <td className="px-3 py-3 font-semibold text-zinc-800 dark:text-zinc-100 whitespace-nowrap">Shift {row.shift}</td>
+                                        <td className="px-3 py-3 text-zinc-600 dark:text-zinc-400 text-xs whitespace-nowrap">{row.pic_name}</td>
+                                        <td className="px-3 py-3 text-zinc-600 dark:text-zinc-400 text-xs whitespace-nowrap">Shift {row.shift}</td>
                                         <td className="px-3 py-3 whitespace-nowrap">
-                                            {row.report_category === 'Schedule PM' ? (
-                                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 text-xs font-semibold border border-blue-200 dark:border-blue-800">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-3.5">
-                                                        <path fillRule="evenodd" d="M7.502 6h7.128A3.375 3.375 0 0 1 18 9.375v9.375a3 3 0 0 0 3-3V6.108c0-1.505-1.125-2.811-2.664-2.94a48.972 48.972 0 0 0-.673-.05A3 3 0 0 0 15 1.5h-1.5a3 3 0 0 0-2.663 1.618c-.225.015-.45.032-.673.05C8.662 3.295 7.554 4.542 7.502 6ZM13.5 3A1.5 1.5 0 0 0 12 4.5h4.5A1.5 1.5 0 0 0 15 3h-1.5Z" clipRule="evenodd" />
-                                                        <path fillRule="evenodd" d="M3 9.375C3 8.339 3.84 7.5 4.875 7.5h9.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 0 1 3 20.625V9.375Zm9.586 4.594a.75.75 0 0 0-1.172-.938l-2.476 3.096-.908-.907a.75.75 0 0 0-1.06 1.06l1.5 1.5a.75.75 0 0 0 1.116-.062l3-3.75Z" clipRule="evenodd" />
-                                                    </svg>
-                                                    {row.report_category}
-                                                </span>
-                                            ) : (
-                                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-50 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300 text-xs font-semibold border border-amber-200 dark:border-amber-800">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-3.5">
-                                                        <path fillRule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clipRule="evenodd" />
-                                                    </svg>
-                                                    {row.report_category}
-                                                </span>
-                                            )}
+                                            {(() => {
+                                                if (row.report_category === 'Schedule PM') {
+                                                    return (
+                                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 text-xs font-semibold border border-blue-200 dark:border-blue-800">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-3.5">
+                                                                <path fillRule="evenodd" d="M7.502 6h7.128A3.375 3.375 0 0 1 18 9.375v9.375a3 3 0 0 0 3-3V6.108c0-1.505-1.125-2.811-2.664-2.94a48.972 48.972 0 0 0-.673-.05A3 3 0 0 0 15 1.5h-1.5a3 3 0 0 0-2.663 1.618c-.225.015-.45.032-.673.05C8.662 3.295 7.554 4.542 7.502 6ZM13.5 3A1.5 1.5 0 0 0 12 4.5h4.5A1.5 1.5 0 0 0 15 3h-1.5Z" clipRule="evenodd" />
+                                                                <path fillRule="evenodd" d="M3 9.375C3 8.339 3.84 7.5 4.875 7.5h9.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 0 1 3 20.625V9.375Zm9.586 4.594a.75.75 0 0 0-1.172-.938l-2.476 3.096-.908-.907a.75.75 0 0 0-1.06 1.06l1.5 1.5a.75.75 0 0 0 1.116-.062l3-3.75Z" clipRule="evenodd" />
+                                                            </svg>
+                                                            {row.report_category}
+                                                        </span>
+                                                    )
+                                                } else if (row.report_category === 'Routine Check') {
+                                                    return (
+                                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 text-xs font-semibold border border-emerald-200 dark:border-emerald-800">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-3.5">
+                                                                <path fillRule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clipRule="evenodd" />
+                                                            </svg>
+                                                            {row.report_category}
+                                                        </span>
+                                                    )
+                                                } else {
+                                                    return (
+                                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-50 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300 text-xs font-semibold border border-amber-200 dark:border-amber-800">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-3.5">
+                                                                <path fillRule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clipRule="evenodd" />
+                                                            </svg>
+                                                            {row.report_category}
+                                                        </span>
+                                                    )
+                                                }
+                                            })()}
                                         </td>
 
                                         {/* Problem */}
                                         <td
-                                            className="px-3 py-3 text-zinc-600 dark:text-zinc-400 max-w-[260px] cursor-help"
+                                            className="px-3 py-3 text-zinc-600 dark:text-zinc-400 text-xs max-w-[260px] cursor-help"
                                             onMouseEnter={(e) => {
                                                 if (hasLongContent(row.problem_desc)) {
                                                     const rect = e.currentTarget.getBoundingClientRect()
@@ -666,7 +688,7 @@ export default function DailyReportUtility({ wire, mingleData }) {
 
                                         {/* Action */}
                                         <td
-                                            className="px-3 py-3 text-zinc-600 dark:text-zinc-400 max-w-[260px] cursor-help"
+                                            className="px-3 py-3 text-zinc-600 dark:text-zinc-400 text-xs max-w-[260px] cursor-help"
                                             onMouseEnter={(e) => {
                                                 if (hasLongContent(row.action_desc)) {
                                                     const rect = e.currentTarget.getBoundingClientRect()
@@ -842,7 +864,8 @@ export default function DailyReportUtility({ wire, mingleData }) {
                                 <label className="block text-sm font-semibold text-zinc-700 dark:text-zinc-200 mb-2">
                                     Category <span className="text-red-500">*</span>
                                 </label>
-                                <div className="grid grid-cols-2 gap-2">
+                                {/* grid-cols-1 di HP, dan grid-cols-3 di layar lebih besar */}
+                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                                     {[
                                         {
                                             value: 'Schedule PM',
@@ -863,11 +886,22 @@ export default function DailyReportUtility({ wire, mingleData }) {
                                                 </svg>
                                             ),
                                         },
+                                        {
+                                            value: 'Routine Check',
+                                            label: 'Routine Check',
+                                            icon: (
+                                                // Icon berbeda untuk Routine Check
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-4 flex-shrink-0">
+                                                    <path fillRule="evenodd" d="M7.502 6h7.128A3.375 3.375 0 0 1 18 9.375v9.375a3 3 0 0 0 3-3V6.108c0-1.505-1.125-2.811-2.664-2.94a48.972 48.972 0 0 0-.673-.05A3 3 0 0 0 15 1.5h-1.5a3 3 0 0 0-2.663 1.618c-.225.015-.45.032-.673.05C8.662 3.295 7.554 4.542 7.502 6ZM13.5 3A1.5 1.5 0 0 0 12 4.5h4.5A1.5 1.5 0 0 0 15 3h-1.5Z" clipRule="evenodd" />
+                                                    <path fillRule="evenodd" d="M3 9.375C3 8.339 3.84 7.5 4.875 7.5h9.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 0 1 3 20.625V9.375Zm9.586 4.594a.75.75 0 0 0-1.172-.938l-2.476 3.096-.908-.907a.75.75 0 0 0-1.06 1.06l1.5 1.5a.75.75 0 0 0 1.116-.062l3-3.75Z" clipRule="evenodd" />
+                                                </svg>
+                                            ),
+                                        }
                                     ].map(opt => {
                                         const isActive = form.report_category === opt.value
                                         return (
                                             <button key={opt.value} type="button" onClick={() => setForm({ ...form, report_category: opt.value })}
-                                                className={`flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg text-sm font-semibold border-2 transition-all ${
+                                                className={`flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg text-sm font-semibold border-2 transition-all ${
                                                     isActive
                                                         ? 'bg-blue-600 border-blue-600 text-white shadow'
                                                         : 'bg-white dark:bg-zinc-800 border-zinc-300 dark:border-zinc-600 text-zinc-700 dark:text-zinc-300 hover:border-blue-400'
@@ -884,7 +918,9 @@ export default function DailyReportUtility({ wire, mingleData }) {
 
                             {/* Problem Description - Rich Text */}
                             <div>
-                                <label className="block text-sm font-semibold text-zinc-700 dark:text-zinc-200 mb-1.5">Problem Description</label>
+                                <label className="block text-sm font-semibold text-zinc-700 dark:text-zinc-200 mb-1.5">
+                                    Problem Description <span className="text-red-500">*</span>
+                                </label>
                                 <RichTextEditor
                                     value={form.problem_desc}
                                     onChange={(html) => setForm(prev => ({ ...prev, problem_desc: html }))}
@@ -1019,8 +1055,8 @@ export default function DailyReportUtility({ wire, mingleData }) {
                             <div className="flex justify-end gap-2 pt-3 border-t border-zinc-200 dark:border-zinc-700">
                                 <button type="button" onClick={() => setShowModal(false)}
                                     className="px-4 py-2 text-sm rounded-lg border border-zinc-300 dark:border-zinc-600 text-zinc-700 dark:text-zinc-300 font-semibold hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">Cancel</button>
-                                <button type="submit" disabled={saving}
-                                    className="px-4 py-2 text-sm rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 dark:hover:bg-blue-500 disabled:opacity-60 transition-colors shadow-sm">
+                                <button type="submit" disabled={saving || !isFormValid()}
+                                    className="px-4 py-2 text-sm rounded-lg bg-blue-600 text-white font-semibold hover:bg-blue-700 dark:hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm">
                                     {saving ? 'Saving...' : 'Save'}
                                 </button>
                             </div>

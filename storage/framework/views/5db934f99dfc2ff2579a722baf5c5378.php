@@ -24,7 +24,6 @@
 <?php # [BlazeFolded]:{flux::spacer}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/spacer.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
 <?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::modal}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/modal/index.blade.php}:{1776985208} ?>
 <section class="w-full">
     <?php echo $__env->make('partials.settings-heading', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
@@ -270,20 +269,13 @@
 <?php endif; ?>
 
     
-    <?php ob_start(); ?><ui-modal wire:model.self="showDeleteModal" data-flux-modal>
-    
-    <dialog
-        wire:ignore.self 
-        class="p-6 [:where(&amp;)]:max-w-xl [:where(&amp;)]:min-w-xs shadow-lg rounded-xl bg-white dark:bg-zinc-800 ring ring-black/5 dark:ring-zinc-700 shadow-lg rounded-xl max-w-md"
-                                <?php if (isset($scope)) $__scope = $scope; ?><?php $scope = array (
-  'name' => NULL,
-); ?>
-        x-data="fluxModal(<?php echo \Illuminate\Support\Js::from($scope['name'])->toHtml() ?>, <?php echo \Illuminate\Support\Js::from(isset($__livewire) ? $__livewire->getId() : null)->toHtml() ?>)"
-        <?php if (isset($__scope)) { $scope = $__scope; unset($__scope); } ?>
-        x-on:modal-show.document="handleShow($event)"
-        x-on:modal-close.document="handleClose($event)"
-    >
-                    <?php ob_start(); ?>
+    <?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/modal/index.blade.php', $__blaze->compiledPath.'/7a1a584bff1c48ca2ab445608144ce83.php'); ?>
+<?php if (isset($__slots7a1a584bff1c48ca2ab445608144ce83)) { $__slotsStack7a1a584bff1c48ca2ab445608144ce83[] = $__slots7a1a584bff1c48ca2ab445608144ce83; } ?>
+<?php if (isset($__attrs7a1a584bff1c48ca2ab445608144ce83)) { $__attrsStack7a1a584bff1c48ca2ab445608144ce83[] = $__attrs7a1a584bff1c48ca2ab445608144ce83; } ?>
+<?php $__attrs7a1a584bff1c48ca2ab445608144ce83 = ['wire:model' => 'showDeleteModal','class' => 'max-w-md']; ?>
+<?php $__slots7a1a584bff1c48ca2ab445608144ce83 = []; ?>
+<?php $__blaze->pushData($__attrs7a1a584bff1c48ca2ab445608144ce83); ?>
+<?php ob_start(); ?>
         <div class="space-y-6">
             <div>
                 <?php ob_start(); ?><div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-base [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading><?php ob_start(); ?>
@@ -338,19 +330,10 @@
 <?php echo ltrim(ob_get_clean()); ?>
             </div>
         </div>
-    <?php echo trim(ob_get_clean()); ?>
-
-
-                            <div class="absolute top-0 end-0 mt-4 me-4">
-                    <ui-close data-flux-modal-close >
-    <button type="button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-8 text-sm rounded-md w-8 inline-flex  bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-800 dark:text-white      text-zinc-400! hover:text-zinc-800! dark:text-zinc-500! dark:hover:text-white!" data-flux-button="data-flux-button" aria-label="Close modal">
-        <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
-  <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"/>
-</svg>
-    </button>
-</ui-close>
-                </div>
-                        </dialog>
-</ui-modal>
-<?php echo ltrim(ob_get_clean()); ?>
+    <?php $__slots7a1a584bff1c48ca2ab445608144ce83['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slots7a1a584bff1c48ca2ab445608144ce83); ?>
+<?php _7a1a584bff1c48ca2ab445608144ce83($__blaze, $__attrs7a1a584bff1c48ca2ab445608144ce83, $__slots7a1a584bff1c48ca2ab445608144ce83, [], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStack7a1a584bff1c48ca2ab445608144ce83)) { $__slots7a1a584bff1c48ca2ab445608144ce83 = array_pop($__slotsStack7a1a584bff1c48ca2ab445608144ce83); } ?>
+<?php if (! empty($__attrsStack7a1a584bff1c48ca2ab445608144ce83)) { $__attrs7a1a584bff1c48ca2ab445608144ce83 = array_pop($__attrsStack7a1a584bff1c48ca2ab445608144ce83); } ?>
+<?php $__blaze->popData(); ?>
 </section><?php /**PATH /www/wwwroot/test.siix-ems.co.id/siix-portal/resources/views/livewire/settings/passkeys.blade.php ENDPATH**/ ?>
