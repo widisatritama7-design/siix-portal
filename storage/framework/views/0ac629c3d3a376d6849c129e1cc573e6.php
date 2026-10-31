@@ -1,0 +1,250 @@
+<?php # [BlazeFolded]:{flux::navlist}:{C:\laragon\www\siix-portal\vendor\livewire\flux\src/../stubs/resources/views/flux/navlist/index.blade.php}:{1776934808} ?>
+<?php # [BlazeFolded]:{flux::separator}:{C:\laragon\www\siix-portal\vendor\livewire\flux\src/../stubs/resources/views/flux/separator.blade.php}:{1776934808} ?>
+<?php # [BlazeFolded]:{flux::heading}:{C:\laragon\www\siix-portal\vendor\livewire\flux\src/../stubs/resources/views/flux/heading.blade.php}:{1776934808} ?>
+<?php # [BlazeFolded]:{flux::subheading}:{C:\laragon\www\siix-portal\vendor\livewire\flux\src/../stubs/resources/views/flux/subheading.blade.php}:{1776934808} ?>
+<div 
+    x-data="{
+        sidebarOpen: JSON.parse(localStorage.getItem('sidebarOpen') ?? 'true'),
+        init() {
+            // Set initial state tanpa animasi
+            this.$nextTick(() => {
+                this.sidebarOpen = JSON.parse(localStorage.getItem('sidebarOpen') ?? 'true');
+            });
+        }
+    }" 
+    x-effect="localStorage.setItem('sidebarOpen', sidebarOpen)"
+    class="flex max-md:flex-col"
+    x-cloak
+>
+    <!-- Sidebar Container -->
+    <div 
+        :class="sidebarOpen ? 'md:w-[220px]' : 'md:w-[61px]'"
+        class="w-full md:flex-shrink-0 transition-none md:transition-all md:duration-300"
+    >
+        <div 
+            :class="sidebarOpen ? 'p-3' : 'p-2'"
+            class="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-sm w-full flex flex-col gap-2"
+        >
+            <!-- Toggle Button (Posisi di tengah) -->
+            <button 
+                @click="sidebarOpen = !sidebarOpen"
+                class="hidden md:flex flex-shrink-0 items-center justify-center w-full py-1.5 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-500 transition-colors"
+                type="button"
+                title="Toggle Sidebar"
+            >
+                <?php if (isset($component)) { $__componentOriginal643fe1b47aec0b76658e1a0200b34b2c = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal643fe1b47aec0b76658e1a0200b34b2c = $attributes; } ?>
+<?php $component = BladeUI\Icons\Components\Svg::resolve([] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('heroicon-s-arrow-left-circle'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\BladeUI\Icons\Components\Svg::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['x-show' => 'sidebarOpen','class' => 'w-5 h-5','x-cloak' => true]); ?>
+<?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::processComponentKey($component); ?>
+
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal643fe1b47aec0b76658e1a0200b34b2c)): ?>
+<?php $attributes = $__attributesOriginal643fe1b47aec0b76658e1a0200b34b2c; ?>
+<?php unset($__attributesOriginal643fe1b47aec0b76658e1a0200b34b2c); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal643fe1b47aec0b76658e1a0200b34b2c)): ?>
+<?php $component = $__componentOriginal643fe1b47aec0b76658e1a0200b34b2c; ?>
+<?php unset($__componentOriginal643fe1b47aec0b76658e1a0200b34b2c); ?>
+<?php endif; ?>
+
+                <?php if (isset($component)) { $__componentOriginal643fe1b47aec0b76658e1a0200b34b2c = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal643fe1b47aec0b76658e1a0200b34b2c = $attributes; } ?>
+<?php $component = BladeUI\Icons\Components\Svg::resolve([] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('heroicon-s-arrow-right-circle'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\BladeUI\Icons\Components\Svg::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['x-show' => '!sidebarOpen','class' => 'w-5 h-5','x-cloak' => true]); ?>
+<?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::processComponentKey($component); ?>
+
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal643fe1b47aec0b76658e1a0200b34b2c)): ?>
+<?php $attributes = $__attributesOriginal643fe1b47aec0b76658e1a0200b34b2c; ?>
+<?php unset($__attributesOriginal643fe1b47aec0b76658e1a0200b34b2c); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal643fe1b47aec0b76658e1a0200b34b2c)): ?>
+<?php $component = $__componentOriginal643fe1b47aec0b76658e1a0200b34b2c; ?>
+<?php unset($__componentOriginal643fe1b47aec0b76658e1a0200b34b2c); ?>
+<?php endif; ?>
+            </button>
+
+            <!-- Divider tipis (opsional, agar rapi) -->
+            <div class="h-px bg-zinc-200 dark:bg-zinc-700 w-full hidden md:block"></div>
+
+            <!-- Navigasi -->
+            <?php ob_start(); ?><?php $__blaze->pushData(['ariaLabel' => 'Settings', 'class' => 'w-full']); $__env->pushConsumableComponentData(['ariaLabel' => 'Settings', 'class' => 'w-full']); ?><nav class="flex flex-col overflow-visible min-h-auto w-full" aria-label="Settings" data-flux-navlist>
+    <?php ob_start(); ?>
+                <!-- Profile -->
+                <?php $__blaze->ensureRequired('C:\laragon\www\siix-portal\vendor\livewire\flux\src/../stubs/resources/views/flux/navlist/item.blade.php', $__blaze->compiledPath.'/34c4baca0a0848a2d5e3061f7967ea00.php'); ?>
+<?php if (isset($__slots34c4baca0a0848a2d5e3061f7967ea00)) { $__slotsStack34c4baca0a0848a2d5e3061f7967ea00[] = $__slots34c4baca0a0848a2d5e3061f7967ea00; } ?>
+<?php if (isset($__attrs34c4baca0a0848a2d5e3061f7967ea00)) { $__attrsStack34c4baca0a0848a2d5e3061f7967ea00[] = $__attrs34c4baca0a0848a2d5e3061f7967ea00; } ?>
+<?php $__attrs34c4baca0a0848a2d5e3061f7967ea00 = ['href' => route('profile.edit'),'wire:navigate' => true,'active' => request()->routeIs('profile.edit'),'title' => 'Profile','class' => 'w-full']; ?>
+<?php $__slots34c4baca0a0848a2d5e3061f7967ea00 = []; ?>
+<?php $__blaze->pushData($__attrs34c4baca0a0848a2d5e3061f7967ea00); ?>
+<?php ob_start(); ?>
+                                         <span x-show="sidebarOpen" class="truncate">
+                        Profile
+                    </span>
+                <?php $__slots34c4baca0a0848a2d5e3061f7967ea00['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php ob_start(); ?>
+                        <?php if (isset($component)) { $__componentOriginal643fe1b47aec0b76658e1a0200b34b2c = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal643fe1b47aec0b76658e1a0200b34b2c = $attributes; } ?>
+<?php $component = BladeUI\Icons\Components\Svg::resolve([] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('heroicon-o-user'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\BladeUI\Icons\Components\Svg::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['class' => 'w-5 h-5']); ?>
+<?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::processComponentKey($component); ?>
+
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal643fe1b47aec0b76658e1a0200b34b2c)): ?>
+<?php $attributes = $__attributesOriginal643fe1b47aec0b76658e1a0200b34b2c; ?>
+<?php unset($__attributesOriginal643fe1b47aec0b76658e1a0200b34b2c); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal643fe1b47aec0b76658e1a0200b34b2c)): ?>
+<?php $component = $__componentOriginal643fe1b47aec0b76658e1a0200b34b2c; ?>
+<?php unset($__componentOriginal643fe1b47aec0b76658e1a0200b34b2c); ?>
+<?php endif; ?>
+                    <?php $__slots34c4baca0a0848a2d5e3061f7967ea00['icon'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slots34c4baca0a0848a2d5e3061f7967ea00); ?>
+<?php _34c4baca0a0848a2d5e3061f7967ea00($__blaze, $__attrs34c4baca0a0848a2d5e3061f7967ea00, $__slots34c4baca0a0848a2d5e3061f7967ea00, ['href', 'wire:navigate', 'active'], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStack34c4baca0a0848a2d5e3061f7967ea00)) { $__slots34c4baca0a0848a2d5e3061f7967ea00 = array_pop($__slotsStack34c4baca0a0848a2d5e3061f7967ea00); } ?>
+<?php if (! empty($__attrsStack34c4baca0a0848a2d5e3061f7967ea00)) { $__attrs34c4baca0a0848a2d5e3061f7967ea00 = array_pop($__attrsStack34c4baca0a0848a2d5e3061f7967ea00); } ?>
+<?php $__blaze->popData(); ?>
+
+                <!-- Security -->
+                <?php $__blaze->ensureRequired('C:\laragon\www\siix-portal\vendor\livewire\flux\src/../stubs/resources/views/flux/navlist/item.blade.php', $__blaze->compiledPath.'/34c4baca0a0848a2d5e3061f7967ea00.php'); ?>
+<?php if (isset($__slots34c4baca0a0848a2d5e3061f7967ea00)) { $__slotsStack34c4baca0a0848a2d5e3061f7967ea00[] = $__slots34c4baca0a0848a2d5e3061f7967ea00; } ?>
+<?php if (isset($__attrs34c4baca0a0848a2d5e3061f7967ea00)) { $__attrsStack34c4baca0a0848a2d5e3061f7967ea00[] = $__attrs34c4baca0a0848a2d5e3061f7967ea00; } ?>
+<?php $__attrs34c4baca0a0848a2d5e3061f7967ea00 = ['href' => route('security.edit'),'wire:navigate' => true,'active' => request()->routeIs('security.edit'),'title' => 'Security','class' => 'w-full']; ?>
+<?php $__slots34c4baca0a0848a2d5e3061f7967ea00 = []; ?>
+<?php $__blaze->pushData($__attrs34c4baca0a0848a2d5e3061f7967ea00); ?>
+<?php ob_start(); ?>
+                                         <span x-show="sidebarOpen" class="truncate">
+                        Security
+                    </span>
+                <?php $__slots34c4baca0a0848a2d5e3061f7967ea00['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php ob_start(); ?>
+                        <?php if (isset($component)) { $__componentOriginal643fe1b47aec0b76658e1a0200b34b2c = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal643fe1b47aec0b76658e1a0200b34b2c = $attributes; } ?>
+<?php $component = BladeUI\Icons\Components\Svg::resolve([] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('heroicon-o-lock-closed'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\BladeUI\Icons\Components\Svg::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['class' => 'w-5 h-5']); ?>
+<?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::processComponentKey($component); ?>
+
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal643fe1b47aec0b76658e1a0200b34b2c)): ?>
+<?php $attributes = $__attributesOriginal643fe1b47aec0b76658e1a0200b34b2c; ?>
+<?php unset($__attributesOriginal643fe1b47aec0b76658e1a0200b34b2c); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal643fe1b47aec0b76658e1a0200b34b2c)): ?>
+<?php $component = $__componentOriginal643fe1b47aec0b76658e1a0200b34b2c; ?>
+<?php unset($__componentOriginal643fe1b47aec0b76658e1a0200b34b2c); ?>
+<?php endif; ?>
+                    <?php $__slots34c4baca0a0848a2d5e3061f7967ea00['icon'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slots34c4baca0a0848a2d5e3061f7967ea00); ?>
+<?php _34c4baca0a0848a2d5e3061f7967ea00($__blaze, $__attrs34c4baca0a0848a2d5e3061f7967ea00, $__slots34c4baca0a0848a2d5e3061f7967ea00, ['href', 'wire:navigate', 'active'], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStack34c4baca0a0848a2d5e3061f7967ea00)) { $__slots34c4baca0a0848a2d5e3061f7967ea00 = array_pop($__slotsStack34c4baca0a0848a2d5e3061f7967ea00); } ?>
+<?php if (! empty($__attrsStack34c4baca0a0848a2d5e3061f7967ea00)) { $__attrs34c4baca0a0848a2d5e3061f7967ea00 = array_pop($__attrsStack34c4baca0a0848a2d5e3061f7967ea00); } ?>
+<?php $__blaze->popData(); ?>
+
+                <!-- Passkey -->
+                <?php $__blaze->ensureRequired('C:\laragon\www\siix-portal\vendor\livewire\flux\src/../stubs/resources/views/flux/navlist/item.blade.php', $__blaze->compiledPath.'/34c4baca0a0848a2d5e3061f7967ea00.php'); ?>
+<?php if (isset($__slots34c4baca0a0848a2d5e3061f7967ea00)) { $__slotsStack34c4baca0a0848a2d5e3061f7967ea00[] = $__slots34c4baca0a0848a2d5e3061f7967ea00; } ?>
+<?php if (isset($__attrs34c4baca0a0848a2d5e3061f7967ea00)) { $__attrsStack34c4baca0a0848a2d5e3061f7967ea00[] = $__attrs34c4baca0a0848a2d5e3061f7967ea00; } ?>
+<?php $__attrs34c4baca0a0848a2d5e3061f7967ea00 = ['href' => route('settings.passkeys'),'wire:navigate' => true,'active' => request()->routeIs('settings.passkeys'),'title' => 'Passkey','class' => 'w-full']; ?>
+<?php $__slots34c4baca0a0848a2d5e3061f7967ea00 = []; ?>
+<?php $__blaze->pushData($__attrs34c4baca0a0848a2d5e3061f7967ea00); ?>
+<?php ob_start(); ?>
+                                         <span x-show="sidebarOpen" class="truncate">
+                        Passkey
+                    </span>
+                <?php $__slots34c4baca0a0848a2d5e3061f7967ea00['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php ob_start(); ?>
+                        <?php if (isset($component)) { $__componentOriginal643fe1b47aec0b76658e1a0200b34b2c = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal643fe1b47aec0b76658e1a0200b34b2c = $attributes; } ?>
+<?php $component = BladeUI\Icons\Components\Svg::resolve([] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('heroicon-o-finger-print'); ?>
+<?php if ($component->shouldRender()): ?>
+<?php $__env->startComponent($component->resolveView(), $component->data()); ?>
+<?php if (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag): ?>
+<?php $attributes = $attributes->except(\BladeUI\Icons\Components\Svg::ignoredParameterNames()); ?>
+<?php endif; ?>
+<?php $component->withAttributes(['class' => 'w-5 h-5']); ?>
+<?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::processComponentKey($component); ?>
+
+<?php echo $__env->renderComponent(); ?>
+<?php endif; ?>
+<?php if (isset($__attributesOriginal643fe1b47aec0b76658e1a0200b34b2c)): ?>
+<?php $attributes = $__attributesOriginal643fe1b47aec0b76658e1a0200b34b2c; ?>
+<?php unset($__attributesOriginal643fe1b47aec0b76658e1a0200b34b2c); ?>
+<?php endif; ?>
+<?php if (isset($__componentOriginal643fe1b47aec0b76658e1a0200b34b2c)): ?>
+<?php $component = $__componentOriginal643fe1b47aec0b76658e1a0200b34b2c; ?>
+<?php unset($__componentOriginal643fe1b47aec0b76658e1a0200b34b2c); ?>
+<?php endif; ?>
+                    <?php $__slots34c4baca0a0848a2d5e3061f7967ea00['icon'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slots34c4baca0a0848a2d5e3061f7967ea00); ?>
+<?php _34c4baca0a0848a2d5e3061f7967ea00($__blaze, $__attrs34c4baca0a0848a2d5e3061f7967ea00, $__slots34c4baca0a0848a2d5e3061f7967ea00, ['href', 'wire:navigate', 'active'], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStack34c4baca0a0848a2d5e3061f7967ea00)) { $__slots34c4baca0a0848a2d5e3061f7967ea00 = array_pop($__slotsStack34c4baca0a0848a2d5e3061f7967ea00); } ?>
+<?php if (! empty($__attrsStack34c4baca0a0848a2d5e3061f7967ea00)) { $__attrs34c4baca0a0848a2d5e3061f7967ea00 = array_pop($__attrsStack34c4baca0a0848a2d5e3061f7967ea00); } ?>
+<?php $__blaze->popData(); ?>
+            <?php echo trim(ob_get_clean()); ?>
+
+</nav>
+<?php $__blaze->popData(); $__env->popConsumableComponentData(); ?><?php echo ltrim(ob_get_clean()); ?>
+        </div>
+    </div>
+
+    <!-- Gap kanan yang mengikuti gap kiri -->
+    <div class="hidden md:block flex-shrink-0 w-6"></div>
+
+    <?php ob_start(); ?><div data-orientation="horizontal" role="none" class="border-0 [print-color-adjust:exact] bg-zinc-800/15 dark:bg-white/20 h-px w-full md:hidden my-4" data-flux-separator></div>
+<?php echo ltrim(ob_get_clean()); ?>
+
+    <!-- Main Content -->
+    <div class="flex-1 min-w-0 self-stretch max-md:pt-6 min-h-screen pb-12">
+        <?php ob_start(); ?><div class="font-medium [:where(&amp;)]:text-zinc-800 [:where(&amp;)]:dark:text-white text-sm [&amp;:has(+[data-flux-subheading])]:mb-2 [[data-flux-subheading]+&amp;]:mt-2" data-flux-heading><?php ob_start(); ?>
+            <?php echo e($heading ?? ''); ?>
+
+        <?php echo trim(ob_get_clean()); ?></div>
+<?php echo ltrim(ob_get_clean()); ?>
+        <?php ob_start(); ?><div class="text-sm [:where(&amp;)]:text-zinc-500 [:where(&amp;)]:dark:text-white/70" data-flux-subheading>
+    <?php ob_start(); ?>
+            <?php echo e($subheading ?? ''); ?>
+
+        <?php echo trim(ob_get_clean()); ?>
+
+</div>
+<?php echo ltrim(ob_get_clean()); ?>
+        <div class="mt-5 w-full max-w-lg">
+            <?php echo e($slot); ?>
+
+        </div>
+    </div>
+
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
+</div><?php /**PATH C:\laragon\www\siix-portal\resources\views/components/settings/layout.blade.php ENDPATH**/ ?>

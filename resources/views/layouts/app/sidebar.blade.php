@@ -129,6 +129,75 @@
         .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
             background: #52525b;
         }
+        @keyframes panah-keluar-masuk {
+            0%, 100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            40% {
+                transform: translateX(8px); /* Panah bergerak keluar ke kanan */
+                opacity: 0; /* Panah memudar saat keluar */
+            }
+            60% {
+                transform: translateX(-8px); /* Panah muncul dari kiri (dalam kotak) */
+                opacity: 0; 
+            }
+            80% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .animate-panah-logout {
+            animation: panah-keluar-masuk 1.5s ease-in-out infinite;
+        }
+        /* Top bar glassmorphism effect */
+        .topbar-glass {
+            transition: background-color 0.3s ease, backdrop-filter 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .topbar-glass.scrolled {
+            background-color: rgba(255, 255, 255, 0.72) !important;
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom-color: rgba(0, 0, 0, 0.08) !important;
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
+        }
+
+        .dark .topbar-glass.scrolled {
+            background-color: rgba(0, 0, 0, 0.65) !important;
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+            box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04);
+        }
+        /* Floating sidebar glassmorphism effect */
+        .sidebar-glass {
+            transition: background-color 0.3s ease, backdrop-filter 0.3s ease, border-color 0.3s ease;
+        }
+
+        /* Saat floating (collapsed + hover) → transparan + blur */
+        .sidebar-floating {
+            background-color: rgba(255, 255, 255, 0.72) !important;
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-right-color: rgba(0, 0, 0, 0.08) !important;
+            box-shadow: 8px 0 32px rgba(0, 0, 0, 0.12) !important;
+        }
+
+        .dark .sidebar-floating {
+            background-color: rgba(24, 24, 27, 0.72) !important;
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-right-color: rgba(255, 255, 255, 0.08) !important;
+            box-shadow: 8px 0 32px rgba(0, 0, 0, 0.4) !important;
+        }
+
+        /* Pastikan konten di dalam sidebar tetap solid (tidak ikut transparan) */
+        .sidebar-floating nav,
+        .sidebar-floating .sidebar-header {
+            background-color: transparent;
+        }
     </style>
 </head>
 
@@ -140,6 +209,7 @@
         <div class="overlay" :class="{'open': sidebarOpen && isMobile}" @click="closeMobileSidebar"></div>
 
         <!-- Backdrop saat sidebar floating di desktop -->
+        <!-- Backdrop saat sidebar floating di desktop -->
         <div x-show="!isMobile && isHovering && !sidebarPinned"
             x-transition:enter="transition ease-out duration-200"
             x-transition:enter-start="opacity-0"
@@ -147,27 +217,47 @@
             x-transition:leave="transition ease-in duration-150"
             x-transition:leave-start="opacity-100"
             x-transition:leave-end="opacity-0"
-            class="fixed inset-0 bg-black/20 z-40"
+            class="fixed inset-0 z-40"
+            style="background-color: rgba(0, 0, 0, 0.15); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);"
             x-cloak></div>
+
+        <!-- TOMBOL COLLAPSE DESKTOP (Tengah Garis) -->
+        <button @click="toggleSidebar" 
+            class="hidden md:flex fixed top-8 z-50 items-center justify-center 
+                w-7 h-7 rounded-full bg-blue-500 dark:bg-blue-600 
+                border border-blue-600 dark:border-blue-500 
+                shadow-sm hover:shadow-md hover:bg-blue-600 dark:hover:bg-blue-500
+                text-white
+                transition-all duration-300 ease-in-out group"
+            :style="`left: ${(sidebarPinned || isHovering) ? '256px' : '80px'}; transform: translate(-50%, -50%);`">
+            
+            <svg class="w-3.5 h-3.5 transition-transform duration-300" 
+                :class="(sidebarPinned || isHovering) ? 'rotate-0' : 'rotate-180'"
+                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path>
+            </svg>
+        </button>
         
-        <!-- SIDEBAR -->
         <aside x-ref="sidebar"
             @mouseenter="handleMouseEnter"
             @mouseleave="handleMouseLeave"
-            class="bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-700 shadow-lg h-screen overflow-hidden sidebar-transition flex flex-col"
+            class="sidebar-glass bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-700 shadow-lg h-screen overflow-hidden sidebar-transition flex flex-col"
             :class="{
                 // Posisi: selalu fixed (mobile & desktop)
-                'fixed top-0 left-0 z-40': true, // <--- UBAH DARI z-50 KE z-40
+                'fixed top-0 left-0 z-40': true,
 
                 // Width
                 'w-64': (isMobile && sidebarOpen) || (!isMobile && (sidebarPinned || isHovering)),
                 'w-20': !isMobile && !sidebarPinned && !isHovering,
 
                 // Visibilitas mobile
-                'hidden': isMobile && !sidebarOpen
+                'hidden': isMobile && !sidebarOpen,
+
+                // Glass effect saat floating (collapsed + hover)
+                'sidebar-floating': !isMobile && isHovering && !sidebarPinned
             }"
             :style="(!isMobile && isHovering && !sidebarPinned) 
-                ? 'transition: width 0.2s ease-in-out; box-shadow: 8px 0 24px rgba(0,0,0,0.15);' 
+                ? 'transition: width 0.2s ease-in-out, background-color 0.3s ease, backdrop-filter 0.3s ease;' 
                 : 'transition: width 0.3s ease-in-out;'">
             
             <!-- Sidebar Header -->
@@ -176,8 +266,9 @@
                     'justify-between': isMobile && sidebarOpen,
                     'justify-center': (!isMobile && (sidebarOpen || (isHovering && !sidebarPinned))) || (isMobile && !sidebarOpen)
                 }">
-                <!-- Logo - Hanya tampil saat sidebar terbuka atau saat hover pada mode collapsed -->
-                <div x-show="sidebarOpen || !isMobile || (isHovering && !sidebarPinned && !sidebarOpen)" 
+                
+                <!-- Logo Utama (tampil saat expanded / hover) -->
+                <div x-show="(sidebarOpen || isMobile || (isHovering && !sidebarPinned))" 
                     x-cloak
                     class="flex justify-center w-full"
                     :class="{'hidden': !sidebarOpen && !isHovering && !sidebarPinned}">
@@ -186,6 +277,19 @@
                             src="{{ asset('images/logo-siix.png') }}" 
                             alt="SIIX Portal" 
                             class="h-11 w-auto object-contain image-rendering-auto"
+                        />
+                    </a>
+                </div>
+
+                <!-- Favicon (tampil saat collapsed & tidak hover) -->
+                <div x-show="!isMobile && !sidebarOpen && !isHovering && !sidebarPinned"
+                    x-cloak
+                    class="flex justify-center w-full mt-1">
+                    <a href="/" wire:navigate class="inline-block">
+                        <img 
+                            src="{{ asset('images/favicon.png') }}" 
+                            alt="SIIX" 
+                            class="h-7 w-7 object-contain"
                         />
                     </a>
                 </div>
@@ -1916,16 +2020,24 @@
         <div class="min-w-0 flex-1 transition-[margin] duration-300 ease-in-out"
              :class="isMobile ? 'ml-0' : (sidebarPinned ? 'ml-64' : 'ml-20')">
             <main class="min-w-0 bg-gray-100 dark:bg-black w-full min-h-screen flex flex-col">
-                <flux:header class="sticky top-0 z-10 block! bg-white dark:bg-black border-b border-zinc-200 dark:border-zinc-800 p-0! m-0! w-full shadow-sm">
+                <flux:header 
+                    x-data="{ scrolled: false }"
+                    x-init="
+                        const onScroll = () => { scrolled = scrollY > 10; };
+                        window.addEventListener('scroll', onScroll, { passive: true });
+                        onScroll();
+                    "
+                    class="topbar-glass sticky top-0 z-10 block! bg-white dark:bg-black border-b border-zinc-200 dark:border-zinc-800 p-0! m-0! w-full shadow-sm"
+                    ::class="{ 'scrolled': scrolled }">
                     <flux:navbar class="flex items-center justify-between px-3 lg:px-4 mx-0!">
                         <div class="flex items-center gap-3">
-                            <button @click="toggleSidebar" 
-                                    class="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                            <!-- Tombol Menu Khusus Mobile -->
+                            <button @click="sidebarOpen = !sidebarOpen" 
+                                class="flex md:hidden p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
                                 <svg class="w-5 h-5 text-zinc-600 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                                 </svg>
                             </button>
-                            
                             <livewire:header-badge />
                         </div>
                         
@@ -1949,26 +2061,71 @@
                             <flux:separator vertical class="my-2" />
                             
                             <button 
-                                x-data
-                                @click="$flux.dark = ! $flux.dark"
-                                class="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                                x-data="{ rotating: false }"
+                                @click="
+                                    rotating = true;
+                                    $flux.dark = !$flux.dark;
+                                    setTimeout(() => rotating = false, 500);
+                                "
+                                class="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors relative overflow-hidden"
                                 :aria-label="$flux.dark ? 'Switch to light mode' : 'Switch to dark mode'">
-                                <svg x-show="!$flux.dark" class="w-5 h-5 text-zinc-600 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                                </svg>
-                                <svg x-show="$flux.dark" class="w-5 h-5 text-zinc-600 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
-                                </svg>
+
+                                <!-- Container dengan animasi rotasi -->
+                                <div 
+                                    class="relative w-5 h-5 transition-transform duration-500 ease-in-out"
+                                    :class="rotating ? 'rotate-[360deg]' : 'rotate-0'">
+                                    
+                                    <!-- Icon Matahari -->
+                                    <svg 
+                                        class="absolute inset-0 w-5 h-5 text-zinc-600 dark:text-zinc-400 transition-all duration-300 ease-in-out"
+                                        :class="$flux.dark ? 'opacity-0 scale-50 rotate-90' : 'opacity-100 scale-100 rotate-0'"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                    </svg>
+                                    
+                                    <!-- Icon Bulan -->
+                                    <svg 
+                                        class="absolute inset-0 w-5 h-5 text-zinc-600 dark:text-zinc-400 transition-all duration-300 ease-in-out"
+                                        :class="$flux.dark ? 'opacity-100 scale-100 rotate-0' : 'opacity-0 scale-50 -rotate-90'"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                                    </svg>
+                                </div>
                             </button>
                             
                             <!-- Tombol Logout - Hanya tampil jika user bukan guest -->
                             @auth
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <flux:button type="submit" variant="danger" icon="arrow-right" size="sm">
-                                    <span class="hidden lg:inline">{{ __('Logout') }}</span>
-                                </flux:button>
-                            </form>
+                            <flux:button 
+                                type="button" 
+                                variant="danger" 
+                                size="sm"
+                                x-data="{ loggingOut: false }"
+                                @click="
+                                    if (loggingOut) return;
+                                    loggingOut = true;
+                                    setTimeout(() => {
+                                        $dispatch('show-logout-modal');
+                                        loggingOut = false;
+                                    }, 200);
+                                "
+                                class="relative overflow-hidden transition-all duration-300">
+                                
+                                <!-- Icon dengan animasi geser ke kanan -->
+                                <span class="inline-flex items-center gap-1.5 relative">
+                                    <svg 
+                                        class="w-4 h-4 transition-all duration-500 ease-in-out"
+                                        :class="loggingOut ? 'translate-x-[120px] opacity-0' : 'translate-x-0 opacity-100'"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                                    </svg>
+                                    <span 
+                                        class="hidden lg:inline transition-all duration-500 ease-in-out whitespace-nowrap"
+                                        :class="loggingOut ? 'translate-x-8 opacity-0' : 'translate-x-0 opacity-100'">
+                                        {{ __('Logout') }}
+                                    </span>
+                                </span>
+                            </flux:button>
                             @endauth
                         </div>
                     </flux:navbar>
@@ -1978,6 +2135,118 @@
                     {{ $slot }}
                 </div>
             </main>
+        </div>
+    </div>
+
+    {{-- ============ CUSTOM LOGOUT CONFIRMATION MODAL ============ --}}
+    <div x-data="{ 
+            showLogoutModal: false, 
+            timer: null, 
+            duration: 10000, 
+            startTime: 0,
+            remainingTime: 10000,
+            
+            openModal() {
+                this.showLogoutModal = true;
+                this.remainingTime = this.duration;
+                this.startTime = Date.now();
+                this.startTimer();
+            },
+            
+            closeModal() {
+                this.showLogoutModal = false;
+                clearInterval(this.timer);
+            },
+            
+            startTimer() {
+                clearInterval(this.timer);
+                this.timer = setInterval(() => {
+                    const elapsed = Date.now() - this.startTime;
+                    const remaining = Math.max(0, this.duration - elapsed);
+                    this.remainingTime = remaining;
+
+                    if (remaining <= 0) {
+                        this.closeModal();
+                    }
+                }, 50); // Update setiap 50ms agar progress bar mulus
+            }
+        }"
+        x-on:show-logout-modal.window="openModal()"
+        x-on:keydown.escape.window="closeModal()"
+        x-show="showLogoutModal"
+        x-cloak
+        class="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+
+        {{-- Backdrop --}}
+        <div x-show="showLogoutModal"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            @click="closeModal()"
+            class="absolute inset-0 bg-black/60"
+            style="backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);"></div>
+
+        {{-- Modal Box --}}
+        <div x-show="showLogoutModal"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+            x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+            x-transition:leave-end="opacity-0 scale-95 translate-y-4"
+            class="relative bg-white dark:bg-zinc-900 rounded-xl shadow-2xl w-full max-w-sm pt-6 px-6 pb-8 border border-zinc-200 dark:border-zinc-700 text-center overflow-hidden">
+            
+            {{-- Icon with Exit Arrow Animation --}}
+            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 dark:bg-red-900/30 mb-5">
+                <svg class="w-8 h-8 text-red-600 dark:text-red-400 overflow-visible" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    
+                    {{-- Door/Open Box (Static) --}}
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    
+                    {{-- Arrow (Animated) --}}
+                    <g class="animate-panah-logout">
+                        <path d="M16 17l5-5-5-5" />
+                        <path d="M21 12H9" />
+                    </g>
+
+                </svg>
+            </div>
+
+            {{-- Text --}}
+            <h3 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 mb-2">Confirm Logout</h3>
+            <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-6">
+                Are you sure you want to log out of this account? You will need to log in again to access the system.
+            </p>
+
+            {{-- Action Buttons --}}
+            <div class="flex flex-col-reverse sm:flex-row justify-center gap-3 w-full mb-6">
+                <button type="button"
+                        @click="closeModal()"
+                        class="w-full sm:w-auto px-5 py-2.5 text-sm font-medium rounded-lg text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors">
+                    Cancel
+                </button>
+
+                <form method="POST" action="{{ route('logout') }}" class="w-full sm:w-auto m-0">
+                    @csrf
+                    <button type="submit"
+                            class="w-full px-5 py-2.5 text-sm font-medium rounded-lg text-white bg-red-600 hover:bg-red-700 transition-colors inline-flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                        </svg>
+                        Yes, Logout
+                    </button>
+                </form>
+            </div>
+
+            {{-- Line Counter / Progress Bar (Diangkat & Melayang) --}}
+            <div class="absolute bottom-3 left-6 right-6 h-1.5 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+                <div class="h-full bg-red-500 transition-all duration-75 ease-linear rounded-full"
+                    :style="`width: ${(remainingTime / duration) * 100}%`"></div>
+            </div>
         </div>
     </div>
 
