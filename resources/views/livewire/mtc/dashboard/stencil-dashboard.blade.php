@@ -1,76 +1,66 @@
-<section class="w-full" x-data="stencilDashboard()" x-init="init()" x-on:livewire:navigated.window="handleNavigated">
+<div class="p-1 space-y-2"
+     x-data="stencilDashboard()" 
+     x-init="init()" 
+     x-on:livewire:navigated.window="handleNavigated">
 
-    <flux:heading class="sr-only">
-        {{ __('MTC - Stencil Dashboard') }}
-    </flux:heading>
+    @section('title', 'Stencil Dashboard - MTC')
 
-    <x-mtc.layout class="!max-w-full !px-0 !mx-0">
-        <x-slot name="heading">
-            <div class="w-full">
-                <flux:breadcrumbs class="mb-1">
-                    <flux:breadcrumbs.item href="{{ route('dashboard') }}" wire:navigate separator="slash">
-                        Dashboard
-                    </flux:breadcrumbs.item>
-                    <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
-                        Maintenance
-                    </flux:breadcrumbs.item>
-                    <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
-                        Stencil Monitoring
-                    </flux:breadcrumbs.item>
-                </flux:breadcrumbs>
-            </div>
-        </x-slot>
-        
-        <x-slot name="subheading">
-            <div class="w-full">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-                    <div>
-                        <h1 class="text-2xl sm:text-3xl font-bold text-zinc-800 dark:text-white">
-                            Realtime Dashboard For Use Stencil
-                        </h1>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <div class="text-xs text-zinc-400" x-text="lastUpdatedText"></div>
-                        <button x-on:click="manualRefresh()" 
-                                x-bind:disabled="refreshing"
-                                class="inline-flex items-center gap-1 px-2 sm:px-3 py-1 text-xs font-medium text-zinc-700 bg-white border border-zinc-300 rounded-lg hover:bg-zinc-50 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-600 dark:hover:bg-zinc-700 transition-colors whitespace-nowrap disabled:opacity-60 disabled:cursor-not-allowed">
-                            <svg class="w-3 h-3" 
-                                :class="{'animate-spin': refreshing}" 
-                                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
-                            </svg>
-                            <span class="hidden sm:inline" x-text="refreshing ? 'Refreshing...' : 'Refresh'"></span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </x-slot>
+    <!-- Breadcrumbs -->
+    <flux:breadcrumbs>
+        <flux:breadcrumbs.item href="{{ route('dashboard') }}" wire:navigate separator="slash">
+            Dashboard
+        </flux:breadcrumbs.item>
+        <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
+            Maintenance
+        </flux:breadcrumbs.item>
+        <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
+            Stencil Monitoring
+        </flux:breadcrumbs.item>
+    </flux:breadcrumbs>
 
-        <div class="-mt-2">
-            <!-- Legend - Smaller -->
-            <div class="flex flex-wrap gap-1.5 sm:gap-2 mb-3">
-                <div class="flex items-center gap-1.5 text-[10px] sm:text-xs text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded-full">
-                    <span class="w-2 h-2 rounded bg-red-500 animate-pulse"></span>
-                    <span>No Stencil</span>
-                </div>
-                <div class="flex items-center gap-1.5 text-[10px] sm:text-xs text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded-full">
-                    <span class="w-2 h-2 rounded bg-green-500"></span>
-                    <span>In Use</span>
-                </div>
-                <div class="flex items-center gap-1.5 text-[10px] sm:text-xs text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded-full">
-                    <span class="w-2 h-2 rounded bg-amber-500"></span>
-                    <span>Rack</span>
-                </div>
-                <div class="flex items-center gap-1.5 text-[10px] sm:text-xs text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded-full">
-                    <span class="w-2 h-2 rounded bg-blue-500"></span>
-                    <span>Prepared</span>
-                </div>
-            </div>
-
-            <!-- Content 3 Columns - Smaller cards -->
-            <div id="stencilCardsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 lg:gap-3" x-html="renderedCards"></div>
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mt-2">
+        <div>
+            <h1 class="text-2xl sm:text-3xl font-bold text-zinc-800 dark:text-white">
+                Realtime Dashboard For Use Stencil
+            </h1>
         </div>
-    </x-mtc.layout>
+        <div class="flex items-center gap-2">
+            <div class="text-xs text-zinc-400" x-text="lastUpdatedText"></div>
+            <button x-on:click="manualRefresh()" 
+                    x-bind:disabled="refreshing"
+                    class="inline-flex items-center gap-1 px-2 sm:px-3 py-1 text-xs font-medium text-zinc-700 bg-white border border-zinc-300 rounded-lg hover:bg-zinc-50 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-600 dark:hover:bg-zinc-700 transition-colors whitespace-nowrap disabled:opacity-60 disabled:cursor-not-allowed">
+                <svg class="w-3 h-3" 
+                    :class="{'animate-spin': refreshing}" 
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                </svg>
+                <span class="hidden sm:inline" x-text="refreshing ? 'Refreshing...' : 'Refresh'"></span>
+            </button>
+        </div>
+    </div>
+    <!-- Legend - Smaller -->
+    <div class="flex flex-wrap gap-1.5 sm:gap-2 mb-3">
+        <div class="flex items-center gap-1.5 text-[10px] sm:text-xs text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded-full">
+            <span class="w-2 h-2 rounded bg-red-500 animate-pulse"></span>
+            <span>No Stencil</span>
+        </div>
+        <div class="flex items-center gap-1.5 text-[10px] sm:text-xs text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded-full">
+            <span class="w-2 h-2 rounded bg-green-500"></span>
+            <span>In Use</span>
+        </div>
+        <div class="flex items-center gap-1.5 text-[10px] sm:text-xs text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded-full">
+            <span class="w-2 h-2 rounded bg-amber-500"></span>
+            <span>Rack</span>
+        </div>
+        <div class="flex items-center gap-1.5 text-[10px] sm:text-xs text-zinc-600 dark:text-zinc-400 bg-zinc-100 dark:bg-zinc-800 px-2 py-1 rounded-full">
+            <span class="w-2 h-2 rounded bg-blue-500"></span>
+            <span>Prepared</span>
+        </div>
+    </div>
+
+    <!-- Content 3 Columns - Smaller cards -->
+    <div id="stencilCardsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 lg:gap-3" x-html="renderedCards"></div>
 
     <!-- Modal - Fixed positioning with proper centering -->
     <div x-show="isModalOpen" 
@@ -429,4 +419,4 @@
         }));
     </script>
     @endscript
-</section>
+</div>

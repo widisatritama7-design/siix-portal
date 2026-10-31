@@ -498,29 +498,186 @@
                             </a>
                             @endcan
                             
-                            <!-- MTC Monitoring -->
-                            @can('view mtc-monitoring')
-                            <a href="{{ route('mtc.daily-dashboard') }}" wire:navigate
-                            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('mtc.daily-dashboard') ? 'menu-active' : '' }}">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cog-icon lucide-cog w-4 h-4">
-                                    <path d="M11 10.27 7 3.34"/>
-                                    <path d="m11 13.73-4 6.93"/>
-                                    <path d="M12 22v-2"/>
-                                    <path d="M12 2v2"/>
-                                    <path d="M14 12h8"/>
-                                    <path d="m17 20.66-1-1.73"/>
-                                    <path d="m17 3.34-1 1.73"/>
-                                    <path d="M2 12h2"/>
-                                    <path d="m20.66 17-1.73-1"/>
-                                    <path d="m20.66 7-1.73 1"/>
-                                    <path d="m3.34 17 1.73-1"/>
-                                    <path d="m3.34 7 1.73 1"/>
-                                    <circle cx="12" cy="12" r="2"/>
-                                    <circle cx="12" cy="12" r="8"/>
-                                </svg>
-                                <span class="truncate">MTC Monitoring</span>
-                            </a>
-                            @endcan
+                            <!-- MTC Monitoring as SUB GROUP -->
+                            @canany(['view mtc-monitoring'])
+                            <div class="relative w-full">
+                                <!-- SUB GRUP 2: MTC Monitoring -->
+                                <button @click="toggleGroup('mtcMonitoring')"
+                                        class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                    <div class="flex items-center gap-2">
+                                        <!-- Icon MTC (cog) -->
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cog-icon lucide-cog w-4 h-4">
+                                            <path d="M11 10.27 7 3.34"/>
+                                            <path d="m11 13.73-4 6.93"/>
+                                            <path d="M12 22v-2"/>
+                                            <path d="M12 2v2"/>
+                                            <path d="M14 12h8"/>
+                                            <path d="m17 20.66-1-1.73"/>
+                                            <path d="m17 3.34-1 1.73"/>
+                                            <path d="M2 12h2"/>
+                                            <path d="m20.66 17-1.73-1"/>
+                                            <path d="m20.66 7-1.73 1"/>
+                                            <path d="m3.34 17 1.73-1"/>
+                                            <path d="m3.34 7 1.73 1"/>
+                                            <circle cx="12" cy="12" r="2"/>
+                                            <circle cx="12" cy="12" r="8"/>
+                                        </svg>
+                                        <span x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                            class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">MTC Monitoring</span>
+                                    </div>
+                                    <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                        class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0"
+                                        :class="{'rotate-180': groups.mtcMonitoring.open}"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </button>
+
+                                <!-- Konten Sub Grup 2: MTC Monitoring -->
+                                <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.mtcMonitoring.open"
+                                    x-collapse
+                                    class="mt-1 relative">
+                                    <!-- Garis vertikal Sub Grup 2 -->
+                                    <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+
+                                    <div class="space-y-1 ml-[24px]">
+
+                                        <!-- ========== SUB GRUP 3: MONITORING ========== -->
+                                        @canany(['view mtc-monitoring'])
+                                        <div class="relative w-full">
+                                            <button @click="toggleGroup('mtcMonitoringMenu')"
+                                                    class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                                <div class="flex items-center gap-2">
+                                                    <!-- Icon Monitoring (chart) -->
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                        <path fill-rule="evenodd" d="M2.25 13.5a8.25 8.25 0 0 1 8.25-8.25.75.75 0 0 1 .75.75v6.75H18a.75.75 0 0 1 .75.75 8.25 8.25 0 0 1-16.5 0Z" clip-rule="evenodd" />
+                                                        <path fill-rule="evenodd" d="M12.75 3a.75.75 0 0 1 .75-.75 8.25 8.25 0 0 1 8.25 8.25.75.75 0 0 1-.75.75h-7.5a.75.75 0 0 1-.75-.75V3Z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    <span x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                        class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">Monitoring</span>
+                                                </div>
+                                                <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                    class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0"
+                                                    :class="{'rotate-180': groups.mtcMonitoringMenu.open}"
+                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                </svg>
+                                            </button>
+
+                                            <!-- Items Sub Grup 3: Monitoring -->
+                                            <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.mtcMonitoringMenu.open"
+                                                x-collapse
+                                                class="mt-1 relative">
+                                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+
+                                                <div class="space-y-1 ml-[24px]">
+                                                    <!-- Daily Dashboard -->
+                                                    <a href="{{ route('mtc.daily-dashboard') }}" wire:navigate
+                                                    class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('mtc.daily-dashboard') ? 'menu-active' : '' }}">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                            <path fill-rule="evenodd" d="M7.502 6h7.128A3.375 3.375 0 0 1 18 9.375v9.375a3 3 0 0 0 3-3V6.108c0-1.505-1.125-2.811-2.664-2.94a48.972 48.972 0 0 0-.673-.05A3 3 0 0 0 15 1.5h-1.5a3 3 0 0 0-2.663 1.618c-.225.015-.45.032-.673.05C8.662 3.295 7.554 4.542 7.502 6ZM13.5 3A1.5 1.5 0 0 0 12 4.5h4.5A1.5 1.5 0 0 0 15 3h-1.5Z" clip-rule="evenodd" />
+                                                            <path fill-rule="evenodd" d="M3 9.375C3 8.339 3.84 7.5 4.875 7.5h9.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 0 1 3 20.625V9.375Zm9.586 4.594a.75.75 0 0 0-1.172-.938l-2.476 3.096-.908-.907a.75.75 0 0 0-1.06 1.06l1.5 1.5a.75.75 0 0 0 1.116-.062l3-3.75Z" clip-rule="evenodd" />
+                                                        </svg>
+                                                        <span class="truncate">Daily Routine</span>
+                                                    </a>
+
+                                                    <!-- Stencil Dashboard -->
+                                                    <a href="{{ route('mtc.stencil-dashboard') }}" wire:navigate
+                                                    class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('mtc.stencil-dashboard') ? 'menu-active' : '' }}">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                            <path fill-rule="evenodd" d="M3 4.875C3 3.839 3.84 3 4.875 3h4.5c1.036 0 1.875.84 1.875 1.875v4.5c0 1.036-.84 1.875-1.875 1.875h-4.5A1.875 1.875 0 0 1 3 9.375v-4.5ZM4.875 4.5a.375.375 0 0 0-.375.375v4.5c0 .207.168.375.375.375h4.5a.375.375 0 0 0 .375-.375v-4.5a.375.375 0 0 0-.375-.375h-4.5Zm7.875.375c0-1.036.84-1.875 1.875-1.875h4.5C20.16 3 21 3.84 21 4.875v4.5c0 1.036-.84 1.875-1.875 1.875h-4.5a1.875 1.875 0 0 1-1.875-1.875v-4.5Zm1.875-.375a.375.375 0 0 0-.375.375v4.5c0 .207.168.375.375.375h4.5a.375.375 0 0 0 .375-.375v-4.5a.375.375 0 0 0-.375-.375h-4.5ZM6 6.75A.75.75 0 0 1 6.75 6h.75a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-.75.75h-.75A.75.75 0 0 1 6 7.5v-.75Zm9.75 0A.75.75 0 0 1 16.5 6h.75a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-.75.75h-.75a.75.75 0 0 1-.75-.75v-.75ZM3 14.625c0-1.036.84-1.875 1.875-1.875h4.5c1.036 0 1.875.84 1.875 1.875v4.5c0 1.035-.84 1.875-1.875 1.875h-4.5A1.875 1.875 0 0 1 3 19.125v-4.5Zm1.875-.375a.375.375 0 0 0-.375.375v4.5c0 .207.168.375.375.375h4.5a.375.375 0 0 0 .375-.375v-4.5a.375.375 0 0 0-.375-.375h-4.5Zm7.875-.75a.75.75 0 0 1 .75-.75h.75a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-.75.75h-.75a.75.75 0 0 1-.75-.75v-.75Zm6 0a.75.75 0 0 1 .75-.75h.75a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-.75.75h-.75a.75.75 0 0 1-.75-.75v-.75ZM6 16.5a.75.75 0 0 1 .75-.75h.75a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-.75.75h-.75a.75.75 0 0 1-.75-.75v-.75Zm9.75 0a.75.75 0 0 1 .75-.75h.75a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-.75.75h-.75a.75.75 0 0 1-.75-.75v-.75Zm-3 3a.75.75 0 0 1 .75-.75h.75a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-.75.75h-.75a.75.75 0 0 1-.75-.75v-.75Zm6 0a.75.75 0 0 1 .75-.75h.75a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-.75.75h-.75a.75.75 0 0 1-.75-.75v-.75Z" clip-rule="evenodd" />
+                                                        </svg>
+                                                        <span class="truncate">Stencil</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @endcanany
+
+                                        <!-- ========== SUB GRUP 3: MASTER ========== -->
+                                        @canany(['view mtc-monitoring'])
+                                        <div class="relative w-full">
+                                            <button @click="toggleGroup('mtcMaster')"
+                                                    class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                                <div class="flex items-center gap-2">
+                                                    <!-- Icon Master (database) -->
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                        <path d="M21 6.375c0 2.692-4.03 4.875-9 4.875S3 9.067 3 6.375 7.03 1.5 12 1.5s9 2.183 9 4.875Z" />
+                                                        <path d="M12 12.75c2.685 0 5.19-.586 7.078-1.609a8.283 8.283 0 0 0 1.897-1.384c.016.121.025.244.025.368C21 12.817 16.97 15 12 15s-9-2.183-9-4.875c0-.124.009-.247.025-.368a8.285 8.285 0 0 0 1.897 1.384C6.809 12.164 9.315 12.75 12 12.75Z" />
+                                                        <path d="M12 16.5c2.685 0 5.19-.586 7.078-1.609a8.282 8.282 0 0 0 1.897-1.384c.016.121.025.244.025.368 0 2.692-4.03 4.875-9 4.875s-9-2.183-9-4.875c0-.124.009-.247.025-.368a8.284 8.284 0 0 0 1.897 1.384C6.809 15.914 9.315 16.5 12 16.5Z" />
+                                                        <path d="M12 20.25c2.685 0 5.19-.586 7.078-1.609a8.282 8.282 0 0 0 1.897-1.384c.016.121.025.244.025.368 0 2.692-4.03 4.875-9 4.875s-9-2.183-9-4.875c0-.124.009-.247.025-.368a8.284 8.284 0 0 0 1.897 1.384C6.809 19.664 9.315 20.25 12 20.25Z" />
+                                                    </svg>
+                                                    <span x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                        class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">Master</span>
+                                                </div>
+                                                <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                    class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0"
+                                                    :class="{'rotate-180': groups.mtcMaster.open}"
+                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                </svg>
+                                            </button>
+
+                                            <!-- Items Sub Grup 3: Master -->
+                                            <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.mtcMaster.open"
+                                                x-collapse
+                                                class="mt-1 relative">
+                                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+
+                                                <div class="space-y-1 ml-[24px]">
+                                                    <!-- Master Areas -->
+                                                    <a href="{{ route('mtc.master-areas') }}" wire:navigate
+                                                    class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('mtc.master-areas') ? 'menu-active' : '' }}">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                            <path fill-rule="evenodd" d="M8.161 2.58a1.875 1.875 0 0 1 1.678 0l4.993 2.498c.106.052.23.052.336 0l3.869-1.935A1.875 1.875 0 0 1 21.75 4.82v12.485c0 .71-.401 1.36-1.037 1.677l-4.875 2.437a1.875 1.875 0 0 1-1.676 0l-4.994-2.497a.375.375 0 0 0-.336 0l-3.868 1.935A1.875 1.875 0 0 1 2.25 19.18V6.695c0-.71.401-1.36 1.036-1.677l4.875-2.437ZM9 6a.75.75 0 0 1 .75.75V15a.75.75 0 0 1-1.5 0V6.75A.75.75 0 0 1 9 6Zm6.75 3a.75.75 0 0 0-1.5 0v8.25a.75.75 0 0 0 1.5 0V9Z" clip-rule="evenodd" />
+                                                        </svg>
+                                                        <span class="truncate">Master Area</span>
+                                                    </a>
+
+                                                    <!-- Master Locations -->
+                                                    <a href="{{ route('mtc.master-locations') }}" wire:navigate
+                                                    class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('mtc.master-locations') ? 'menu-active' : '' }}">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                            <path fill-rule="evenodd" d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd" />
+                                                        </svg>
+                                                        <span class="truncate">Master Location</span>
+                                                    </a>
+
+                                                    <!-- Master Lines -->
+                                                    <a href="{{ route('mtc.master-lines') }}" wire:navigate
+                                                    class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('mtc.master-lines') ? 'menu-active' : '' }}">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                            <path fill-rule="evenodd" d="M3 5.25a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 5.25Zm0 4.5A.75.75 0 0 1 3.75 9h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 9.75Zm0 4.5a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75a.75.75 0 0 1-.75-.75Zm0 4.5a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
+                                                        </svg>
+                                                        <span class="truncate">Master Line</span>
+                                                    </a>
+
+                                                    <!-- Master Machines -->
+                                                    <a href="{{ route('mtc.master-machines') }}" wire:navigate
+                                                    class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('mtc.master-machines') ? 'menu-active' : '' }}">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                            <path d="M3.75 6a2.25 2.25 0 0 0-2.25 2.25v9a2.25 2.25 0 0 0 2.25 2.25h16.5A2.25 2.25 0 0 0 22.5 17.25v-9A2.25 2.25 0 0 0 20.25 6H3.75ZM4.5 9a.75.75 0 0 1 .75-.75h.75a.75.75 0 0 1 0 1.5h-.75A.75.75 0 0 1 4.5 9Zm1.5 3.75a.75.75 0 0 0 0 1.5h.75a.75.75 0 0 0 0-1.5h-.75Zm-1.5 3.75a.75.75 0 0 1 .75-.75h.75a.75.75 0 0 1 0 1.5h-.75a.75.75 0 0 1-.75-.75ZM9.75 9a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 9.75 9Zm0 3.75a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5a.75.75 0 0 1-.75-.75Zm0 3.75a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5a.75.75 0 0 1-.75-.75Z" />
+                                                        </svg>
+                                                        <span class="truncate">Master Machine</span>
+                                                    </a>
+
+                                                    <!-- Stencil Master -->
+                                                    <a href="{{ route('mtc.stencil.index') }}" wire:navigate
+                                                    class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('mtc.stencil.index') ? 'menu-active' : '' }}">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                            <path fill-rule="evenodd" d="M1.5 7.125c0-1.036.84-1.875 1.875-1.875h6c1.036 0 1.875.84 1.875 1.875v3.75c0 1.036-.84 1.875-1.875 1.875h-6A1.875 1.875 0 0 1 1.5 10.875v-3.75Zm12 1.5c0-1.036.84-1.875 1.875-1.875h5.25c1.035 0 1.875.84 1.875 1.875v8.25c0 1.035-.84 1.875-1.875 1.875h-5.25a1.875 1.875 0 0 1-1.875-1.875v-8.25ZM3 16.125c0-1.036.84-1.875 1.875-1.875h5.25c1.036 0 1.875.84 1.875 1.875v2.25c0 1.035-.84 1.875-1.875 1.875h-5.25A1.875 1.875 0 0 1 3 18.375v-2.25Z" clip-rule="evenodd" />
+                                                        </svg>
+                                                        <span class="truncate">Master Stencil</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @endcanany
+
+                                    </div>
+                                </div>
+                            </div>
+                            @endcanany
 
                             <!-- ========== SUB GROUP: UTILITY MONITORING ========== -->
                             @canany(['view daily report utility'])
@@ -1867,6 +2024,10 @@
                     patrolMonitoring: { open: false },
                     utilityMonitoring: { open: false },
                     dailyReportUtility: { open: false },
+                    // ===== TAMBAHKAN INI =====
+                    mtcMonitoring: { open: false },       // Sub Grup 2
+                    mtcMonitoringMenu: { open: false },   // Sub Grup 3 - Monitoring
+                    mtcMaster: { open: false },           // Sub Grup 3 - Master
                 },
                 
                 init() {
@@ -1923,7 +2084,15 @@
                     });
 
                     // 5. Load state group menu (accordion)
-                    const groupNames = ['home', 'maintenance', 'production', 'dcc', 'hr', 'hrMaster', 'hrForm', 'hrReport', 'ticketing', 'settings', 'auth', 'wipMonitoring', 'msMonitoring', 'fctMonitoring', 'qaqc', 'qaqcMaster', 'qaqcForm', 'qaqcReport', 'uniformMonitoring', 'absenceMonitoring', 'lockerMonitoring', 'patrolMonitoring', 'utilityMonitoring', 'dailyReportUtility'];
+                    // 5. Load state group menu (accordion)
+                    const groupNames = [
+                        'home', 'maintenance', 'production', 'dcc', 'hr', 'hrMaster', 'hrForm', 
+                        'hrReport', 'ticketing', 'settings', 'auth', 'wipMonitoring', 'msMonitoring', 
+                        'fctMonitoring', 'qaqc', 'qaqcMaster', 'qaqcForm', 'qaqcReport', 
+                        'uniformMonitoring', 'absenceMonitoring', 'lockerMonitoring', 'patrolMonitoring', 
+                        'utilityMonitoring', 'dailyReportUtility',
+                        'mtcMonitoring', 'mtcMonitoringMenu', 'mtcMaster'
+                    ];
                     groupNames.forEach(groupName => {
                         const saved = localStorage.getItem(`sidebar_group_${groupName}`);
                         if (saved !== null) {

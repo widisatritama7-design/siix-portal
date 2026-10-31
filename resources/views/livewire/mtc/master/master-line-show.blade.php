@@ -1,856 +1,837 @@
-<section class="w-full">
+<div class="p-1 space-y-2">
+    @section('title', 'Master Line Detail - MTC')
 
-    <flux:heading class="sr-only">
-        {{ __('MTC - Master Line Detail') }}
-    </flux:heading>
+    <!-- Breadcrumbs -->
+    <flux:breadcrumbs>
+        <flux:breadcrumbs.item href="{{ route('dashboard') }}" wire:navigate separator="slash">
+            Dashboard
+        </flux:breadcrumbs.item>
+        <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
+            Maintenance
+        </flux:breadcrumbs.item>
+        <flux:breadcrumbs.item href="{{ route('mtc.master-lines') }}" wire:navigate separator="slash">
+            Master Line
+        </flux:breadcrumbs.item>
+        <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
+            View
+        </flux:breadcrumbs.item>
+    </flux:breadcrumbs>
 
-    <x-mtc.layout 
-        class="!max-w-full !px-0 !mx-0"
-    >
-        <x-slot name="heading">
-            <div class="w-full">
-                <flux:breadcrumbs class="mb-1">
-                    <flux:breadcrumbs.item href="{{ route('dashboard') }}" wire:navigate separator="slash">
-                        Dashboard
-                    </flux:breadcrumbs.item>
-                    <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
-                        Maintenance
-                    </flux:breadcrumbs.item>
-                    <flux:breadcrumbs.item href="{{ route('mtc.master-lines') }}" wire:navigate separator="slash">
-                        Master Line
-                    </flux:breadcrumbs.item>
-                    <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
-                        View
-                    </flux:breadcrumbs.item>
-                </flux:breadcrumbs>
-            </div>
-        </x-slot>
-        
-        <x-slot name="subheading">
-            <div class="w-full">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                    <div class="w-full sm:w-auto">
-                        <h1 class="text-2xl sm:text-3xl font-bold text-zinc-800 dark:text-white">
-                            View Master Line
-                        </h1>
-                        <p class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-                            View detailed information about production line
-                        </p>
-                    </div>
-                    <div class="w-full sm:w-auto flex-shrink-0">
-                        <flux:button 
-                            href="{{ route('mtc.master-lines') }}"
-                            wire:navigate
-                            icon="arrow-left"
-                            variant="primary"
-                            color="blue"
-                            class="w-full sm:w-auto justify-center"
-                        >
-                            Back to List
-                        </flux:button>
-                    </div>
-                </div>
-            </div>
-        </x-slot>
-        
-        <div class="-mt-2">
-            <!-- Line Information Card -->
-            <flux:card class="p-0 shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden mb-6">
-                <div class="bg-blue-600 dark:bg-blue-500 px-6 py-4">
-                    <div class="flex items-center gap-2">
-                        <flux:icon name="queue-list" class="w-5 h-5 text-white" />
-                        <h3 class="font-semibold text-base text-white">Line Information</h3>
-                    </div>
-                </div>
-                
-                <div class="p-6">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-                        <div class="text-center">
-                            <label class="text-sm font-medium text-zinc-500 dark:text-zinc-400 block">Line Number</label>
-                            <p class="mt-1 text-base font-semibold text-zinc-800 dark:text-white">
-                                {{ $line->line_number }}
-                            </p>
-                        </div>
-
-                        <div class="text-center">
-                            <label class="text-sm font-medium text-zinc-500 dark:text-zinc-400 block">Location</label>
-                            <p class="mt-1 text-base text-zinc-800 dark:text-white">
-                                {{ $line->location->location_name ?? 'N/A' }}
-                            </p>
-                        </div>
-
-                        <div class="text-center">
-                            <label class="text-sm font-medium text-zinc-500 dark:text-zinc-400 block">Area</label>
-                            <p class="mt-1 text-base text-zinc-800 dark:text-white">
-                                {{ $line->location->area->area_name ?? 'N/A' }}
-                            </p>
-                        </div>
-
-                        <div class="text-center">
-                            <label class="text-sm font-medium text-zinc-500 dark:text-zinc-400 block">Machine Type</label>
-                            <div class="mt-1 flex justify-center">
-                                @php
-                                    $machineTypeColors = [
-                                        'fuji' => 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
-                                        'panasonic' => 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
-                                        'both' => 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-                                    ];
-                                @endphp
-                                <span class="inline-flex px-3 py-1 rounded-full text-sm font-medium {{ $machineTypeColors[$line->machine_type] ?? 'bg-gray-100 text-gray-800' }}">
-                                    {{ ucfirst($line->machine_type) }}
-                                </span>
-                            </div>
-                        </div>
-
-                        <div class="text-center">
-                            <label class="text-sm font-medium text-zinc-500 dark:text-zinc-400 block">Status</label>
-                            <div class="mt-1 flex justify-center">
-                                @php
-                                    $statusColors = [
-                                        'Running' => 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
-                                        'Maintenance' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
-                                        'No Schedule' => 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
-                                        'Trouble' => 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
-                                    ];
-                                @endphp
-                                <span class="inline-flex px-3 py-1 rounded-full text-sm font-medium {{ $statusColors[$line->status] ?? 'bg-gray-100 text-gray-800' }}">
-                                    {{ $line->status }}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Shift Information - Collapsible -->
-                    <div class="mt-6 pt-4 border-t border-zinc-200 dark:border-zinc-700">
-                        <div x-data="{ open: false }" class="bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-950/20 dark:to-amber-950/20 rounded-xl border border-yellow-200 dark:border-yellow-800 overflow-hidden">
-                            
-                            <!-- Header (Click to toggle) -->
-                            <button @click="open = !open" class="w-full flex items-center justify-between p-4 hover:bg-yellow-100/50 dark:hover:bg-yellow-900/20 transition-colors">
-                                <div class="flex items-center gap-2">
-                                    <div class="bg-yellow-500 p-1.5 rounded-lg">
-                                        <flux:icon name="clock" class="w-5 h-5 text-white" />
-                                    </div>
-                                    <label class="text-base font-bold text-yellow-700 dark:text-yellow-400">Shift Information & Deadline</label>
-                                </div>
-                                <div class="text-yellow-600 dark:text-yellow-400">
-                                    <svg x-show="!open" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-                                    </svg>
-                                    <svg x-show="open" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
-                                    </svg>
-                                </div>
-                            </button>
-                            
-                            <!-- Content (Collapsible) -->
-                            <div x-show="open" x-collapse class="p-4 pt-0">
-                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
-                                    <!-- Shift 1 -->
-                                    <div class="bg-white dark:bg-zinc-800/50 rounded-lg p-3 border-l-4 border-green-500 shadow-sm">
-                                        <div class="flex items-center justify-between mb-2">
-                                            <div class="flex items-center gap-2">
-                                                <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-400 text-xs font-bold">1</span>
-                                                <span class="font-semibold text-zinc-800 dark:text-white">Shift 1</span>
-                                            </div>
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
-                                                Morning
-                                            </span>
-                                        </div>
-                                        <div class="text-sm text-zinc-600 dark:text-zinc-400 mb-2">
-                                            🕐 07:00 - 15:00
-                                        </div>
-                                        <div>
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
-                                                ⏰ Deadline: 15:00
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <!-- Shift 2 -->
-                                    <div class="bg-white dark:bg-zinc-800/50 rounded-lg p-3 border-l-4 border-yellow-500 shadow-sm">
-                                        <div class="flex items-center justify-between mb-2">
-                                            <div class="flex items-center gap-2">
-                                                <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-400 text-xs font-bold">2</span>
-                                                <span class="font-semibold text-zinc-800 dark:text-white">Shift 2</span>
-                                            </div>
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400">
-                                                Afternoon
-                                            </span>
-                                        </div>
-                                        <div class="text-sm text-zinc-600 dark:text-zinc-400 mb-2">
-                                            🕐 15:00 - 23:00
-                                        </div>
-                                        <div>
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
-                                                ⏰ Deadline: 23:00
-                                            </span>
-                                        </div>
-                                    </div>
-
-                                    <!-- Shift 3 -->
-                                    <div class="bg-white dark:bg-zinc-800/50 rounded-lg p-3 border-l-4 border-blue-500 shadow-sm">
-                                        <div class="flex items-center justify-between mb-2">
-                                            <div class="flex items-center gap-2">
-                                                <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-400 text-xs font-bold">3</span>
-                                                <span class="font-semibold text-zinc-800 dark:text-white">Shift 3</span>
-                                            </div>
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
-                                                Night
-                                            </span>
-                                        </div>
-                                        <div class="text-sm text-zinc-600 dark:text-zinc-400 mb-2">
-                                            🕐 23:00 - 07:00
-                                        </div>
-                                        <div>
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
-                                                ⏰ Deadline: 07:00
-                                            </span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Saturday Schedule -->
-                                <div class="bg-white dark:bg-zinc-800/50 rounded-lg p-3 mb-4 border border-purple-200 dark:border-purple-800">
-                                    <div class="flex items-center gap-2 mb-3">
-                                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-400 text-xs font-bold">S</span>
-                                        <span class="font-semibold text-zinc-800 dark:text-white">Saturday Schedule</span>
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400">
-                                            Weekend
-                                        </span>
-                                    </div>
-                                    
-                                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                                        <!-- Saturday Shift 1 -->
-                                        <div class="bg-zinc-50 dark:bg-zinc-900/50 rounded-lg p-2 border-l-4 border-green-500">
-                                            <div class="flex items-center justify-between mb-1">
-                                                <div class="flex items-center gap-1">
-                                                    <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-400 text-xs font-bold">1</span>
-                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Shift 1</span>
-                                                </div>
-                                            </div>
-                                            <div class="text-xs text-zinc-600 dark:text-zinc-400 mb-1">
-                                                🕐 07:00 - 12:15
-                                            </div>
-                                            <div>
-                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
-                                                    Deadline: 12:15
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        <!-- Saturday Shift 2 -->
-                                        <div class="bg-zinc-50 dark:bg-zinc-900/50 rounded-lg p-2 border-l-4 border-yellow-500">
-                                            <div class="flex items-center justify-between mb-1">
-                                                <div class="flex items-center gap-1">
-                                                    <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-400 text-xs font-bold">2</span>
-                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Shift 2</span>
-                                                </div>
-                                            </div>
-                                            <div class="text-xs text-zinc-600 dark:text-zinc-400 mb-1">
-                                                🕐 12:15 - 17:45
-                                            </div>
-                                            <div>
-                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
-                                                    Deadline: 17:45
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        <!-- Saturday Shift 3 -->
-                                        <div class="bg-zinc-50 dark:bg-zinc-900/50 rounded-lg p-2 border-l-4 border-blue-500">
-                                            <div class="flex items-center justify-between mb-1">
-                                                <div class="flex items-center gap-1">
-                                                    <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-400 text-xs font-bold">3</span>
-                                                    <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Shift 3</span>
-                                                </div>
-                                            </div>
-                                            <div class="text-xs text-zinc-600 dark:text-zinc-400 mb-1">
-                                                🕐 17:45 - 23:00
-                                            </div>
-                                            <div>
-                                                <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
-                                                    Deadline: 23:00
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Warning Note -->
-                                <div class="bg-red-50 dark:bg-red-950/30 rounded-lg p-3 border border-red-200 dark:border-red-800">
-                                    <div class="flex items-center gap-2">
-                                        <div class="bg-red-500 p-1 rounded-full">
-                                            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                                            </svg>
-                                        </div>
-                                        <div class="flex-1">
-                                            <span class="font-semibold text-red-700 dark:text-red-400">⚠️ Important</span>
-                                            <p class="text-sm text-red-600 dark:text-red-400">If inspection exceeds the shift deadline, status will automatically change to <strong>"Delay"</strong></p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    @if($line->trouble_desc)
-                    <div class="mt-6 pt-4 border-t border-zinc-200 dark:border-zinc-700">
-                        <label class="text-sm font-medium text-zinc-500 dark:text-zinc-400 block mb-2">Trouble Description</label>
-                        <div class="bg-red-50 dark:bg-red-950/30 rounded-lg p-3">
-                            <p class="text-sm text-red-700 dark:text-red-400">
-                                {{ $line->trouble_desc }}
-                            </p>
-                        </div>
-                    </div>
-                    @endif
-                </div>
-            </flux:card>
-
-            <!-- Daily Fuji Inspection Records -->
-            @if(in_array($line->machine_type, ['fuji', 'both']))
-            <flux:card class="p-0 shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden mb-6">
-                <div class="bg-white dark:bg-zinc-800 px-6 py-4 border-b border-zinc-200 dark:border-zinc-700">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div class="flex items-center gap-2">
-                            <flux:icon name="clipboard-document-list" class="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
-                            <h3 class="font-semibold text-base text-zinc-900 dark:text-white">Daily Fuji Inspection Records</h3>
-                        </div>
-                        <div class="flex flex-wrap items-center gap-2">
-                            <flux:input 
-                                wire:model.live.debounce.300ms="search" 
-                                placeholder="Search..."
-                                icon="magnifying-glass"
-                                class="w-48 sm:w-64"
-                            />
-                            <select 
-                                wire:model.live="selectedStatus" 
-                                class="rounded-lg border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm focus:ring-2 focus:ring-green-500"
-                            >
-                                <option value="">All Status</option>
-                                <option value="Checked">Checked</option>
-                                <option value="On Progress">On Progress</option>
-                                <option value="Delay">Delay</option>
-                                <option value="Holiday">Holiday</option>
-                            </select>
-                            <flux:button 
-                                wire:click="resetFilters" 
-                                icon="arrow-path" 
-                                variant="subtle"
-                            >
-                                Reset
-                            </flux:button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="p-4 sm:p-6">
-                    @if($dailyFujis->count() > 0)
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
-                            <thead class="bg-zinc-50 dark:bg-zinc-800/50">
-                                <tr>
-                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Status</th>
-                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Approval</th>
-                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Group</th>
-                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Run Time</th>
-                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Stop Time</th>
-                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Check By</th>
-                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Approved By</th>
-                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Time First</th>
-                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Last Updated</th>
-                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
-                                @foreach($dailyFujis as $dailyFuji)
-                                <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors group">
-                                    <!-- Status Column with Icon & Tooltip -->
-                                    <td class="px-3 py-3 whitespace-nowrap text-center">
-                                        <div class="relative inline-flex items-center gap-2 cursor-help group/status justify-center"
-                                            title="{{ $dailyFuji->overall_status_text }}">
-                                            @if($dailyFuji->overall_status === 'success')
-                                                <flux:icon.check-circle class="w-5 h-5 text-green-600" />
-                                            @else
-                                                <flux:icon.x-circle class="w-5 h-5 text-red-600" />
-                                            @endif
-                                            <span class="text-sm text-zinc-700 dark:text-zinc-300">
-                                                {{ $dailyFuji->overall_status === 'success' ? 'OK' : 'Invalid' }}
-                                            </span>
-                                        </div>
-                                    </td>
-                                    
-                                    <!-- Approval Badge -->
-                                    <td class="px-3 py-3 whitespace-nowrap text-center">
-                                        @php
-                                            $approvalConfig = [
-                                                'Approved' => ['class' => 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400', 'icon' => 'check-circle'],
-                                                'Rejected' => ['class' => 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400', 'icon' => 'x-circle'],
-                                                'Pending' => ['class' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400', 'icon' => 'clock'],
-                                            ];
-                                            $config = $approvalConfig[$dailyFuji->approval] ?? $approvalConfig['Pending'];
-                                        @endphp
-                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium {{ $config['class'] }}">
-                                            <flux:icon name="{{ $config['icon'] }}" class="w-3 h-3" />
-                                            {{ $dailyFuji->approval ?? 'Pending' }}
-                                        </span>
-                                    </td>
-                                    
-                                    <!-- Group -->
-                                    <td class="px-3 py-3 whitespace-nowrap text-center">
-                                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 font-semibold text-sm">
-                                            {{ $dailyFuji->group ?? '-' }}
-                                        </span>
-                                    </td>
-                                    
-                                    <!-- Run Time Badge -->
-                                    <td class="px-3 py-3 whitespace-nowrap text-center">
-                                        @if($dailyFuji->run_time)
-                                        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                                            <flux:icon.play class="w-3 h-3" />
-                                            {{ $dailyFuji->run_time->format('H:i') }}
-                                        </span>
-                                        @else
-                                        <span class="text-sm text-zinc-400">-</span>
-                                        @endif
-                                    </td>
-                                    
-                                    <!-- Stop Time Badge -->
-                                    <td class="px-3 py-3 whitespace-nowrap text-center">
-                                        @if($dailyFuji->stop_time)
-                                        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
-                                            <flux:icon.stop class="w-3 h-3" />
-                                            {{ $dailyFuji->stop_time->format('H:i') }}
-                                        </span>
-                                        @else
-                                        <span class="text-sm text-zinc-400">-</span>
-                                        @endif
-                                    </td>
-                                    
-                                    <!-- Check By -->
-                                    <td class="px-3 py-3 whitespace-nowrap text-center">
-                                        <div class="flex items-center justify-center gap-2">
-                                            <div class="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                                                <span class="text-xs font-medium text-blue-600 dark:text-blue-400">
-                                                    {{ substr($dailyFuji->updater->name ?? $dailyFuji->creator->name ?? '-', 0, 1) }}
-                                                </span>
-                                            </div>
-                                            <span class="text-sm text-zinc-700 dark:text-zinc-300">
-                                                {{ $dailyFuji->updater->name ?? $dailyFuji->creator->name ?? '-' }}
-                                            </span>
-                                        </div>
-                                    </td>
-                                    
-                                    <!-- Approved By -->
-                                    <td class="px-3 py-3 whitespace-nowrap text-center">
-                                        @if($dailyFuji->approvedBy)
-                                        <div class="flex items-center justify-center gap-2">
-                                            <div class="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                                                <span class="text-xs font-medium text-green-600 dark:text-green-400">
-                                                    {{ substr($dailyFuji->approvedBy->name, 0, 1) }}
-                                                </span>
-                                            </div>
-                                            <span class="text-sm text-zinc-700 dark:text-zinc-300">
-                                                {{ $dailyFuji->approvedBy->name }}
-                                            </span>
-                                        </div>
-                                        @else
-                                        <span class="text-sm text-zinc-400">-</span>
-                                        @endif
-                                    </td>
-                                    
-                                    <!-- Created At -->
-                                    <td class="px-3 py-3 whitespace-nowrap text-center">
-                                        <div class="text-sm">
-                                            <div class="text-zinc-700 dark:text-zinc-300">{{ $dailyFuji->created_at->format('d/m/Y') }}</div>
-                                            <div class="text-xs text-zinc-400">{{ $dailyFuji->created_at->format('H:i:s') }}</div>
-                                        </div>
-                                    </td>
-
-                                    
-                                    <!-- Updated At -->
-                                    <td class="px-3 py-3 whitespace-nowrap text-center">
-                                        <div class="text-sm">
-                                            <div class="text-zinc-700 dark:text-zinc-300">{{ $dailyFuji->updated_at->format('d/m/Y') }}</div>
-                                            <div class="text-xs text-zinc-400">{{ $dailyFuji->updated_at->format('H:i:s') }}</div>
-                                        </div>
-                                    </td>
-                                    
-                                    <td class="px-4 py-3 text-center">
-                                        <div class="flex items-center justify-center gap-1 whitespace-nowrap">
-                                            <!-- View Activity Button -->
-                                            <flux:tooltip content="View activity log" position="top">
-                                                <flux:button 
-                                                    wire:click="viewActivity({{ $dailyFuji->id }}, 'fuji')"
-                                                    size="sm"
-                                                    icon="document-text"
-                                                    variant="primary"
-                                                    color="indigo"
-                                                    class="!p-2 flex-shrink-0"
-                                                />
-                                            </flux:tooltip>
-
-                                            <!-- View Details Button -->
-                                            <flux:tooltip content="View inspection details" position="top">
-                                                <flux:button 
-                                                    wire:click="viewDailyFujiDetails({{ $dailyFuji->id }})"
-                                                    size="sm"
-                                                    icon="eye"
-                                                    variant="primary"
-                                                    color="blue"
-                                                    class="!p-2 flex-shrink-0"
-                                                />
-                                            </flux:tooltip>
-                                            
-                                            <!-- Edit Button - HIDDEN jika sudah melewati batas -->
-                                            @php
-                                                $canEdit = now()->lessThanOrEqualTo($dailyFuji->getShiftEnd());
-                                            @endphp
-                                            
-                                            @if($canEdit && auth()->user()->can('edit daily fuji'))
-                                                <flux:tooltip content="Edit inspection (shift active)" position="top">
-                                                    <flux:button 
-                                                        wire:click="editDailyFuji({{ $dailyFuji->id }})"
-                                                        size="sm"
-                                                        icon="pencil-square"
-                                                        variant="primary"
-                                                        color="amber"
-                                                        class="!p-2 flex-shrink-0"
-                                                    />
-                                                </flux:tooltip>
-                                            @endif
-                                            
-                                            <!-- Approval Button - HIDDEN jika sudah Approved atau bukan Checked -->
-                                            @if($dailyFuji->approval !== 'Approved' && $dailyFuji->status === 'Checked' && auth()->user()->can('edit daily fuji'))
-                                                <flux:tooltip content="Approve/Reject inspection" position="top">
-                                                    <flux:button 
-                                                        wire:click="openApprovalModal({{ $dailyFuji->id }})"
-                                                        size="sm"
-                                                        icon="check-badge"
-                                                        variant="primary"
-                                                        color="green"
-                                                        class="!p-2 flex-shrink-0"
-                                                    />
-                                                </flux:tooltip>
-                                            @endif
-
-                                            <!-- Print Button -->
-                                            <flux:tooltip content="Print checklist" position="top">
-                                                <flux:button 
-                                                    href="{{ route('print.daily-fuji', $dailyFuji->id) }}"
-                                                    target="_blank"
-                                                    size="sm"
-                                                    icon="printer"
-                                                    variant="primary"
-                                                    color="gray"
-                                                    class="!p-2 flex-shrink-0"
-                                                />
-                                            </flux:tooltip>
-                                        </div>
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <!-- Pagination -->
-                    <div class="mt-4 px-2">
-                        {{ $dailyFujis->links() }}
-                    </div>
-                    
-                    @else
-                    <div class="text-center py-12">
-                        <flux:icon.document-magnifying-glass class="w-12 h-12 mx-auto text-zinc-400 mb-3" />
-                        <p class="text-zinc-500 dark:text-zinc-400">No inspection records found for this line.</p>
-                        <button 
-                            wire:click="createDailyFuji"
-                            class="mt-4 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors"
-                        >
-                            <flux:icon.plus class="w-4 h-4" />
-                            Create First Inspection
-                        </button>
-                    </div>
-                    @endif
-                </div>
-            </flux:card>
-            @endif
-
-            <!-- Daily Panasonic Inspection Records -->
-            @if(in_array($line->machine_type, ['panasonic', 'both']))
-            <flux:card class="p-0 shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden mb-6">
-                <div class="bg-white dark:bg-zinc-800 px-6 py-4 border-b border-zinc-200 dark:border-zinc-700">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                        <div class="flex items-center gap-2">
-                            <flux:icon name="clipboard-document-list" class="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
-                            <h3 class="font-semibold text-base text-zinc-900 dark:text-white">Daily Panasonic Inspection Records</h3>
-                        </div>
-                        <div class="flex flex-wrap items-center gap-2">
-                            <flux:input 
-                                wire:model.live.debounce.300ms="panasonicSearch" 
-                                placeholder="Search..."
-                                icon="magnifying-glass"
-                                class="w-48 sm:w-64"
-                            />
-                            <select 
-                                wire:model.live="selectedPanasonicStatus" 
-                                class="rounded-lg border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
-                            >
-                                <option value="">All Status</option>
-                                <option value="Checked">Checked</option>
-                                <option value="On Progress">On Progress</option>
-                                <option value="Delay">Delay</option>
-                                <option value="Holiday">Holiday</option>
-                            </select>
-                            <flux:button 
-                                wire:click="resetPanasonicFilters" 
-                                icon="arrow-path" 
-                                variant="subtle"
-                            >
-                                Reset
-                            </flux:button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="p-4 sm:p-6">
-                    @if($dailyPanasonics->count() > 0)
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
-                            <thead class="bg-zinc-50 dark:bg-zinc-800/50">
-                                <tr>
-                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Status</th>
-                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Approval</th>
-                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Group</th>
-                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Run Time</th>
-                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Stop Time</th>
-                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Check By</th>
-                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Approved By</th>
-                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Time First</th>
-                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Last Updated</th>
-                                    <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
-                                @foreach($dailyPanasonics as $dailyPanasonic)
-                                <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors group">
-                                    <!-- Status Column -->
-                                    <td class="px-3 py-3 whitespace-nowrap text-center">
-                                        <div class="relative inline-flex items-center gap-2 cursor-help group/status justify-center"
-                                            title="{{ $dailyPanasonic->overall_status_text }}">
-                                            @if($dailyPanasonic->overall_status === 'success')
-                                                <flux:icon.check-circle class="w-5 h-5 text-green-600" />
-                                            @else
-                                                <flux:icon.x-circle class="w-5 h-5 text-red-600" />
-                                            @endif
-                                            <span class="text-sm text-zinc-700 dark:text-zinc-300">
-                                                {{ $dailyPanasonic->overall_status === 'success' ? 'OK' : 'Invalid' }}
-                                            </span>
-                                        </div>
-                                    </td>
-                                    
-                                    <!-- Approval Badge -->
-                                    <td class="px-3 py-3 whitespace-nowrap text-center">
-                                        @php
-                                            $panasonicApprovalConfig = [
-                                                'Approved' => ['class' => 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400', 'icon' => 'check-circle'],
-                                                'Rejected' => ['class' => 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400', 'icon' => 'x-circle'],
-                                                'Pending' => ['class' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400', 'icon' => 'clock'],
-                                            ];
-                                            $panasonicConfig = $panasonicApprovalConfig[$dailyPanasonic->approval] ?? $panasonicApprovalConfig['Pending'];
-                                        @endphp
-                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium {{ $panasonicConfig['class'] }}">
-                                            <flux:icon name="{{ $panasonicConfig['icon'] }}" class="w-3 h-3" />
-                                            {{ $dailyPanasonic->approval ?? 'Pending' }}
-                                        </span>
-                                    </td>
-                                    
-                                    <!-- Group -->
-                                    <td class="px-3 py-3 whitespace-nowrap text-center">
-                                        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 font-semibold text-sm">
-                                            {{ $dailyPanasonic->group ?? '-' }}
-                                        </span>
-                                    </td>
-                                    
-                                    <!-- Run Time -->
-                                    <td class="px-3 py-3 whitespace-nowrap text-center">
-                                        @if($dailyPanasonic->run_time)
-                                        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-                                            <flux:icon.play class="w-3 h-3" />
-                                            {{ $dailyPanasonic->run_time->format('H:i') }}
-                                        </span>
-                                        @else
-                                        <span class="text-sm text-zinc-400">-</span>
-                                        @endif
-                                    </td>
-                                    
-                                    <!-- Stop Time -->
-                                    <td class="px-3 py-3 whitespace-nowrap text-center">
-                                        @if($dailyPanasonic->stop_time)
-                                        <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
-                                            <flux:icon.stop class="w-3 h-3" />
-                                            {{ $dailyPanasonic->stop_time->format('H:i') }}
-                                        </span>
-                                        @else
-                                        <span class="text-sm text-zinc-400">-</span>
-                                        @endif
-                                    </td>
-                                    
-                                    <!-- Check By -->
-                                    <td class="px-3 py-3 whitespace-nowrap text-center">
-                                        <div class="flex items-center justify-center gap-2">
-                                            <div class="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                                                <span class="text-xs font-medium text-blue-600 dark:text-blue-400">
-                                                    {{ substr($dailyPanasonic->updater->name ?? $dailyPanasonic->creator->name ?? '-', 0, 1) }}
-                                                </span>
-                                            </div>
-                                            <span class="text-sm text-zinc-700 dark:text-zinc-300">
-                                                {{ $dailyPanasonic->updater->name ?? $dailyPanasonic->creator->name ?? '-' }}
-                                            </span>
-                                        </div>
-                                    </td>
-                                    
-                                    <!-- Approved By -->
-                                    <td class="px-3 py-3 whitespace-nowrap text-center">
-                                        @if($dailyPanasonic->approvedBy)
-                                        <div class="flex items-center justify-center gap-2">
-                                            <div class="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                                                <span class="text-xs font-medium text-green-600 dark:text-green-400">
-                                                    {{ substr($dailyPanasonic->approvedBy->name, 0, 1) }}
-                                                </span>
-                                            </div>
-                                            <span class="text-sm text-zinc-700 dark:text-zinc-300">
-                                                {{ $dailyPanasonic->approvedBy->name }}
-                                            </span>
-                                        </div>
-                                        @else
-                                        <span class="text-sm text-zinc-400">-</span>
-                                        @endif
-                                    </td>
-                                    
-                                    <!-- Created At -->
-                                    <td class="px-3 py-3 whitespace-nowrap text-center">
-                                        <div class="text-sm">
-                                            <div class="text-zinc-700 dark:text-zinc-300">{{ $dailyPanasonic->created_at->format('d/m/Y') }}</div>
-                                            <div class="text-xs text-zinc-400">{{ $dailyPanasonic->created_at->format('H:i:s') }}</div>
-                                        </div>
-                                    </td>
-                                    
-                                    <!-- Updated At -->
-                                    <td class="px-3 py-3 whitespace-nowrap text-center">
-                                        <div class="text-sm">
-                                            <div class="text-zinc-700 dark:text-zinc-300">{{ $dailyPanasonic->updated_at->format('d/m/Y') }}</div>
-                                            <div class="text-xs text-zinc-400">{{ $dailyPanasonic->updated_at->format('H:i:s') }}</div>
-                                        </div>
-                                    </td>
-                                    
-                                    <!-- Actions -->
-                                    <td class="px-4 py-3 text-center">
-                                        <div class="flex items-center justify-center gap-1 whitespace-nowrap">
-
-                                            <!-- View Activity Button -->
-                                            <flux:tooltip content="View activity log" position="top">
-                                                <flux:button 
-                                                    wire:click="viewActivity({{ $dailyPanasonic->id }}, 'panasonic')"
-                                                    size="sm"
-                                                    icon="document-text"
-                                                    variant="primary"
-                                                    color="indigo"
-                                                    class="!p-2 flex-shrink-0"
-                                                />
-                                            </flux:tooltip>
-
-                                            <!-- View Button -->
-                                            <flux:tooltip content="View inspection details" position="top">
-                                                <flux:button 
-                                                    wire:click="viewDailyPanasonicDetails({{ $dailyPanasonic->id }})"
-                                                    size="sm"
-                                                    icon="eye"
-                                                    variant="primary"
-                                                    color="blue"
-                                                    class="!p-2 flex-shrink-0"
-                                                />
-                                            </flux:tooltip>
-                                            
-                                            <!-- Edit Button - HIDDEN jika shift sudah berakhir -->
-                                            @php
-                                                $canEditPanasonic = now()->lessThanOrEqualTo($dailyPanasonic->getShiftEnd());
-                                            @endphp
-                                            
-                                            @if($canEditPanasonic && auth()->user()->can('edit daily panasonic'))
-                                                <flux:tooltip content="Edit inspection (shift active)" position="top">
-                                                    <flux:button 
-                                                        wire:click="editDailyPanasonic({{ $dailyPanasonic->id }})"
-                                                        size="sm"
-                                                        icon="pencil-square"
-                                                        variant="primary"
-                                                        color="amber"
-                                                        class="!p-2 flex-shrink-0"
-                                                    />
-                                                </flux:tooltip>
-                                            @endif
-                                            
-                                            <!-- Approval Button -->
-                                            @if($dailyPanasonic->approval !== 'Approved' && $dailyPanasonic->status === 'Checked' && auth()->user()->can('edit daily panasonic'))
-                                                <flux:tooltip content="Approve/Reject inspection" position="top">
-                                                    <flux:button 
-                                                        wire:click="openPanasonicApprovalModal({{ $dailyPanasonic->id }})"
-                                                        size="sm"
-                                                        icon="check-badge"
-                                                        variant="primary"
-                                                        color="green"
-                                                        class="!p-2 flex-shrink-0"
-                                                    />
-                                                </flux:tooltip>
-                                            @endif
-
-                                            <!-- Print Button -->
-                                            <flux:tooltip content="Print checklist" position="top">
-                                                <flux:button 
-                                                    href="{{ route('print.daily-panasonic', $dailyPanasonic->id) }}"
-                                                    target="_blank"
-                                                    size="sm"
-                                                    icon="printer"
-                                                    variant="primary"
-                                                    color="gray"
-                                                    class="!p-2 flex-shrink-0"
-                                                />
-                                            </flux:tooltip>
-                                        </div>
-                                    </td>
-                                </tr>   
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-                    
-                    <!-- Pagination Panasonic -->
-                    <div class="mt-4 px-2">
-                        {{ $dailyPanasonics->links() }}
-                    </div>
-                    
-                    @else
-                    <div class="text-center py-12">
-                        <flux:icon.document-magnifying-glass class="w-12 h-12 mx-auto text-zinc-400 mb-3" />
-                        <p class="text-zinc-500 dark:text-zinc-400">No Panasonic inspection records found for this line.</p>
-                        <button 
-                            wire:click="createDailyPanasonic"
-                            class="mt-4 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors"
-                        >
-                            <flux:icon.plus class="w-4 h-4" />
-                            Create First Panasonic Inspection
-                        </button>
-                    </div>
-                    @endif
-                </div>
-            </flux:card>
-            @endif
-
-            <style>
-                [x-cloak] { display: none !important; }
-            </style>
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-2">
+        <div class="w-full sm:w-auto">
+            <h1 class="text-2xl sm:text-3xl font-bold text-zinc-800 dark:text-white">
+                View Master Line
+            </h1>
+            <p class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+                View detailed information about production line
+            </p>
         </div>
-    </x-mtc.layout>
+        <div class="w-full sm:w-auto flex-shrink-0">
+            <flux:button 
+                href="{{ route('mtc.master-lines') }}"
+                wire:navigate
+                icon="arrow-left"
+                variant="primary"
+                color="blue"
+                class="w-full sm:w-auto justify-center"
+            >
+                Back to List
+            </flux:button>
+        </div>
+    </div>
+
+    <!-- Line Information Card -->
+    <flux:card class="p-0 shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden mb-6">
+        <div class="bg-blue-600 dark:bg-blue-500 px-6 py-4">
+            <div class="flex items-center gap-2">
+                <flux:icon name="queue-list" class="w-5 h-5 text-white" />
+                <h3 class="font-semibold text-base text-white">Line Information</h3>
+            </div>
+        </div>
+        
+        <div class="p-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+                <div class="text-center">
+                    <label class="text-sm font-medium text-zinc-500 dark:text-zinc-400 block">Line Number</label>
+                    <p class="mt-1 text-base font-semibold text-zinc-800 dark:text-white">
+                        {{ $line->line_number }}
+                    </p>
+                </div>
+
+                <div class="text-center">
+                    <label class="text-sm font-medium text-zinc-500 dark:text-zinc-400 block">Location</label>
+                    <p class="mt-1 text-base text-zinc-800 dark:text-white">
+                        {{ $line->location->location_name ?? 'N/A' }}
+                    </p>
+                </div>
+
+                <div class="text-center">
+                    <label class="text-sm font-medium text-zinc-500 dark:text-zinc-400 block">Area</label>
+                    <p class="mt-1 text-base text-zinc-800 dark:text-white">
+                        {{ $line->location->area->area_name ?? 'N/A' }}
+                    </p>
+                </div>
+
+                <div class="text-center">
+                    <label class="text-sm font-medium text-zinc-500 dark:text-zinc-400 block">Machine Type</label>
+                    <div class="mt-1 flex justify-center">
+                        @php
+                            $machineTypeColors = [
+                                'fuji' => 'bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-400',
+                                'panasonic' => 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+                                'both' => 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+                            ];
+                        @endphp
+                        <span class="inline-flex px-3 py-1 rounded-full text-sm font-medium {{ $machineTypeColors[$line->machine_type] ?? 'bg-gray-100 text-gray-800' }}">
+                            {{ ucfirst($line->machine_type) }}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="text-center">
+                    <label class="text-sm font-medium text-zinc-500 dark:text-zinc-400 block">Status</label>
+                    <div class="mt-1 flex justify-center">
+                        @php
+                            $statusColors = [
+                                'Running' => 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400',
+                                'Maintenance' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400',
+                                'No Schedule' => 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400',
+                                'Trouble' => 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400',
+                            ];
+                        @endphp
+                        <span class="inline-flex px-3 py-1 rounded-full text-sm font-medium {{ $statusColors[$line->status] ?? 'bg-gray-100 text-gray-800' }}">
+                            {{ $line->status }}
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Shift Information - Collapsible -->
+            <div class="mt-6 pt-4 border-t border-zinc-200 dark:border-zinc-700">
+                <div x-data="{ open: false }" class="bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-950/20 dark:to-amber-950/20 rounded-xl border border-yellow-200 dark:border-yellow-800 overflow-hidden">
+                    
+                    <!-- Header (Click to toggle) -->
+                    <button @click="open = !open" class="w-full flex items-center justify-between p-4 hover:bg-yellow-100/50 dark:hover:bg-yellow-900/20 transition-colors">
+                        <div class="flex items-center gap-2">
+                            <div class="bg-yellow-500 p-1.5 rounded-lg">
+                                <flux:icon name="clock" class="w-5 h-5 text-white" />
+                            </div>
+                            <label class="text-base font-bold text-yellow-700 dark:text-yellow-400">Shift Information & Deadline</label>
+                        </div>
+                        <div class="text-yellow-600 dark:text-yellow-400">
+                            <svg x-show="!open" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                            <svg x-show="open" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                            </svg>
+                        </div>
+                    </button>
+                    
+                    <!-- Content (Collapsible) -->
+                    <div x-show="open" x-collapse class="p-4 pt-0">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-4">
+                            <!-- Shift 1 -->
+                            <div class="bg-white dark:bg-zinc-800/50 rounded-lg p-3 border-l-4 border-green-500 shadow-sm">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center gap-2">
+                                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-400 text-xs font-bold">1</span>
+                                        <span class="font-semibold text-zinc-800 dark:text-white">Shift 1</span>
+                                    </div>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                                        Morning
+                                    </span>
+                                </div>
+                                <div class="text-sm text-zinc-600 dark:text-zinc-400 mb-2">
+                                    🕐 07:00 - 15:00
+                                </div>
+                                <div>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+                                        ⏰ Deadline: 15:00
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Shift 2 -->
+                            <div class="bg-white dark:bg-zinc-800/50 rounded-lg p-3 border-l-4 border-yellow-500 shadow-sm">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center gap-2">
+                                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-400 text-xs font-bold">2</span>
+                                        <span class="font-semibold text-zinc-800 dark:text-white">Shift 2</span>
+                                    </div>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400">
+                                        Afternoon
+                                    </span>
+                                </div>
+                                <div class="text-sm text-zinc-600 dark:text-zinc-400 mb-2">
+                                    🕐 15:00 - 23:00
+                                </div>
+                                <div>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+                                        ⏰ Deadline: 23:00
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Shift 3 -->
+                            <div class="bg-white dark:bg-zinc-800/50 rounded-lg p-3 border-l-4 border-blue-500 shadow-sm">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center gap-2">
+                                        <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-400 text-xs font-bold">3</span>
+                                        <span class="font-semibold text-zinc-800 dark:text-white">Shift 3</span>
+                                    </div>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+                                        Night
+                                    </span>
+                                </div>
+                                <div class="text-sm text-zinc-600 dark:text-zinc-400 mb-2">
+                                    🕐 23:00 - 07:00
+                                </div>
+                                <div>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+                                        ⏰ Deadline: 07:00
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Saturday Schedule -->
+                        <div class="bg-white dark:bg-zinc-800/50 rounded-lg p-3 mb-4 border border-purple-200 dark:border-purple-800">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-purple-100 dark:bg-purple-900/50 text-purple-700 dark:text-purple-400 text-xs font-bold">S</span>
+                                <span class="font-semibold text-zinc-800 dark:text-white">Saturday Schedule</span>
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400">
+                                    Weekend
+                                </span>
+                            </div>
+                            
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                <!-- Saturday Shift 1 -->
+                                <div class="bg-zinc-50 dark:bg-zinc-900/50 rounded-lg p-2 border-l-4 border-green-500">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <div class="flex items-center gap-1">
+                                            <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-green-100 dark:bg-green-900/50 text-green-700 dark:text-green-400 text-xs font-bold">1</span>
+                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Shift 1</span>
+                                        </div>
+                                    </div>
+                                    <div class="text-xs text-zinc-600 dark:text-zinc-400 mb-1">
+                                        🕐 07:00 - 12:15
+                                    </div>
+                                    <div>
+                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+                                            Deadline: 12:15
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Saturday Shift 2 -->
+                                <div class="bg-zinc-50 dark:bg-zinc-900/50 rounded-lg p-2 border-l-4 border-yellow-500">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <div class="flex items-center gap-1">
+                                            <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-yellow-100 dark:bg-yellow-900/50 text-yellow-700 dark:text-yellow-400 text-xs font-bold">2</span>
+                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Shift 2</span>
+                                        </div>
+                                    </div>
+                                    <div class="text-xs text-zinc-600 dark:text-zinc-400 mb-1">
+                                        🕐 12:15 - 17:45
+                                    </div>
+                                    <div>
+                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+                                            Deadline: 17:45
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Saturday Shift 3 -->
+                                <div class="bg-zinc-50 dark:bg-zinc-900/50 rounded-lg p-2 border-l-4 border-blue-500">
+                                    <div class="flex items-center justify-between mb-1">
+                                        <div class="flex items-center gap-1">
+                                            <span class="inline-flex items-center justify-center w-5 h-5 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-400 text-xs font-bold">3</span>
+                                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Shift 3</span>
+                                        </div>
+                                    </div>
+                                    <div class="text-xs text-zinc-600 dark:text-zinc-400 mb-1">
+                                        🕐 17:45 - 23:00
+                                    </div>
+                                    <div>
+                                        <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+                                            Deadline: 23:00
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Warning Note -->
+                        <div class="bg-red-50 dark:bg-red-950/30 rounded-lg p-3 border border-red-200 dark:border-red-800">
+                            <div class="flex items-center gap-2">
+                                <div class="bg-red-500 p-1 rounded-full">
+                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                    </svg>
+                                </div>
+                                <div class="flex-1">
+                                    <span class="font-semibold text-red-700 dark:text-red-400">⚠️ Important</span>
+                                    <p class="text-sm text-red-600 dark:text-red-400">If inspection exceeds the shift deadline, status will automatically change to <strong>"Delay"</strong></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            @if($line->trouble_desc)
+            <div class="mt-6 pt-4 border-t border-zinc-200 dark:border-zinc-700">
+                <label class="text-sm font-medium text-zinc-500 dark:text-zinc-400 block mb-2">Trouble Description</label>
+                <div class="bg-red-50 dark:bg-red-950/30 rounded-lg p-3">
+                    <p class="text-sm text-red-700 dark:text-red-400">
+                        {{ $line->trouble_desc }}
+                    </p>
+                </div>
+            </div>
+            @endif
+        </div>
+    </flux:card>
+
+    <!-- Daily Fuji Inspection Records -->
+    @if(in_array($line->machine_type, ['fuji', 'both']))
+    <flux:card class="p-0 shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden mb-6">
+        <div class="bg-white dark:bg-zinc-800 px-6 py-4 border-b border-zinc-200 dark:border-zinc-700">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex items-center gap-2">
+                    <flux:icon name="clipboard-document-list" class="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
+                    <h3 class="font-semibold text-base text-zinc-900 dark:text-white">Daily Fuji Inspection Records</h3>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <flux:input 
+                        wire:model.live.debounce.300ms="search" 
+                        placeholder="Search..."
+                        icon="magnifying-glass"
+                        class="w-48 sm:w-64"
+                    />
+                    <select 
+                        wire:model.live="selectedStatus" 
+                        class="rounded-lg border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm focus:ring-2 focus:ring-green-500"
+                    >
+                        <option value="">All Status</option>
+                        <option value="Checked">Checked</option>
+                        <option value="On Progress">On Progress</option>
+                        <option value="Delay">Delay</option>
+                        <option value="Holiday">Holiday</option>
+                    </select>
+                    <flux:button 
+                        wire:click="resetFilters" 
+                        icon="arrow-path" 
+                        variant="subtle"
+                    >
+                        Reset
+                    </flux:button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="p-4 sm:p-6">
+            @if($dailyFujis->count() > 0)
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
+                    <thead class="bg-zinc-50 dark:bg-zinc-800/50">
+                        <tr>
+                            <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Status</th>
+                            <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Approval</th>
+                            <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Group</th>
+                            <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Run Time</th>
+                            <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Stop Time</th>
+                            <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Check By</th>
+                            <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Approved By</th>
+                            <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Time First</th>
+                            <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Last Updated</th>
+                            <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
+                        @foreach($dailyFujis as $dailyFuji)
+                        <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors group">
+                            <!-- Status Column with Icon & Tooltip -->
+                            <td class="px-3 py-3 whitespace-nowrap text-center">
+                                <div class="relative inline-flex items-center gap-2 cursor-help group/status justify-center"
+                                    title="{{ $dailyFuji->overall_status_text }}">
+                                    @if($dailyFuji->overall_status === 'success')
+                                        <flux:icon.check-circle class="w-5 h-5 text-green-600" />
+                                    @else
+                                        <flux:icon.x-circle class="w-5 h-5 text-red-600" />
+                                    @endif
+                                    <span class="text-sm text-zinc-700 dark:text-zinc-300">
+                                        {{ $dailyFuji->overall_status === 'success' ? 'OK' : 'Invalid' }}
+                                    </span>
+                                </div>
+                            </td>
+                            
+                            <!-- Approval Badge -->
+                            <td class="px-3 py-3 whitespace-nowrap text-center">
+                                @php
+                                    $approvalConfig = [
+                                        'Approved' => ['class' => 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400', 'icon' => 'check-circle'],
+                                        'Rejected' => ['class' => 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400', 'icon' => 'x-circle'],
+                                        'Pending' => ['class' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400', 'icon' => 'clock'],
+                                    ];
+                                    $config = $approvalConfig[$dailyFuji->approval] ?? $approvalConfig['Pending'];
+                                @endphp
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium {{ $config['class'] }}">
+                                    <flux:icon name="{{ $config['icon'] }}" class="w-3 h-3" />
+                                    {{ $dailyFuji->approval ?? 'Pending' }}
+                                </span>
+                            </td>
+                            
+                            <!-- Group -->
+                            <td class="px-3 py-3 whitespace-nowrap text-center">
+                                <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 font-semibold text-sm">
+                                    {{ $dailyFuji->group ?? '-' }}
+                                </span>
+                            </td>
+                            
+                            <!-- Run Time Badge -->
+                            <td class="px-3 py-3 whitespace-nowrap text-center">
+                                @if($dailyFuji->run_time)
+                                <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                                    <flux:icon.play class="w-3 h-3" />
+                                    {{ $dailyFuji->run_time->format('H:i') }}
+                                </span>
+                                @else
+                                <span class="text-sm text-zinc-400">-</span>
+                                @endif
+                            </td>
+                            
+                            <!-- Stop Time Badge -->
+                            <td class="px-3 py-3 whitespace-nowrap text-center">
+                                @if($dailyFuji->stop_time)
+                                <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
+                                    <flux:icon.stop class="w-3 h-3" />
+                                    {{ $dailyFuji->stop_time->format('H:i') }}
+                                </span>
+                                @else
+                                <span class="text-sm text-zinc-400">-</span>
+                                @endif
+                            </td>
+                            
+                            <!-- Check By -->
+                            <td class="px-3 py-3 whitespace-nowrap text-center">
+                                <div class="flex items-center justify-center gap-2">
+                                    <div class="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                                        <span class="text-xs font-medium text-blue-600 dark:text-blue-400">
+                                            {{ substr($dailyFuji->updater->name ?? $dailyFuji->creator->name ?? '-', 0, 1) }}
+                                        </span>
+                                    </div>
+                                    <span class="text-sm text-zinc-700 dark:text-zinc-300">
+                                        {{ $dailyFuji->updater->name ?? $dailyFuji->creator->name ?? '-' }}
+                                    </span>
+                                </div>
+                            </td>
+                            
+                            <!-- Approved By -->
+                            <td class="px-3 py-3 whitespace-nowrap text-center">
+                                @if($dailyFuji->approvedBy)
+                                <div class="flex items-center justify-center gap-2">
+                                    <div class="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                                        <span class="text-xs font-medium text-green-600 dark:text-green-400">
+                                            {{ substr($dailyFuji->approvedBy->name, 0, 1) }}
+                                        </span>
+                                    </div>
+                                    <span class="text-sm text-zinc-700 dark:text-zinc-300">
+                                        {{ $dailyFuji->approvedBy->name }}
+                                    </span>
+                                </div>
+                                @else
+                                <span class="text-sm text-zinc-400">-</span>
+                                @endif
+                            </td>
+                            
+                            <!-- Created At -->
+                            <td class="px-3 py-3 whitespace-nowrap text-center">
+                                <div class="text-sm">
+                                    <div class="text-zinc-700 dark:text-zinc-300">{{ $dailyFuji->created_at->format('d/m/Y') }}</div>
+                                    <div class="text-xs text-zinc-400">{{ $dailyFuji->created_at->format('H:i:s') }}</div>
+                                </div>
+                            </td>
+
+                            
+                            <!-- Updated At -->
+                            <td class="px-3 py-3 whitespace-nowrap text-center">
+                                <div class="text-sm">
+                                    <div class="text-zinc-700 dark:text-zinc-300">{{ $dailyFuji->updated_at->format('d/m/Y') }}</div>
+                                    <div class="text-xs text-zinc-400">{{ $dailyFuji->updated_at->format('H:i:s') }}</div>
+                                </div>
+                            </td>
+                            
+                            <td class="px-4 py-3 text-center">
+                                <div class="flex items-center justify-center gap-1 whitespace-nowrap">
+                                    <!-- View Activity Button -->
+                                    <flux:tooltip content="View activity log" position="top">
+                                        <flux:button 
+                                            wire:click="viewActivity({{ $dailyFuji->id }}, 'fuji')"
+                                            size="sm"
+                                            icon="document-text"
+                                            variant="primary"
+                                            color="indigo"
+                                            class="!p-2 flex-shrink-0"
+                                        />
+                                    </flux:tooltip>
+
+                                    <!-- View Details Button -->
+                                    <flux:tooltip content="View inspection details" position="top">
+                                        <flux:button 
+                                            wire:click="viewDailyFujiDetails({{ $dailyFuji->id }})"
+                                            size="sm"
+                                            icon="eye"
+                                            variant="primary"
+                                            color="blue"
+                                            class="!p-2 flex-shrink-0"
+                                        />
+                                    </flux:tooltip>
+                                    
+                                    <!-- Edit Button - HIDDEN jika sudah melewati batas -->
+                                    @php
+                                        $canEdit = now()->lessThanOrEqualTo($dailyFuji->getShiftEnd());
+                                    @endphp
+                                    
+                                    @if($canEdit && auth()->user()->can('edit daily fuji'))
+                                        <flux:tooltip content="Edit inspection (shift active)" position="top">
+                                            <flux:button 
+                                                wire:click="editDailyFuji({{ $dailyFuji->id }})"
+                                                size="sm"
+                                                icon="pencil-square"
+                                                variant="primary"
+                                                color="amber"
+                                                class="!p-2 flex-shrink-0"
+                                            />
+                                        </flux:tooltip>
+                                    @endif
+                                    
+                                    <!-- Approval Button - HIDDEN jika sudah Approved atau bukan Checked -->
+                                    @if($dailyFuji->approval !== 'Approved' && $dailyFuji->status === 'Checked' && auth()->user()->can('edit daily fuji'))
+                                        <flux:tooltip content="Approve/Reject inspection" position="top">
+                                            <flux:button 
+                                                wire:click="openApprovalModal({{ $dailyFuji->id }})"
+                                                size="sm"
+                                                icon="check-badge"
+                                                variant="primary"
+                                                color="green"
+                                                class="!p-2 flex-shrink-0"
+                                            />
+                                        </flux:tooltip>
+                                    @endif
+
+                                    <!-- Print Button -->
+                                    <flux:tooltip content="Print checklist" position="top">
+                                        <flux:button 
+                                            href="{{ route('print.daily-fuji', $dailyFuji->id) }}"
+                                            target="_blank"
+                                            size="sm"
+                                            icon="printer"
+                                            variant="primary"
+                                            color="gray"
+                                            class="!p-2 flex-shrink-0"
+                                        />
+                                    </flux:tooltip>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="mt-4 px-2">
+                {{ $dailyFujis->links() }}
+            </div>
+            
+            @else
+            <div class="text-center py-12">
+                <flux:icon.document-magnifying-glass class="w-12 h-12 mx-auto text-zinc-400 mb-3" />
+                <p class="text-zinc-500 dark:text-zinc-400">No inspection records found for this line.</p>
+                <button 
+                    wire:click="createDailyFuji"
+                    class="mt-4 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors"
+                >
+                    <flux:icon.plus class="w-4 h-4" />
+                    Create First Inspection
+                </button>
+            </div>
+            @endif
+        </div>
+    </flux:card>
+    @endif
+
+    <!-- Daily Panasonic Inspection Records -->
+    @if(in_array($line->machine_type, ['panasonic', 'both']))
+    <flux:card class="p-0 shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden mb-6">
+        <div class="bg-white dark:bg-zinc-800 px-6 py-4 border-b border-zinc-200 dark:border-zinc-700">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex items-center gap-2">
+                    <flux:icon name="clipboard-document-list" class="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
+                    <h3 class="font-semibold text-base text-zinc-900 dark:text-white">Daily Panasonic Inspection Records</h3>
+                </div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <flux:input 
+                        wire:model.live.debounce.300ms="panasonicSearch" 
+                        placeholder="Search..."
+                        icon="magnifying-glass"
+                        class="w-48 sm:w-64"
+                    />
+                    <select 
+                        wire:model.live="selectedPanasonicStatus" 
+                        class="rounded-lg border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
+                    >
+                        <option value="">All Status</option>
+                        <option value="Checked">Checked</option>
+                        <option value="On Progress">On Progress</option>
+                        <option value="Delay">Delay</option>
+                        <option value="Holiday">Holiday</option>
+                    </select>
+                    <flux:button 
+                        wire:click="resetPanasonicFilters" 
+                        icon="arrow-path" 
+                        variant="subtle"
+                    >
+                        Reset
+                    </flux:button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="p-4 sm:p-6">
+            @if($dailyPanasonics->count() > 0)
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-zinc-200 dark:divide-zinc-700">
+                    <thead class="bg-zinc-50 dark:bg-zinc-800/50">
+                        <tr>
+                            <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Status</th>
+                            <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Approval</th>
+                            <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Group</th>
+                            <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Run Time</th>
+                            <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Stop Time</th>
+                            <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Check By</th>
+                            <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Approved By</th>
+                            <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Time First</th>
+                            <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Last Updated</th>
+                            <th class="px-3 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
+                        @foreach($dailyPanasonics as $dailyPanasonic)
+                        <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors group">
+                            <!-- Status Column -->
+                            <td class="px-3 py-3 whitespace-nowrap text-center">
+                                <div class="relative inline-flex items-center gap-2 cursor-help group/status justify-center"
+                                    title="{{ $dailyPanasonic->overall_status_text }}">
+                                    @if($dailyPanasonic->overall_status === 'success')
+                                        <flux:icon.check-circle class="w-5 h-5 text-green-600" />
+                                    @else
+                                        <flux:icon.x-circle class="w-5 h-5 text-red-600" />
+                                    @endif
+                                    <span class="text-sm text-zinc-700 dark:text-zinc-300">
+                                        {{ $dailyPanasonic->overall_status === 'success' ? 'OK' : 'Invalid' }}
+                                    </span>
+                                </div>
+                            </td>
+                            
+                            <!-- Approval Badge -->
+                            <td class="px-3 py-3 whitespace-nowrap text-center">
+                                @php
+                                    $panasonicApprovalConfig = [
+                                        'Approved' => ['class' => 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400', 'icon' => 'check-circle'],
+                                        'Rejected' => ['class' => 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400', 'icon' => 'x-circle'],
+                                        'Pending' => ['class' => 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400', 'icon' => 'clock'],
+                                    ];
+                                    $panasonicConfig = $panasonicApprovalConfig[$dailyPanasonic->approval] ?? $panasonicApprovalConfig['Pending'];
+                                @endphp
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium {{ $panasonicConfig['class'] }}">
+                                    <flux:icon name="{{ $panasonicConfig['icon'] }}" class="w-3 h-3" />
+                                    {{ $dailyPanasonic->approval ?? 'Pending' }}
+                                </span>
+                            </td>
+                            
+                            <!-- Group -->
+                            <td class="px-3 py-3 whitespace-nowrap text-center">
+                                <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 font-semibold text-sm">
+                                    {{ $dailyPanasonic->group ?? '-' }}
+                                </span>
+                            </td>
+                            
+                            <!-- Run Time -->
+                            <td class="px-3 py-3 whitespace-nowrap text-center">
+                                @if($dailyPanasonic->run_time)
+                                <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+                                    <flux:icon.play class="w-3 h-3" />
+                                    {{ $dailyPanasonic->run_time->format('H:i') }}
+                                </span>
+                                @else
+                                <span class="text-sm text-zinc-400">-</span>
+                                @endif
+                            </td>
+                            
+                            <!-- Stop Time -->
+                            <td class="px-3 py-3 whitespace-nowrap text-center">
+                                @if($dailyPanasonic->stop_time)
+                                <span class="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
+                                    <flux:icon.stop class="w-3 h-3" />
+                                    {{ $dailyPanasonic->stop_time->format('H:i') }}
+                                </span>
+                                @else
+                                <span class="text-sm text-zinc-400">-</span>
+                                @endif
+                            </td>
+                            
+                            <!-- Check By -->
+                            <td class="px-3 py-3 whitespace-nowrap text-center">
+                                <div class="flex items-center justify-center gap-2">
+                                    <div class="w-6 h-6 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                                        <span class="text-xs font-medium text-blue-600 dark:text-blue-400">
+                                            {{ substr($dailyPanasonic->updater->name ?? $dailyPanasonic->creator->name ?? '-', 0, 1) }}
+                                        </span>
+                                    </div>
+                                    <span class="text-sm text-zinc-700 dark:text-zinc-300">
+                                        {{ $dailyPanasonic->updater->name ?? $dailyPanasonic->creator->name ?? '-' }}
+                                    </span>
+                                </div>
+                            </td>
+                            
+                            <!-- Approved By -->
+                            <td class="px-3 py-3 whitespace-nowrap text-center">
+                                @if($dailyPanasonic->approvedBy)
+                                <div class="flex items-center justify-center gap-2">
+                                    <div class="w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                                        <span class="text-xs font-medium text-green-600 dark:text-green-400">
+                                            {{ substr($dailyPanasonic->approvedBy->name, 0, 1) }}
+                                        </span>
+                                    </div>
+                                    <span class="text-sm text-zinc-700 dark:text-zinc-300">
+                                        {{ $dailyPanasonic->approvedBy->name }}
+                                    </span>
+                                </div>
+                                @else
+                                <span class="text-sm text-zinc-400">-</span>
+                                @endif
+                            </td>
+                            
+                            <!-- Created At -->
+                            <td class="px-3 py-3 whitespace-nowrap text-center">
+                                <div class="text-sm">
+                                    <div class="text-zinc-700 dark:text-zinc-300">{{ $dailyPanasonic->created_at->format('d/m/Y') }}</div>
+                                    <div class="text-xs text-zinc-400">{{ $dailyPanasonic->created_at->format('H:i:s') }}</div>
+                                </div>
+                            </td>
+                            
+                            <!-- Updated At -->
+                            <td class="px-3 py-3 whitespace-nowrap text-center">
+                                <div class="text-sm">
+                                    <div class="text-zinc-700 dark:text-zinc-300">{{ $dailyPanasonic->updated_at->format('d/m/Y') }}</div>
+                                    <div class="text-xs text-zinc-400">{{ $dailyPanasonic->updated_at->format('H:i:s') }}</div>
+                                </div>
+                            </td>
+                            
+                            <!-- Actions -->
+                            <td class="px-4 py-3 text-center">
+                                <div class="flex items-center justify-center gap-1 whitespace-nowrap">
+
+                                    <!-- View Activity Button -->
+                                    <flux:tooltip content="View activity log" position="top">
+                                        <flux:button 
+                                            wire:click="viewActivity({{ $dailyPanasonic->id }}, 'panasonic')"
+                                            size="sm"
+                                            icon="document-text"
+                                            variant="primary"
+                                            color="indigo"
+                                            class="!p-2 flex-shrink-0"
+                                        />
+                                    </flux:tooltip>
+
+                                    <!-- View Button -->
+                                    <flux:tooltip content="View inspection details" position="top">
+                                        <flux:button 
+                                            wire:click="viewDailyPanasonicDetails({{ $dailyPanasonic->id }})"
+                                            size="sm"
+                                            icon="eye"
+                                            variant="primary"
+                                            color="blue"
+                                            class="!p-2 flex-shrink-0"
+                                        />
+                                    </flux:tooltip>
+                                    
+                                    <!-- Edit Button - HIDDEN jika shift sudah berakhir -->
+                                    @php
+                                        $canEditPanasonic = now()->lessThanOrEqualTo($dailyPanasonic->getShiftEnd());
+                                    @endphp
+                                    
+                                    @if($canEditPanasonic && auth()->user()->can('edit daily panasonic'))
+                                        <flux:tooltip content="Edit inspection (shift active)" position="top">
+                                            <flux:button 
+                                                wire:click="editDailyPanasonic({{ $dailyPanasonic->id }})"
+                                                size="sm"
+                                                icon="pencil-square"
+                                                variant="primary"
+                                                color="amber"
+                                                class="!p-2 flex-shrink-0"
+                                            />
+                                        </flux:tooltip>
+                                    @endif
+                                    
+                                    <!-- Approval Button -->
+                                    @if($dailyPanasonic->approval !== 'Approved' && $dailyPanasonic->status === 'Checked' && auth()->user()->can('edit daily panasonic'))
+                                        <flux:tooltip content="Approve/Reject inspection" position="top">
+                                            <flux:button 
+                                                wire:click="openPanasonicApprovalModal({{ $dailyPanasonic->id }})"
+                                                size="sm"
+                                                icon="check-badge"
+                                                variant="primary"
+                                                color="green"
+                                                class="!p-2 flex-shrink-0"
+                                            />
+                                        </flux:tooltip>
+                                    @endif
+
+                                    <!-- Print Button -->
+                                    <flux:tooltip content="Print checklist" position="top">
+                                        <flux:button 
+                                            href="{{ route('print.daily-panasonic', $dailyPanasonic->id) }}"
+                                            target="_blank"
+                                            size="sm"
+                                            icon="printer"
+                                            variant="primary"
+                                            color="gray"
+                                            class="!p-2 flex-shrink-0"
+                                        />
+                                    </flux:tooltip>
+                                </div>
+                            </td>
+                        </tr>   
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination Panasonic -->
+            <div class="mt-4 px-2">
+                {{ $dailyPanasonics->links() }}
+            </div>
+            
+            @else
+            <div class="text-center py-12">
+                <flux:icon.document-magnifying-glass class="w-12 h-12 mx-auto text-zinc-400 mb-3" />
+                <p class="text-zinc-500 dark:text-zinc-400">No Panasonic inspection records found for this line.</p>
+                <button 
+                    wire:click="createDailyPanasonic"
+                    class="mt-4 inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg bg-green-600 text-white hover:bg-green-700 transition-colors"
+                >
+                    <flux:icon.plus class="w-4 h-4" />
+                    Create First Panasonic Inspection
+                </button>
+            </div>
+            @endif
+        </div>
+    </flux:card>
+    @endif
 
     {{-- MODAL PILIH CUSTOMER --}}
     <flux:modal wire:model="showCustomerModal" class="max-w-md">
@@ -5091,5 +5072,8 @@
             @endif
         </div>
     </flux:modal>
-    
-</section>
+
+    <style>
+        [x-cloak] { display: none !important; }
+    </style>
+</div>
