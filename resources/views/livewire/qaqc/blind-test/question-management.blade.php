@@ -317,7 +317,7 @@
                                 {{-- Section --}}
                                 <div>
                                     <flux:label required>Section</flux:label>
-                                    <flux:select wire:model="section" placeholder="Select section...">
+                                    <flux:select wire:model.live="section" placeholder="Select section...">
                                         @foreach($sections as $sec)
                                             <flux:select.option value="{{ $sec }}">{{ $sec }}</flux:select.option>
                                         @endforeach
@@ -350,6 +350,7 @@
                                             bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300
                                         @endif">
                                         {{ $this->totalDefects }} / {{ $maxDefects }} defects
+                                        @if($section === 'QC') · QC @endif
                                     </span>
                                 </div>
                             </div>
@@ -434,7 +435,11 @@
                                         </div>
                                     </div>
                                     <p class="text-[11px] text-amber-700 dark:text-amber-400 mt-2 italic">
-                                        Pilih model, defect item, dan lokasi. Max <strong>{{ $maxDefects }}</strong> defect per question.
+                                        Pilih model, defect item, dan lokasi. Max <strong>{{ $maxDefects }}</strong> defect per question
+                                        @if($section === 'QC')
+                                            <span class="text-blue-700 dark:text-blue-400 font-semibold">(khusus section QC)</span>
+                                        @endif
+                                        .
                                     </p>
                                 </div>
 

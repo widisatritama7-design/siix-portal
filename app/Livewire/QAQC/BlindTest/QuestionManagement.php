@@ -16,6 +16,7 @@ class QuestionManagement extends Component
     use WithPagination;
 
     public const MAX_DEFECTS = 5;
+    public const MAX_DEFECTS_QC = 10;
 
     public $question_id;
     public $customer_id = '';
@@ -55,7 +56,7 @@ class QuestionManagement extends Component
 
     protected function rules()
     {
-        return [
+        $rules = [
             'customer_id' => 'required|exists:tb_qaqc_customer,id',
             'section'     => 'required|in:QC,SMT,BE,MI',
             'modelGroups' => 'required|array|min:1',
@@ -65,6 +66,24 @@ class QuestionManagement extends Component
             'modelGroups.*.items.*.location'   => 'required|string|max:255',
             'question_text' => 'nullable|string|max:1000',
         ];
+
+        // Semua section wajib TEPAT sesuai limit (QC=10, lain=5)
+        $rules['modelGroups'] = [
+            'required',
+            'array',
+            'min:1',
+            function ($attribute, $value, $fail) {
+                $total = collect($value)->sum(fn($g) => count($g['items'] ?? []));
+                $expected = $this->maxDefects;
+
+                if ($total !== $expected) {
+                    $fail('Section ' . $this->section . ' wajib memiliki tepat ' .
+                        $expected . ' defect. Saat ini: ' . $total . '.');
+                }
+            },
+        ];
+
+        return $rules;
     }
 
     protected $messages = [
@@ -91,6 +110,18 @@ class QuestionManagement extends Component
     {
         $this->activeTab = $tab;
         $this->resetPage();
+    }
+
+    public function getMaxDefectsProperty(): int
+    {
+        return $this->section === 'QC'
+            ? self::MAX_DEFECTS_QC
+            : self::MAX_DEFECTS;
+    }
+
+    public function getMinDefectsProperty(): int
+    {
+        return $this->maxDefects;
     }
 
     public function resetForm()
@@ -125,7 +156,7 @@ class QuestionManagement extends Component
 
     public function getRemainingQuotaProperty(): int
     {
-        return max(0, self::MAX_DEFECTS - $this->totalDefects);
+        return max(0, $this->maxDefects - $this->totalDefects);
     }
 
     private function findGroupIndex($modelId): ?int
@@ -179,9 +210,9 @@ class QuestionManagement extends Component
 
     public function addItem()
     {
-        if ($this->totalDefects >= self::MAX_DEFECTS) {
+        if ($this->totalDefects >= $this->maxDefects) {
             $this->dispatch('notify',
-                message: 'Maximum ' . self::MAX_DEFECTS . ' defects per question already reached!',
+                message: 'Maximum ' . $this->maxDefects . ' defects per question already reached!',
                 type: 'error');
             return;
         }
@@ -225,9 +256,9 @@ class QuestionManagement extends Component
         $this->resetTemp();
         $this->resetValidation(['tempDeffectId', 'tempLocation', 'selectedModelId']);
 
-        if ($this->totalDefects >= self::MAX_DEFECTS) {
+        if ($this->totalDefects >= $this->maxDefects) {
             $this->dispatch('notify',
-                message: 'Maximum ' . self::MAX_DEFECTS . ' defects reached.',
+                message: 'Maximum ' . $this->maxDefects . ' defects reached.',
                 type: 'warning');
         }
     }
@@ -255,9 +286,20 @@ class QuestionManagement extends Component
             }
         }
 
-        if ($this->totalDefects > self::MAX_DEFECTS) {
+        // ==== VALIDASI JUMLAH DEFECT ====
+        if ($this->totalDefects !== $this->maxDefects) {
             $this->dispatch('notify',
-                message: 'Total defects cannot exceed ' . self::MAX_DEFECTS . ' pcs!',
+                message: 'Section ' . $this->section . ' wajib memiliki tepat ' .
+                        $this->maxDefects . ' defect. Saat ini: ' . $this->totalDefects . '.',
+                type: 'error');
+            return;
+        }
+
+        // KHUSUS QC: wajib TEPAT 10
+        if ($this->section === 'QC' && $this->totalDefects !== self::MAX_DEFECTS_QC) {
+            $this->dispatch('notify',
+                message: 'Section QC wajib memiliki tepat ' . self::MAX_DEFECTS_QC .
+                        ' defect. Saat ini: ' . $this->totalDefects . '.',
                 type: 'error');
             return;
         }
@@ -453,6 +495,16 @@ class QuestionManagement extends Component
         $this->dispatch('close-modal-delete');
     }
 
+    public function updatedSection()
+    {
+        if ($this->totalDefects > 0 && $this->totalDefects !== $this->maxDefects) {
+            $this->dispatch('notify',
+                message: 'Section ' . $this->section . ' wajib tepat ' .
+                        $this->maxDefects . ' defect. Saat ini: ' . $this->totalDefects . '.',
+                type: 'warning');
+        }
+    }
+
     /* ================= RENDER ================= */
 
     public function render()
@@ -490,7 +542,7 @@ class QuestionManagement extends Component
             'models'     => $models,
             'deffects'   => Deffect::orderBy('deffect_item_name')->get(),
             'sections'   => self::SECTIONS,
-            'maxDefects' => self::MAX_DEFECTS,
+            'maxDefects' => $this->maxDefects,   // <-- dinamis
         ]);
     }
 }

@@ -18,7 +18,6 @@ export default function PickTrayModal({ locator, trays = [], onBack, onPick }) {
                             {locator?.rack_number ? ` · Rack ${locator.rack_number}` : ''}
                         </p>
                     </div>
-                    <button onClick={onBack} className="text-white/80 hover:text-white p-1 rounded hover:bg-white/20">✕</button>
                 </div>
 
                 {/* CONTENT */}

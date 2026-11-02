@@ -578,16 +578,355 @@
                         <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
                         <div class="space-y-1 ml-[30px]">
                             
-                            <!-- ESD Monitoring -->
-                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view esd-monitoring')): ?>
-                            <a href="<?php echo e(route('esd.calendar')); ?>" wire:navigate
-                            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('esd.calendar') ? 'menu-active' : ''); ?>">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
-                                    <path d="m20.798 11.012-3.188 3.416L9.462 6.28l4.24-4.542a.75.75 0 0 1 1.272.71L12.982 9.75h7.268a.75.75 0 0 1 .548 1.262ZM3.202 12.988 6.39 9.572l8.148 8.148-4.24 4.542a.75.75 0 0 1-1.272-.71l1.992-7.302H3.75a.75.75 0 0 1-.548-1.262ZM3.53 2.47a.75.75 0 0 0-1.06 1.06l18 18a.75.75 0 1 0 1.06-1.06l-18-18Z" />
-                                </svg>
-                                <span class="truncate">ESD Monitoring</span>
-                            </a>
-                            <?php endif; ?>
+                            <!-- ========== SUB GROUP: ESD MONITORING (dengan grup existing) ========== -->
+                            <div class="relative w-full">
+                                <button @click="toggleGroup('esdMonitoringMenu')"
+                                        class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                    <div class="flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                            <path d="m20.798 11.012-3.188 3.416L9.462 6.28l4.24-4.542a.75.75 0 0 1 1.272.71L12.982 9.75h7.268a.75.75 0 0 1 .548 1.262ZM3.202 12.988 6.39 9.572l8.148 8.148-4.24 4.542a.75.75 0 0 1-1.272-.71l1.992-7.302H3.75a.75.75 0 0 1-.548-1.262ZM3.53 2.47a.75.75 0 0 0-1.06 1.06l18 18a.75.75 0 1 0 1.06-1.06l-18-18Z" />
+                                        </svg>
+                                        <span x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                            class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">ESD Monitoring</span>
+                                    </div>
+                                    <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                        class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0"
+                                        :class="{'rotate-180': groups.esdMonitoringMenu.open}"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </button>
+
+                                <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.esdMonitoringMenu.open"
+                                    x-collapse class="mt-1 relative">
+                                    <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+                                    <div class="space-y-1 ml-[24px]">
+
+                                        <!-- ===== ESD Management ===== -->
+                                        <div class="relative w-full">
+                                            <button @click="toggleGroup('esdManagement')"
+                                                    class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                                <div class="flex items-center gap-2">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                        <path d="M18.75 12.75h1.5a.75.75 0 0 0 0-1.5h-1.5a.75.75 0 0 0 0 1.5ZM12 6a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 12 6ZM12 18a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 12 18ZM3.75 6.75h1.5a.75.75 0 1 0 0-1.5h-1.5a.75.75 0 0 0 0 1.5ZM5.25 18.75h-1.5a.75.75 0 0 1 0-1.5h1.5a.75.75 0 0 1 0 1.5ZM3 12a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 3 12ZM9 3.75a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5ZM12.75 12a2.25 2.25 0 1 1 4.5 0 2.25 2.25 0 0 1-4.5 0ZM9 15.75a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5Z" />
+                                                    </svg>
+                                                    <span x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                        class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">Management</span>
+                                                </div>
+                                                <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                    class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0"
+                                                    :class="{'rotate-180': groups.esdManagement.open}"
+                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                </svg>
+                                            </button>
+                                            <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.esdManagement.open"
+                                                x-collapse class="mt-1 relative">
+                                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+                                                <div class="space-y-1 ml-[24px]">
+                                                    <a href="<?php echo e(route('esd.calendar')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.calendar') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.calendar') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Calendar</span>
+                                                    </a>
+                                                    <a href="<?php echo e(route('esd.events')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.events') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.events') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Event</span>
+                                                    </a>
+                                                    <a href="<?php echo e(route('esd.lockers')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.lockers') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.lockers') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Locker</span>
+                                                    </a>
+                                                    <a href="<?php echo e(route('esd.product-qualifications')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.product-qualifications') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.product-qualifications') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Product Qualification</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- ===== Stock Management ===== -->
+                                        <div class="relative w-full">
+                                            <button @click="toggleGroup('esdStock')"
+                                                    class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                                <div class="flex items-center gap-2">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                        <path d="M10.464 8.746c.227-.18.497-.311.786-.394v2.795a2.252 2.252 0 0 1-.786-.393c-.394-.313-.546-.681-.546-1.004 0-.323.152-.691.546-1.004ZM12.75 15.662v-2.824c.347.085.664.228.921.421.427.32.579.686.579.991 0 .305-.152.671-.579.991a2.534 2.534 0 0 1-.921.42Z" />
+                                                        <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 6a.75.75 0 0 0-1.5 0v.816a3.836 3.836 0 0 0-1.72.756c-.712.566-1.112 1.35-1.112 2.178 0 .829.4 1.612 1.113 2.178.502.4 1.102.647 1.719.756v2.978a2.536 2.536 0 0 1-.921-.421l-.879-.66a.75.75 0 0 0-.9 1.2l.879.66c.533.4 1.169.645 1.821.75V18a.75.75 0 0 0 1.5 0v-.81a4.124 4.124 0 0 0 1.821-.749c.745-.559 1.179-1.344 1.179-2.191 0-.847-.434-1.632-1.179-2.191a4.122 4.122 0 0 0-1.821-.75V8.354c.29.082.559.213.786.393l.415.33a.75.75 0 0 0 .933-1.175l-.415-.33a3.836 3.836 0 0 0-1.719-.755V6Z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    <span x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                        class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">Stock</span>
+                                                </div>
+                                                <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                    class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0"
+                                                    :class="{'rotate-180': groups.esdStock.open}"
+                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                </svg>
+                                            </button>
+                                            <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.esdStock.open"
+                                                x-collapse class="mt-1 relative">
+                                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+                                                <div class="space-y-1 ml-[24px]">
+                                                    <a href="<?php echo e(route('esd.materials')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.materials') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.materials') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Material</span>
+                                                    </a>
+                                                    <a href="<?php echo e(route('esd.transactions')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.transactions') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.transactions') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Transaction</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- ===== Yearly ===== -->
+                                        <div class="relative w-full">
+                                            <button @click="toggleGroup('esdYearly')"
+                                                    class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                                <div class="flex items-center gap-2">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                        <path fill-rule="evenodd" d="M6.75 2.25A.75.75 0 0 1 7.5 3v1.5h9V3A.75.75 0 0 1 18 3v1.5h.75a3 3 0 0 1 3 3v11.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V7.5a3 3 0 0 1 3-3H6V3a.75.75 0 0 1 .75-.75Zm13.5 9a1.5 1.5 0 0 0-1.5-1.5H5.25a1.5 1.5 0 0 0-1.5 1.5v7.5a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5v-7.5Z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    <span x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                        class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">Yearly</span>
+                                                </div>
+                                                <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                    class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0"
+                                                    :class="{'rotate-180': groups.esdYearly.open}"
+                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                </svg>
+                                            </button>
+                                            <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.esdYearly.open"
+                                                x-collapse class="mt-1 relative">
+                                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+                                                <div class="space-y-1 ml-[24px]">
+                                                    <a href="<?php echo e(route('esd.floorings')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.floorings') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.floorings') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Flooring</span>
+                                                    </a>
+                                                    <a href="<?php echo e(route('esd.garments')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.garments') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.garments') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Garment</span>
+                                                    </a>
+                                                    <a href="<?php echo e(route('esd.ground-monitor-boxs')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.ground-monitor-boxs') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.ground-monitor-boxs') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Ground Monitor Box</span>
+                                                    </a>
+                                                    <a href="<?php echo e(route('esd.jigs')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.jigs') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.jigs') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Jig</span>
+                                                    </a>
+                                                    <a href="<?php echo e(route('esd.packagings')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.packagings') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.packagings') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Packaging</span>
+                                                    </a>
+                                                    <a href="<?php echo e(route('esd.solderings')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.solderings') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.solderings') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Soldering</span>
+                                                    </a>
+                                                    <a href="<?php echo e(route('esd.scissors')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.scissors') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.scissors') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Scissors</span>
+                                                    </a>
+                                                    <a href="<?php echo e(route('esd.worksurfaces')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.worksurfaces') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.worksurfaces') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Worksurface</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- ===== Monthly ===== -->
+                                        <div class="relative w-full">
+                                            <button @click="toggleGroup('esdMonthly')"
+                                                    class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                                <div class="flex items-center gap-2">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                        <path d="M12.75 12.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM7.5 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM8.25 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM9.75 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM10.5 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM12.75 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM14.25 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM15 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM16.5 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM15 12.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM16.5 13.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" />
+                                                        <path fill-rule="evenodd" d="M6.75 2.25A.75.75 0 0 1 7.5 3v1.5h9V3A.75.75 0 0 1 18 3v1.5h.75a3 3 0 0 1 3 3v11.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V7.5a3 3 0 0 1 3-3H6V3a.75.75 0 0 1 .75-.75Zm-3 9.75v7.5a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5v-7.5h-16.5Z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    <span x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                        class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">Monthly</span>
+                                                </div>
+                                                <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                    class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0"
+                                                    :class="{'rotate-180': groups.esdMonthly.open}"
+                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                </svg>
+                                            </button>
+                                            <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.esdMonthly.open"
+                                                x-collapse class="mt-1 relative">
+                                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+                                                <div class="space-y-1 ml-[24px]">
+                                                    <a href="<?php echo e(route('esd.equipment-grounds')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.equipment-grounds') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.equipment-grounds') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Equipment Ground</span>
+                                                    </a>
+                                                    <a href="<?php echo e(route('esd.ionizers')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.ionizers') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.ionizers') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Ionizer</span>
+                                                    </a>
+                                                    <a href="<?php echo e(route('esd.wrist-straps')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.wrist-straps') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.wrist-straps') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Wrist Strap</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- ===== 3 Month (lanjutan) ===== -->
+                                        <div class="relative w-full">
+                                            <button @click="toggleGroup('esdThreeMonth')"
+                                                    class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                                <div class="flex items-center gap-2">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                        <path d="M12 11.993a.75.75 0 0 0-.75.75v.006c0 .414.336.75.75.75h.006a.75.75 0 0 0 .75-.75v-.006a.75.75 0 0 0-.75-.75H12ZM12 16.494a.75.75 0 0 0-.75.75v.005c0 .414.335.75.75.75h.005a.75.75 0 0 0 .75-.75v-.005a.75.75 0 0 0-.75-.75H12ZM8.999 17.244a.75.75 0 0 1 .75-.75h.006a.75.75 0 0 1 .75.75v.006a.75.75 0 0 1-.75.75h-.006a.75.75 0 0 1-.75-.75v-.006ZM7.499 16.494a.75.75 0 0 0-.75.75v.005c0 .414.336.75.75.75h.005a.75.75 0 0 0 .75-.75v-.005a.75.75 0 0 0-.75-.75H7.5ZM13.499 14.997a.75.75 0 0 1 .75-.75h.006a.75.75 0 0 1 .75.75v.005a.75.75 0 0 1-.75.75h-.006a.75.75 0 0 1-.75-.75v-.005ZM14.25 16.494a.75.75 0 0 0-.75.75v.006c0 .414.335.75.75.75h.005a.75.75 0 0 0 .75-.75v-.006a.75.75 0 0 0-.75-.75h-.005ZM15.75 14.995a.75.75 0 0 1 .75-.75h.005a.75.75 0 0 1 .75.75v.006a.75.75 0 0 1-.75.75H16.5a.75.75 0 0 1-.75-.75v-.006ZM13.498 12.743a.75.75 0 0 1 .75-.75h2.25a.75.75 0 1 1 0 1.5h-2.25a.75.75 0 0 1-.75-.75ZM6.748 14.993a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Z" />
+                                                        <path fill-rule="evenodd" d="M18 2.993a.75.75 0 0 0-1.5 0v1.5h-9V2.994a.75.75 0 1 0-1.5 0v1.497h-.752a3 3 0 0 0-3 3v11.252a3 3 0 0 0 3 3h13.5a3 3 0 0 0 3-3V7.492a3 3 0 0 0-3-3H18V2.993ZM3.748 18.743v-7.5a1.5 1.5 0 0 1 1.5-1.5h13.5a1.5 1.5 0 0 1 1.5 1.5v7.5a1.5 1.5 0 0 1-1.5 1.5h-13.5a1.5 1.5 0 0 1-1.5-1.5Z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    <span x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                        class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">3 Month</span>
+                                                </div>
+                                                <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                    class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0"
+                                                    :class="{'rotate-180': groups.esdThreeMonth.open}"
+                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                </svg>
+                                            </button>
+                                            <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.esdThreeMonth.open"
+                                                x-collapse class="mt-1 relative">
+                                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+                                                <div class="space-y-1 ml-[24px]">
+                                                    <a href="<?php echo e(route('esd.magazines')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.magazines') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.magazines') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Magazine</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- ===== Weekly ===== -->
+                                        <div class="relative w-full">
+                                            <button @click="toggleGroup('esdWeekly')"
+                                                    class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                                <div class="flex items-center gap-2">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                        <path fill-rule="evenodd" d="M1.5 5.625c0-1.036.84-1.875 1.875-1.875h17.25c1.035 0 1.875.84 1.875 1.875v12.75c0 1.035-.84 1.875-1.875 1.875H3.375A1.875 1.875 0 0 1 1.5 18.375V5.625ZM21 9.375A.375.375 0 0 0 20.625 9h-7.5a.375.375 0 0 0-.375.375v1.5c0 .207.168.375.375.375h7.5a.375.375 0 0 0 .375-.375v-1.5Zm0 3.75a.375.375 0 0 0-.375-.375h-7.5a.375.375 0 0 0-.375.375v1.5c0 .207.168.375.375.375h7.5a.375.375 0 0 0 .375-.375v-1.5Zm0 3.75a.375.375 0 0 0-.375-.375h-7.5a.375.375 0 0 0-.375.375v1.5c0 .207.168.375.375.375h7.5a.375.375 0 0 0 .375-.375v-1.5ZM10.875 18.75a.375.375 0 0 0 .375-.375v-1.5a.375.375 0 0 0-.375-.375h-7.5a.375.375 0 0 0-.375.375v1.5c0 .207.168.375.375.375h7.5ZM3.375 15h7.5a.375.375 0 0 0 .375-.375v-1.5a.375.375 0 0 0-.375-.375h-7.5a.375.375 0 0 0-.375.375v1.5c0 .207.168.375.375.375Zm0-3.75h7.5a.375.375 0 0 0 .375-.375v-1.5A.375.375 0 0 0 10.875 9h-7.5A.375.375 0 0 0 3 9.375v1.5c0 .207.168.375.375.375Z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    <span x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                        class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">Weekly</span>
+                                                </div>
+                                                <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                    class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0"
+                                                    :class="{'rotate-180': groups.esdWeekly.open}"
+                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                </svg>
+                                            </button>
+                                            <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.esdWeekly.open"
+                                                x-collapse class="mt-1 relative">
+                                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+                                                <div class="space-y-1 ml-[24px]">
+                                                    <a href="<?php echo e(route('esd.showers')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.showers') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.showers') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Shower</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- ===== Daily ===== -->
+                                        <div class="relative w-full">
+                                            <button @click="toggleGroup('esdDaily')"
+                                                    class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                                <div class="flex items-center gap-2">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                        <path fill-rule="evenodd" d="M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    <span x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                        class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">Daily</span>
+                                                </div>
+                                                <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                    class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0"
+                                                    :class="{'rotate-180': groups.esdDaily.open}"
+                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                </svg>
+                                            </button>
+                                            <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.esdDaily.open"
+                                                x-collapse class="mt-1 relative">
+                                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+                                                <div class="space-y-1 ml-[24px]">
+                                                    <a href="<?php echo e(route('esd.insulatif-checks')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.insulatif-checks') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.insulatif-checks') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Insulatif Check</span>
+                                                    </a>
+                                                    <a href="<?php echo e(route('esd.patrols')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.patrols') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.patrols') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Patrol</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- ===== New Admission ===== -->
+                                        <div class="relative w-full">
+                                            <button @click="toggleGroup('esdNewAdmission')"
+                                                    class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                                <div class="flex items-center gap-2">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                        <path fill-rule="evenodd" d="M9.75 6.75h-3a3 3 0 0 0-3 3v7.5a3 3 0 0 0 3 3h7.5a3 3 0 0 0 3-3v-7.5a3 3 0 0 0-3-3h-3V1.5a.75.75 0 0 0-1.5 0v5.25Zm0 0h1.5v5.69l1.72-1.72a.75.75 0 1 1 1.06 1.06l-3 3a.75.75 0 0 1-1.06 0l-3-3a.75.75 0 1 1 1.06-1.06l1.72 1.72V6.75Z" clip-rule="evenodd" />
+                                                        <path d="M7.151 21.75a2.999 2.999 0 0 0 2.599 1.5h7.5a3 3 0 0 0 3-3v-7.5c0-1.11-.603-2.08-1.5-2.599v7.099a4.5 4.5 0 0 1-4.5 4.5H7.151Z" />
+                                                    </svg>
+                                                    <span x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                        class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">New Admission</span>
+                                                </div>
+                                                <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                    class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0"
+                                                    :class="{'rotate-180': groups.esdNewAdmission.open}"
+                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                </svg>
+                                            </button>
+                                            <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.esdNewAdmission.open"
+                                                x-collapse class="mt-1 relative">
+                                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+                                                <div class="space-y-1 ml-[24px]">
+                                                    <a href="<?php echo e(route('esd.gloves')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.gloves') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.gloves') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Glove</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
                             
                             <!-- MTC Monitoring as SUB GROUP -->
                             <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->any(['view mtc-monitoring'])): ?>
@@ -2150,21 +2489,36 @@
             </nav>
         </aside>
 
-        <!-- TOMBOL COLLAPSE DESKTOP (Sekarang letaknya SETELAH sidebar) -->
+        <!-- TOMBOL COLLAPSE DESKTOP (letaknya SETELAH sidebar) -->
         <button @click="toggleSidebar" 
             class="hidden md:flex fixed top-8.5 z-40 items-center justify-center 
-                w-7 h-7 rounded-full bg-blue-500 dark:bg-blue-600 
-                border border-blue-600 dark:border-blue-500 
-                shadow-sm hover:shadow-md hover:bg-blue-600 dark:hover:bg-blue-500
-                text-white
+                w-9 h-9 rounded-full 
+                bg-gray-200 dark:bg-black
+                border border-gray-300 dark:border-gray-800
+                shadow-sm hover:shadow-md 
+                hover:bg-gray-300 dark:hover:bg-gray-900
                 transition-all duration-300 ease-in-out group"
             :style="`left: ${(sidebarPinned || isHovering) ? '256px' : '80px'}; transform: translate(-50%, -50%);`">
             
-            <svg class="w-3.5 h-3.5 transition-transform duration-300" 
-                :class="(sidebarPinned || isHovering) ? 'rotate-0' : 'rotate-180'"
-                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path>
-            </svg>
+            <!-- Inner circle (biru) — glow dihilangkan -->
+            <span class="flex items-center justify-center w-6 h-6 rounded-full 
+                bg-blue-500 dark:bg-blue-600 
+                border border-blue-600 dark:border-blue-500
+                shadow-sm
+                transition-all duration-300 ease-out
+                group-hover:scale-110">
+                <!-- 
+                    Kalau mau glow biru balik, tambahkan di class span:
+                    group-hover:scale-125
+                    group-hover:shadow-lg
+                    group-hover:shadow-blue-500/50
+                -->
+                <svg class="w-3.5 h-3.5 text-white transition-transform duration-300" 
+                    :class="(sidebarPinned || isHovering) ? 'rotate-0' : 'rotate-180'"
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </span>
         </button>
         
         <div class="min-w-0 flex-1 transition-[margin] duration-300 ease-in-out"
@@ -2252,18 +2606,18 @@ unset($__split);
                                     class="relative w-5 h-5 transition-transform duration-500 ease-in-out"
                                     :class="rotating ? 'rotate-[360deg]' : 'rotate-0'">
                                     
-                                    <!-- Icon Matahari -->
+                                    <!-- Icon Matahari (tampil saat mode DARK) -->
                                     <svg 
                                         class="absolute inset-0 w-5 h-5 text-zinc-600 dark:text-zinc-400 transition-all duration-300 ease-in-out"
-                                        :class="$flux.dark ? 'opacity-0 scale-50 rotate-90' : 'opacity-100 scale-100 rotate-0'"
+                                        :class="$flux.dark ? 'opacity-100 scale-100 rotate-0' : 'opacity-0 scale-50 rotate-90'"
                                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
                                     </svg>
-                                    
-                                    <!-- Icon Bulan -->
+
+                                    <!-- Icon Bulan (tampil saat mode LIGHT) -->
                                     <svg 
                                         class="absolute inset-0 w-5 h-5 text-zinc-600 dark:text-zinc-400 transition-all duration-300 ease-in-out"
-                                        :class="$flux.dark ? 'opacity-100 scale-100 rotate-0' : 'opacity-0 scale-50 -rotate-90'"
+                                        :class="$flux.dark ? 'opacity-0 scale-50 -rotate-90' : 'opacity-100 scale-100 rotate-0'"
                                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
                                     </svg>
@@ -2483,6 +2837,15 @@ unset($__split);
                     trayMonitoring: { open: false },
                     trayMaster: { open: false },
                     trayTransaction: { open: false },
+                    esdMonitoringMenu: { open: false },
+                    esdManagement: { open: false },
+                    esdStock: { open: false },
+                    esdYearly: { open: false },
+                    esdMonthly: { open: false },
+                    esdThreeMonth: { open: false },
+                    esdWeekly: { open: false },
+                    esdDaily: { open: false },
+                    esdNewAdmission: { open: false },
                 },
                 
                 init() {
@@ -2547,7 +2910,9 @@ unset($__split);
                         'uniformMonitoring', 'absenceMonitoring', 'lockerMonitoring', 'patrolMonitoring', 
                         'utilityMonitoring', 'dailyReportUtility',
                         'mtcMonitoring', 'mtcMonitoringMenu', 'mtcMaster',
-                        'trayMonitoring', 'trayMaster', 'trayTransaction'
+                        'trayMonitoring', 'trayMaster', 'trayTransaction',
+                        'esdMonitoringMenu', 'esdManagement', 'esdStock', 'esdYearly',
+                        'esdMonthly', 'esdThreeMonth', 'esdWeekly', 'esdDaily', 'esdNewAdmission'
                     ];
                     groupNames.forEach(groupName => {
                         const saved = localStorage.getItem(`sidebar_group_${groupName}`);

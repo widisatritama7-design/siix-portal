@@ -29,21 +29,13 @@ class BlindTestReview extends Component
             abort(403, 'Test belum selesai, tidak bisa direview.');
         }
 
-        // Paksa semua jawaban jadi pending — full manual review
         $this->answers = collect($this->blindTest->user_answers ?? [])
             ->map(function ($ans) {
-                $isMissing = ($ans['user_answer'] ?? '') === 'MISSING';
-
-                if ($isMissing) {
-                    // Baris tidak dijawab → langsung invalid, tidak perlu direview
-                    $ans['location_status'] = 'invalid';
-                    $ans['is_correct'] = false;
-                    $ans['auto_missing'] = true; // flag biar UI tahu ini auto
-                } else {
-                    $ans['location_status'] = 'pending';
-                    $ans['is_correct'] = false;
-                    $ans['auto_missing'] = false;
-                }
+                // Semua baris (termasuk MISSING) wajib direview manual oleh QC.
+                // Sistem TIDAK memberi penilaian otomatis.
+                $ans['location_status'] = 'pending';
+                $ans['is_correct'] = false;
+                $ans['auto_missing'] = false;
 
                 unset($ans['reviewed_by'], $ans['reviewed_at']);
                 return $ans;
@@ -57,19 +49,11 @@ class BlindTestReview extends Component
     public function setLocationStatus($index, $status)
     {
         if (!in_array($status, ['valid', 'invalid'])) return;
-
         if (!isset($this->answers[$index])) return;
-
-        // Baris MISSING tidak boleh direview
-        if (($this->answers[$index]['auto_missing'] ?? false) === true) {
-            return;
-        }
 
         $this->answers[$index]['location_status'] = $status;
         $this->answers[$index]['reviewed_by'] = auth()->id();
         $this->answers[$index]['reviewed_at'] = now()->toDateTimeString();
-
-        // Semua manual: valid = benar, invalid = salah
         $this->answers[$index]['is_correct'] = ($status === 'valid');
     }
 
@@ -79,8 +63,7 @@ class BlindTestReview extends Component
     public function markAllPendingValid()
     {
         foreach ($this->answers as $i => $ans) {
-            if (($ans['location_status'] ?? null) === 'pending'
-                && !($ans['auto_missing'] ?? false)) {
+            if (($ans['location_status'] ?? null) === 'pending') {
                 $this->setLocationStatus($i, 'valid');
             }
         }
@@ -108,12 +91,8 @@ class BlindTestReview extends Component
             return;
         }
 
-        // Cek masih ada pending?
         $hasPending = collect($this->answers)
-            ->contains(function ($a) {
-                if ($a['auto_missing'] ?? false) return false;
-                return ($a['location_status'] ?? null) === 'pending';
-            });
+            ->contains(fn ($a) => ($a['location_status'] ?? null) === 'pending');
 
         if ($hasPending) {
             $this->dispatch('notify', message: 'Masih ada yang perlu direview!', type: 'error');

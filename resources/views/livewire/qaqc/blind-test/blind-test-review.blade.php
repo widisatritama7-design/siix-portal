@@ -330,73 +330,51 @@
 
                         {{-- ========== QC: REVIEW LOCATION ========== --}}
                         <td class="px-3 py-3 text-center border-r border-zinc-200 dark:border-zinc-700">
-                            @if($ans['auto_missing'] ?? false)
-                                {{-- Baris MISSING: tidak perlu direview --}}
-                                <div class="flex flex-col items-center gap-0.5">
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 text-[10px] font-bold border border-zinc-300 dark:border-zinc-700">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3">
-                                            <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-8-5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5A.75.75 0 0 1 10 5Zm0 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd" />
-                                        </svg>
-                                        Tidak Dijawab
-                                    </span>
-                                    <div class="text-[9px] text-zinc-400 italic">Auto salah</div>
-                                </div>
-                            @else
-                                <div class="flex flex-col items-center gap-1">
-                                    <div class="inline-flex rounded-lg border border-zinc-300 dark:border-zinc-700 overflow-hidden shadow-sm">
-                                        <button type="button"
-                                            wire:click="setLocationStatus({{ $i }}, 'valid')"
-                                            @if($blindTest->is_reviewed) disabled @endif
-                                            class="px-3 py-1.5 text-xs font-semibold transition-colors disabled:cursor-not-allowed
-                                                {{ $locStatus === 'valid'
-                                                    ? 'bg-green-600 text-white shadow-inner'
-                                                    : 'bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-green-50 dark:hover:bg-green-950/20' }}">
-                                            <span class="flex items-center gap-1">
-                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">
-                                                    <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
-                                                </svg>
-                                                Valid
-                                            </span>
-                                        </button>
-                                        <button type="button"
-                                            wire:click="setLocationStatus({{ $i }}, 'invalid')"
-                                            @if($blindTest->is_reviewed) disabled @endif
-                                            class="px-3 py-1.5 text-xs font-semibold transition-colors border-l border-zinc-300 dark:border-zinc-700 disabled:cursor-not-allowed
-                                                {{ $locStatus === 'invalid'
-                                                    ? 'bg-red-600 text-white shadow-inner'
-                                                    : 'bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-red-50 dark:hover:bg-red-950/20' }}">
-                                            <span class="flex items-center gap-1">
-                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">
-                                                    <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
-                                                </svg>
-                                                Invalid
-                                            </span>
-                                        </button>
-                                    </div>
-                                    @if($locStatus === 'pending')
-                                        <div class="text-[10px] text-yellow-600 dark:text-yellow-400 italic font-semibold inline-flex items-center gap-1">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3">
-                                                <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z" clip-rule="evenodd" />
+                            <div class="flex flex-col items-center gap-1">
+                                <div class="inline-flex rounded-lg border border-zinc-300 dark:border-zinc-700 overflow-hidden shadow-sm">
+                                    <button type="button"
+                                        wire:click="setLocationStatus({{ $i }}, 'valid')"
+                                        @if($blindTest->is_reviewed) disabled @endif
+                                        class="px-3 py-1.5 text-xs font-semibold transition-colors disabled:cursor-not-allowed
+                                            {{ $locStatus === 'valid'
+                                                ? 'bg-green-600 text-white shadow-inner'
+                                                : 'bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-green-50 dark:hover:bg-green-950/20' }}">
+                                        <span class="flex items-center gap-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">
+                                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
                                             </svg>
-                                            Belum direview
-                                        </div>
-                                    @endif
+                                            Valid
+                                        </span>
+                                    </button>
+                                    <button type="button"
+                                        wire:click="setLocationStatus({{ $i }}, 'invalid')"
+                                        @if($blindTest->is_reviewed) disabled @endif
+                                        class="px-3 py-1.5 text-xs font-semibold transition-colors border-l border-zinc-300 dark:border-zinc-700 disabled:cursor-not-allowed
+                                            {{ $locStatus === 'invalid'
+                                                ? 'bg-red-600 text-white shadow-inner'
+                                                : 'bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-red-50 dark:hover:bg-red-950/20' }}">
+                                        <span class="flex items-center gap-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">
+                                                <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
+                                            </svg>
+                                            Invalid
+                                        </span>
+                                    </button>
                                 </div>
-                            @endif
+                                @if($locStatus === 'pending')
+                                    <div class="text-[10px] text-yellow-600 dark:text-yellow-400 italic font-semibold inline-flex items-center gap-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z" clip-rule="evenodd" />
+                                        </svg>
+                                        Belum direview
+                                    </div>
+                                @endif
+                            </div>
                         </td>
 
                         {{-- ========== QC: FINAL ========== --}}
                         <td class="px-3 py-3 text-center">
-                            @if($ans['auto_missing'] ?? false)
-                                {{-- Baris MISSING → auto SALAH --}}
-                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 text-[11px] font-bold border-2 border-orange-300 dark:border-orange-700">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">
-                                        <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-8-5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5A.75.75 0 0 1 10 5Zm0 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd" />
-                                    </svg>
-                                    SALAH
-                                </span>
-                                <div class="text-[9px] text-orange-600 dark:text-orange-400 italic mt-0.5">Tidak dijawab</div>
-                            @elseif($locStatus === 'pending')
+                            @if($locStatus === 'pending')
                                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 text-[11px] font-bold border-2 border-amber-300 dark:border-amber-700">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">
                                         <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z" clip-rule="evenodd" />
@@ -438,8 +416,7 @@
             $totalCorrect = collect($answers)->where('is_correct', true)->count();
             $totalAnswers = count($answers);
             $stillPending = collect($answers)
-                ->filter(fn ($a) => ($a['location_status'] ?? null) === 'pending'
-                    && !($a['auto_missing'] ?? false))
+                ->filter(fn ($a) => ($a['location_status'] ?? null) === 'pending')
                 ->count();
         @endphp
         <div class="mt-6 pt-4 border-t border-zinc-200 dark:border-zinc-700 flex flex-wrap items-center justify-between gap-4">

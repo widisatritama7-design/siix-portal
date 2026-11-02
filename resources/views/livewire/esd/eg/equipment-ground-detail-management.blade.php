@@ -1,178 +1,93 @@
-<section class="w-full">
-    
+<div class="p-1 space-y-2">
+    @section('title', 'Equipment Ground Measurement - ESD Control Panel')
 
-    <flux:heading class="sr-only">
-        {{ __('Electrostatic Discharge') }}
-    </flux:heading>
+    <!-- Breadcrumbs -->
+    <flux:breadcrumbs>
+        <flux:breadcrumbs.item href="{{ route('dashboard') }}" wire:navigate separator="slash">
+            Dashboard
+        </flux:breadcrumbs.item>
+        <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
+            Maintenance
+        </flux:breadcrumbs.item>
+        <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
+            ESD
+        </flux:breadcrumbs.item>
+        <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
+            Equipment Ground Measurement
+        </flux:breadcrumbs.item>
+    </flux:breadcrumbs>
 
-    <x-esd.layout 
-        class="!max-w-full !px-0 !mx-0"
-    >
-        <x-slot name="heading">
-            <div class="w-full">
-                <!-- Breadcrumbs above the heading -->
-                <flux:breadcrumbs class="mb-1">
-                    <flux:breadcrumbs.item href="{{ route('dashboard') }}" wire:navigate separator="slash">
-                        Dashboard
-                    </flux:breadcrumbs.item>
-                    <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
-                        Maintenance
-                    </flux:breadcrumbs.item>
-                    <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
-                        ESD
-                    </flux:breadcrumbs.item>
-                    <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
-                        Equipment Ground Measurement
-                    </flux:breadcrumbs.item>
-                </flux:breadcrumbs>
-            </div>
-        </x-slot>
-        <x-slot name="subheading">
-            <div class="w-full">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <h1 class="text-3xl font-bold text-zinc-800 dark:text-white">
-                            Equipment Ground Measurement
-                        </h1>
-                        <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-                            Manage measurement records for ESD equipment ground
-                        </p>
-                    </div>
-                    <flux:button 
-                        href="{{ route('esd.equipment-grounds') }}"
-                        wire:navigate
-                        icon="arrow-left"
-                        variant="primary"
-                        color="green"
-                    >
-                        Back to Equipment Ground
-                    </flux:button>
-                </div>
-            </div>
-        </x-slot>
-        <div class="p-1 space-y-2 w-full">
-            <!-- Filters Section -->
-            <div x-data="{ showFilters: false }">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-1 mb-4">
-                    <div class="flex-1">
-                        <button @click="showFilters = !showFilters"
-                            class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-zinc-700 bg-white border border-zinc-300 rounded-lg hover:bg-zinc-50 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-600 dark:hover:bg-zinc-700">
-                            <svg x-show="!showFilters" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                            </svg>
-                            <svg x-show="showFilters" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
-                            </svg>
-                            <span x-text="showFilters ? 'Hide Filters' : 'Show Filters'"></span>
-                            <span x-show="window.Livewire.find('{{ $this->getId() }}').entangle('selectedMachines').value.length > 0 || $wire.filterDateFrom || $wire.filterDateUntil || $wire.filterNextDateFrom || $wire.filterNextDateUntil || $wire.search" 
-                                class="ml-1 px-1.5 py-0.5 text-xs bg-blue-100 text-blue-800 rounded-full">Active</span>
-                        </button>
-                    </div>
-                    
-                    <div class="flex gap-2">
-                        @if(!empty($selectedMachines) || $filterDateFrom || $filterDateUntil || $filterNextDateFrom || $filterNextDateUntil || $search)
-                        <button wire:click="resetFilters" class="text-sm text-blue-600 hover:text-blue-800">Clear All Filters</button>
-                        @endif
-                    </div>
-                </div>
-
-                <div x-show="showFilters" x-cloak class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border p-6 mb-4">
-                    <div class="space-y-4">
-                        <!-- Search -->
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Search</label>
-                            <input type="text" wire:model.live.debounce.300ms="search" 
-                                placeholder="Search by machine, area, location..." 
-                                class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-700 dark:border-zinc-600">
-                        </div>
-
-                        <!-- Machine Filter with Searchable Dropdown -->
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Machine Name</label>
-                            
-                            <!-- Selected Machines Tags -->
-                            @if(!empty($selectedMachines))
-                            <div class="flex flex-wrap gap-2 mb-2">
-                                @foreach($selectedMachines as $machineId)
-                                    @php $machine = $allMachines->firstWhere('id', $machineId); @endphp
-                                    @if($machine)
-                                    <span class="inline-flex items-center gap-1 px-2 py-1 text-sm bg-blue-100 text-blue-800 rounded-full dark:bg-blue-900 dark:text-blue-300">
-                                        {{ $machine->machine_name }}
-                                        <button type="button" wire:click="removeMachineFilter({{ $machineId }})" class="hover:text-blue-600">
-                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                                            </svg>
-                                        </button>
-                                    </span>
-                                    @endif
-                                @endforeach
-                            </div>
-                            @endif
-
-                            <!-- Search Input -->
-                            <input type="text" wire:model.live="machineSearch" 
-                                placeholder="Search and select machine..." 
-                                class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-700 dark:border-zinc-600">
-
-                            <!-- Search Results Dropdown -->
-                            @if($machineSearch && $availableMachines->count() > 0)
-                            <div class="mt-1 border rounded-lg max-h-48 overflow-y-auto shadow-lg bg-white dark:bg-zinc-800">
-                                @foreach($availableMachines as $machine)
-                                    @if(!in_array($machine->id, $selectedMachines))
-                                    <button type="button" wire:click="addMachineFilter({{ $machine->id }})"
-                                        class="w-full text-left px-3 py-2 hover:bg-blue-50 dark:hover:bg-zinc-700 border-b last:border-b-0">
-                                        <div class="font-medium">{{ $machine->machine_name }}</div>
-                                        <div class="text-xs text-zinc-500">{{ $machine->area }} - {{ $machine->location }}</div>
-                                    </button>
-                                    @endif
-                                @endforeach
-                            </div>
-                            @endif
-                        </div>
-
-                        <!-- Date Filters -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium mb-1">Date From</label>
-                                <input type="date" wire:model.live="filterDateFrom" class="w-full px-3 py-2 border rounded-lg">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">Date Until</label>
-                                <input type="date" wire:model.live="filterDateUntil" class="w-full px-3 py-2 border rounded-lg">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">Next Date From</label>
-                                <input type="date" wire:model.live="filterNextDateFrom" class="w-full px-3 py-2 border rounded-lg">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">Next Date Until</label>
-                                <input type="date" wire:model.live="filterNextDateUntil" class="w-full px-3 py-2 border rounded-lg">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Print Report Section -->
-            <div class="mb-4">
-                <div class="bg-white dark:bg-zinc-800 rounded-xl p-4 border shadow-sm">
-                    <h3 class="text-lg font-semibold mb-3 flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-2 mb-4">
+        <div>
+            <h1 class="text-3xl font-bold text-zinc-800 dark:text-white">
+                Equipment Ground Measurement
+            </h1>
+            <p class="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+                Manage measurement records for ESD equipment ground
+            </p>
+        </div>
+        <div class="flex-shrink-0">
+            <flux:button
+                href="{{ route('esd.equipment-grounds') }}"
+                wire:navigate
+                icon="arrow-left"
+                variant="primary"
+                color="green"
+            >
+                Back to Equipment Ground
+            </flux:button>
+        </div>
+    </div>
+    <div class="p-1 space-y-2 w-full">
+        <!-- Filters Section -->
+        <div x-data="{ showFilters: false }">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-1 mb-4">
+                <div class="flex-1">
+                    <button @click="showFilters = !showFilters"
+                        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-zinc-700 bg-white border border-zinc-300 rounded-lg hover:bg-zinc-50 dark:bg-zinc-800 dark:text-zinc-300 dark:border-zinc-600 dark:hover:bg-zinc-700">
+                        <svg x-show="!showFilters" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                         </svg>
-                        Print Report
-                    </h3>
-                    
-                    <div class="space-y-4">
-                        <!-- Selected Print Machines -->
-                        @if(!empty($printSelectedMachines))
-                        <div class="flex flex-wrap gap-2">
-                            @foreach($printSelectedMachines as $machineId)
+                        <svg x-show="showFilters" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                        </svg>
+                        <span x-text="showFilters ? 'Hide Filters' : 'Show Filters'"></span>
+                        <span x-show="window.Livewire.find('{{ $this->getId() }}').entangle('selectedMachines').value.length > 0 || $wire.filterDateFrom || $wire.filterDateUntil || $wire.filterNextDateFrom || $wire.filterNextDateUntil || $wire.search" 
+                            class="ml-1 px-1.5 py-0.5 text-xs bg-blue-100 text-blue-800 rounded-full">Active</span>
+                    </button>
+                </div>
+                
+                <div class="flex gap-2">
+                    @if(!empty($selectedMachines) || $filterDateFrom || $filterDateUntil || $filterNextDateFrom || $filterNextDateUntil || $search)
+                    <button wire:click="resetFilters" class="text-sm text-blue-600 hover:text-blue-800">Clear All Filters</button>
+                    @endif
+                </div>
+            </div>
+
+            <div x-show="showFilters" x-cloak class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border p-6 mb-4">
+                <div class="space-y-4">
+                    <!-- Search -->
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Search</label>
+                        <input type="text" wire:model.live.debounce.300ms="search" 
+                            placeholder="Search by machine, area, location..." 
+                            class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-700 dark:border-zinc-600">
+                    </div>
+
+                    <!-- Machine Filter with Searchable Dropdown -->
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Machine Name</label>
+                        
+                        <!-- Selected Machines Tags -->
+                        @if(!empty($selectedMachines))
+                        <div class="flex flex-wrap gap-2 mb-2">
+                            @foreach($selectedMachines as $machineId)
                                 @php $machine = $allMachines->firstWhere('id', $machineId); @endphp
                                 @if($machine)
-                                <span class="inline-flex items-center gap-1 px-2 py-1 text-sm bg-green-100 text-green-800 rounded-full">
+                                <span class="inline-flex items-center gap-1 px-2 py-1 text-sm bg-blue-100 text-blue-800 rounded-full dark:bg-blue-900 dark:text-blue-300">
                                     {{ $machine->machine_name }}
-                                    <button type="button" wire:click="removePrintMachine({{ $machineId }})" class="hover:text-green-600">
+                                    <button type="button" wire:click="removeMachineFilter({{ $machineId }})" class="hover:text-blue-600">
                                         <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                                         </svg>
@@ -183,383 +98,456 @@
                         </div>
                         @endif
 
-                        <!-- Search Machine for Print -->
-                        <div>
-                            <label class="block text-sm font-medium mb-1">Select Machine</label>
-                            <input type="text" wire:model.live="printMachineSearch" 
-                                placeholder="Search machine..." 
-                                class="w-full px-3 py-2 border rounded-lg">
-                            
-                            @if($printMachineSearch && $printAvailableMachines->count() > 0)
-                            <div class="mt-1 border rounded-lg max-h-48 overflow-y-auto shadow-lg">
-                                @foreach($printAvailableMachines as $machine)
-                                    @if(!in_array($machine->id, $printSelectedMachines))
-                                    <button type="button" wire:click="addPrintMachine({{ $machine->id }})"
-                                        class="w-full text-left px-3 py-2 hover:bg-green-50 border-b last:border-b-0">
-                                        <div class="font-medium">{{ $machine->machine_name }}</div>
-                                        <div class="text-xs text-zinc-500">{{ $machine->area }} - {{ $machine->location }}</div>
-                                    </button>
-                                    @endif
-                                @endforeach
-                            </div>
-                            @endif
-                        </div>
+                        <!-- Search Input -->
+                        <input type="text" wire:model.live="machineSearch" 
+                            placeholder="Search and select machine..." 
+                            class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-700 dark:border-zinc-600">
 
-                        <!-- Date Filters for Print -->
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium mb-1">Date From</label>
-                                <input type="date" wire:model.live="printDateFrom" class="w-full px-3 py-2 border rounded-lg">
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium mb-1">Date Until</label>
-                                <input type="date" wire:model.live="printDateUntil" class="w-full px-3 py-2 border rounded-lg">
-                            </div>
-                        </div>
-                        
-                        <!-- Print Buttons -->
-                        @if(!empty($printSelectedMachines) || $printDateFrom || $printDateUntil)
-                        <div class="flex gap-2">
-                            <button wire:click="printPDF" 
-                                class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path>
-                                </svg>
-                                Download PDF
-                            </button>
-                            
-                            <button wire:click="resetPrintFilters" 
-                                class="inline-flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-zinc-50">
-                                Reset Filters
-                            </button>
+                        <!-- Search Results Dropdown -->
+                        @if($machineSearch && $availableMachines->count() > 0)
+                        <div class="mt-1 border rounded-lg max-h-48 overflow-y-auto shadow-lg bg-white dark:bg-zinc-800">
+                            @foreach($availableMachines as $machine)
+                                @if(!in_array($machine->id, $selectedMachines))
+                                <button type="button" wire:click="addMachineFilter({{ $machine->id }})"
+                                    class="w-full text-left px-3 py-2 hover:bg-blue-50 dark:hover:bg-zinc-700 border-b last:border-b-0">
+                                    <div class="font-medium">{{ $machine->machine_name }}</div>
+                                    <div class="text-xs text-zinc-500">{{ $machine->area }} - {{ $machine->location }}</div>
+                                </button>
+                                @endif
+                            @endforeach
                         </div>
                         @endif
                     </div>
-                </div>
-            </div>
 
-            <style>
-                [x-cloak] { display: none !important; }
-            </style>
-
-            <!-- Measurements Table -->
-            <flux:card class="p-6 h-full shadow-lg hover:shadow-xl transition-shadow duration-300 w-full">
-                <div class="overflow-x-auto">
-                    <table class="w-full whitespace-nowrap">
-                        <thead>
-                            <tr class="bg-zinc-50 dark:bg-zinc-800/50">
-                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider w-16">#</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[200px]">Machine Name</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[120px]">Area</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[120px]">Location</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Ohm Result</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider w-20">Judgement</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Volts Result</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider w-20">Judgement</th>
-                                <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">EG-3.1</th>
-                                <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">EG-3.2</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[150px]">Remarks</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Date</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Next Date</th>
-                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[120px]">Checked By</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
-                            @forelse($details as $index => $detail)
-                            <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors" wire:key="detail-{{ $detail->id }}">
-                                <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400">
-                                    {{ $details->firstItem() + $index }}
-                                </td>
-                                <td class="px-4 py-3">
-                                    <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-medium shadow-lg flex-shrink-0 text-xs">
-                                            {{ strtoupper(substr($detail->equipmentGround->machine_name ?? '', 0, 1)) }}
-                                        </div>
-                                        <span class="text-sm font-semibold text-zinc-800 dark:text-white truncate max-w-[180px]" title="{{ $detail->equipmentGround->machine_name ?? '' }}">
-                                            {{ $detail->equipmentGround->machine_name ?? 'N/A' }}
-                                        </span>
-                                    </div>
-                                </td>
-                                <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
-                                    {{ $detail->equipmentGround->area ?? 'N/A' }}
-                                </td>
-                                <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
-                                    {{ $detail->equipmentGround->location ?? 'N/A' }}
-                                </td>
-                                <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
-                                    {{ $detail->measure_results_ohm }} Ω
-                                </td>
-                                <td class="px-4 py-3">
-                                    @php
-                                        $ohmColor = $detail->judgement_ohm == 'OK' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400';
-                                    @endphp
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $ohmColor }}">
-                                        {{ $detail->judgement_ohm }}
-                                    </span>
-                                </td>
-                                <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
-                                    {{ $detail->measure_results_volts }} V
-                                </td>
-                                <td class="px-4 py-3">
-                                    @php
-                                        $voltsColor = $detail->judgement_volts == 'OK' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400';
-                                    @endphp
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $voltsColor }}">
-                                        {{ $detail->judgement_volts }}
-                                    </span>
-                                </td>
-                                {{-- EG-3.1 --}}
-                                <td class="px-4 py-3 text-center">
-                                    @if($detail->eg_3_1 !== null)
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $detail->eg_3_1 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' }}">
-                                            {{ $detail->eg_3_1 ? 'Yes' : 'No' }}
-                                        </span>
-                                    @else
-                                        <span class="text-zinc-400">-</span>
-                                    @endif
-                                </td>
-
-                                {{-- EG-3.2 --}}
-                                <td class="px-4 py-3 text-center">
-                                    @if($detail->eg_3_2 !== null)
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $detail->eg_3_2 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' }}">
-                                            {{ $detail->eg_3_2 ? 'Yes' : 'No' }}
-                                        </span>
-                                    @else
-                                        <span class="text-zinc-400">-</span>
-                                    @endif
-                                </td>
-                                <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300 truncate max-w-[150px]" title="{{ $detail->remarks }}">
-                                    {{ $detail->remarks ?? '-' }}
-                                </td>
-                                <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
-                                    {{ $detail->created_at ? $detail->created_at->format('d M Y') : '-' }}
-                                </td>
-                                <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
-                                    {{ $detail->next_date ? \Carbon\Carbon::parse($detail->next_date)->format('d M Y') : '-' }}
-                                </td>
-                                <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
-                                    {{ $detail->creator->name ?? 'N/A' }}
-                                </td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="13" class="px-4 py-12 text-center">
-                                    <div class="flex flex-col items-center gap-3">
-                                        <div class="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-                                            <flux:icon name="clipboard-document-list" class="w-10 h-10 text-zinc-400 dark:text-zinc-500" />
-                                        </div>
-                                        <div>
-                                            <h3 class="text-lg font-medium text-zinc-900 dark:text-white mb-1">
-                                                No measurement records found
-                                            </h3>
-                                            <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-4">
-                                                {{ $search || $filterMachine || $filterArea || $filterLocation ? 'Try adjusting your filters' : 'Get started by adding a new measurement' }}
-                                            </p>
-                                        </div>
-                                        @if($search || $filterMachine || $filterArea || $filterLocation)
-                                            <flux:button wire:click="resetFilters" size="sm">
-                                                Clear Filters
-                                            </flux:button>
-                                        @else
-                                            @can('create equipment ground details')
-                                            <flux:button 
-                                                variant="primary" 
-                                                size="sm"
-                                                wire:click="resetForm"
-                                                x-on:click="$dispatch('open-modal', 'detail-form-modal')"
-                                            >
-                                                Add Your First Measurement
-                                            </flux:button>
-                                            @endcan
-                                        @endif
-                                    </div>
-                                </td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-
-                <!-- Pagination -->
-                @if($details->hasPages())
-                <div class="p-4 border-t border-zinc-200 dark:border-zinc-700">
-                    {{ $details->links() }}
-                </div>
-                @endif
-            </flux:card>
-
-            <!-- MODAL FORM MEASUREMENT DETAIL -->
-            <div x-data="{ open: false }" 
-                 x-show="open" 
-                 @open-modal.window="if ($event.detail === 'detail-form-modal') open = true"
-                 @close-modal.window="if ($event.detail === 'detail-form-modal') open = false"
-                 x-cloak>
-
-                <div class="fixed inset-0 bg-black/50 z-40" @click="open = false"></div>
-
-                <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-                        <div class="p-6">
-                            <h2 class="text-xl font-bold mb-4">{{ $modalTitle }}</h2>
-
-                            <form wire:submit="save">
-                                <!-- Machine Name -->
-                                <div class="mb-4">
-                                    <label class="block text-sm font-medium mb-1">Machine Name <span class="text-red-500">*</span></label>
-                                    <select wire:model="equipment_ground_id"
-                                            class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-blue-500">
-                                        <option value="">Select Machine</option>
-                                        @foreach($allMachines as $machine)
-                                            <option value="{{ $machine->id }}">{{ $machine->machine_name }} - {{ $machine->area }} - {{ $machine->location }}</option>
-                                        @endforeach
-                                    </select>
-                                    @error('equipment_ground_id') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                </div>
-
-                                <!-- Area & Location (Readonly) -->
-                                <div class="grid grid-cols-2 gap-4 mb-4">
-                                    <div>
-                                        <label class="block text-sm font-medium mb-1">Area</label>
-                                        <input type="text" wire:model="area" readonly class="w-full px-3 py-2 border rounded-lg bg-gray-100 dark:bg-zinc-800 dark:border-zinc-700">
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium mb-1">Location</label>
-                                        <input type="text" wire:model="location" readonly class="w-full px-3 py-2 border rounded-lg bg-gray-100 dark:bg-zinc-800 dark:border-zinc-700">
-                                    </div>
-                                </div>
-
-                                <!-- Ohm Measurement -->
-                                <div class="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
-                                    <div class="text-sm font-semibold text-yellow-800 dark:text-yellow-400 mb-2">Standard: &lt; 1.0 Ohm</div>
-                                    <div class="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label class="block text-sm font-medium mb-1">Measure Results Ohm <span class="text-red-500">*</span></label>
-                                            <input type="number" step="0.01" wire:model="measure_results_ohm" wire:keyup="resetJudgement"
-                                                   class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                                            @error('measure_results_ohm') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-medium mb-1">Judgement Ohm</label>
-                                            <div class="flex gap-2 mt-2">
-                                                <span class="px-3 py-1 rounded-full text-sm font-medium {{ $judgement_ohm == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                                    {{ $judgement_ohm ?: 'Auto' }}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Volts Measurement -->
-                                <div class="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
-                                    <div class="text-sm font-semibold text-yellow-800 dark:text-yellow-400 mb-2">Standard: &lt; 2.0 Volts</div>
-                                    <div class="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label class="block text-sm font-medium mb-1">Measure Results Volts <span class="text-red-500">*</span></label>
-                                            <input type="number" step="0.01" wire:model="measure_results_volts" wire:keyup="resetJudgement"
-                                                   class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                                            @error('measure_results_volts') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                        </div>
-                                        <div>
-                                            <label class="block text-sm font-medium mb-1">Judgement Volts</label>
-                                            <div class="flex gap-2 mt-2">
-                                                <span class="px-3 py-1 rounded-full text-sm font-medium {{ $judgement_volts == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
-                                                    {{ $judgement_volts ?: 'Auto' }}
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Remarks -->
-                                <div class="mb-4">
-                                    <label class="block text-sm font-medium mb-1">Remarks</label>
-                                    <textarea wire:model="remarks" rows="3" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700"></textarea>
-                                    @error('remarks') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                </div>
-
-                                <!-- Next Date -->
-                                <div class="mb-4">
-                                    <label class="block text-sm font-medium mb-1">Next Date</label>
-                                    <input type="date" wire:model="next_date" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                                    @error('next_date') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                </div>
-
-                                <!-- Buttons -->
-                                <div class="flex justify-end gap-2 mt-6">
-                                    <button type="button" 
-                                            @click="open = false"
-                                            class="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
-                                        Cancel
-                                    </button>
-                                    <button type="submit" 
-                                            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                                        {{ $detail_id ? 'Update' : 'Create' }}
-                                    </button>
-                                </div>
-                            </form>
+                    <!-- Date Filters -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Date From</label>
+                            <input type="date" wire:model.live="filterDateFrom" class="w-full px-3 py-2 border rounded-lg">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Date Until</label>
+                            <input type="date" wire:model.live="filterDateUntil" class="w-full px-3 py-2 border rounded-lg">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Next Date From</label>
+                            <input type="date" wire:model.live="filterNextDateFrom" class="w-full px-3 py-2 border rounded-lg">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Next Date Until</label>
+                            <input type="date" wire:model.live="filterNextDateUntil" class="w-full px-3 py-2 border rounded-lg">
                         </div>
                     </div>
                 </div>
             </div>
-
-            <!-- MODAL DELETE -->
-            <div x-data="{ open: false }" 
-                 x-show="open" 
-                 @open-modal.window="if ($event.detail === 'delete-detail-modal') open = true"
-                 @close-modal.window="if ($event.detail === 'delete-detail-modal') open = false"
-                 x-cloak>
-
-                <div class="fixed inset-0 bg-black/50 z-40" @click="open = false"></div>
-
-                <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-xl w-full max-w-md p-6 text-center">
-                        <div class="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
-                            <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                            </svg>
-                        </div>
-
-                        <h3 class="text-lg font-bold mb-2">Delete Measurement Record</h3>
-                        <p class="text-gray-600 dark:text-gray-400 mb-6">
-                            Are you sure you want to delete measurement for "{{ $detailToDelete?->equipmentGround?->machine_name ?? 'this machine' }}"? This action cannot be undone.
-                        </p>
-
-                        <div class="flex justify-center gap-3">
-                            <button @click="open = false" 
-                                    class="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800">
-                                Cancel
-                            </button>
-                            <button wire:click="delete" 
-                                    @click="open = false"
-                                    class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
-                                Yes, Delete
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Notifikasi -->
-            <div x-data="{ show: false, message: '', type: 'success' }" 
-                 x-on:notify.window="show = true; message = $event.detail.message; type = $event.detail.type || 'success'; setTimeout(() => show = false, 3000)"
-                 x-show="show"
-                 x-transition
-                 class="fixed bottom-4 right-4 z-50"
-                 :class="{
-                     'bg-green-500': type === 'success',
-                     'bg-red-500': type === 'error',
-                     'bg-yellow-500': type === 'warning'
-                 }"
-                 style="display: none;">
-                <div class="text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2">
-                    <span x-text="message"></span>
-                </div>
-            </div>
-
-            <style>
-                [x-cloak] { display: none !important; }
-            </style>
         </div>
-    </x-esd.layout>
-</section>
+
+        <!-- Print Report Section -->
+        <div class="mb-4">
+            <div class="bg-white dark:bg-zinc-800 rounded-xl p-4 border shadow-sm">
+                <h3 class="text-lg font-semibold mb-3 flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
+                    </svg>
+                    Print Report
+                </h3>
+                
+                <div class="space-y-4">
+                    <!-- Selected Print Machines -->
+                    @if(!empty($printSelectedMachines))
+                    <div class="flex flex-wrap gap-2">
+                        @foreach($printSelectedMachines as $machineId)
+                            @php $machine = $allMachines->firstWhere('id', $machineId); @endphp
+                            @if($machine)
+                            <span class="inline-flex items-center gap-1 px-2 py-1 text-sm bg-green-100 text-green-800 rounded-full">
+                                {{ $machine->machine_name }}
+                                <button type="button" wire:click="removePrintMachine({{ $machineId }})" class="hover:text-green-600">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </span>
+                            @endif
+                        @endforeach
+                    </div>
+                    @endif
+
+                    <!-- Search Machine for Print -->
+                    <div>
+                        <label class="block text-sm font-medium mb-1">Select Machine</label>
+                        <input type="text" wire:model.live="printMachineSearch" 
+                            placeholder="Search machine..." 
+                            class="w-full px-3 py-2 border rounded-lg">
+                        
+                        @if($printMachineSearch && $printAvailableMachines->count() > 0)
+                        <div class="mt-1 border rounded-lg max-h-48 overflow-y-auto shadow-lg">
+                            @foreach($printAvailableMachines as $machine)
+                                @if(!in_array($machine->id, $printSelectedMachines))
+                                <button type="button" wire:click="addPrintMachine({{ $machine->id }})"
+                                    class="w-full text-left px-3 py-2 hover:bg-green-50 border-b last:border-b-0">
+                                    <div class="font-medium">{{ $machine->machine_name }}</div>
+                                    <div class="text-xs text-zinc-500">{{ $machine->area }} - {{ $machine->location }}</div>
+                                </button>
+                                @endif
+                            @endforeach
+                        </div>
+                        @endif
+                    </div>
+
+                    <!-- Date Filters for Print -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Date From</label>
+                            <input type="date" wire:model.live="printDateFrom" class="w-full px-3 py-2 border rounded-lg">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium mb-1">Date Until</label>
+                            <input type="date" wire:model.live="printDateUntil" class="w-full px-3 py-2 border rounded-lg">
+                        </div>
+                    </div>
+                    
+                    <!-- Print Buttons -->
+                    @if(!empty($printSelectedMachines) || $printDateFrom || $printDateUntil)
+                    <div class="flex gap-2">
+                        <button wire:click="printPDF" 
+                            class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3M3 17V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path>
+                            </svg>
+                            Download PDF
+                        </button>
+                        
+                        <button wire:click="resetPrintFilters" 
+                            class="inline-flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-zinc-50">
+                            Reset Filters
+                        </button>
+                    </div>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        <style>
+            [x-cloak] { display: none !important; }
+        </style>
+
+        <!-- Measurements Table -->
+        <flux:card class="p-6 h-full shadow-lg hover:shadow-xl transition-shadow duration-300 w-full">
+            <div class="overflow-x-auto">
+                <table class="w-full whitespace-nowrap">
+                    <thead>
+                        <tr class="bg-zinc-50 dark:bg-zinc-800/50">
+                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider w-16">#</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[200px]">Machine Name</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[120px]">Area</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[120px]">Location</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Ohm Result</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider w-20">Judgement</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Volts Result</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider w-20">Judgement</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">EG-3.1</th>
+                            <th class="px-4 py-3 text-center text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider">EG-3.2</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[150px]">Remarks</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Date</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Next Date</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[120px]">Checked By</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
+                        @forelse($details as $index => $detail)
+                        <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors" wire:key="detail-{{ $detail->id }}">
+                            <td class="px-4 py-3 text-sm text-zinc-500 dark:text-zinc-400">
+                                {{ $details->firstItem() + $index }}
+                            </td>
+                            <td class="px-4 py-3">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-medium shadow-lg flex-shrink-0 text-xs">
+                                        {{ strtoupper(substr($detail->equipmentGround->machine_name ?? '', 0, 1)) }}
+                                    </div>
+                                    <span class="text-sm font-semibold text-zinc-800 dark:text-white truncate max-w-[180px]" title="{{ $detail->equipmentGround->machine_name ?? '' }}">
+                                        {{ $detail->equipmentGround->machine_name ?? 'N/A' }}
+                                    </span>
+                                </div>
+                            </td>
+                            <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
+                                {{ $detail->equipmentGround->area ?? 'N/A' }}
+                            </td>
+                            <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
+                                {{ $detail->equipmentGround->location ?? 'N/A' }}
+                            </td>
+                            <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
+                                {{ $detail->measure_results_ohm }} Ω
+                            </td>
+                            <td class="px-4 py-3">
+                                @php
+                                    $ohmColor = $detail->judgement_ohm == 'OK' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400';
+                                @endphp
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $ohmColor }}">
+                                    {{ $detail->judgement_ohm }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
+                                {{ $detail->measure_results_volts }} V
+                            </td>
+                            <td class="px-4 py-3">
+                                @php
+                                    $voltsColor = $detail->judgement_volts == 'OK' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400';
+                                @endphp
+                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $voltsColor }}">
+                                    {{ $detail->judgement_volts }}
+                                </span>
+                            </td>
+                            {{-- EG-3.1 --}}
+                            <td class="px-4 py-3 text-center">
+                                @if($detail->eg_3_1 !== null)
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $detail->eg_3_1 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' }}">
+                                        {{ $detail->eg_3_1 ? 'Yes' : 'No' }}
+                                    </span>
+                                @else
+                                    <span class="text-zinc-400">-</span>
+                                @endif
+                            </td>
+
+                            {{-- EG-3.2 --}}
+                            <td class="px-4 py-3 text-center">
+                                @if($detail->eg_3_2 !== null)
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $detail->eg_3_2 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' }}">
+                                        {{ $detail->eg_3_2 ? 'Yes' : 'No' }}
+                                    </span>
+                                @else
+                                    <span class="text-zinc-400">-</span>
+                                @endif
+                            </td>
+                            <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300 truncate max-w-[150px]" title="{{ $detail->remarks }}">
+                                {{ $detail->remarks ?? '-' }}
+                            </td>
+                            <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
+                                {{ $detail->created_at ? $detail->created_at->format('d M Y') : '-' }}
+                            </td>
+                            <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
+                                {{ $detail->next_date ? \Carbon\Carbon::parse($detail->next_date)->format('d M Y') : '-' }}
+                            </td>
+                            <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
+                                {{ $detail->creator->name ?? 'N/A' }}
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="13" class="px-4 py-12 text-center">
+                                <div class="flex flex-col items-center gap-3">
+                                    <div class="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                                        <flux:icon name="clipboard-document-list" class="w-10 h-10 text-zinc-400 dark:text-zinc-500" />
+                                    </div>
+                                    <div>
+                                        <h3 class="text-lg font-medium text-zinc-900 dark:text-white mb-1">
+                                            No measurement records found
+                                        </h3>
+                                        <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-4">
+                                            {{ $search || $filterMachine || $filterArea || $filterLocation ? 'Try adjusting your filters' : 'Get started by adding a new measurement' }}
+                                        </p>
+                                    </div>
+                                    @if($search || $filterMachine || $filterArea || $filterLocation)
+                                        <flux:button wire:click="resetFilters" size="sm">
+                                            Clear Filters
+                                        </flux:button>
+                                    @else
+                                        @can('create equipment ground details')
+                                        <flux:button 
+                                            variant="primary" 
+                                            size="sm"
+                                            wire:click="resetForm"
+                                            x-on:click="$dispatch('open-modal', 'detail-form-modal')"
+                                        >
+                                            Add Your First Measurement
+                                        </flux:button>
+                                        @endcan
+                                    @endif
+                                </div>
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            @if($details->hasPages())
+            <div class="p-4 border-t border-zinc-200 dark:border-zinc-700">
+                {{ $details->links() }}
+            </div>
+            @endif
+        </flux:card>
+
+        <!-- MODAL FORM MEASUREMENT DETAIL -->
+        <div x-data="{ open: false }" 
+                x-show="open" 
+                @open-modal.window="if ($event.detail === 'detail-form-modal') open = true"
+                @close-modal.window="if ($event.detail === 'detail-form-modal') open = false"
+                x-cloak>
+
+            <div class="fixed inset-0 bg-black/50 z-40" @click="open = false"></div>
+
+            <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+                <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+                    <div class="p-6">
+                        <h2 class="text-xl font-bold mb-4">{{ $modalTitle }}</h2>
+
+                        <form wire:submit="save">
+                            <!-- Machine Name -->
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium mb-1">Machine Name <span class="text-red-500">*</span></label>
+                                <select wire:model="equipment_ground_id"
+                                        class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Select Machine</option>
+                                    @foreach($allMachines as $machine)
+                                        <option value="{{ $machine->id }}">{{ $machine->machine_name }} - {{ $machine->area }} - {{ $machine->location }}</option>
+                                    @endforeach
+                                </select>
+                                @error('equipment_ground_id') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            </div>
+
+                            <!-- Area & Location (Readonly) -->
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Area</label>
+                                    <input type="text" wire:model="area" readonly class="w-full px-3 py-2 border rounded-lg bg-gray-100 dark:bg-zinc-800 dark:border-zinc-700">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Location</label>
+                                    <input type="text" wire:model="location" readonly class="w-full px-3 py-2 border rounded-lg bg-gray-100 dark:bg-zinc-800 dark:border-zinc-700">
+                                </div>
+                            </div>
+
+                            <!-- Ohm Measurement -->
+                            <div class="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+                                <div class="text-sm font-semibold text-yellow-800 dark:text-yellow-400 mb-2">Standard: &lt; 1.0 Ohm</div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">Measure Results Ohm <span class="text-red-500">*</span></label>
+                                        <input type="number" step="0.01" wire:model="measure_results_ohm" wire:keyup="resetJudgement"
+                                                class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
+                                        @error('measure_results_ohm') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">Judgement Ohm</label>
+                                        <div class="flex gap-2 mt-2">
+                                            <span class="px-3 py-1 rounded-full text-sm font-medium {{ $judgement_ohm == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                                {{ $judgement_ohm ?: 'Auto' }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Volts Measurement -->
+                            <div class="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+                                <div class="text-sm font-semibold text-yellow-800 dark:text-yellow-400 mb-2">Standard: &lt; 2.0 Volts</div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">Measure Results Volts <span class="text-red-500">*</span></label>
+                                        <input type="number" step="0.01" wire:model="measure_results_volts" wire:keyup="resetJudgement"
+                                                class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
+                                        @error('measure_results_volts') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium mb-1">Judgement Volts</label>
+                                        <div class="flex gap-2 mt-2">
+                                            <span class="px-3 py-1 rounded-full text-sm font-medium {{ $judgement_volts == 'OK' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                                                {{ $judgement_volts ?: 'Auto' }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Remarks -->
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium mb-1">Remarks</label>
+                                <textarea wire:model="remarks" rows="3" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700"></textarea>
+                                @error('remarks') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            </div>
+
+                            <!-- Next Date -->
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium mb-1">Next Date</label>
+                                <input type="date" wire:model="next_date" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
+                                @error('next_date') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="flex justify-end gap-2 mt-6">
+                                <button type="button" 
+                                        @click="open = false"
+                                        class="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
+                                    Cancel
+                                </button>
+                                <button type="submit" 
+                                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                                    {{ $detail_id ? 'Update' : 'Create' }}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL DELETE -->
+        <div x-data="{ open: false }" 
+                x-show="open" 
+                @open-modal.window="if ($event.detail === 'delete-detail-modal') open = true"
+                @close-modal.window="if ($event.detail === 'delete-detail-modal') open = false"
+                x-cloak>
+
+            <div class="fixed inset-0 bg-black/50 z-40" @click="open = false"></div>
+
+            <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+                <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-xl w-full max-w-md p-6 text-center">
+                    <div class="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
+                        <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                    </div>
+
+                    <h3 class="text-lg font-bold mb-2">Delete Measurement Record</h3>
+                    <p class="text-gray-600 dark:text-gray-400 mb-6">
+                        Are you sure you want to delete measurement for "{{ $detailToDelete?->equipmentGround?->machine_name ?? 'this machine' }}"? This action cannot be undone.
+                    </p>
+
+                    <div class="flex justify-center gap-3">
+                        <button @click="open = false" 
+                                class="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800">
+                            Cancel
+                        </button>
+                        <button wire:click="delete" 
+                                @click="open = false"
+                                class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                            Yes, Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notifikasi -->
+        <div x-data="{ show: false, message: '', type: 'success' }" 
+                x-on:notify.window="show = true; message = $event.detail.message; type = $event.detail.type || 'success'; setTimeout(() => show = false, 3000)"
+                x-show="show"
+                x-transition
+                class="fixed bottom-4 right-4 z-50"
+                :class="{
+                    'bg-green-500': type === 'success',
+                    'bg-red-500': type === 'error',
+                    'bg-yellow-500': type === 'warning'
+                }"
+                style="display: none;">
+            <div class="text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2">
+                <span x-text="message"></span>
+            </div>
+        </div>
+
+        <style>
+            [x-cloak] { display: none !important; }
+        </style>
+    </div>
+</div>

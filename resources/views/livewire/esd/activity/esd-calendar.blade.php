@@ -1,235 +1,220 @@
-<section class="w-full">
-    
+<div class="p-1 space-y-2">
+    @section('title', 'ESD Measurement Schedule - ESD Control Panel')
 
-    <flux:heading class="sr-only">
-        {{ __('Electrostatic Discharge - Event Calendar') }}
-    </flux:heading>
+    <!-- Breadcrumbs -->
+    <flux:breadcrumbs>
+        <flux:breadcrumbs.item href="{{ route('dashboard') }}" wire:navigate separator="slash">
+            Dashboard
+        </flux:breadcrumbs.item>
+        <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
+            Maintenance
+        </flux:breadcrumbs.item>
+        <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
+            ESD
+        </flux:breadcrumbs.item>
+        <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
+            Calendar
+        </flux:breadcrumbs.item>
+    </flux:breadcrumbs>
 
-    <x-esd.layout class="!max-w-full !px-0 !mx-0">
-        <x-slot name="heading">
-            <div class="w-full">
-                <flux:breadcrumbs class="mb-1">
-                    <flux:breadcrumbs.item href="{{ route('dashboard') }}" wire:navigate separator="slash">
-                        Dashboard
-                    </flux:breadcrumbs.item>
-                    <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
-                        Maintenance
-                    </flux:breadcrumbs.item>
-                    <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
-                        ESD
-                    </flux:breadcrumbs.item>
-                    <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
-                        Calendar
-                    </flux:breadcrumbs.item>
-                </flux:breadcrumbs>
-            </div>
-        </x-slot>
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-2 mb-4">
+        <div>
+            <h1 class="text-3xl font-bold text-zinc-800 dark:text-white">
+                ESD Measurement Schedule
+            </h1>
+            <p class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+                Control And Monitor Your ESD Schedule
+            </p>
+        </div>
+
+        <!-- Tombol Refresh All -->
+        <button wire:click="refreshAllCards"
+            wire:loading.attr="disabled"
+            wire:target="refreshAllCards"
+            class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-semibold py-2 px-4 rounded-full transition-all duration-200 hover:scale-105 shadow-md">
+            <svg wire:loading.remove wire:target="refreshAllCards" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                <path fill-rule="evenodd" d="M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z" clip-rule="evenodd" />
+            </svg>
+            <svg wire:loading wire:target="refreshAllCards" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 animate-spin">
+                <path fill-rule="evenodd" d="M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z" clip-rule="evenodd" />
+            </svg>
+            <span wire:loading.remove wire:target="refreshAllCards">Refresh All</span>
+            <span wire:loading wire:target="refreshAllCards">Refreshing...</span>
+        </button>
+    </div>
         
-        <x-slot name="subheading">
-            <div class="w-full">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                    <div>
-                        <h1 class="text-xl sm:text-2xl font-bold text-zinc-800 dark:text-white">
-                            ESD Measurement Schedule
-                        </h1>
-                        <p class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mt-0.5">
-                            Control And Monitor Your ESD Schedule
-                        </p>
-                    </div>
-                    <!-- TOMBOL REFRESH ALL -->
-                    <div>
-                        <button wire:click="refreshAllCards"
-                            wire:loading.attr="disabled"
-                            wire:target="refreshAllCards"
-                            class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm font-semibold py-2 px-4 rounded-full transition-all duration-200 hover:scale-105 shadow-md">
-                            <!-- Icon normal (tidak loading) -->
-                            <svg wire:loading.remove wire:target="refreshAllCards" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
-                                <path fill-rule="evenodd" d="M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z" clip-rule="evenodd" />
-                            </svg>
-                            <!-- Icon loading (sama tapi diputer) -->
-                            <svg wire:loading wire:target="refreshAllCards" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 animate-spin">
-                                <path fill-rule="evenodd" d="M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z" clip-rule="evenodd" />
-                            </svg>
-                            <span wire:loading.remove wire:target="refreshAllCards">Refresh All</span>
-                            <span wire:loading wire:target="refreshAllCards">Refreshing...</span>
-                        </button>
+    <div class="-mt-2">
+        <!-- Grid auto-fill dengan card ukuran sedang -->
+        <div class="grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem;">
+            @foreach($sortedTypes as $type)
+            <div class="bg-white dark:bg-zinc-800 rounded-2xl shadow-md border border-zinc-200 dark:border-zinc-700 p-3.5 hover:shadow-lg transition-all duration-300">
+                
+                <!-- Navigation dengan Icon SVG -->
+                <div class="flex justify-between items-center mb-3">
+                    <button wire:click="goToPrevMonth('{{ $type }}')" 
+                            class="bg-blue-600 hover:bg-blue-700 text-white p-1.5 rounded-full transition-all duration-200 hover:scale-105">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                            <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-4.28 9.22a.75.75 0 0 0 0 1.06l3 3a.75.75 0 1 0 1.06-1.06l-1.72-1.72h5.69a.75.75 0 0 0 0-1.5h-5.69l1.72-1.72a.75.75 0 0 0-1.06-1.06l-3 3Z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+
+                    <span class="font-semibold text-gray-800 dark:text-white text-xs sm:text-sm text-center truncate mx-1">
+                        {{ $this->getMonthName($type) }}
+                    </span>
+
+                    <button wire:click="goToNextMonth('{{ $type }}')" 
+                            class="bg-blue-600 hover:bg-blue-700 text-white p-1.5 rounded-full transition-all duration-200 hover:scale-105">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                            <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm4.28 10.28a.75.75 0 0 0 0-1.06l-3-3a.75.75 0 1 0-1.06 1.06l1.72 1.72H8.25a.75.75 0 0 0 0 1.5h5.69l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3Z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Badges - rounded-full -->
+                <div class="mb-3">
+                    @if(($typeCodes[$type] ?? '-') !== '-')
+                        <div class="bg-gradient-to-r from-purple-600 to-purple-800 text-white py-1.5 px-3 rounded-full text-[11px] sm:text-xs font-bold text-center truncate shadow-sm">
+                            {{ $typeCodes[$type] }}
+                        </div>
+                    @else
+                        <div class="bg-gray-500 text-white py-1.5 px-3 rounded-full text-[11px] sm:text-xs font-bold text-center shadow-sm">
+                            -
+                        </div>
+                    @endif
+
+                    {{-- Section name (90%) + Refresh button (10%) --}}
+                    <div class="flex items-center mt-1.5 gap-1">
+                        {{-- Nama section - 90%, text center --}}
+                        <div class="relative bg-gradient-to-r from-orange-500 to-orange-600 text-white py-1 px-3 rounded-full text-[10px] sm:text-[11px] font-bold shadow-sm flex items-center justify-center"
+                            style="width: 90%;">
+                            <span class="truncate text-center w-full">{{ $displayNames[$type] }}</span>
+                        </div>
+
+                        {{-- Tombol Refresh per-section - 10% (BIRU) --}}
+                        <div style="width: 10%;">
+                            <button wire:click="refreshCardMonthOnly('{{ $type }}')"
+                                    wire:loading.attr="disabled"
+                                    wire:target="refreshCardMonthOnly('{{ $type }}')"
+                                    title="Refresh {{ $displayNames[$type] }}"
+                                    class="w-full bg-blue-600 hover:bg-blue-700 text-white py-1 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-105 shadow-sm">
+                                <svg wire:loading.remove wire:target="refreshCardMonthOnly('{{ $type }}')"
+                                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3">
+                                    <path fill-rule="evenodd" d="M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z" clip-rule="evenodd" />
+                                </svg>
+                                <svg wire:loading wire:target="refreshCardMonthOnly('{{ $type }}')"
+                                    xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3 animate-spin">
+                                    <path fill-rule="evenodd" d="M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </x-slot>
-        
-        <div class="-mt-2">
-            <!-- Grid auto-fill dengan card ukuran sedang -->
-            <div class="grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem;">
-                @foreach($sortedTypes as $type)
-                <div class="bg-white dark:bg-zinc-800 rounded-2xl shadow-md border border-zinc-200 dark:border-zinc-700 p-3.5 hover:shadow-lg transition-all duration-300">
-                    
-                    <!-- Navigation dengan Icon SVG -->
-                    <div class="flex justify-between items-center mb-3">
-                        <button wire:click="goToPrevMonth('{{ $type }}')" 
-                                class="bg-blue-600 hover:bg-blue-700 text-white p-1.5 rounded-full transition-all duration-200 hover:scale-105">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
-                                <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-4.28 9.22a.75.75 0 0 0 0 1.06l3 3a.75.75 0 1 0 1.06-1.06l-1.72-1.72h5.69a.75.75 0 0 0 0-1.5h-5.69l1.72-1.72a.75.75 0 0 0-1.06-1.06l-3 3Z" clip-rule="evenodd" />
-                            </svg>
-                        </button>
 
-                        <span class="font-semibold text-gray-800 dark:text-white text-xs sm:text-sm text-center truncate mx-1">
-                            {{ $this->getMonthName($type) }}
-                        </span>
+                <!-- Calendar Table -->
+                <div>
+                    <table class="w-full">
+                        <thead>
+                            <tr>
+                                <th class="text-gray-500 dark:text-gray-400 text-[10px] sm:text-xs py-1 text-center font-medium">S</th>
+                                <th class="text-gray-500 dark:text-gray-400 text-[10px] sm:text-xs py-1 text-center font-medium">M</th>
+                                <th class="text-gray-500 dark:text-gray-400 text-[10px] sm:text-xs py-1 text-center font-medium">T</th>
+                                <th class="text-gray-500 dark:text-gray-400 text-[10px] sm:text-xs py-1 text-center font-medium">W</th>
+                                <th class="text-gray-500 dark:text-gray-400 text-[10px] sm:text-xs py-1 text-center font-medium">T</th>
+                                <th class="text-gray-500 dark:text-gray-400 text-[10px] sm:text-xs py-1 text-center font-medium">F</th>
+                                <th class="text-gray-500 dark:text-gray-400 text-[10px] sm:text-xs py-1 text-center font-medium">S</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($this->getCalendarWeeks($type) as $week)
+                            <tr>
+                                @foreach($week as $day)
+                                    @if($day)
+                                        @php
+                                            $eventCount = $this->getEventCount($type, $day['date']);
+                                            $badgeColor = $this->getBadgeColor($type, $day['date']);
+                                            $displayCount = $eventCount > 99 ? '99+' : $eventCount;
+                                        @endphp
+                                        <td class="p-0.5 text-center align-middle">
+                                            <button wire:click="selectDate('{{ $type }}', '{{ $day['date'] }}')"
+                                                    class="relative w-full py-1.5 rounded-xl transition-all duration-200 text-xs sm:text-sm font-semibold
+                                                    {{ $day['isSelected'] ? 'bg-blue-600 text-white shadow-md scale-95' : 'bg-gray-100 dark:bg-zinc-700 text-gray-800 dark:text-white hover:bg-gray-200 dark:hover:bg-zinc-600 hover:scale-95' }}">
+                                                {{ $day['day'] }}
+                                                
+                                                @if($eventCount > 0)
+                                                    <span class="absolute -top-1 -right-1 text-white text-[9px] sm:text-[10px] rounded-full min-w-[16px] h-4 flex items-center justify-center font-bold shadow-md
+                                                        {{ $badgeColor == 'green' ? 'bg-green-600' : ($badgeColor == 'yellow' ? 'bg-yellow-500' : 'bg-red-600') }}
+                                                        px-0.5">
+                                                        {{ $displayCount }}
+                                                    </span>
+                                                @endif
+                                            </button>
+                                        </button>
+                                    </td>
+                                    @else
+                                        <td class="p-0.5">
+                                            <div class="w-full py-1.5"></div>
+                                        </td>
+                                    @endif
+                                @endforeach
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
 
-                        <button wire:click="goToNextMonth('{{ $type }}')" 
-                                class="bg-blue-600 hover:bg-blue-700 text-white p-1.5 rounded-full transition-all duration-200 hover:scale-105">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
-                                <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm4.28 10.28a.75.75 0 0 0 0-1.06l-3-3a.75.75 0 1 0-1.06 1.06l1.72 1.72H8.25a.75.75 0 0 0 0 1.5h5.69l-1.72 1.72a.75.75 0 1 0 1.06 1.06l3-3Z" clip-rule="evenodd" />
-                            </svg>
-                        </button>
-                    </div>
-
-                    <!-- Badges - rounded-full -->
-                    <div class="mb-3">
-                        @if(($typeCodes[$type] ?? '-') !== '-')
-                            <div class="bg-gradient-to-r from-purple-600 to-purple-800 text-white py-1.5 px-3 rounded-full text-[11px] sm:text-xs font-bold text-center truncate shadow-sm">
-                                {{ $typeCodes[$type] }}
+                <!-- Event List - Scroll hanya di sini -->
+                <div class="mt-3">
+                    <div class="space-y-1.5 pr-0.5 max-h-[200px] overflow-y-auto scrollbar-hide">
+                        @php
+                            $selectedDateForCard = $selectedDate[$type] ?? date('Y-m-d');
+                            $dayEvents = $this->getEventsForDate($type, $selectedDateForCard);
+                        @endphp
+                        
+                        @if(count($dayEvents) === 0)
+                            <div class="text-center text-gray-400 text-[10px] sm:text-xs py-2 bg-gray-50 dark:bg-zinc-800/50 rounded-xl">
+                                No events
                             </div>
                         @else
-                            <div class="bg-gray-500 text-white py-1.5 px-3 rounded-full text-[11px] sm:text-xs font-bold text-center shadow-sm">
-                                -
-                            </div>
-                        @endif
+                            @foreach($dayEvents as $event)
+                                @php
+                                    $detailUrl = $this->getDetailUrl($type, $event['detail_foreign_key']);
+                                @endphp
+                                <a href="{{ $detailUrl }}" 
+                                target="_blank"
+                                class="block transition-all duration-200 hover:translate-x-0.5">
+                                <div class="flex items-center justify-between p-1.5 rounded-xl text-[10px] sm:text-xs
+                                        {{ $event['hasActual'] ? 'bg-green-50 dark:bg-green-900/20 border-l-2 border-green-500' : 'bg-red-50 dark:bg-red-900/20 border-l-2 border-red-500' }}">
+                                        
+                                        <span class="flex-1 truncate mr-1 font-medium">
+                                            {{ $event['title'] }}
+                                        </span>
 
-                        {{-- Section name (90%) + Refresh button (10%) --}}
-                        <div class="flex items-center mt-1.5 gap-1">
-                            {{-- Nama section - 90%, text center --}}
-                            <div class="relative bg-gradient-to-r from-orange-500 to-orange-600 text-white py-1 px-3 rounded-full text-[10px] sm:text-[11px] font-bold shadow-sm flex items-center justify-center"
-                                style="width: 90%;">
-                                <span class="truncate text-center w-full">{{ $displayNames[$type] }}</span>
-                            </div>
-
-                            {{-- Tombol Refresh per-section - 10% (BIRU) --}}
-                            <div style="width: 10%;">
-                                <button wire:click="refreshCardMonthOnly('{{ $type }}')"
-                                        wire:loading.attr="disabled"
-                                        wire:target="refreshCardMonthOnly('{{ $type }}')"
-                                        title="Refresh {{ $displayNames[$type] }}"
-                                        class="w-full bg-blue-600 hover:bg-blue-700 text-white py-1 rounded-full flex items-center justify-center transition-all duration-200 hover:scale-105 shadow-sm">
-                                    <svg wire:loading.remove wire:target="refreshCardMonthOnly('{{ $type }}')"
-                                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3">
-                                        <path fill-rule="evenodd" d="M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z" clip-rule="evenodd" />
-                                    </svg>
-                                    <svg wire:loading wire:target="refreshCardMonthOnly('{{ $type }}')"
-                                        xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-3 h-3 animate-spin">
-                                        <path fill-rule="evenodd" d="M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z" clip-rule="evenodd" />
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Calendar Table -->
-                    <div>
-                        <table class="w-full">
-                            <thead>
-                                <tr>
-                                    <th class="text-gray-500 dark:text-gray-400 text-[10px] sm:text-xs py-1 text-center font-medium">S</th>
-                                    <th class="text-gray-500 dark:text-gray-400 text-[10px] sm:text-xs py-1 text-center font-medium">M</th>
-                                    <th class="text-gray-500 dark:text-gray-400 text-[10px] sm:text-xs py-1 text-center font-medium">T</th>
-                                    <th class="text-gray-500 dark:text-gray-400 text-[10px] sm:text-xs py-1 text-center font-medium">W</th>
-                                    <th class="text-gray-500 dark:text-gray-400 text-[10px] sm:text-xs py-1 text-center font-medium">T</th>
-                                    <th class="text-gray-500 dark:text-gray-400 text-[10px] sm:text-xs py-1 text-center font-medium">F</th>
-                                    <th class="text-gray-500 dark:text-gray-400 text-[10px] sm:text-xs py-1 text-center font-medium">S</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($this->getCalendarWeeks($type) as $week)
-                                <tr>
-                                    @foreach($week as $day)
-                                        @if($day)
-                                            @php
-                                                $eventCount = $this->getEventCount($type, $day['date']);
-                                                $badgeColor = $this->getBadgeColor($type, $day['date']);
-                                                $displayCount = $eventCount > 99 ? '99+' : $eventCount;
-                                            @endphp
-                                            <td class="p-0.5 text-center align-middle">
-                                                <button wire:click="selectDate('{{ $type }}', '{{ $day['date'] }}')"
-                                                        class="relative w-full py-1.5 rounded-xl transition-all duration-200 text-xs sm:text-sm font-semibold
-                                                        {{ $day['isSelected'] ? 'bg-blue-600 text-white shadow-md scale-95' : 'bg-gray-100 dark:bg-zinc-700 text-gray-800 dark:text-white hover:bg-gray-200 dark:hover:bg-zinc-600 hover:scale-95' }}">
-                                                    {{ $day['day'] }}
-                                                    
-                                                    @if($eventCount > 0)
-                                                        <span class="absolute -top-1 -right-1 text-white text-[9px] sm:text-[10px] rounded-full min-w-[16px] h-4 flex items-center justify-center font-bold shadow-md
-                                                            {{ $badgeColor == 'green' ? 'bg-green-600' : ($badgeColor == 'yellow' ? 'bg-yellow-500' : 'bg-red-600') }}
-                                                            px-0.5">
-                                                            {{ $displayCount }}
-                                                        </span>
-                                                    @endif
-                                                </button>
-                                            </button>
-                                        </td>
+                                        <!-- ICON -->
+                                        @if($event['hasActual'])
+                                            <!-- CHECK (HIJAU) -->
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                                                class="w-4 h-4 sm:w-5 sm:h-5 text-green-600 flex-shrink-0">
+                                                <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
+                                            </svg>
                                         @else
-                                            <td class="p-0.5">
-                                                <div class="w-full py-1.5"></div>
-                                            </td>
+                                            <!-- CROSS (MERAH) -->
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                                                class="w-4 h-4 sm:w-5 sm:h-5 text-red-600 flex-shrink-0">
+                                                <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z" clip-rule="evenodd" />
+                                            </svg>
                                         @endif
-                                    @endforeach
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Event List - Scroll hanya di sini -->
-                    <div class="mt-3">
-                        <div class="space-y-1.5 pr-0.5 max-h-[200px] overflow-y-auto scrollbar-hide">
-                            @php
-                                $selectedDateForCard = $selectedDate[$type] ?? date('Y-m-d');
-                                $dayEvents = $this->getEventsForDate($type, $selectedDateForCard);
-                            @endphp
-                            
-                            @if(count($dayEvents) === 0)
-                                <div class="text-center text-gray-400 text-[10px] sm:text-xs py-2 bg-gray-50 dark:bg-zinc-800/50 rounded-xl">
-                                    No events
-                                </div>
-                            @else
-                                @foreach($dayEvents as $event)
-                                    @php
-                                        $detailUrl = $this->getDetailUrl($type, $event['detail_foreign_key']);
-                                    @endphp
-                                    <a href="{{ $detailUrl }}" 
-                                    target="_blank"
-                                    class="block transition-all duration-200 hover:translate-x-0.5">
-                                    <div class="flex items-center justify-between p-1.5 rounded-xl text-[10px] sm:text-xs
-                                            {{ $event['hasActual'] ? 'bg-green-50 dark:bg-green-900/20 border-l-2 border-green-500' : 'bg-red-50 dark:bg-red-900/20 border-l-2 border-red-500' }}">
-                                            
-                                            <span class="flex-1 truncate mr-1 font-medium">
-                                                {{ $event['title'] }}
-                                            </span>
-
-                                            <!-- ICON -->
-                                            @if($event['hasActual'])
-                                                <!-- CHECK (HIJAU) -->
-                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-                                                    class="w-4 h-4 sm:w-5 sm:h-5 text-green-600 flex-shrink-0">
-                                                    <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
-                                                </svg>
-                                            @else
-                                                <!-- CROSS (MERAH) -->
-                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-                                                    class="w-4 h-4 sm:w-5 sm:h-5 text-red-600 flex-shrink-0">
-                                                    <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.72 6.97a.75.75 0 1 0-1.06 1.06L10.94 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L12 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L13.06 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L12 10.94l-1.72-1.72Z" clip-rule="evenodd" />
-                                                </svg>
-                                            @endif
-                                        </div>
-                                    </a>
-                                @endforeach
-                            @endif
-                        </div>
+                                    </div>
+                                </a>
+                            @endforeach
+                        @endif
                     </div>
                 </div>
-                @endforeach
             </div>
+            @endforeach
         </div>
-    </x-esd.layout>
-</section>
+    </div>
+</div>
 
 @push('styles')
 <style>

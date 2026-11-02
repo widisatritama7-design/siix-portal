@@ -19,7 +19,9 @@
                     </div>
                     <div>
                         <h2 class="text-lg font-bold text-white">{{ $modalTitle }}</h2>
-                        <p class="text-xs text-blue-100">Pilih employee & buat test (durasi otomatis 5 menit)</p>
+                        <p class="text-xs text-blue-100">
+                            Pilih employee & buat test (durasi otomatis {{ $section === 'QC' ? '10' : '5' }} menit)
+                        </p>
                     </div>
                 </div>
                 <button type="button" @click="open = false"
@@ -386,9 +388,15 @@
                         <div class="p-5">
                             <div class="flex items-center gap-4 p-4 rounded-xl bg-cyan-50 dark:bg-cyan-950/20 border-2 border-cyan-200 dark:border-cyan-800">
                                 <div>
-                                    <div class="text-sm font-bold text-cyan-800 dark:text-cyan-300">5 Menit</div>
+                                    <div class="text-sm font-bold text-cyan-800 dark:text-cyan-300">
+                                        {{ $section === 'QC' ? '10 Menit' : '5 Menit' }}
+                                        @if($section === 'QC')
+                                            <span class="ml-1 text-[10px] px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 font-bold uppercase">QC</span>
+                                        @endif
+                                    </div>
                                     <div class="text-xs text-cyan-600 dark:text-cyan-400">
-                                        Durasi otomatis 5 menit. Test akan close sendiri saat waktu habis.
+                                        Durasi otomatis {{ $section === 'QC' ? '10' : '5' }} menit (section {{ $section }}).
+                                        Test akan close sendiri saat waktu habis.
                                     </div>
                                 </div>
                             </div>

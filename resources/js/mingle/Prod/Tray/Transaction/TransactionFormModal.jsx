@@ -52,7 +52,6 @@ export default function TransactionFormModal({ wire, tray, initialRow, onClose, 
             <div className="w-full max-w-xl bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-700 max-h-[90vh] flex flex-col">
                 <div className="px-5 py-4 bg-gradient-to-r from-blue-600 to-blue-700 flex justify-between items-center rounded-t-2xl">
                     <h2 className="text-base font-bold text-white">{form.id ? 'Edit Transaction' : 'Transaction'}</h2>
-                    <button onClick={onClose} className="text-white/80 hover:text-white p-1 rounded hover:bg-white/20">✕</button>
                 </div>
 
                 <form onSubmit={handleSave} className="p-5 space-y-4 overflow-y-auto">

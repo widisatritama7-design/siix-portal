@@ -39,7 +39,6 @@ export default function ScanLocatorModal({ wire, onClose, onFound, showToast }) 
             <div className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl border border-zinc-200 dark:border-zinc-700 overflow-hidden">
                 <div className="px-5 py-4 bg-gradient-to-r from-blue-600 to-blue-700 flex justify-between items-center">
                     <h2 className="text-base font-bold text-white">Scan Locator</h2>
-                    <button onClick={onClose} className="text-white/80 hover:text-white p-1 rounded hover:bg-white/20">✕</button>
                 </div>
 
                 <form onSubmit={handleScan} className="p-5 space-y-4">

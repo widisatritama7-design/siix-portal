@@ -1,623 +1,607 @@
-{{-- resources/views/livewire/esd/shower/shower-show.blade.php --}}
-<section class="w-full">
-    
+<div class="p-1 space-y-2">
+    @section('title', 'Shower Detail - ESD Control Panel')
 
-    <flux:heading class="sr-only">
-        {{ __('Electrostatic Discharge - Shower Detail') }}
-    </flux:heading>
+    <!-- Breadcrumbs -->
+    <flux:breadcrumbs>
+        <flux:breadcrumbs.item href="{{ route('dashboard') }}" wire:navigate separator="slash">
+            Dashboard
+        </flux:breadcrumbs.item>
+        <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
+            Maintenance
+        </flux:breadcrumbs.item>
+        <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
+            ESD
+        </flux:breadcrumbs.item>
+        <flux:breadcrumbs.item href="{{ route('esd.showers') }}" wire:navigate separator="slash">
+            Shower
+        </flux:breadcrumbs.item>
+        <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
+            View
+        </flux:breadcrumbs.item>
+    </flux:breadcrumbs>
 
-    <x-esd.layout 
-        class="!max-w-full !px-0 !mx-0"
-    >
-        <x-slot name="heading">
-            <div class="w-full">
-                <!-- Breadcrumbs -->
-                <flux:breadcrumbs class="mb-1">
-                    <flux:breadcrumbs.item href="{{ route('dashboard') }}" wire:navigate separator="slash">
-                        Dashboard
-                    </flux:breadcrumbs.item>
-                    <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
-                        Maintenance
-                    </flux:breadcrumbs.item>
-                    <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
-                        ESD
-                    </flux:breadcrumbs.item>
-                    <flux:breadcrumbs.item href="{{ route('esd.showers') }}" wire:navigate separator="slash">
-                        Shower
-                    </flux:breadcrumbs.item>
-                    <flux:breadcrumbs.item separator="slash" class="font-semibold text-blue-600 dark:text-blue-400">
-                        View
-                    </flux:breadcrumbs.item>
-                </flux:breadcrumbs>
-            </div>
-        </x-slot>
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mt-2 mb-4">
+        <div class="w-full sm:w-auto">
+            <h1 class="text-2xl sm:text-3xl font-bold text-zinc-800 dark:text-white">
+                View Shower
+            </h1>
+            <p class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+                View detailed information about shower unit
+            </p>
+        </div>
+        <div class="w-full sm:w-auto flex-shrink-0">
+            <flux:button
+                href="{{ route('esd.showers') }}"
+                wire:navigate
+                icon="arrow-left"
+                variant="primary"
+                color="blue"
+                class="w-full sm:w-auto justify-center"
+            >
+                Back to List
+            </flux:button>
+        </div>
+    </div>
         
-        <x-slot name="subheading">
-            <div class="w-full">
-                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-                    <div class="w-full sm:w-auto">
-                        <h1 class="text-2xl sm:text-3xl font-bold text-zinc-800 dark:text-white">
-                            View Shower
-                        </h1>
-                        <p class="text-xs sm:text-sm text-zinc-500 dark:text-zinc-400 mt-1">
-                            View detailed information about shower unit
+    <div class="-mt-2">
+        <!-- Shower Information Card -->
+        <flux:card class="p-0 shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden mb-6">
+            <!-- Header with Solid Color -->
+            <div class="bg-blue-600 dark:bg-blue-500 px-6 py-4">
+                <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                    <h3 class="font-semibold text-base text-white">Shower Information</h3>
+                </div>
+            </div>
+            
+            <div class="p-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-center">
+                    <!-- Register No -->
+                    <div>
+                        <label class="text-sm font-medium text-zinc-500 dark:text-zinc-400 block">Register No</label>
+                        <p class="mt-1 text-base font-semibold text-zinc-800 dark:text-white">
+                            {{ $shower->register_no }}
                         </p>
                     </div>
-                    <div class="w-full sm:w-auto flex-shrink-0">
-                        <flux:button 
-                            href="{{ route('esd.showers') }}"
-                            wire:navigate
-                            icon="arrow-left"
-                            variant="primary"
-                            color="blue"
-                            class="w-full sm:w-auto justify-center"
-                        >
-                            Back to List
-                        </flux:button>
+
+                    <!-- Area -->
+                    <div>
+                        <label class="text-sm font-medium text-zinc-500 dark:text-zinc-400 block">Area</label>
+                        <p class="mt-1 text-base text-zinc-800 dark:text-white">
+                            {{ $shower->area }}
+                        </p>
+                    </div>
+
+                    <!-- Location -->
+                    <div>
+                        <label class="text-sm font-medium text-zinc-500 dark:text-zinc-400 block">Location</label>
+                        <p class="mt-1 text-base text-zinc-800 dark:text-white">
+                            {{ $shower->location }}
+                        </p>
                     </div>
                 </div>
             </div>
-        </x-slot>
-        
-        <div class="-mt-2">
-            <!-- Shower Information Card -->
-            <flux:card class="p-0 shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden mb-6">
-                <!-- Header with Solid Color -->
-                <div class="bg-blue-600 dark:bg-blue-500 px-6 py-4">
+        </flux:card>
+
+        <!-- Standard ESD Shower Card -->
+        <flux:card class="p-0 shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden mb-6">
+            <!-- Header with Solid Color -->
+            <div class="bg-blue-600 dark:bg-blue-500 px-6 py-4">
+                <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                    <h3 class="font-semibold text-base text-white">Standard Check ESD Shower</h3>
+                </div>
+            </div>
+            
+            <div class="p-6" x-data="{ open: false }">
+                <!-- Toggle Button inside content -->
+                <button 
+                    @click="open = !open"
+                    class="w-full flex items-center justify-between p-3 bg-gray-50 dark:bg-zinc-800/50 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors mb-4"
+                >
                     <div class="flex items-center gap-2">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                        </svg>
-                        <h3 class="font-semibold text-base text-white">Shower Information</h3>
+                        <flux:icon name="clipboard-document-list" class="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                        <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">View Standard Check Procedures</span>
                     </div>
-                </div>
+                    <flux:icon x-show="!open" name="chevron-down" class="w-5 h-5 text-zinc-500" />
+                    <flux:icon x-show="open" name="chevron-up" class="w-5 h-5 text-zinc-500" />
+                </button>
                 
-                <div class="p-6">
-                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-center">
-                        <!-- Register No -->
-                        <div>
-                            <label class="text-sm font-medium text-zinc-500 dark:text-zinc-400 block">Register No</label>
-                            <p class="mt-1 text-base font-semibold text-zinc-800 dark:text-white">
-                                {{ $shower->register_no }}
-                            </p>
-                        </div>
-
-                        <!-- Area -->
-                        <div>
-                            <label class="text-sm font-medium text-zinc-500 dark:text-zinc-400 block">Area</label>
-                            <p class="mt-1 text-base text-zinc-800 dark:text-white">
-                                {{ $shower->area }}
-                            </p>
-                        </div>
-
-                        <!-- Location -->
-                        <div>
-                            <label class="text-sm font-medium text-zinc-500 dark:text-zinc-400 block">Location</label>
-                            <p class="mt-1 text-base text-zinc-800 dark:text-white">
-                                {{ $shower->location }}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </flux:card>
-
-            <!-- Standard ESD Shower Card -->
-            <flux:card class="p-0 shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden mb-6">
-                <!-- Header with Solid Color -->
-                <div class="bg-blue-600 dark:bg-blue-500 px-6 py-4">
-                    <div class="flex items-center gap-2">
-                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                        </svg>
-                        <h3 class="font-semibold text-base text-white">Standard Check ESD Shower</h3>
-                    </div>
-                </div>
-                
-                <div class="p-6" x-data="{ open: false }">
-                    <!-- Toggle Button inside content -->
-                    <button 
-                        @click="open = !open"
-                        class="w-full flex items-center justify-between p-3 bg-gray-50 dark:bg-zinc-800/50 rounded-lg hover:bg-gray-100 dark:hover:bg-zinc-800 transition-colors mb-4"
-                    >
-                        <div class="flex items-center gap-2">
-                            <flux:icon name="clipboard-document-list" class="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                            <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300">View Standard Check Procedures</span>
-                        </div>
-                        <flux:icon x-show="!open" name="chevron-down" class="w-5 h-5 text-zinc-500" />
-                        <flux:icon x-show="open" name="chevron-up" class="w-5 h-5 text-zinc-500" />
-                    </button>
-                    
-                    <div x-show="open" x-collapse x-cloak>
-                        <div class="pt-2 space-y-6">
-                            <!-- Step 1: Cleaning -->
-                            <div class="bg-green-50 dark:bg-green-950/20 rounded-lg p-4 border border-green-200 dark:border-green-800">
-                                <div class="flex items-start gap-3">
-                                    <div class="flex-shrink-0 w-6 h-6 bg-green-600 text-white rounded-full flex items-center justify-center text-xs font-bold mt-0.5">
-                                        1
-                                    </div>
-                                    <div class="flex-1">
-                                        <h4 class="text-sm font-semibold text-green-800 dark:text-green-400 mb-1">Cleaning Procedure</h4>
-                                        <p class="text-sm text-green-700 dark:text-green-300">
-                                            Clean the entire machine body using a damp and dry cloth, and check the box on the checksheet once cleaning is complete.
-                                        </p>
-                                    </div>
+                <div x-show="open" x-collapse x-cloak>
+                    <div class="pt-2 space-y-6">
+                        <!-- Step 1: Cleaning -->
+                        <div class="bg-green-50 dark:bg-green-950/20 rounded-lg p-4 border border-green-200 dark:border-green-800">
+                            <div class="flex items-start gap-3">
+                                <div class="flex-shrink-0 w-6 h-6 bg-green-600 text-white rounded-full flex items-center justify-center text-xs font-bold mt-0.5">
+                                    1
                                 </div>
-                            </div>
-
-                            <!-- Step 2: Velocity Measurement -->
-                            <div class="bg-yellow-50 dark:bg-yellow-950/20 rounded-lg p-4 border border-yellow-200 dark:border-yellow-800">
-                                <div class="flex items-start gap-3">
-                                    <div class="flex-shrink-0 w-6 h-6 bg-yellow-600 text-white rounded-full flex items-center justify-center text-xs font-bold mt-0.5">
-                                        2
-                                    </div>
-                                    <div class="flex-1">
-                                        <h4 class="text-sm font-semibold text-yellow-800 dark:text-yellow-400 mb-1">Velocity Measurement</h4>
-                                        <p class="text-sm text-yellow-700 dark:text-yellow-300 mb-2">
-                                            Record the measured air velocity with a standard of <span class="font-bold">80–100 km/h</span>. Perform the measurement three times to ensure consistent airflow.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Step 3: NG Action -->
-                            <div class="bg-red-50 dark:bg-red-950/20 rounded-lg p-4 border border-red-200 dark:border-red-800">
-                                <div class="flex items-start gap-3">
-                                    <div class="flex-shrink-0 w-6 h-6 bg-red-600 text-white rounded-full flex items-center justify-center text-xs font-bold mt-0.5">
-                                        3
-                                    </div>
-                                    <div class="flex-1">
-                                        <h4 class="text-sm font-semibold text-red-800 dark:text-red-400 mb-1">If NG (Not Good)</h4>
-                                        <p class="text-sm text-red-700 dark:text-red-300">
-                                            Immediately report to your supervisor.
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Frequency and Document Reference -->
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                                <!-- Frequency -->
-                                <div class="bg-purple-50 dark:bg-purple-950/30 rounded-lg p-3 text-center">
-                                    <div class="flex items-center justify-center gap-2 mb-2">
-                                        <flux:icon name="calendar" class="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                                        <label class="text-sm font-semibold text-purple-800 dark:text-purple-400 uppercase tracking-wider">
-                                            Frequency
-                                        </label>
-                                    </div>
-                                    <p class="text-lg font-bold text-purple-700 dark:text-purple-400">
-                                        Weekly
+                                <div class="flex-1">
+                                    <h4 class="text-sm font-semibold text-green-800 dark:text-green-400 mb-1">Cleaning Procedure</h4>
+                                    <p class="text-sm text-green-700 dark:text-green-300">
+                                        Clean the entire machine body using a damp and dry cloth, and check the box on the checksheet once cleaning is complete.
                                     </p>
                                 </div>
+                            </div>
+                        </div>
 
-                                <!-- Document Reference -->
-                                <div class="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-3">
-                                    <div class="flex flex-col items-center justify-center gap-2">
-                                        <div class="flex items-center gap-2">
-                                            <flux:icon name="document-text" class="w-4 h-4 text-zinc-500" />
-                                            <span class="text-xs text-zinc-500 dark:text-zinc-400">Document Reference</span>
-                                        </div>
-                                        <code class="text-sm font-mono font-bold text-zinc-800 dark:text-white bg-white dark:bg-zinc-900 px-3 py-1 rounded">
-                                            QR-ADM-24-K028
-                                        </code>
+                        <!-- Step 2: Velocity Measurement -->
+                        <div class="bg-yellow-50 dark:bg-yellow-950/20 rounded-lg p-4 border border-yellow-200 dark:border-yellow-800">
+                            <div class="flex items-start gap-3">
+                                <div class="flex-shrink-0 w-6 h-6 bg-yellow-600 text-white rounded-full flex items-center justify-center text-xs font-bold mt-0.5">
+                                    2
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="text-sm font-semibold text-yellow-800 dark:text-yellow-400 mb-1">Velocity Measurement</h4>
+                                    <p class="text-sm text-yellow-700 dark:text-yellow-300 mb-2">
+                                        Record the measured air velocity with a standard of <span class="font-bold">80–100 km/h</span>. Perform the measurement three times to ensure consistent airflow.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Step 3: NG Action -->
+                        <div class="bg-red-50 dark:bg-red-950/20 rounded-lg p-4 border border-red-200 dark:border-red-800">
+                            <div class="flex items-start gap-3">
+                                <div class="flex-shrink-0 w-6 h-6 bg-red-600 text-white rounded-full flex items-center justify-center text-xs font-bold mt-0.5">
+                                    3
+                                </div>
+                                <div class="flex-1">
+                                    <h4 class="text-sm font-semibold text-red-800 dark:text-red-400 mb-1">If NG (Not Good)</h4>
+                                    <p class="text-sm text-red-700 dark:text-red-300">
+                                        Immediately report to your supervisor.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Frequency and Document Reference -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                            <!-- Frequency -->
+                            <div class="bg-purple-50 dark:bg-purple-950/30 rounded-lg p-3 text-center">
+                                <div class="flex items-center justify-center gap-2 mb-2">
+                                    <flux:icon name="calendar" class="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                                    <label class="text-sm font-semibold text-purple-800 dark:text-purple-400 uppercase tracking-wider">
+                                        Frequency
+                                    </label>
+                                </div>
+                                <p class="text-lg font-bold text-purple-700 dark:text-purple-400">
+                                    Weekly
+                                </p>
+                            </div>
+
+                            <!-- Document Reference -->
+                            <div class="bg-zinc-50 dark:bg-zinc-800/50 rounded-lg p-3">
+                                <div class="flex flex-col items-center justify-center gap-2">
+                                    <div class="flex items-center gap-2">
+                                        <flux:icon name="document-text" class="w-4 h-4 text-zinc-500" />
+                                        <span class="text-xs text-zinc-500 dark:text-zinc-400">Document Reference</span>
                                     </div>
+                                    <code class="text-sm font-mono font-bold text-zinc-800 dark:text-white bg-white dark:bg-zinc-900 px-3 py-1 rounded">
+                                        QR-ADM-24-K028
+                                    </code>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </flux:card>
+            </div>
+        </flux:card>
 
-            <!-- Measurements Section -->
-            <div class="mt-6">
-                <div class="mb-4">
-                    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
-                        <h2 class="text-xl font-bold text-zinc-800 dark:text-white order-1 sm:order-1">
-                            Measurement History
-                        </h2>
-                        <div class="order-2 sm:order-2">
-                            @can('create shower details')
-                            <flux:button 
-                                variant="primary" 
-                                icon="plus" 
-                                class="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto justify-center"
-                                wire:click="resetForm"
-                                x-on:click="$dispatch('open-modal', 'detail-form-modal')"
-                            >
-                                Add New Measurement
-                            </flux:button>
-                            @endcan
-                        </div>
+        <!-- Measurements Section -->
+        <div class="mt-6">
+            <div class="mb-4">
+                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3">
+                    <h2 class="text-xl font-bold text-zinc-800 dark:text-white order-1 sm:order-1">
+                        Measurement History
+                    </h2>
+                    <div class="order-2 sm:order-2">
+                        @can('create shower details')
+                        <flux:button 
+                            variant="primary" 
+                            icon="plus" 
+                            class="bg-blue-600 hover:bg-blue-700 w-full sm:w-auto justify-center"
+                            wire:click="resetForm"
+                            x-on:click="$dispatch('open-modal', 'detail-form-modal')"
+                        >
+                            Add New Measurement
+                        </flux:button>
+                        @endcan
                     </div>
                 </div>
-
-                <!-- Filters -->
-                <div class="bg-white dark:bg-zinc-800 rounded-xl shadow-lg border border-zinc-200 dark:border-zinc-700 p-4 mb-4">
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                        <!-- Date From -->
-                        <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Date From</label>
-                            <input type="date" wire:model.live="filterDateFrom" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                        </div>
-
-                        <!-- Date Until -->
-                        <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Date Until</label>
-                            <input type="date" wire:model.live="filterDateUntil" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                        </div>
-
-                        <!-- Next Date From -->
-                        <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Next Date From</label>
-                            <input type="date" wire:model.live="filterNextDateFrom" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                        </div>
-
-                        <!-- Next Date Until -->
-                        <div>
-                            <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Next Date Until</label>
-                            <input type="date" wire:model.live="filterNextDateUntil" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
-                        </div>
-                    </div>
-
-                    @if($filterDateFrom || $filterDateUntil || $filterNextDateFrom || $filterNextDateUntil || $search)
-                    <div class="mt-3 text-right">
-                        <button wire:click="resetFilters" class="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400">
-                            Clear All Filters
-                        </button>
-                    </div>
-                    @endif
-                </div>
-
-                <!-- Measurements Table -->
-                <flux:card class="p-6 h-full shadow-lg hover:shadow-xl transition-shadow duration-300 w-full">
-                    <div class="overflow-x-auto">
-                        <table class="w-full whitespace-nowrap">
-                            <thead>
-                                <tr class="bg-zinc-50 dark:bg-zinc-800/50">
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Check Body</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[120px]">Velocity Result</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider w-20">Judgement</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[150px]">Remarks</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Date</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Next Date</th>
-                                    <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[120px]">Checked By</th>
-                                    <th class="px-4 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider w-24">Actions</th>
-                            </thead>
-                            <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
-                                @forelse($details as $index => $detail)
-                                @php
-                                    $isOutOfSpec = ($detail->velocity < 80 || $detail->velocity > 100);
-                                    $velocityColor = $isOutOfSpec ? 'text-red-600 dark:text-red-400 font-bold' : 'text-green-600 dark:text-green-400';
-                                @endphp
-                                <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors {{ $isOutOfSpec ? 'bg-red-50 dark:bg-red-950/20' : '' }}" wire:key="detail-{{ $detail->id }}">
-                                    <!-- Check Body Column -->
-                                    <td class="px-4 py-3">
-                                        @if($detail->check_body)
-                                            <span class="inline-flex items-center gap-1 text-green-600 dark:text-green-400">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                                </svg>
-                                                <span class="text-sm">Yes</span>
-                                            </span>
-                                        @else
-                                            <span class="inline-flex items-center gap-1 text-red-600 dark:text-red-400">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                                </svg>
-                                                <span class="text-sm">No</span>
-                                            </span>
-                                        @endif
-                                    </td>
-                                    
-                                    <!-- Velocity Result Column -->
-                                    <td class="px-4 py-3">
-                                        <div class="flex items-center gap-2">
-                                            <span class="text-sm font-mono {{ $velocityColor }}">
-                                                {{ $detail->velocity }} <span class="text-xs">m/s</span>
-                                            </span>
-                                            @if($isOutOfSpec)
-                                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
-                                                    Out of Spec
-                                                </span>
-                                            @endif
-                                        </div>
-                                    </td>
-                                    
-                                    <!-- Judgement Column -->
-                                    <td class="px-4 py-3">
-                                        @php
-                                            $judgementClass = 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400';
-                                            if ($detail->judgement == 'OK') {
-                                                $judgementClass = 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400';
-                                            } elseif (str_contains($detail->judgement, 'NG')) {
-                                                $judgementClass = 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400';
-                                            }
-                                        @endphp
-                                        <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $judgementClass }}">
-                                            {{ $detail->judgement }}
-                                        </span>
-                                    </td>
-                                    
-                                    <!-- Remarks Column -->
-                                    <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300 truncate max-w-[200px]" title="{{ $detail->remarks ?? 'No remarks' }}">
-                                        @if($detail->remarks)
-                                            @if(str_contains($detail->remarks, '⚠️'))
-                                                <span class="text-yellow-600 dark:text-yellow-400">⚠️</span>
-                                            @elseif(str_contains($detail->remarks, '✓'))
-                                                <span class="text-green-600 dark:text-green-400">✓</span>
-                                            @endif
-                                            {{ $detail->remarks }}
-                                        @else
-                                            -
-                                        @endif
-                                    </td>
-                                    
-                                    <!-- Date Column -->
-                                    <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
-                                        {{ $detail->created_at ? $detail->created_at->format('d M Y') : '-' }}
-                                    </td>
-                                    
-                                    <!-- Next Date Column -->
-                                    <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
-                                        {{ $detail->next_date ? \Carbon\Carbon::parse($detail->next_date)->format('d M Y') : '-' }}
-                                    </td>
-                                    
-                                    <!-- Checked By Column -->
-                                    <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
-                                        {{ $detail->creator->name ?? 'N/A' }}
-                                    </td>
-                                    
-                                    <!-- Actions Column -->
-                                    <td class="px-4 py-3 text-right">
-                                        <div class="flex items-center justify-end gap-1 whitespace-nowrap">
-                                            @can('edit shower details')
-                                            <flux:button 
-                                                wire:click="edit({{ $detail->id }})" 
-                                                x-on:click="$dispatch('open-modal', 'detail-form-modal')"
-                                                size="sm"
-                                                icon="pencil-square"
-                                                variant="primary"
-                                                color="yellow"
-                                                class="!p-2 flex-shrink-0"
-                                                title="Edit measurement"
-                                            />
-                                            @endcan
-
-                                            @can('delete shower details')
-                                                <flux:button 
-                                                    wire:click="confirmDelete({{ $detail->id }})" 
-                                                    x-on:click="$dispatch('open-modal', 'delete-detail-modal')"
-                                                    size="sm"
-                                                    icon="trash"
-                                                    variant="primary"
-                                                    color="red"
-                                                    class="!p-2 flex-shrink-0"
-                                                    title="Delete measurement"
-                                                />
-                                            @endcan
-                                        </div>
-                                    </td>
-                                </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="8" class="px-4 py-12 text-center">
-                                        <div class="flex flex-col items-center gap-3">
-                                            <div class="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-                                                <flux:icon name="square-3-stack-3d" class="w-10 h-10 text-zinc-400 dark:text-zinc-500" />
-                                            </div>
-                                            <div>
-                                                <h3 class="text-lg font-medium text-zinc-900 dark:text-white mb-1">
-                                                    No measurement records found
-                                                </h3>
-                                                <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-4">
-                                                    {{ $search || $filterDateFrom || $filterDateUntil || $filterNextDateFrom || $filterNextDateUntil ? 'Try adjusting your filters' : 'Get started by adding a new measurement' }}
-                                                </p>
-                                            </div>
-                                            @if($search || $filterDateFrom || $filterDateUntil || $filterNextDateFrom || $filterNextDateUntil)
-                                                <flux:button wire:click="resetFilters" size="sm">
-                                                    Clear Filters
-                                                </flux:button>
-                                            @else
-                                                @can('create shower details')
-                                                <flux:button 
-                                                    variant="primary" 
-                                                    size="sm"
-                                                    wire:click="resetForm"
-                                                    x-on:click="$dispatch('open-modal', 'detail-form-modal')"
-                                                >
-                                                    Add Your First Measurement
-                                                </flux:button>
-                                                @endcan
-                                            @endif
-                                        </div>
-                                    </td>
-                                </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Pagination -->
-                    @if($details->hasPages())
-                    <div class="p-4 border-t border-zinc-200 dark:border-zinc-700">
-                        {{ $details->links() }}
-                    </div>
-                    @endif
-                </flux:card>
             </div>
 
-            <!-- MODAL FORM MEASUREMENT DETAIL -->
-            <div x-data="{ open: false }" 
-                x-show="open" 
-                @open-modal.window="if ($event.detail === 'detail-form-modal') open = true"
-                @close-modal.window="if ($event.detail === 'detail-form-modal') open = false"
-                x-cloak>
+            <!-- Filters -->
+            <div class="bg-white dark:bg-zinc-800 rounded-xl shadow-lg border border-zinc-200 dark:border-zinc-700 p-4 mb-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Date From -->
+                    <div>
+                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Date From</label>
+                        <input type="date" wire:model.live="filterDateFrom" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                    </div>
 
-                <div class="fixed inset-0 bg-black/50 z-40" @click="open = false"></div>
+                    <!-- Date Until -->
+                    <div>
+                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Date Until</label>
+                        <input type="date" wire:model.live="filterDateUntil" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                    </div>
 
-                <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-                        <div class="p-6">
-                            <h2 class="text-xl font-bold mb-4">{{ $modalTitle }}</h2>
+                    <!-- Next Date From -->
+                    <div>
+                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Next Date From</label>
+                        <input type="date" wire:model.live="filterNextDateFrom" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                    </div>
 
-                            <form wire:submit="save">
-                                <!-- Hidden Input for shower_id -->
-                                <input type="hidden" wire:model="shower_id" value="{{ $shower->id }}">
+                    <!-- Next Date Until -->
+                    <div>
+                        <label class="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">Next Date Until</label>
+                        <input type="date" wire:model.live="filterNextDateUntil" class="w-full px-3 py-2 border border-zinc-300 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-zinc-700 dark:border-zinc-600 dark:text-white">
+                    </div>
+                </div>
 
-                                <!-- Check Body Toggle -->
-                                <div class="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-                                    <label class="block text-sm font-medium mb-3">Check Body Status <span class="text-red-500">*</span></label>
-                                    <div class="flex items-center gap-4">
-                                        <button type="button" 
-                                            wire:click="$set('check_body', true)"
-                                            class="flex items-center gap-2 px-4 py-2 rounded-lg transition-all {{ $check_body ? 'bg-green-600 text-white shadow-md' : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400' }}">
+                @if($filterDateFrom || $filterDateUntil || $filterNextDateFrom || $filterNextDateUntil || $search)
+                <div class="mt-3 text-right">
+                    <button wire:click="resetFilters" class="text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400">
+                        Clear All Filters
+                    </button>
+                </div>
+                @endif
+            </div>
+
+            <!-- Measurements Table -->
+            <flux:card class="p-6 h-full shadow-lg hover:shadow-xl transition-shadow duration-300 w-full">
+                <div class="overflow-x-auto">
+                    <table class="w-full whitespace-nowrap">
+                        <thead>
+                            <tr class="bg-zinc-50 dark:bg-zinc-800/50">
+                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Check Body</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[120px]">Velocity Result</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider w-20">Judgement</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[150px]">Remarks</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Date</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[100px]">Next Date</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider min-w-[120px]">Checked By</th>
+                                <th class="px-4 py-3 text-right text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wider w-24">Actions</th>
+                        </thead>
+                        <tbody class="divide-y divide-zinc-200 dark:divide-zinc-700">
+                            @forelse($details as $index => $detail)
+                            @php
+                                $isOutOfSpec = ($detail->velocity < 80 || $detail->velocity > 100);
+                                $velocityColor = $isOutOfSpec ? 'text-red-600 dark:text-red-400 font-bold' : 'text-green-600 dark:text-green-400';
+                            @endphp
+                            <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors {{ $isOutOfSpec ? 'bg-red-50 dark:bg-red-950/20' : '' }}" wire:key="detail-{{ $detail->id }}">
+                                <!-- Check Body Column -->
+                                <td class="px-4 py-3">
+                                    @if($detail->check_body)
+                                        <span class="inline-flex items-center gap-1 text-green-600 dark:text-green-400">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                             </svg>
-                                            Yes (Check)
-                                        </button>
-                                        <button type="button"
-                                            wire:click="$set('check_body', false)"
-                                            class="flex items-center gap-2 px-4 py-2 rounded-lg transition-all {{ !$check_body ? 'bg-red-600 text-white shadow-md' : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400' }}">
+                                            <span class="text-sm">Yes</span>
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1 text-red-600 dark:text-red-400">
                                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                             </svg>
-                                            No (Skip)
-                                        </button>
-                                    </div>
-                                    @error('check_body') <span class="text-red-500 text-sm block mt-2">{{ $message }}</span> @enderror
-                                </div>
-
-                                <!-- Velocity Measurement -->
-                                <div class="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
-                                    <div class="text-sm font-semibold text-yellow-800 dark:text-yellow-400 mb-2">Standard: 80 - 100 m/s</div>
-                                    <div>
-                                        <label class="block text-sm font-medium mb-1">Velocity (m/s) <span class="text-red-500">*</span></label>
-                                        <input type="number" step="0.01" wire:model="velocity" wire:keyup="resetJudgement"
-                                            class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-blue-500">
-                                        @error('velocity') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                        @if($velocity && (floatval($velocity) < 80 || floatval($velocity) > 100))
-                                            <div class="mt-2 text-xs text-yellow-600 dark:text-yellow-400 flex items-center gap-1">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                                                </svg>
-                                                <span>Warning: Value is outside the standard range (80-100 m/s)</span>
-                                            </div>
+                                            <span class="text-sm">No</span>
+                                        </span>
+                                    @endif
+                                </td>
+                                
+                                <!-- Velocity Result Column -->
+                                <td class="px-4 py-3">
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-sm font-mono {{ $velocityColor }}">
+                                            {{ $detail->velocity }} <span class="text-xs">m/s</span>
+                                        </span>
+                                        @if($isOutOfSpec)
+                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
+                                                Out of Spec
+                                            </span>
                                         @endif
                                     </div>
-                                </div>
+                                </td>
+                                
+                                <!-- Judgement Column -->
+                                <td class="px-4 py-3">
+                                    @php
+                                        $judgementClass = 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400';
+                                        if ($detail->judgement == 'OK') {
+                                            $judgementClass = 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400';
+                                        } elseif (str_contains($detail->judgement, 'NG')) {
+                                            $judgementClass = 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400';
+                                        }
+                                    @endphp
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {{ $judgementClass }}">
+                                        {{ $detail->judgement }}
+                                    </span>
+                                </td>
+                                
+                                <!-- Remarks Column -->
+                                <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300 truncate max-w-[200px]" title="{{ $detail->remarks ?? 'No remarks' }}">
+                                    @if($detail->remarks)
+                                        @if(str_contains($detail->remarks, '⚠️'))
+                                            <span class="text-yellow-600 dark:text-yellow-400">⚠️</span>
+                                        @elseif(str_contains($detail->remarks, '✓'))
+                                            <span class="text-green-600 dark:text-green-400">✓</span>
+                                        @endif
+                                        {{ $detail->remarks }}
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                                
+                                <!-- Date Column -->
+                                <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
+                                    {{ $detail->created_at ? $detail->created_at->format('d M Y') : '-' }}
+                                </td>
+                                
+                                <!-- Next Date Column -->
+                                <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
+                                    {{ $detail->next_date ? \Carbon\Carbon::parse($detail->next_date)->format('d M Y') : '-' }}
+                                </td>
+                                
+                                <!-- Checked By Column -->
+                                <td class="px-4 py-3 text-sm text-zinc-700 dark:text-zinc-300">
+                                    {{ $detail->creator->name ?? 'N/A' }}
+                                </td>
+                                
+                                <!-- Actions Column -->
+                                <td class="px-4 py-3 text-right">
+                                    <div class="flex items-center justify-end gap-1 whitespace-nowrap">
+                                        @can('edit shower details')
+                                        <flux:button 
+                                            wire:click="edit({{ $detail->id }})" 
+                                            x-on:click="$dispatch('open-modal', 'detail-form-modal')"
+                                            size="sm"
+                                            icon="pencil-square"
+                                            variant="primary"
+                                            color="yellow"
+                                            class="!p-2 flex-shrink-0"
+                                            title="Edit measurement"
+                                        />
+                                        @endcan
 
-                                <!-- Judgement -->
-                                <div class="mb-4">
-                                    <label class="block text-sm font-medium mb-1">Judgement</label>
-                                    <div class="flex gap-2">
-                                        <span class="inline-flex px-3 py-1 rounded-full text-sm font-medium {{ $judgement == 'OK' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400' }}">
-                                            OK
-                                        </span>
-                                        <span class="inline-flex px-3 py-1 rounded-full text-sm font-medium {{ str_contains($judgement, 'NG') ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400' }}">
-                                            {{ $judgement ?: 'NG' }}
-                                        </span>
+                                        @can('delete shower details')
+                                            <flux:button 
+                                                wire:click="confirmDelete({{ $detail->id }})" 
+                                                x-on:click="$dispatch('open-modal', 'delete-detail-modal')"
+                                                size="sm"
+                                                icon="trash"
+                                                variant="primary"
+                                                color="red"
+                                                class="!p-2 flex-shrink-0"
+                                                title="Delete measurement"
+                                            />
+                                        @endcan
                                     </div>
-                                    <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-                                        * Auto-calculated based on velocity (80-100 = OK, below 80 = NG Below Standard, above 100 = NG Above Standard)
-                                    </p>
-                                </div>
-
-                                <!-- Remarks -->
-                                <div class="mb-4">
-                                    <label class="block text-sm font-medium mb-1">Remarks</label>
-                                    <textarea wire:model="remarks" 
-                                            rows="3"
-                                            placeholder="Enter any additional notes or comments..."
-                                            class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-blue-500 resize-y"></textarea>
-                                    @error('remarks') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                    <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
-                                        * Optional: Add notes about the measurement, corrective actions, or special conditions
-                                    </p>
-                                </div>
-
-                                <!-- Next Date -->
-                                <div class="mb-4">
-                                    <label class="block text-sm font-medium mb-1">Next Date</label>
-                                    <input type="date" wire:model="next_date" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
-                                    @error('next_date') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                                </div>
-
-                                <!-- Buttons -->
-                                <div class="flex justify-end gap-2 mt-6">
-                                    <button type="button" 
-                                            @click="open = false"
-                                            class="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
-                                        Cancel
-                                    </button>
-                                    <button type="submit" 
-                                            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                                        {{ $detail_id ? 'Update' : 'Create' }}
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="8" class="px-4 py-12 text-center">
+                                    <div class="flex flex-col items-center gap-3">
+                                        <div class="w-20 h-20 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                                            <flux:icon name="square-3-stack-3d" class="w-10 h-10 text-zinc-400 dark:text-zinc-500" />
+                                        </div>
+                                        <div>
+                                            <h3 class="text-lg font-medium text-zinc-900 dark:text-white mb-1">
+                                                No measurement records found
+                                            </h3>
+                                            <p class="text-sm text-zinc-500 dark:text-zinc-400 mb-4">
+                                                {{ $search || $filterDateFrom || $filterDateUntil || $filterNextDateFrom || $filterNextDateUntil ? 'Try adjusting your filters' : 'Get started by adding a new measurement' }}
+                                            </p>
+                                        </div>
+                                        @if($search || $filterDateFrom || $filterDateUntil || $filterNextDateFrom || $filterNextDateUntil)
+                                            <flux:button wire:click="resetFilters" size="sm">
+                                                Clear Filters
+                                            </flux:button>
+                                        @else
+                                            @can('create shower details')
+                                            <flux:button 
+                                                variant="primary" 
+                                                size="sm"
+                                                wire:click="resetForm"
+                                                x-on:click="$dispatch('open-modal', 'detail-form-modal')"
+                                            >
+                                                Add Your First Measurement
+                                            </flux:button>
+                                            @endcan
+                                        @endif
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
                 </div>
-            </div>
 
-            <!-- MODAL DELETE -->
-            <div x-data="{ open: false }" 
-                 x-show="open" 
-                 @open-modal.window="if ($event.detail === 'delete-detail-modal') open = true"
-                 @close-modal.window="if ($event.detail === 'delete-detail-modal') open = false"
-                 x-cloak>
-
-                <div class="fixed inset-0 bg-black/50 z-40" @click="open = false"></div>
-
-                <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-xl w-full max-w-md p-6 text-center">
-                        <div class="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
-                            <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                            </svg>
-                        </div>
-
-                        <h3 class="text-lg font-bold mb-2">Delete Measurement Record</h3>
-                        <p class="text-gray-600 dark:text-gray-400 mb-6">
-                            Are you sure you want to delete measurement for "{{ $detailToDelete?->shower?->register_no ?? 'this shower' }}"? This action cannot be undone.
-                        </p>
-
-                        <div class="flex justify-center gap-3">
-                            <button @click="open = false" 
-                                    class="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800">
-                                Cancel
-                            </button>
-                            <button wire:click="delete" 
-                                    @click="open = false"
-                                    class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
-                                Yes, Delete
-                            </button>
-                        </div>
-                    </div>
+                <!-- Pagination -->
+                @if($details->hasPages())
+                <div class="p-4 border-t border-zinc-200 dark:border-zinc-700">
+                    {{ $details->links() }}
                 </div>
-            </div>
-
-            <!-- Notifikasi -->
-            <div x-data="{ show: false, message: '', type: 'success' }" 
-                 x-on:notify.window="show = true; message = $event.detail.message; type = $event.detail.type || 'success'; setTimeout(() => show = false, 5000)"
-                 x-show="show"
-                 x-transition
-                 class="fixed bottom-4 right-4 z-50"
-                 :class="{
-                     'bg-green-500': type === 'success',
-                     'bg-red-500': type === 'error',
-                     'bg-yellow-500': type === 'warning'
-                 }"
-                 style="display: none;">
-                <div class="text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2">
-                    <span x-text="message"></span>
-                </div>
-            </div>
-
-            <style>
-                [x-cloak] { display: none !important; }
-                [x-collapse] { overflow: hidden; }
-            </style>
+                @endif
+            </flux:card>
         </div>
-    </x-esd.layout>
-</section>
+
+        <!-- MODAL FORM MEASUREMENT DETAIL -->
+        <div x-data="{ open: false }" 
+            x-show="open" 
+            @open-modal.window="if ($event.detail === 'detail-form-modal') open = true"
+            @close-modal.window="if ($event.detail === 'detail-form-modal') open = false"
+            x-cloak>
+
+            <div class="fixed inset-0 bg-black/50 z-40" @click="open = false"></div>
+
+            <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+                <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+                    <div class="p-6">
+                        <h2 class="text-xl font-bold mb-4">{{ $modalTitle }}</h2>
+
+                        <form wire:submit="save">
+                            <!-- Hidden Input for shower_id -->
+                            <input type="hidden" wire:model="shower_id" value="{{ $shower->id }}">
+
+                            <!-- Check Body Toggle -->
+                            <div class="mb-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+                                <label class="block text-sm font-medium mb-3">Check Body Status <span class="text-red-500">*</span></label>
+                                <div class="flex items-center gap-4">
+                                    <button type="button" 
+                                        wire:click="$set('check_body', true)"
+                                        class="flex items-center gap-2 px-4 py-2 rounded-lg transition-all {{ $check_body ? 'bg-green-600 text-white shadow-md' : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400' }}">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        Yes (Check)
+                                    </button>
+                                    <button type="button"
+                                        wire:click="$set('check_body', false)"
+                                        class="flex items-center gap-2 px-4 py-2 rounded-lg transition-all {{ !$check_body ? 'bg-red-600 text-white shadow-md' : 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400' }}">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                        </svg>
+                                        No (Skip)
+                                    </button>
+                                </div>
+                                @error('check_body') <span class="text-red-500 text-sm block mt-2">{{ $message }}</span> @enderror
+                            </div>
+
+                            <!-- Velocity Measurement -->
+                            <div class="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+                                <div class="text-sm font-semibold text-yellow-800 dark:text-yellow-400 mb-2">Standard: 80 - 100 m/s</div>
+                                <div>
+                                    <label class="block text-sm font-medium mb-1">Velocity (m/s) <span class="text-red-500">*</span></label>
+                                    <input type="number" step="0.01" wire:model="velocity" wire:keyup="resetJudgement"
+                                        class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-blue-500">
+                                    @error('velocity') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                    @if($velocity && (floatval($velocity) < 80 || floatval($velocity) > 100))
+                                        <div class="mt-2 text-xs text-yellow-600 dark:text-yellow-400 flex items-center gap-1">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                                            </svg>
+                                            <span>Warning: Value is outside the standard range (80-100 m/s)</span>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+
+                            <!-- Judgement -->
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium mb-1">Judgement</label>
+                                <div class="flex gap-2">
+                                    <span class="inline-flex px-3 py-1 rounded-full text-sm font-medium {{ $judgement == 'OK' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400' }}">
+                                        OK
+                                    </span>
+                                    <span class="inline-flex px-3 py-1 rounded-full text-sm font-medium {{ str_contains($judgement, 'NG') ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400' }}">
+                                        {{ $judgement ?: 'NG' }}
+                                    </span>
+                                </div>
+                                <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+                                    * Auto-calculated based on velocity (80-100 = OK, below 80 = NG Below Standard, above 100 = NG Above Standard)
+                                </p>
+                            </div>
+
+                            <!-- Remarks -->
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium mb-1">Remarks</label>
+                                <textarea wire:model="remarks" 
+                                        rows="3"
+                                        placeholder="Enter any additional notes or comments..."
+                                        class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-blue-500 resize-y"></textarea>
+                                @error('remarks') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                                <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1">
+                                    * Optional: Add notes about the measurement, corrective actions, or special conditions
+                                </p>
+                            </div>
+
+                            <!-- Next Date -->
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium mb-1">Next Date</label>
+                                <input type="date" wire:model="next_date" class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700">
+                                @error('next_date') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="flex justify-end gap-2 mt-6">
+                                <button type="button" 
+                                        @click="open = false"
+                                        class="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800 transition-colors">
+                                    Cancel
+                                </button>
+                                <button type="submit" 
+                                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+                                    {{ $detail_id ? 'Update' : 'Create' }}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL DELETE -->
+        <div x-data="{ open: false }" 
+                x-show="open" 
+                @open-modal.window="if ($event.detail === 'delete-detail-modal') open = true"
+                @close-modal.window="if ($event.detail === 'delete-detail-modal') open = false"
+                x-cloak>
+
+            <div class="fixed inset-0 bg-black/50 z-40" @click="open = false"></div>
+
+            <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+                <div class="bg-white dark:bg-zinc-900 rounded-xl shadow-xl w-full max-w-md p-6 text-center">
+                    <div class="w-16 h-16 mx-auto mb-4 bg-red-100 rounded-full flex items-center justify-center">
+                        <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                        </svg>
+                    </div>
+
+                    <h3 class="text-lg font-bold mb-2">Delete Measurement Record</h3>
+                    <p class="text-gray-600 dark:text-gray-400 mb-6">
+                        Are you sure you want to delete measurement for "{{ $detailToDelete?->shower?->register_no ?? 'this shower' }}"? This action cannot be undone.
+                    </p>
+
+                    <div class="flex justify-center gap-3">
+                        <button @click="open = false" 
+                                class="px-4 py-2 border rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-800">
+                            Cancel
+                        </button>
+                        <button wire:click="delete" 
+                                @click="open = false"
+                                class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">
+                            Yes, Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notifikasi -->
+        <div x-data="{ show: false, message: '', type: 'success' }" 
+                x-on:notify.window="show = true; message = $event.detail.message; type = $event.detail.type || 'success'; setTimeout(() => show = false, 5000)"
+                x-show="show"
+                x-transition
+                class="fixed bottom-4 right-4 z-50"
+                :class="{
+                    'bg-green-500': type === 'success',
+                    'bg-red-500': type === 'error',
+                    'bg-yellow-500': type === 'warning'
+                }"
+                style="display: none;">
+            <div class="text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2">
+                <span x-text="message"></span>
+            </div>
+        </div>
+
+        <style>
+            [x-cloak] { display: none !important; }
+            [x-collapse] { overflow: hidden; }
+        </style>
+    </div>
+</div>

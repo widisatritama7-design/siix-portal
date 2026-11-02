@@ -18,6 +18,7 @@ class BlindTestManagement extends Component
     use WithPagination;
 
     public const DEFAULT_DURATION_MINUTES = 5;
+    public const QC_DURATION_MINUTES = 10;
 
     // ==================== FORM PROPERTIES ====================
     public $blind_test_id;
@@ -120,6 +121,13 @@ class BlindTestManagement extends Component
         $this->calendarMonth = now()->format('Y-m');
         $this->selectedDate  = now()->format('Y-m-d');
         $this->weekStart     = now()->startOfWeek(\Carbon\Carbon::MONDAY)->format('Y-m-d');
+    }
+
+    public function getDurationMinutesProperty(): int
+    {
+        return $this->section === 'QC'
+            ? self::QC_DURATION_MINUTES
+            : self::DEFAULT_DURATION_MINUTES;
     }
 
     public function updatedCalendarMonth()
@@ -262,7 +270,7 @@ class BlindTestManagement extends Component
             'blind_test_id', 'section', 'customer_id', 'model_id', 'question_ids',
             'selectedEmployees', 'employeeSearch', 'tempShift', 'tempGroup',
         ]);
-        $this->duration_minutes = self::DEFAULT_DURATION_MINUTES;
+        $this->duration_minutes = self::DEFAULT_DURATION_MINUTES; // default sebelum section dipilih
         $this->modalTitle = 'Create Blind Test';
         $this->resetValidation();
     }
@@ -281,7 +289,9 @@ class BlindTestManagement extends Component
         $this->customer_id      = $question->customer_id;
         $this->model_id         = $question->model_id;
         $this->question_ids     = [$question->id];
-        $this->duration_minutes = self::DEFAULT_DURATION_MINUTES;
+        $this->duration_minutes = $question->section === 'QC'
+            ? self::QC_DURATION_MINUTES
+            : self::DEFAULT_DURATION_MINUTES;
 
         $this->modalTitle = 'Create Blind Test';
         $this->dispatch('open-modal-blind-test');
@@ -435,7 +445,7 @@ class BlindTestManagement extends Component
             }
         }
 
-        $this->duration_minutes = self::DEFAULT_DURATION_MINUTES;
+        $this->duration_minutes = $this->durationMinutes; // helper: QC=10, lain=5
         $this->validate();
 
         if (empty($this->question_ids)) {
@@ -504,7 +514,7 @@ class BlindTestManagement extends Component
                 'question_ids'      => $this->question_ids,
                 'question_snapshot' => $questionSnapshot,
                 'blind_test_items'  => $blindTestItems,
-                'duration_minutes'  => self::DEFAULT_DURATION_MINUTES,
+                'duration_minutes'  => $this->durationMinutes,
                 'updated_by'        => auth()->id(),
             ]);
 
@@ -552,7 +562,7 @@ class BlindTestManagement extends Component
                 'question_ids'      => $this->question_ids,
                 'question_snapshot' => $questionSnapshot,
                 'blind_test_items'  => $blindTestItems,
-                'duration_minutes'  => self::DEFAULT_DURATION_MINUTES,
+                'duration_minutes'  => $this->durationMinutes,
                 'time_test'         => null,
                 'status'            => 'pending',
                 'created_by'        => auth()->id(),
@@ -562,7 +572,8 @@ class BlindTestManagement extends Component
         }
 
         $this->resetForm();
-        $this->dispatch('notify', message: "{$count} blind test berhasil dibuat! (durasi 5 menit)");
+        $this->dispatch('notify',
+        message: "{$count} blind test berhasil dibuat! (durasi {$this->durationMinutes} menit)");
         $this->dispatch('close-modal-blind-test');
     }
 
@@ -584,7 +595,8 @@ class BlindTestManagement extends Component
         $this->section          = $bt->section;
         $this->customer_id      = $bt->customer_id;
         $this->model_id         = $bt->model_id;
-        $this->duration_minutes = self::DEFAULT_DURATION_MINUTES;
+        $this->duration_minutes = $bt->duration_minutes
+            ?? ($bt->section === 'QC' ? self::QC_DURATION_MINUTES : self::DEFAULT_DURATION_MINUTES);
 
         $this->question_ids = is_array($bt->question_ids)
             ? $bt->question_ids
@@ -600,6 +612,11 @@ class BlindTestManagement extends Component
         ]];
         $this->modalTitle = 'Edit Blind Test';
         $this->dispatch('open-modal-blind-test');
+    }
+
+    public function updatedSection()
+    {
+        $this->duration_minutes = $this->durationMinutes;
     }
 
     /* ================= VIEW ================= */
