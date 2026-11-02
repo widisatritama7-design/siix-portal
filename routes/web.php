@@ -93,6 +93,10 @@ use App\Models\ESD\Locker\UniformTransaction;
 use App\Services\MicrosoftGraphService;
 use App\Services\WhatsAppService;
 use Illuminate\Support\Facades\Route;
+use App\Livewire\PROD\Tray\MasterRackManagement;
+use App\Livewire\PROD\Tray\MasterLocatorManagement;
+use App\Livewire\PROD\Tray\MasterTrayManagement;
+use App\Livewire\PROD\Tray\TransactionManagement;
 
 Route::get('/', function () {
     return redirect('/login');
@@ -258,6 +262,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/prod/patrol/result-patrol', ResultPatrolManagement::class)->name('prod.patrol.result-patrol.index');
     Route::get('/prod/patrol/result-patrol/create', ResultPatrolForm::class)->name('prod.patrol.result-patrol.create');
     Route::get('/prod/patrol/result-patrol/{id}/edit', ResultPatrolForm::class)->name('prod.patrol.result-patrol.edit');
+
+    // Tray
+    Route::get('/prod/tray/master-rack', MasterRackManagement::class)->name('prod.tray.master-rack');
+    Route::get('/prod/tray/master-locator', MasterLocatorManagement::class)->name('prod.tray.master-locator');
+    Route::get('/prod/tray/master-tray', MasterTrayManagement::class)->name('prod.tray.master-tray');
+    Route::get('/prod/tray/transaction', TransactionManagement::class)->name('prod.tray.transaction');
 
     // Floor Plan
     Route::get('/floor-plan', FloorPlanBuilder::class);

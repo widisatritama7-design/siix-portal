@@ -220,23 +220,6 @@
             class="fixed inset-0 z-40"
             style="background-color: rgba(0, 0, 0, 0.15); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);"
             x-cloak></div>
-
-        <!-- TOMBOL COLLAPSE DESKTOP (Tengah Garis) -->
-        <button @click="toggleSidebar" 
-            class="hidden md:flex fixed top-8.5 z-50 items-center justify-center 
-                w-7 h-7 rounded-full bg-blue-500 dark:bg-blue-600 
-                border border-blue-600 dark:border-blue-500 
-                shadow-sm hover:shadow-md hover:bg-blue-600 dark:hover:bg-blue-500
-                text-white
-                transition-all duration-300 ease-in-out group"
-            :style="`left: ${(sidebarPinned || isHovering) ? '256px' : '80px'}; transform: translate(-50%, -50%);`">
-            
-            <svg class="w-3.5 h-3.5 transition-transform duration-300" 
-                :class="(sidebarPinned || isHovering) ? 'rotate-0' : 'rotate-180'"
-                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path>
-            </svg>
-        </button>
         
         <aside x-ref="sidebar"
             @mouseenter="handleMouseEnter"
@@ -980,54 +963,53 @@
                                     </svg>
                                 </button>
                                 
-                                <!-- Sub-group items for FCT Monitoring -->
-                                <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.fctMonitoring.open" 
-                                    x-collapse 
-                                    class="mt-1 relative">
-                                    <!-- Sub garis vertikal untuk FCT items -->
-                                    <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+                            <-- Sub-group items for FCT Monitoring -->
+                            <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.fctMonitoring.open" 
+                                x-collapse 
+                                class="mt-1 relative">
+                                <!-- Sub garis vertikal untuk FCT items -->
+                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+                                
+                                <div class="space-y-1 ml-[24px]">
+                                    <!-- FCT -->
+                                    <a href="{{ route('pcb-scan.fct') }}" wire:navigate
+                                    class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('pcb-scan.fct') ? 'menu-active' : '' }}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                            <path d="M16.5 7.5h-9v9h9v-9Z" />
+                                            <path fill-rule="evenodd" d="M8.25 2.25A.75.75 0 0 1 9 3v.75h2.25V3a.75.75 0 0 1 1.5 0v.75H15V3a.75.75 0 0 1 1.5 0v.75h.75a3 3 0 0 1 3 3v.75H21A.75.75 0 0 1 21 9h-.75v2.25H21a.75.75 0 0 1 0 1.5h-.75V15H21a.75.75 0 0 1 0 1.5h-.75v.75a3 3 0 0 1-3 3h-.75V21a.75.75 0 0 1-1.5 0v-.75h-2.25V21a.75.75 0 0 1-1.5 0v-.75H9V21a.75.75 0 0 1-1.5 0v-.75h-.75a3 3 0 0 1-3-3v-.75H3A.75.75 0 0 1 3 15h.75v-2.25H3a.75.75 0 0 1 0-1.5h.75V9H3a.75.75 0 0 1 0-1.5h.75v-.75a3 3 0 0 1 3-3h.75V3a.75.75 0 0 1 .75-.75ZM6 6.75A.75.75 0 0 1 6.75 6h10.5a.75.75 0 0 1 .75.75v10.5a.75.75 0 0 1-.75.75H6.75a.75.75 0 0 1-.75-.75V6.75Z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span class="truncate">FCT</span>
+                                    </a>
                                     
-                                    <div class="space-y-1 ml-[24px]">
-                                        <!-- FCT -->
-                                        <a href="{{ route('pcb-scan.fct') }}" wire:navigate
-                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('pcb-scan.fct') ? 'menu-active' : '' }}">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
-                                                <path d="M16.5 7.5h-9v9h9v-9Z" />
-                                                <path fill-rule="evenodd" d="M8.25 2.25A.75.75 0 0 1 9 3v.75h2.25V3a.75.75 0 0 1 1.5 0v.75H15V3a.75.75 0 0 1 1.5 0v.75h.75a3 3 0 0 1 3 3v.75H21A.75.75 0 0 1 21 9h-.75v2.25H21a.75.75 0 0 1 0 1.5h-.75V15H21a.75.75 0 0 1 0 1.5h-.75v.75a3 3 0 0 1-3 3h-.75V21a.75.75 0 0 1-1.5 0v-.75h-2.25V21a.75.75 0 0 1-1.5 0v-.75H9V21a.75.75 0 0 1-1.5 0v-.75h-.75a3 3 0 0 1-3-3v-.75H3A.75.75 0 0 1 3 15h.75v-2.25H3a.75.75 0 0 1 0-1.5h.75V9H3a.75.75 0 0 1 0-1.5h.75v-.75a3 3 0 0 1 3-3h.75V3a.75.75 0 0 1 .75-.75ZM6 6.75A.75.75 0 0 1 6.75 6h10.5a.75.75 0 0 1 .75.75v10.5a.75.75 0 0 1-.75.75H6.75a.75.75 0 0 1-.75-.75V6.75Z" clip-rule="evenodd" />
-                                            </svg>
-                                            <span class="truncate">FCT</span>
-                                        </a>
-                                        
-                                        <!-- LED Test -->
-                                        <a href="{{ route('pcb-scan.led-test') }}" wire:navigate
-                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('pcb-scan.led-test') ? 'menu-active' : '' }}">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
-                                                <path fill-rule="evenodd" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" clip-rule="evenodd" />
-                                            </svg>
-                                            <span class="truncate">LED Test</span>
-                                        </a>
-                                        
-                                        <!-- Visual Inspection -->
-                                        <a href="{{ route('pcb-scan.visual-inspection') }}" wire:navigate
-                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('pcb-scan.visual-inspection') ? 'menu-active' : '' }}">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
-                                                <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
-                                                <path fill-rule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.49 4.467-5.705 7.69-10.675 7.69-4.973 0-9.19-3.223-10.678-7.69a2.25 2.25 0 010-1.113zM17.25 12a5.25 5.25 0 11-10.5 0 5.25 5.25 0 0110.5 0z" clip-rule="evenodd" />
-                                            </svg>
-                                            <span class="truncate">Visual Inspection</span>
-                                        </a>
-                                        
-                                        <!-- Leader -->
-                                        <a href="{{ route('pcb-scan.leader.index') }}" wire:navigate
-                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('pcb-scan.leader.index') ? 'menu-active' : '' }}">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
-                                                <path fill-rule="evenodd" d="M12.516 2.17a.75.75 0 00-1.032 0 11.209 11.209 0 01-7.877 3.08.75.75 0 00-.722.515A12.74 12.74 0 002.25 9.75c0 5.942 4.064 10.933 9.563 12.348a.749.749 0 00.374 0c5.499-1.415 9.563-6.406 9.563-12.348 0-1.39-.223-2.73-.635-3.985a.75.75 0 00-.722-.516 11.209 11.209 0 01-7.877-3.08zM12 9a.75.75 0 01.75.75v2.25h2.25a.75.75 0 010 1.5h-2.25v2.25a.75.75 0 01-1.5 0v-2.25H9a.75.75 0 010-1.5h2.25V9.75A.75.75 0 0112 9z" clip-rule="evenodd" />
-                                            </svg>
-                                            <span class="truncate">Leader</span>
-                                        </a>
-                                    </div>
+                                    <!-- LED Test -->
+                                    <a href="{{ route('pcb-scan.led-test') }}" wire:navigate
+                                    class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('pcb-scan.led-test') ? 'menu-active' : '' }}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                            <path fill-rule="evenodd" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span class="truncate">LED Test</span>
+                                    </a>
+                                    
+                                    <!-- Visual Inspection -->
+                                    <a href="{{ route('pcb-scan.visual-inspection') }}" wire:navigate
+                                    class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('pcb-scan.visual-inspection') ? 'menu-active' : '' }}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                            <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
+                                            <path fill-rule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.49 4.467-5.705 7.69-10.675 7.69-4.973 0-9.19-3.223-10.678-7.69a2.25 2.25 0 010-1.113zM17.25 12a5.25 5.25 0 11-10.5 0 5.25 5.25 0 0110.5 0z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span class="truncate">Visual Inspection</span>
+                                    </a>
+                                    
+                                    <!-- Leader -->
+                                    <a href="{{ route('pcb-scan.leader.index') }}" wire:navigate
+                                    class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('pcb-scan.leader.index') ? 'menu-active' : '' }}">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                            <path fill-rule="evenodd" d="M12.516 2.17a.75.75 0 00-1.032 0 11.209 11.209 0 01-7.877 3.08.75.75 0 00-.722.515A12.74 12.74 0 002.25 9.75c0 5.942 4.064 10.933 9.563 12.348a.749.749 0 00.374 0c5.499-1.415 9.563-6.406 9.563-12.348 0-1.39-.223-2.73-.635-3.985a.75.75 0 00-.722-.516 11.209 11.209 0 01-7.877-3.08zM12 9a.75.75 0 01.75.75v2.25h2.25a.75.75 0 010 1.5h-2.25v2.25a.75.75 0 01-1.5 0v-2.25H9a.75.75 0 010-1.5h2.25V9.75A.75.75 0 0112 9z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span class="truncate">Leader</span>
+                                    </a>
                                 </div>
-                            <!--</div>-->
+                            </div>
                             
                             @canany(['view wip'])
                             <!-- WIP Monitoring as SUB GROUP -->
@@ -1230,6 +1212,153 @@
                                         </a>
                                         @endcan
                                         
+                                    </div>
+                                </div>
+                            </div>
+                            @endcanany
+
+                            @canany(['view tray monitoring'])
+                            <!-- ========== SUB GROUP: TRAY MONITORING ========== -->
+                            <div class="relative w-full">
+                                <button @click="toggleGroup('trayMonitoring')" 
+                                        class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                    <div class="flex items-center gap-2">
+                                        <!-- Icon Tray (box stack) -->
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                            <path d="M3.375 3C2.339 3 1.5 3.84 1.5 4.875v.75c0 1.036.84 1.875 1.875 1.875h17.25c1.035 0 1.875-.84 1.875-1.875v-.75C22.5 3.839 21.66 3 20.625 3H3.375Z" />
+                                            <path fill-rule="evenodd" d="m3.087 9 .54 9.176A3 3 0 0 0 6.62 21h10.757a3 3 0 0 0 2.995-2.824L20.913 9H3.087Zm6.163 3.75A.75.75 0 0 1 10 12h4a.75.75 0 0 1 0 1.5h-4a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)" 
+                                            class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">Tray Monitoring</span>
+                                    </div>
+                                    <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)" 
+                                        class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0"
+                                        :class="{'rotate-180': groups.trayMonitoring.open}"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </button>
+
+                                <!-- Sub-group items Tray Monitoring -->
+                                <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.trayMonitoring.open" 
+                                    x-collapse 
+                                    class="mt-1 relative">
+                                    <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+                                    
+                                    <div class="space-y-1 ml-[24px]">
+
+                                        <!-- ========== SUB SUB GROUP: MASTER ========== -->
+                                        @canany(['view master rack', 'view master locator', 'view master tray'])
+                                        <div class="relative w-full">
+                                            <button @click="toggleGroup('trayMaster')" 
+                                                    class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                                <div class="flex items-center gap-2">
+                                                    <!-- Icon Master (database) -->
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                        <path d="M21 6.375c0 2.692-4.03 4.875-9 4.875S3 9.067 3 6.375 7.03 1.5 12 1.5s9 2.183 9 4.875Z" />
+                                                        <path d="M12 12.75c2.685 0 5.19-.586 7.078-1.609a8.283 8.283 0 0 0 1.897-1.384c.016.121.025.244.025.368C21 12.817 16.97 15 12 15s-9-2.183-9-4.875c0-.124.009-.247.025-.368a8.285 8.285 0 0 0 1.897 1.384C6.809 12.164 9.315 12.75 12 12.75Z" />
+                                                        <path d="M12 16.5c2.685 0 5.19-.586 7.078-1.609a8.282 8.282 0 0 0 1.897-1.384c.016.121.025.244.025.368 0 2.692-4.03 4.875-9 4.875s-9-2.183-9-4.875c0-.124.009-.247.025-.368a8.284 8.284 0 0 0 1.897 1.384C6.809 15.914 9.315 16.5 12 16.5Z" />
+                                                        <path d="M12 20.25c2.685 0 5.19-.586 7.078-1.609a8.282 8.282 0 0 0 1.897-1.384c.016.121.025.244.025.368 0 2.692-4.03 4.875-9 4.875s-9-2.183-9-4.875c0-.124.009-.247.025-.368a8.284 8.284 0 0 0 1.897 1.384C6.809 19.664 9.315 20.25 12 20.25Z" />
+                                                    </svg>
+                                                    <span x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)" 
+                                                        class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">Master</span>
+                                                </div>
+                                                <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)" 
+                                                    class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0"
+                                                    :class="{'rotate-180': groups.trayMaster.open}"
+                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                </svg>
+                                            </button>
+
+                                            <!-- Items Master -->
+                                            <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.trayMaster.open" 
+                                                x-collapse 
+                                                class="mt-1 relative">
+                                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+                                                
+                                                <div class="space-y-1 ml-[24px]">
+                                                    @can('view master rack')
+                                                    <!-- Master Rack -->
+                                                    <a href="{{ route('prod.tray.master-rack') }}" wire:navigate
+                                                    class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('prod.tray.master-rack') ? 'menu-active' : '' }}">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                            <path d="M5.507 4.048A3 3 0 0 1 7.785 3h8.43a3 3 0 0 1 2.278 1.048l1.722 2.008A4.533 4.533 0 0 0 19.5 6h-15c-.243 0-.482.02-.715.056l1.722-2.008Z" />
+                                                            <path fill-rule="evenodd" d="M1.5 10.5a3 3 0 0 1 3-3h15a3 3 0 1 1 0 6h-15a3 3 0 0 1-3-3Zm15 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm2.25.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM4.5 15a3 3 0 1 0 0 6h15a3 3 0 1 0 0-6h-15Zm11.25 3.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM19.5 18a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" clip-rule="evenodd" />
+                                                        </svg>
+                                                        <span class="truncate">Master Rack</span>
+                                                    </a>
+                                                    @endcan
+
+                                                    @can('view master locator')
+                                                    <!-- Master Locator -->
+                                                    <a href="{{ route('prod.tray.master-locator') }}" wire:navigate
+                                                    class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('prod.tray.master-locator') ? 'menu-active' : '' }}">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                            <path fill-rule="evenodd" d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd" />
+                                                        </svg>
+                                                        <span class="truncate">Master Locator</span>
+                                                    </a>
+                                                    @endcan
+
+                                                    @can('view master tray')
+                                                    <!-- Master Tray -->
+                                                    <a href="{{ route('prod.tray.master-tray') }}" wire:navigate
+                                                    class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('prod.tray.master-tray') ? 'menu-active' : '' }}">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                            <path d="M3.375 3C2.339 3 1.5 3.84 1.5 4.875v.75c0 1.036.84 1.875 1.875 1.875h17.25c1.035 0 1.875-.84 1.875-1.875v-.75C22.5 3.839 21.66 3 20.625 3H3.375Z" />
+                                                            <path fill-rule="evenodd" d="m3.087 9 .54 9.176A3 3 0 0 0 6.62 21h10.757a3 3 0 0 0 2.995-2.824L20.913 9H3.087Zm6.163 3.75A.75.75 0 0 1 10 12h4a.75.75 0 0 1 0 1.5h-4a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
+                                                        </svg>
+                                                        <span class="truncate">Master Tray</span>
+                                                    </a>
+                                                    @endcan
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @endcanany
+
+                                        <!-- ========== SUB SUB GROUP: TRANSACTION ========== -->
+                                        @canany(['view tray transaction'])
+                                        <div class="relative w-full">
+                                            <button @click="toggleGroup('trayTransaction')" 
+                                                    class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                                <div class="flex items-center gap-2">
+                                                    <!-- Icon Transaction (arrows) -->
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                        <path fill-rule="evenodd" d="M15.97 2.47a.75.75 0 0 1 1.06 0l4.5 4.5a.75.75 0 0 1 0 1.06l-4.5 4.5a.75.75 0 1 1-1.06-1.06l3.22-3.22H7.5a.75.75 0 0 1 0-1.5h11.69l-3.22-3.22a.75.75 0 0 1 0-1.06Zm-7.94 9a.75.75 0 0 1 0 1.06l-3.22 3.22H16.5a.75.75 0 0 1 0 1.5H4.81l3.22 3.22a.75.75 0 1 1-1.06 1.06l-4.5-4.5a.75.75 0 0 1 0-1.06l4.5-4.5a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    <span x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)" 
+                                                        class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">Transaction</span>
+                                                </div>
+                                                <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)" 
+                                                    class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0"
+                                                    :class="{'rotate-180': groups.trayTransaction.open}"
+                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                </svg>
+                                            </button>
+
+                                            <!-- Items Transaction -->
+                                            <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.trayTransaction.open" 
+                                                x-collapse 
+                                                class="mt-1 relative">
+                                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+                                                
+                                                <div class="space-y-1 ml-[24px]">
+                                                    <!-- Transaction In -->
+                                                    <a href="{{ route('prod.tray.transaction') }}" wire:navigate
+                                                    class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors {{ request()->routeIs('prod.tray.transaction') ? 'menu-active' : '' }}">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                            <path fill-rule="evenodd" d="M12 2.25a.75.75 0 0 1 .75.75v11.69l3.22-3.22a.75.75 0 1 1 1.06 1.06l-4.5 4.5a.75.75 0 0 1-1.06 0l-4.5-4.5a.75.75 0 1 1 1.06-1.06l3.22 3.22V3a.75.75 0 0 1 .75-.75Zm-9 13.5a.75.75 0 0 1 .75.75v2.25a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5V16.5a.75.75 0 0 1 1.5 0v2.25a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V16.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
+                                                        </svg>
+                                                        <span class="truncate">Tray Transaction</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @endcanany
+
                                     </div>
                                 </div>
                             </div>
@@ -2016,6 +2145,23 @@
                 
             </nav>
         </aside>
+
+        <!-- TOMBOL COLLAPSE DESKTOP (Sekarang letaknya SETELAH sidebar) -->
+        <button @click="toggleSidebar" 
+            class="hidden md:flex fixed top-8.5 z-40 items-center justify-center 
+                w-7 h-7 rounded-full bg-blue-500 dark:bg-blue-600 
+                border border-blue-600 dark:border-blue-500 
+                shadow-sm hover:shadow-md hover:bg-blue-600 dark:hover:bg-blue-500
+                text-white
+                transition-all duration-300 ease-in-out group"
+            :style="`left: ${(sidebarPinned || isHovering) ? '256px' : '80px'}; transform: translate(-50%, -50%);`">
+            
+            <svg class="w-3.5 h-3.5 transition-transform duration-300" 
+                :class="(sidebarPinned || isHovering) ? 'rotate-0' : 'rotate-180'"
+                fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path>
+            </svg>
+        </button>
         
         <div class="min-w-0 flex-1 transition-[margin] duration-300 ease-in-out"
              :class="isMobile ? 'ml-0' : (sidebarPinned ? 'ml-64' : 'ml-20')">
@@ -2030,7 +2176,7 @@
                     class="topbar-glass sticky top-0 z-10 block! bg-white dark:bg-black border-b border-zinc-200 dark:border-zinc-800 p-0! m-0! w-full shadow-sm"
                     ::class="{ 'scrolled': scrolled }">
                     <flux:navbar class="flex items-center justify-between px-3 lg:px-4 mx-0!">
-                        <div class="flex items-center gap-3"> <!-- Atau gap-5 -->
+                        <div class="flex items-center gap-4"> <!-- Atau gap-5 -->
                             <!-- Tombol Menu Khusus Mobile -->
                             <button @click="sidebarOpen = !sidebarOpen" 
                                 class="flex md:hidden p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
@@ -2040,7 +2186,7 @@
                             </button>
 
                             <!-- BUNGKUS NOTIFIKASI DENGAN DIV DAN BERI JARAK KIRI (ml-2 / ml-3 / ml-4) -->
-                            <div class="ml-2 md:ml-0">
+                            <div class="ml-3 md:ml-0">
                                 <livewire:header-badge />
                             </div>
                         </div>
@@ -2301,6 +2447,9 @@
                     mtcMonitoring: { open: false },       // Sub Grup 2
                     mtcMonitoringMenu: { open: false },   // Sub Grup 3 - Monitoring
                     mtcMaster: { open: false },           // Sub Grup 3 - Master
+                    trayMonitoring: { open: false },
+                    trayMaster: { open: false },
+                    trayTransaction: { open: false },
                 },
                 
                 init() {
@@ -2364,7 +2513,8 @@
                         'fctMonitoring', 'qaqc', 'qaqcMaster', 'qaqcForm', 'qaqcReport', 
                         'uniformMonitoring', 'absenceMonitoring', 'lockerMonitoring', 'patrolMonitoring', 
                         'utilityMonitoring', 'dailyReportUtility',
-                        'mtcMonitoring', 'mtcMonitoringMenu', 'mtcMaster'
+                        'mtcMonitoring', 'mtcMonitoringMenu', 'mtcMaster',
+                        'trayMonitoring', 'trayMaster', 'trayTransaction'
                     ];
                     groupNames.forEach(groupName => {
                         const saved = localStorage.getItem(`sidebar_group_${groupName}`);
