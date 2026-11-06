@@ -1,33 +1,34 @@
-<?php # [BlazeFolded]:{flux::breadcrumbs.item}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/breadcrumbs/item.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::breadcrumbs}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/breadcrumbs/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::card}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/card/index.blade.php}:{1776985208} ?>
+<?php # [BlazeVersion]:{v3} ?>
+<?php # [BlazeFolded]:{flux::breadcrumbs.item}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/breadcrumbs/item.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::breadcrumbs}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/breadcrumbs/index.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::card}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/card/index.blade.php}:{1792593958} ?>
 <div class="p-1 space-y-3">
     <!-- Breadcrumbs -->
     <?php ob_start(); ?><div class="flex" data-flux-breadcrumbs>
     <?php ob_start(); ?>
-        <?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/breadcrumbs/item.blade.php', $__blaze->compiledPath.'/b843a539037c1542dedc5bd82236e28a.php'); ?>
-<?php if (isset($__slotsb843a539037c1542dedc5bd82236e28a)) { $__slotsStackb843a539037c1542dedc5bd82236e28a[] = $__slotsb843a539037c1542dedc5bd82236e28a; } ?>
-<?php if (isset($__attrsb843a539037c1542dedc5bd82236e28a)) { $__attrsStackb843a539037c1542dedc5bd82236e28a[] = $__attrsb843a539037c1542dedc5bd82236e28a; } ?>
-<?php $__attrsb843a539037c1542dedc5bd82236e28a = ['href' => e(route('dashboard')),'wire:navigate' => true,'separator' => 'slash']; ?>
-<?php $__slotsb843a539037c1542dedc5bd82236e28a = []; ?>
-<?php $__blaze->pushData($__attrsb843a539037c1542dedc5bd82236e28a); ?>
-<?php ob_start(); ?>Dashboard<?php $__slotsb843a539037c1542dedc5bd82236e28a['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
-<?php $__blaze->pushSlots($__slotsb843a539037c1542dedc5bd82236e28a); ?>
-<?php _b843a539037c1542dedc5bd82236e28a($__blaze, $__attrsb843a539037c1542dedc5bd82236e28a, $__slotsb843a539037c1542dedc5bd82236e28a, ['wire:navigate'], [], $__this ?? (isset($this) ? $this : null)); ?>
-<?php if (! empty($__slotsStackb843a539037c1542dedc5bd82236e28a)) { $__slotsb843a539037c1542dedc5bd82236e28a = array_pop($__slotsStackb843a539037c1542dedc5bd82236e28a); } ?>
-<?php if (! empty($__attrsStackb843a539037c1542dedc5bd82236e28a)) { $__attrsb843a539037c1542dedc5bd82236e28a = array_pop($__attrsStackb843a539037c1542dedc5bd82236e28a); } ?>
+        <?php if (!function_exists('_1e458aebbd4033357c172a25595afd62')) { require $__blaze->compile('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/breadcrumbs/item.blade.php'); } ?>
+<?php if (isset($__slots1e458aebbd4033357c172a25595afd62)) { $__slotsStack1e458aebbd4033357c172a25595afd62[] = $__slots1e458aebbd4033357c172a25595afd62; } ?>
+<?php if (isset($__data1e458aebbd4033357c172a25595afd62)) { $__dataStack1e458aebbd4033357c172a25595afd62[] = $__data1e458aebbd4033357c172a25595afd62; } ?>
+<?php $__data1e458aebbd4033357c172a25595afd62 = ['href' => e(route('dashboard')),'wire:navigate' => true,'separator' => 'slash']; ?>
+<?php $__slots1e458aebbd4033357c172a25595afd62 = []; ?>
+<?php $__blaze->pushData($__data1e458aebbd4033357c172a25595afd62); ?>
+<?php ob_start(); ?>Dashboard<?php $__slots1e458aebbd4033357c172a25595afd62['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slots1e458aebbd4033357c172a25595afd62); ?>
+<?php _1e458aebbd4033357c172a25595afd62($__blaze, $__data1e458aebbd4033357c172a25595afd62, ['href' => $__data1e458aebbd4033357c172a25595afd62['href'], 'wire:navigate' => true, 'separator' => 'slash'], $__slots1e458aebbd4033357c172a25595afd62, $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStack1e458aebbd4033357c172a25595afd62)) { $__slots1e458aebbd4033357c172a25595afd62 = array_pop($__slotsStack1e458aebbd4033357c172a25595afd62); } ?>
+<?php if (! empty($__dataStack1e458aebbd4033357c172a25595afd62)) { $__data1e458aebbd4033357c172a25595afd62 = array_pop($__dataStack1e458aebbd4033357c172a25595afd62); } ?>
 <?php $__blaze->popData(); ?>
-        <?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/breadcrumbs/item.blade.php', $__blaze->compiledPath.'/b843a539037c1542dedc5bd82236e28a.php'); ?>
-<?php if (isset($__slotsb843a539037c1542dedc5bd82236e28a)) { $__slotsStackb843a539037c1542dedc5bd82236e28a[] = $__slotsb843a539037c1542dedc5bd82236e28a; } ?>
-<?php if (isset($__attrsb843a539037c1542dedc5bd82236e28a)) { $__attrsStackb843a539037c1542dedc5bd82236e28a[] = $__attrsb843a539037c1542dedc5bd82236e28a; } ?>
-<?php $__attrsb843a539037c1542dedc5bd82236e28a = ['href' => e(route('qaqc.blind-test')),'wire:navigate' => true,'separator' => 'slash','class' => 'font-semibold text-blue-600']; ?>
-<?php $__slotsb843a539037c1542dedc5bd82236e28a = []; ?>
-<?php $__blaze->pushData($__attrsb843a539037c1542dedc5bd82236e28a); ?>
-<?php ob_start(); ?>QA/QC<?php $__slotsb843a539037c1542dedc5bd82236e28a['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
-<?php $__blaze->pushSlots($__slotsb843a539037c1542dedc5bd82236e28a); ?>
-<?php _b843a539037c1542dedc5bd82236e28a($__blaze, $__attrsb843a539037c1542dedc5bd82236e28a, $__slotsb843a539037c1542dedc5bd82236e28a, ['wire:navigate'], [], $__this ?? (isset($this) ? $this : null)); ?>
-<?php if (! empty($__slotsStackb843a539037c1542dedc5bd82236e28a)) { $__slotsb843a539037c1542dedc5bd82236e28a = array_pop($__slotsStackb843a539037c1542dedc5bd82236e28a); } ?>
-<?php if (! empty($__attrsStackb843a539037c1542dedc5bd82236e28a)) { $__attrsb843a539037c1542dedc5bd82236e28a = array_pop($__attrsStackb843a539037c1542dedc5bd82236e28a); } ?>
+        <?php if (!function_exists('_1e458aebbd4033357c172a25595afd62')) { require $__blaze->compile('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/breadcrumbs/item.blade.php'); } ?>
+<?php if (isset($__slots1e458aebbd4033357c172a25595afd62)) { $__slotsStack1e458aebbd4033357c172a25595afd62[] = $__slots1e458aebbd4033357c172a25595afd62; } ?>
+<?php if (isset($__data1e458aebbd4033357c172a25595afd62)) { $__dataStack1e458aebbd4033357c172a25595afd62[] = $__data1e458aebbd4033357c172a25595afd62; } ?>
+<?php $__data1e458aebbd4033357c172a25595afd62 = ['href' => e(route('qaqc.blind-test')),'wire:navigate' => true,'separator' => 'slash','class' => 'font-semibold text-blue-600']; ?>
+<?php $__slots1e458aebbd4033357c172a25595afd62 = []; ?>
+<?php $__blaze->pushData($__data1e458aebbd4033357c172a25595afd62); ?>
+<?php ob_start(); ?>QA/QC<?php $__slots1e458aebbd4033357c172a25595afd62['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slots1e458aebbd4033357c172a25595afd62); ?>
+<?php _1e458aebbd4033357c172a25595afd62($__blaze, $__data1e458aebbd4033357c172a25595afd62, ['href' => $__data1e458aebbd4033357c172a25595afd62['href'], 'wire:navigate' => true, 'separator' => 'slash', 'class' => 'font-semibold text-blue-600'], $__slots1e458aebbd4033357c172a25595afd62, $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStack1e458aebbd4033357c172a25595afd62)) { $__slots1e458aebbd4033357c172a25595afd62 = array_pop($__slotsStack1e458aebbd4033357c172a25595afd62); } ?>
+<?php if (! empty($__dataStack1e458aebbd4033357c172a25595afd62)) { $__data1e458aebbd4033357c172a25595afd62 = array_pop($__dataStack1e458aebbd4033357c172a25595afd62); } ?>
 <?php $__blaze->popData(); ?>
         <?php ob_start(); ?><div class="flex items-center text-sm font-medium group/breadcrumb font-semibold text-blue-600" data-flux-breadcrumbs-item>
             <div class="text-gray-500 dark:text-white/80">
@@ -35,11 +36,11 @@
 
                     </div>
     
-    <!--[if BLOCK]><![endif]-->        <svg class="shrink-0 [:where(&amp;)]:size-5 mx-1 text-zinc-300 dark:text-white/80 group-last/breadcrumb:hidden rtl:-scale-x-100" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+            <svg class="shrink-0 [:where(&amp;)]:size-5 mx-1 text-zinc-300 dark:text-white/80 group-last/breadcrumb:hidden rtl:-scale-x-100" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
   <path fill-rule="evenodd" d="M12.528 3.047a.75.75 0 0 1 .449.961L8.433 16.504a.75.75 0 1 1-1.41-.512l4.544-12.496a.75.75 0 0 1 .961-.449Z" clip-rule="evenodd"/>
 </svg>
 
-            <!--[if ENDBLOCK]><![endif]--></div>
+            </div>
 <?php echo ltrim(ob_get_clean()); ?>
     <?php echo trim(ob_get_clean()); ?>
 
@@ -204,7 +205,10 @@
     </div>
 
     <!-- Tabel Review -->
-    <?php ob_start(); ?><div class="[:where(&amp;)]:bg-white dark:[:where(&amp;)]:bg-white/10 border border-zinc-200 dark:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl p-4 sm:p-6 shadow-lg" data-flux-card>
+    <?php ob_start(); ?><div
+    class="border bg-clip-padding dark:bg-clip-border [:where(&amp;)]:border-zinc-900/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:shadow-xs dark:[:where(&amp;)]:shadow-none relative after:pointer-events-none after:absolute after:inset-0 after:rounded-[calc(var(--flux-card-radius)-1px)] after:inset-ring [:where(&amp;)]:after:inset-ring-white/25 dark:after:hidden after:[mask-image:linear-gradient(to_bottom,black,transparent)] [:where(&amp;)]:bg-white dark:[:where(&amp;)]:bg-white/10 p-4 sm:p-6 shadow-lg" data-flux-card-body-variant="seamless" data-flux-card-variant="default"
+    data-flux-card
+>
     <?php ob_start(); ?>
         <div class="overflow-x-auto rounded-xl border border-zinc-200 dark:border-zinc-700">
             <table class="w-full" style="min-width: 1400px; white-space: nowrap;">
@@ -382,73 +386,51 @@
 
                         
                         <td class="px-3 py-3 text-center border-r border-zinc-200 dark:border-zinc-700">
-                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($ans['auto_missing'] ?? false): ?>
-                                
-                                <div class="flex flex-col items-center gap-0.5">
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-500 dark:text-zinc-400 text-[10px] font-bold border border-zinc-300 dark:border-zinc-700">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3">
-                                            <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-8-5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5A.75.75 0 0 1 10 5Zm0 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd" />
-                                        </svg>
-                                        Tidak Dijawab
-                                    </span>
-                                    <div class="text-[9px] text-zinc-400 italic">Auto salah</div>
-                                </div>
-                            <?php else: ?>
-                                <div class="flex flex-col items-center gap-1">
-                                    <div class="inline-flex rounded-lg border border-zinc-300 dark:border-zinc-700 overflow-hidden shadow-sm">
-                                        <button type="button"
-                                            wire:click="setLocationStatus(<?php echo e($i); ?>, 'valid')"
-                                            <?php if($blindTest->is_reviewed): ?> disabled <?php endif; ?>
-                                            class="px-3 py-1.5 text-xs font-semibold transition-colors disabled:cursor-not-allowed
-                                                <?php echo e($locStatus === 'valid'
-                                                    ? 'bg-green-600 text-white shadow-inner'
-                                                    : 'bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-green-50 dark:hover:bg-green-950/20'); ?>">
-                                            <span class="flex items-center gap-1">
-                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">
-                                                    <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
-                                                </svg>
-                                                Valid
-                                            </span>
-                                        </button>
-                                        <button type="button"
-                                            wire:click="setLocationStatus(<?php echo e($i); ?>, 'invalid')"
-                                            <?php if($blindTest->is_reviewed): ?> disabled <?php endif; ?>
-                                            class="px-3 py-1.5 text-xs font-semibold transition-colors border-l border-zinc-300 dark:border-zinc-700 disabled:cursor-not-allowed
-                                                <?php echo e($locStatus === 'invalid'
-                                                    ? 'bg-red-600 text-white shadow-inner'
-                                                    : 'bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-red-50 dark:hover:bg-red-950/20'); ?>">
-                                            <span class="flex items-center gap-1">
-                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">
-                                                    <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
-                                                </svg>
-                                                Invalid
-                                            </span>
-                                        </button>
-                                    </div>
-                                    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($locStatus === 'pending'): ?>
-                                        <div class="text-[10px] text-yellow-600 dark:text-yellow-400 italic font-semibold inline-flex items-center gap-1">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3">
-                                                <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z" clip-rule="evenodd" />
+                            <div class="flex flex-col items-center gap-1">
+                                <div class="inline-flex rounded-lg border border-zinc-300 dark:border-zinc-700 overflow-hidden shadow-sm">
+                                    <button type="button"
+                                        wire:click="setLocationStatus(<?php echo e($i); ?>, 'valid')"
+                                        <?php if($blindTest->is_reviewed): ?> disabled <?php endif; ?>
+                                        class="px-3 py-1.5 text-xs font-semibold transition-colors disabled:cursor-not-allowed
+                                            <?php echo e($locStatus === 'valid'
+                                                ? 'bg-green-600 text-white shadow-inner'
+                                                : 'bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-green-50 dark:hover:bg-green-950/20'); ?>">
+                                        <span class="flex items-center gap-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">
+                                                <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143Z" clip-rule="evenodd" />
                                             </svg>
-                                            Belum direview
-                                        </div>
-                                    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                            Valid
+                                        </span>
+                                    </button>
+                                    <button type="button"
+                                        wire:click="setLocationStatus(<?php echo e($i); ?>, 'invalid')"
+                                        <?php if($blindTest->is_reviewed): ?> disabled <?php endif; ?>
+                                        class="px-3 py-1.5 text-xs font-semibold transition-colors border-l border-zinc-300 dark:border-zinc-700 disabled:cursor-not-allowed
+                                            <?php echo e($locStatus === 'invalid'
+                                                ? 'bg-red-600 text-white shadow-inner'
+                                                : 'bg-white dark:bg-zinc-900 text-zinc-600 dark:text-zinc-400 hover:bg-red-50 dark:hover:bg-red-950/20'); ?>">
+                                        <span class="flex items-center gap-1">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">
+                                                <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z" />
+                                            </svg>
+                                            Invalid
+                                        </span>
+                                    </button>
                                 </div>
-                            <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($locStatus === 'pending'): ?>
+                                    <div class="text-[10px] text-yellow-600 dark:text-yellow-400 italic font-semibold inline-flex items-center gap-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z" clip-rule="evenodd" />
+                                        </svg>
+                                        Belum direview
+                                    </div>
+                                <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                            </div>
                         </td>
 
                         
                         <td class="px-3 py-3 text-center">
-                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($ans['auto_missing'] ?? false): ?>
-                                
-                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300 text-[11px] font-bold border-2 border-orange-300 dark:border-orange-700">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">
-                                        <path fill-rule="evenodd" d="M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0Zm-8-5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5A.75.75 0 0 1 10 5Zm0 10a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z" clip-rule="evenodd" />
-                                    </svg>
-                                    SALAH
-                                </span>
-                                <div class="text-[9px] text-orange-600 dark:text-orange-400 italic mt-0.5">Tidak dijawab</div>
-                            <?php elseif($locStatus === 'pending'): ?>
+                            <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($locStatus === 'pending'): ?>
                                 <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 text-[11px] font-bold border-2 border-amber-300 dark:border-amber-700">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3.5 h-3.5">
                                         <path fill-rule="evenodd" d="M10 18a8 8 0 1 0 0-16 8 8 0 0 0 0 16Zm.75-13a.75.75 0 0 0-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 0 0 0-1.5h-3.25V5Z" clip-rule="evenodd" />
@@ -490,8 +472,7 @@
             $totalCorrect = collect($answers)->where('is_correct', true)->count();
             $totalAnswers = count($answers);
             $stillPending = collect($answers)
-                ->filter(fn ($a) => ($a['location_status'] ?? null) === 'pending'
-                    && !($a['auto_missing'] ?? false))
+                ->filter(fn ($a) => ($a['location_status'] ?? null) === 'pending')
                 ->count();
         ?>
         <div class="mt-6 pt-4 border-t border-zinc-200 dark:border-zinc-700 flex flex-wrap items-center justify-between gap-4">

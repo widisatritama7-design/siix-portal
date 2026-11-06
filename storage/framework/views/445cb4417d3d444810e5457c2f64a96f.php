@@ -1,9 +1,10 @@
-<?php # [BlazeFolded]:{flux::heading}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/heading.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::link}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/link.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::text}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/text.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::text}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/text.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::card}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/card/index.blade.php}:{1776985208} ?>
+<?php # [BlazeVersion]:{v3} ?>
+<?php # [BlazeFolded]:{flux::heading}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/heading.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::link}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/link.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::text}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/text.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::text}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/text.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::card}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/card/index.blade.php}:{1792593958} ?>
 <section class="w-full">
     <?php echo $__env->make('partials.settings-heading', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?>
 
@@ -22,19 +23,24 @@
 <?php $component->withAttributes(['heading' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(__('Profile')),'subheading' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute(__('Update your name and email address'))]); ?>
 <?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::processComponentKey($component); ?>
 
-        <?php ob_start(); ?><div class="[:where(&amp;)]:bg-white dark:[:where(&amp;)]:bg-white/10 border border-zinc-200 dark:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl !p-0 space-y-0 overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300" data-flux-card>
+        <?php ob_start(); ?><div
+    class="border bg-clip-padding dark:bg-clip-border [:where(&amp;)]:border-zinc-900/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:shadow-xs dark:[:where(&amp;)]:shadow-none relative after:pointer-events-none after:absolute after:inset-0 after:rounded-[calc(var(--flux-card-radius)-1px)] after:inset-ring [:where(&amp;)]:after:inset-ring-white/25 dark:after:hidden after:[mask-image:linear-gradient(to_bottom,black,transparent)] [:where(&amp;)]:bg-white dark:[:where(&amp;)]:bg-white/10 !p-0 space-y-0 overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300" data-flux-card-body-variant="seamless" data-flux-card-variant="default"
+    data-flux-card
+>
     <?php ob_start(); ?>
             <!-- Profile Form -->
             <form wire:submit="updateProfileInformation" class="p-6 space-y-6">
-                <?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/input/index.blade.php', $__blaze->compiledPath.'/f9ce25dced5c86c906351e8ca96b9cbb.php'); ?>
-<?php $__blaze->pushData(['wire:model' => 'name','label' => __('Name'),'type' => 'text','required' => true,'autofocus' => true,'autocomplete' => 'name']); ?>
-<?php _f9ce25dced5c86c906351e8ca96b9cbb($__blaze, ['wire:model' => 'name','label' => __('Name'),'type' => 'text','required' => true,'autofocus' => true,'autocomplete' => 'name'], [], ['label', 'required', 'autofocus'], [], $__this ?? (isset($this) ? $this : null)); ?>
+                <?php if (!function_exists('_097d090efcd4e6e44e8bb88ba22bb3be')) { require $__blaze->compile('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/input/index.blade.php'); } ?>
+<?php $__componentData = ['wire:model' => 'name','label' => __('Name'),'type' => 'text','required' => true,'autofocus' => true,'autocomplete' => 'name']; ?>
+<?php $__blaze->pushData($__componentData); ?>
+<?php _097d090efcd4e6e44e8bb88ba22bb3be($__blaze, $__componentData, ['wire:model' => 'name', 'label' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($__componentData['label']), 'type' => 'text', 'required' => true, 'autofocus' => true, 'autocomplete' => 'name'], [], $__this ?? (isset($this) ? $this : null)); ?>
 <?php $__blaze->popData(); ?>
 
                 <div>
-                    <?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/input/index.blade.php', $__blaze->compiledPath.'/f9ce25dced5c86c906351e8ca96b9cbb.php'); ?>
-<?php $__blaze->pushData(['wire:model' => 'email','label' => __('Email'),'type' => 'email','required' => true,'autocomplete' => 'email']); ?>
-<?php _f9ce25dced5c86c906351e8ca96b9cbb($__blaze, ['wire:model' => 'email','label' => __('Email'),'type' => 'email','required' => true,'autocomplete' => 'email'], [], ['label', 'required'], [], $__this ?? (isset($this) ? $this : null)); ?>
+                    <?php if (!function_exists('_097d090efcd4e6e44e8bb88ba22bb3be')) { require $__blaze->compile('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/input/index.blade.php'); } ?>
+<?php $__componentData = ['wire:model' => 'email','label' => __('Email'),'type' => 'email','required' => true,'autocomplete' => 'email']; ?>
+<?php $__blaze->pushData($__componentData); ?>
+<?php _097d090efcd4e6e44e8bb88ba22bb3be($__blaze, $__componentData, ['wire:model' => 'email', 'label' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($__componentData['label']), 'type' => 'email', 'required' => true, 'autocomplete' => 'email'], [], $__this ?? (isset($this) ? $this : null)); ?>
 <?php $__blaze->popData(); ?>
 
                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($this->hasUnverifiedEmail): ?>
@@ -61,7 +67,7 @@
 
                 <div class="flex items-center gap-4">
                     <div class="flex items-center justify-end">
-                        <?php ob_start(); ?><button type="submit" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-10 text-sm rounded-lg ps-4 pe-4 inline-flex  bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 dark:border-0 shadow-[inset_0px_1px_--theme(--color-white/.2)] [[data-flux-button-group]_&amp;]:border-e-0 [:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-[1px] dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-0 dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-s-[1px] [:is([data-flux-button-group]&gt;&amp;:not(:first-child),_[data-flux-button-group]_:not(:first-child)&gt;&amp;)]:border-s-[color-mix(in_srgb,var(--color-accent-foreground),transparent_85%)] *:transition-opacity [&amp;[disabled]&gt;:not([data-flux-loading-indicator])]:opacity-0 [&amp;[disabled]&gt;[data-flux-loading-indicator]]:opacity-100 [&amp;[disabled]]:pointer-events-none  w-full" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target">
+                        <?php ob_start(); ?><button type="submit" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-10 text-sm rounded-lg gap-2 ps-4 pe-4 inline-flex  bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)] text-[var(--color-accent-foreground)] border border-black/10 dark:border-0 shadow-[inset_0px_1px_--theme(--color-white/.2)] [[data-flux-button-group]_&amp;]:border-e-0 [:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-[1px] dark:[:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-0 [:is([data-flux-button-group]&gt;&amp;:not(:first-child),_[data-flux-button-group]_:not(:first-child)&gt;&amp;)]:border-s-[1px]! [:is([data-flux-button-group]&gt;&amp;:not(:first-child),_[data-flux-button-group]_:not(:first-child)&gt;&amp;)]:border-s-[color-mix(in_srgb,var(--color-accent-foreground),transparent_85%)] *:transition-opacity [&amp;[disabled]&gt;:not([data-flux-loading-indicator])]:opacity-0 [&amp;[disabled]&gt;[data-flux-loading-indicator]]:opacity-100 [&amp;[disabled]]:pointer-events-none   w-full" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target">
         <div class="absolute inset-0 flex items-center justify-center opacity-0" data-flux-loading-indicator>
                 <svg class="shrink-0 [:where(&amp;)]:size-4 animate-spin" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true" data-slot="icon">
     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>

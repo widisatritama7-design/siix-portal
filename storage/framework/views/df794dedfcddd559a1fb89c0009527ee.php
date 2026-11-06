@@ -1,3 +1,4 @@
+<?php # [BlazeVersion]:{v3} ?>
 <!DOCTYPE html>
 <html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>" class="dark">
 <head>

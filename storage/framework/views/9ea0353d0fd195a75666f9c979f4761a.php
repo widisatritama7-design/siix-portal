@@ -1,3 +1,4 @@
+<?php # [BlazeVersion]:{v3} ?>
 <?php
     use Carbon\Carbon;
 

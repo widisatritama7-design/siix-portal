@@ -1,3 +1,4 @@
+<?php # [BlazeVersion]:{v3} ?>
 <?php $attributes ??= new \Illuminate\View\ComponentAttributeBag;
 
 $__newAttributes = [];

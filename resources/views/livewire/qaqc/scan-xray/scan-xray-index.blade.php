@@ -166,30 +166,6 @@
                 <div class="text-base font-bold text-white">Scan X-Ray List</div>
 
                 <div class="flex items-center gap-2">
-                    <flux:tooltip content="{{ $isStacked ? 'Unstack kolom (scroll bebas)' : 'Stack kolom (sticky)' }}" position="top">
-                        <button type="button"
-                            wire:click="toggleStack"
-                            wire:loading.attr="disabled"
-                            wire:target="toggleStack"
-                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer
-                                {{ $isStacked
-                                    ? 'bg-white/20 border border-white/30 text-white hover:bg-white/30'
-                                    : 'bg-white text-blue-700 hover:bg-blue-50 border border-white/40' }}">
-
-                            @if($isStacked)
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
-                                    <path fill-rule="evenodd" d="M15 3.75a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0V5.56l-3.97 3.97a.75.75 0 1 1-1.06-1.06l3.97-3.97h-2.69a.75.75 0 0 1-.75-.75Zm-12 0A.75.75 0 0 1 3.75 3h4.5a.75.75 0 0 1 0 1.5H5.56l3.97 3.97a.75.75 0 0 1-1.06 1.06L4.5 5.56v2.69a.75.75 0 0 1-1.5 0v-4.5Zm11.47 11.78a.75.75 0 1 1 1.06-1.06l3.97 3.97v-2.69a.75.75 0 0 1 1.5 0v4.5a.75.75 0 0 1-.75.75h-4.5a.75.75 0 0 1 0-1.5h2.69l-3.97-3.97Zm-4.94-1.06a.75.75 0 0 1 0 1.06L5.56 19.5h2.69a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75v-4.5a.75.75 0 0 1 1.5 0v2.69l3.97-3.97a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" />
-                                </svg>
-                                <span>Unstack</span>
-                            @else
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
-                                    <path fill-rule="evenodd" d="M3.22 3.22a.75.75 0 0 1 1.06 0l3.97 3.97V4.5a.75.75 0 0 1 1.5 0V9a.75.75 0 0 1-.75.75H4.5a.75.75 0 0 1 0-1.5h2.69L3.22 4.28a.75.75 0 0 1 0-1.06Zm17.56 0a.75.75 0 0 1 0 1.06l-3.97 3.97h2.69a.75.75 0 0 1 0 1.5H15a.75.75 0 0 1-.75-.75V4.5a.75.75 0 0 1 1.5 0v2.69l3.97-3.97a.75.75 0 0 1 1.06 0ZM3.75 15a.75.75 0 0 1 .75-.75H9a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-2.69l-3.97 3.97a.75.75 0 0 1-1.06-1.06l3.97-3.97H4.5a.75.75 0 0 1-.75-.75Zm10.5 0a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-2.69l3.97 3.97a.75.75 0 1 1-1.06 1.06l-3.97-3.97v2.69a.75.75 0 0 1-1.5 0V15Z" clip-rule="evenodd" />
-                                </svg>
-                                <span>Stack</span>
-                            @endif
-                        </button>
-                    </flux:tooltip>
-
                     <span class="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/20 border border-white/30 text-white text-xs font-semibold">
                         {{ $scans->total() }} total
                     </span>
@@ -199,15 +175,15 @@
 
         <div class="p-6">
             @if($scans->count() > 0)
-                <div class="overflow-x-auto {{ $isStacked ? '' : 'unstacked-mode' }}">
+                <div class="overflow-x-auto">
                     <table class="w-full" style="min-width: 2400px; white-space: nowrap; border-collapse: separate; border-spacing: 0;">
                         <thead>
                             {{-- BARIS HEADER 1 --}}
                             <tr class="bg-zinc-50 dark:bg-zinc-800/50">
-                                <th rowspan="2" class="px-4 py-2 text-center text-xs font-medium text-zinc-500 uppercase sticky left-0 z-20 bg-zinc-50 dark:bg-zinc-800" style="min-width: 50px; width: 50px; box-shadow: inset -1px 0 0 0 rgb(228 228 231);">#</th>
-                                <th rowspan="2" class="px-4 py-2 text-center text-xs font-medium text-zinc-500 uppercase sticky z-20 bg-zinc-50 dark:bg-zinc-800" style="left: 50px; min-width: 170px; box-shadow: inset -1px 0 0 0 rgb(228 228 231);">Customer</th>
-                                <th rowspan="2" class="px-4 py-2 text-center text-xs font-medium text-zinc-500 uppercase sticky z-20 bg-zinc-50 dark:bg-zinc-800" style="left: 220px; min-width: 170px; box-shadow: inset -1px 0 0 0 rgb(228 228 231);">Model</th>
-                                <th rowspan="2" class="px-3 py-2 text-center text-xs font-medium text-zinc-500 uppercase sticky z-20 bg-zinc-50 dark:bg-zinc-800" style="left: 390px; min-width: 100px; box-shadow: inset -2px 0 0 0 rgb(212 212 216);">PCB Type</th>
+                                <th rowspan="2" class="px-4 py-2 text-center text-xs font-medium text-zinc-500 uppercase" style="min-width: 50px; width: 50px;">#</th>
+                                <th rowspan="2" class="px-4 py-2 text-center text-xs font-medium text-zinc-500 uppercase" style="min-width: 170px;">Customer</th>
+                                <th rowspan="2" class="px-4 py-2 text-center text-xs font-medium text-zinc-500 uppercase" style="min-width: 170px;">Model</th>
+                                <th rowspan="2" class="px-3 py-2 text-center text-xs font-medium text-zinc-500 uppercase" style="min-width: 100px;">PCB Type</th>
 
                                 <th rowspan="2" class="px-3 py-2 text-center text-xs font-medium text-zinc-500 uppercase">Shift</th>
                                 <th rowspan="2" class="px-3 py-2 text-center text-xs font-medium text-zinc-500 uppercase">Group</th>
@@ -251,7 +227,7 @@
                                     PIC INFO
                                 </th>
 
-                                <th rowspan="2" class="px-4 py-2 text-center text-xs font-medium text-zinc-500 uppercase sticky right-0 z-20 bg-zinc-50 dark:bg-zinc-800" style="min-width: 150px; box-shadow: inset 2px 0 0 0 rgb(212 212 216);">Actions</th>
+                                <th rowspan="2" class="px-4 py-2 text-center text-xs font-medium text-zinc-500 uppercase" style="min-width: 150px;">Actions</th>
                             </tr>
 
                             {{-- BARIS HEADER 2 --}}
@@ -297,19 +273,19 @@
                                 @endphp
                                 <tr class="hover:bg-zinc-50 dark:hover:bg-zinc-800/50 group" wire:key="scan-{{ $scan->id }}">
 
-                                    {{-- STICKY LEFT --}}
-                                    <td class="px-4 py-3 text-sm text-zinc-500 text-center sticky left-0 z-10 bg-white dark:bg-zinc-900 group-hover:bg-zinc-50 dark:group-hover:bg-zinc-800/50" style="min-width: 50px; width: 50px; box-shadow: inset -1px 0 0 0 rgb(228 228 231);">
+                                    {{-- KOLOM KIRI --}}
+                                    <td class="px-4 py-3 text-sm text-zinc-500 text-center" style="min-width: 50px; width: 50px;">
                                         {{ $scans->firstItem() + $index }}
                                     </td>
-                                    <td class="px-4 py-3 text-sm text-zinc-800 dark:text-white text-center sticky z-10 bg-white dark:bg-zinc-900 group-hover:bg-zinc-50 dark:group-hover:bg-zinc-800/50" style="left: 50px; min-width: 170px; box-shadow: inset -1px 0 0 0 rgb(228 228 231);">
+                                    <td class="px-4 py-3 text-sm text-zinc-800 dark:text-white text-center" style="min-width: 170px;">
                                         {{ $scan->customer->customer_name ?? '-' }}
                                     </td>
-                                    <td class="px-4 py-3 text-sm text-zinc-800 dark:text-white text-center sticky z-10 bg-white dark:bg-zinc-900 group-hover:bg-zinc-50 dark:group-hover:bg-zinc-800/50" style="left: 220px; min-width: 170px; box-shadow: inset -1px 0 0 0 rgb(228 228 231);">
+                                    <td class="px-4 py-3 text-sm text-zinc-800 dark:text-white text-center" style="min-width: 170px;">
                                         {{ $scan->model->model_name ?? '-' }}
                                     </td>
 
                                     {{-- PCB TYPE --}}
-                                    <td class="px-3 py-3 text-center sticky z-10 bg-white dark:bg-zinc-900 group-hover:bg-zinc-50 dark:group-hover:bg-zinc-800/50" style="left: 390px; min-width: 100px; box-shadow: inset -2px 0 0 0 rgb(212 212 216);">
+                                    <td class="px-3 py-3 text-center" style="min-width: 100px;">
                                         @if($scan->pcb_type === 'SINGLE')
                                             <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300">SINGLE</span>
                                         @elseif($scan->pcb_type === 'LH')
@@ -514,8 +490,8 @@
                                         @endif
                                     </td>
 
-                                    {{-- STICKY RIGHT: ACTIONS --}}
-                                    <td class="px-4 py-3 text-center sticky right-0 z-10 bg-white dark:bg-zinc-900 group-hover:bg-zinc-50 dark:group-hover:bg-zinc-800/50" style="min-width: 150px; box-shadow: inset 2px 0 0 0 rgb(212 212 216);">
+                                    {{-- ACTIONS --}}
+                                    <td class="px-4 py-3 text-center" style="min-width: 150px;">
                                         <div class="flex items-center justify-center gap-1">
                                             @can('view scan xray')
                                                 <flux:tooltip content="View" position="top">

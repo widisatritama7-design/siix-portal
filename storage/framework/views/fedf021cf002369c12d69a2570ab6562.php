@@ -1,3 +1,4 @@
+<?php # [BlazeVersion]:{v3} ?>
 <div>
     <!-- Header dengan Back Button -->
     <div class="flex items-center gap-4 mb-6">

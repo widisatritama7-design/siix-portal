@@ -1,13 +1,14 @@
+<?php # [BlazeVersion]:{v3} ?>
 <?php
-if (!function_exists('_791aabb0f0d190e7ee4ce1fa39082fe5')):
-function _791aabb0f0d190e7ee4ce1fa39082fe5($__blaze, $__data = [], $__slots = [], $__bound = [], $__keys = [], $__this = null) {
+if (!function_exists('_f6b5bd8232297581696809b9c29b3dd4')):
+function _f6b5bd8232297581696809b9c29b3dd4($__blaze, $__data = [], $__attributes = [], $__slots = [], $__this = null) {
 $__env = $__blaze->env;
 $__slots['slot'] ??= new \Illuminate\View\ComponentSlot('');
 if (($__data['attributes'] ?? null) instanceof \Illuminate\View\ComponentAttributeBag) { $__data = $__data + $__data['attributes']->all(); unset($__data['attributes']); }
 extract($__slots, EXTR_SKIP); unset($__slots);
 extract($__data, EXTR_SKIP);
-$attributes = \Livewire\Blaze\Runtime\BlazeAttributeBag::make($__data, $__bound, $__keys);
-unset($__data, $__bound, $__keys);
+$attributes = new \Livewire\Blaze\Runtime\BlazeAttributeBag($__attributes);
+unset($__data, $__attributes);
 ob_start();
 ?>
 
@@ -49,6 +50,7 @@ $classes = Flux::classes()
         default => [ // Adjust spacing around description...
             '[&>[data-flux-label]+[data-flux-description]]:mt-0',
             '[&>[data-flux-label]+[data-flux-description]]:mb-3',
+            '[&>[data-flux-description]:first-child:has(+*)]:mb-3',
             '[&>*:not([data-flux-label])+[data-flux-description]]:mt-3',
         ],
         'bare' => '',

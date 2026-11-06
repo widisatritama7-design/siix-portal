@@ -37,6 +37,8 @@ class BlindTestExecution extends Component
     public $screenRecordingTemp;
     public $isUploadingRecording = false;
 
+    public $showSubmitModal = false;
+
     // ==================== MOUNT ====================
 
     public function mount($id)
@@ -64,9 +66,7 @@ class BlindTestExecution extends Component
             $this->remainingSeconds = null;
 
             // Reset user answers ke baris kosong
-            $this->userAnswers = [
-                ['deffect_item_id' => '', 'component_location' => ''],
-            ];
+            $this->userAnswers = $this->makeEmptyRows(5);
 
             // Set ulang modal browser check (karena attempt baru = wajib verifikasi ulang)
             if (!$this->blindTest->browser_verified) {
@@ -98,9 +98,7 @@ class BlindTestExecution extends Component
             $this->browserCheckPassed    = true;
         }
 
-        $this->userAnswers = [
-            ['deffect_item_id' => '', 'component_location' => ''],
-        ];
+        $this->userAnswers = $this->makeEmptyRows(5);
 
         if ($this->blindTest->status === 'in_progress' && $this->blindTest->started_at) {
             $this->isStarted = true;
@@ -109,6 +107,14 @@ class BlindTestExecution extends Component
 
             $this->cameraStreamActive = (bool) $this->blindTest->camera_enabled;
         }
+    }
+
+    private function makeEmptyRows(int $count = 5): array
+    {
+        return array_fill(0, $count, [
+            'deffect_item_id'    => '',
+            'component_location' => '',
+        ]);
     }
 
     // ==================== DEADLINE HELPERS ====================
@@ -382,6 +388,30 @@ class BlindTestExecution extends Component
 
     public function submit()
     {
+        $this->confirmSubmit();
+    }
+
+    public function confirmSubmit()
+    {
+        if (!$this->isStarted || $this->isFinished) return;
+
+        $validAnswers = collect($this->userAnswers)
+            ->filter(fn ($r) => !empty($r['deffect_item_id']) && !empty($r['component_location']))
+            ->values()
+            ->toArray();
+
+        if (empty($validAnswers)) {
+            $this->dispatch('notify', message: 'Isi minimal 1 jawaban sebelum submit!', type: 'error');
+            return;
+        }
+
+        $this->showSubmitModal = true;
+    }
+
+    public function confirmSubmitYes()
+    {
+        $this->showSubmitModal = false;
+
         if (!$this->isStarted || $this->isFinished) return;
 
         $this->blindTest->refresh();
@@ -393,14 +423,22 @@ class BlindTestExecution extends Component
             return;
         }
 
-        foreach ($this->userAnswers as $i => $row) {
-            if (empty($row['deffect_item_id']) || empty($row['component_location'])) {
-                $this->dispatch('notify', message: "Baris #" . ($i + 1) . " belum lengkap!", type: 'error');
-                return;
-            }
+        $validAnswers = collect($this->userAnswers)
+            ->filter(fn ($r) => !empty($r['deffect_item_id']) && !empty($r['component_location']))
+            ->values()
+            ->toArray();
+
+        if (empty($validAnswers)) {
+            $this->dispatch('notify', message: 'Isi minimal 1 jawaban sebelum submit!', type: 'error');
+            return;
         }
 
-        $this->finalizeSubmit($this->userAnswers, false);
+        $this->finalizeSubmit($validAnswers, false);
+    }
+
+    public function cancelSubmit()
+    {
+        $this->showSubmitModal = false;
     }
 
     private function finalizeSubmit(array $answers, bool $isAutoSave): void

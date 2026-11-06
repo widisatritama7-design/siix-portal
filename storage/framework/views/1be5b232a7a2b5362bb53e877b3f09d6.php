@@ -1,4 +1,5 @@
-<?php # [BlazeFolded]:{flux::main}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/main.blade.php}:{1776985208} ?>
+<?php # [BlazeVersion]:{v3} ?>
+<?php # [BlazeFolded]:{flux::main}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/main.blade.php}:{1792593958} ?>
 <?php if (isset($component)) { $__componentOriginal23399719f391f3076fe3bf0929a84741 = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal23399719f391f3076fe3bf0929a84741 = $attributes; } ?>
 <?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => 'f4ac99e09542ff494432bc959d4fee61::app.sidebar','data' => ['title' => $title ?? null]] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -11,13 +12,13 @@
 <?php $component->withAttributes(['title' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($title ?? null)]); ?>
 <?php \Livewire\Features\SupportCompiledWireKeys\SupportCompiledWireKeys::processComponentKey($component); ?>
 
-    <?php ob_start(); ?><div class="[grid-area:main] p-6 lg:p-8 [[data-flux-container]_&amp;]:px-0" data-flux-main>
-    <?php ob_start(); ?>
+    <?php ob_start(); ?><div class="[grid-area:main] p-6 lg:p-8   [[data-flux-container]_&amp;]:px-0" data-flux-main >
+            <?php ob_start(); ?>
         <?php echo e($slot); ?>
 
     <?php echo trim(ob_get_clean()); ?>
 
-</div>
+    </div>
 <?php echo ltrim(ob_get_clean()); ?>
     
     <?php echo $__env->yieldPushContent('scripts'); ?>

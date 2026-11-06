@@ -1,3 +1,4 @@
+<?php # [BlazeVersion]:{v3} ?>
 <div x-data="{ show: false, message: '', type: 'success' }"
     x-on:notify.window="show = true; message = $event.detail.message; type = $event.detail.type || 'success'; setTimeout(() => show = false, 3000)"
     x-show="show" x-transition

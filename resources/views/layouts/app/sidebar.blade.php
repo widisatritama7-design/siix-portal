@@ -176,19 +176,15 @@
             transition: background-color 0.3s ease, backdrop-filter 0.3s ease, border-color 0.3s ease;
         }
 
-        /* Saat floating (collapsed + hover) → transparan + blur */
+        /* Saat floating (collapsed + hover) → solid */
         .sidebar-floating {
-            background-color: rgba(255, 255, 255, 0.72) !important;
-            backdrop-filter: saturate(180%) blur(20px);
-            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            background-color: #ffffff !important;
             border-right-color: rgba(0, 0, 0, 0.08) !important;
             box-shadow: 8px 0 32px rgba(0, 0, 0, 0.12) !important;
         }
 
         .dark .sidebar-floating {
-            background-color: rgba(24, 24, 27, 0.72) !important;
-            backdrop-filter: saturate(180%) blur(20px);
-            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            background-color: #18181b !important;
             border-right-color: rgba(255, 255, 255, 0.08) !important;
             box-shadow: 8px 0 32px rgba(0, 0, 0, 0.4) !important;
         }
@@ -573,7 +569,7 @@
                         class="mt-1 relative">
                         <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
                         <div class="space-y-1 ml-[30px]">
-                            
+                            @canany(['view esd-monitoring'])
                             <!-- ========== SUB GROUP: ESD MONITORING (dengan grup existing) ========== -->
                             <div class="relative w-full">
                                 <button @click="toggleGroup('esdMonitoringMenu')"
@@ -923,7 +919,8 @@
                                     </div>
                                 </div>
                             </div>
-                            
+                            @endcanany
+
                             <!-- MTC Monitoring as SUB GROUP -->
                             @canany(['view mtc-monitoring'])
                             <div class="relative w-full">

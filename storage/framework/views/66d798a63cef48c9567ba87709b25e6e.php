@@ -1,23 +1,25 @@
-<?php # [BlazeFolded]:{flux::breadcrumbs.item}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/breadcrumbs/item.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::breadcrumbs.item}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/breadcrumbs/item.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::breadcrumbs}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/breadcrumbs/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::card}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/card/index.blade.php}:{1776985208} ?>
+<?php # [BlazeVersion]:{v3} ?>
+<?php # [BlazeFolded]:{flux::breadcrumbs.item}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/breadcrumbs/item.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::breadcrumbs.item}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/breadcrumbs/item.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::breadcrumbs}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/breadcrumbs/index.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::input}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/input/index.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::card}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/card/index.blade.php}:{1792593958} ?>
 <div class="p-1 space-y-3">
     <!-- Breadcrumbs -->
     <?php ob_start(); ?><div class="flex" data-flux-breadcrumbs>
     <?php ob_start(); ?>
-        <?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/breadcrumbs/item.blade.php', $__blaze->compiledPath.'/b843a539037c1542dedc5bd82236e28a.php'); ?>
-<?php if (isset($__slotsb843a539037c1542dedc5bd82236e28a)) { $__slotsStackb843a539037c1542dedc5bd82236e28a[] = $__slotsb843a539037c1542dedc5bd82236e28a; } ?>
-<?php if (isset($__attrsb843a539037c1542dedc5bd82236e28a)) { $__attrsStackb843a539037c1542dedc5bd82236e28a[] = $__attrsb843a539037c1542dedc5bd82236e28a; } ?>
-<?php $__attrsb843a539037c1542dedc5bd82236e28a = ['href' => e(route('dashboard')),'wire:navigate' => true,'separator' => 'slash']; ?>
-<?php $__slotsb843a539037c1542dedc5bd82236e28a = []; ?>
-<?php $__blaze->pushData($__attrsb843a539037c1542dedc5bd82236e28a); ?>
-<?php ob_start(); ?>Dashboard<?php $__slotsb843a539037c1542dedc5bd82236e28a['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
-<?php $__blaze->pushSlots($__slotsb843a539037c1542dedc5bd82236e28a); ?>
-<?php _b843a539037c1542dedc5bd82236e28a($__blaze, $__attrsb843a539037c1542dedc5bd82236e28a, $__slotsb843a539037c1542dedc5bd82236e28a, ['wire:navigate'], [], $__this ?? (isset($this) ? $this : null)); ?>
-<?php if (! empty($__slotsStackb843a539037c1542dedc5bd82236e28a)) { $__slotsb843a539037c1542dedc5bd82236e28a = array_pop($__slotsStackb843a539037c1542dedc5bd82236e28a); } ?>
-<?php if (! empty($__attrsStackb843a539037c1542dedc5bd82236e28a)) { $__attrsb843a539037c1542dedc5bd82236e28a = array_pop($__attrsStackb843a539037c1542dedc5bd82236e28a); } ?>
+        <?php if (!function_exists('_1e458aebbd4033357c172a25595afd62')) { require $__blaze->compile('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/breadcrumbs/item.blade.php'); } ?>
+<?php if (isset($__slots1e458aebbd4033357c172a25595afd62)) { $__slotsStack1e458aebbd4033357c172a25595afd62[] = $__slots1e458aebbd4033357c172a25595afd62; } ?>
+<?php if (isset($__data1e458aebbd4033357c172a25595afd62)) { $__dataStack1e458aebbd4033357c172a25595afd62[] = $__data1e458aebbd4033357c172a25595afd62; } ?>
+<?php $__data1e458aebbd4033357c172a25595afd62 = ['href' => e(route('dashboard')),'wire:navigate' => true,'separator' => 'slash']; ?>
+<?php $__slots1e458aebbd4033357c172a25595afd62 = []; ?>
+<?php $__blaze->pushData($__data1e458aebbd4033357c172a25595afd62); ?>
+<?php ob_start(); ?>Dashboard<?php $__slots1e458aebbd4033357c172a25595afd62['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slots1e458aebbd4033357c172a25595afd62); ?>
+<?php _1e458aebbd4033357c172a25595afd62($__blaze, $__data1e458aebbd4033357c172a25595afd62, ['href' => $__data1e458aebbd4033357c172a25595afd62['href'], 'wire:navigate' => true, 'separator' => 'slash'], $__slots1e458aebbd4033357c172a25595afd62, $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStack1e458aebbd4033357c172a25595afd62)) { $__slots1e458aebbd4033357c172a25595afd62 = array_pop($__slotsStack1e458aebbd4033357c172a25595afd62); } ?>
+<?php if (! empty($__dataStack1e458aebbd4033357c172a25595afd62)) { $__data1e458aebbd4033357c172a25595afd62 = array_pop($__dataStack1e458aebbd4033357c172a25595afd62); } ?>
 <?php $__blaze->popData(); ?>
         <?php ob_start(); ?><div class="flex items-center text-sm font-medium group/breadcrumb font-semibold text-blue-600 dark:text-blue-400" data-flux-breadcrumbs-item>
             <div class="text-gray-500 dark:text-white/80">
@@ -25,11 +27,11 @@
 
                     </div>
     
-    <!--[if BLOCK]><![endif]-->        <svg class="shrink-0 [:where(&amp;)]:size-5 mx-1 text-zinc-300 dark:text-white/80 group-last/breadcrumb:hidden rtl:-scale-x-100" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+            <svg class="shrink-0 [:where(&amp;)]:size-5 mx-1 text-zinc-300 dark:text-white/80 group-last/breadcrumb:hidden rtl:-scale-x-100" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
   <path fill-rule="evenodd" d="M12.528 3.047a.75.75 0 0 1 .449.961L8.433 16.504a.75.75 0 1 1-1.41-.512l4.544-12.496a.75.75 0 0 1 .961-.449Z" clip-rule="evenodd"/>
 </svg>
 
-            <!--[if ENDBLOCK]><![endif]--></div>
+            </div>
 <?php echo ltrim(ob_get_clean()); ?>
         <?php ob_start(); ?><div class="flex items-center text-sm font-medium group/breadcrumb font-semibold text-blue-600 dark:text-blue-400" data-flux-breadcrumbs-item>
             <div class="text-gray-500 dark:text-white/80">
@@ -37,11 +39,11 @@
 
                     </div>
     
-    <!--[if BLOCK]><![endif]-->        <svg class="shrink-0 [:where(&amp;)]:size-5 mx-1 text-zinc-300 dark:text-white/80 group-last/breadcrumb:hidden rtl:-scale-x-100" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+            <svg class="shrink-0 [:where(&amp;)]:size-5 mx-1 text-zinc-300 dark:text-white/80 group-last/breadcrumb:hidden rtl:-scale-x-100" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
   <path fill-rule="evenodd" d="M12.528 3.047a.75.75 0 0 1 .449.961L8.433 16.504a.75.75 0 1 1-1.41-.512l4.544-12.496a.75.75 0 0 1 .961-.449Z" clip-rule="evenodd"/>
 </svg>
 
-            <!--[if ENDBLOCK]><![endif]--></div>
+            </div>
 <?php echo ltrim(ob_get_clean()); ?>
     <?php echo trim(ob_get_clean()); ?>
 
@@ -212,20 +214,63 @@
     </div>
 
     
-    <?php ob_start(); ?><div class="[:where(&amp;)]:bg-white dark:[:where(&amp;)]:bg-white/10 border border-zinc-200 dark:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl p-4 shadow-sm" x-data="{
+    <?php ob_start(); ?><div
+    class="border bg-clip-padding dark:bg-clip-border [:where(&amp;)]:border-zinc-900/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:shadow-xs dark:[:where(&amp;)]:shadow-none relative after:pointer-events-none after:absolute after:inset-0 after:rounded-[calc(var(--flux-card-radius)-1px)] after:inset-ring [:where(&amp;)]:after:inset-ring-white/25 dark:after:hidden after:[mask-image:linear-gradient(to_bottom,black,transparent)] [:where(&amp;)]:bg-white dark:[:where(&amp;)]:bg-white/10 p-4 shadow-sm" data-flux-card-body-variant="seamless" data-flux-card-variant="default" x-data="{
             filterOpen: localStorage.getItem('blindTest_filterOpen') !== 'false',
             toggleFilter() {
                 this.filterOpen = !this.filterOpen;
                 localStorage.setItem('blindTest_filterOpen', this.filterOpen ? 'true' : 'false');
             }
-        }" data-flux-card>
+        }"
+    data-flux-card
+>
     <?php ob_start(); ?>
         <div class="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
             <div class="flex-1 w-full">
-                <?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/input/index.blade.php', $__blaze->compiledPath.'/f9ce25dced5c86c906351e8ca96b9cbb.php'); ?>
-<?php $__blaze->pushData(['wire:model.live.debounce.300ms' => 'search','placeholder' => 'Search NIK, Name, Customer, Model...','icon' => 'magnifying-glass','clearable' => true]); ?>
-<?php _f9ce25dced5c86c906351e8ca96b9cbb($__blaze, ['wire:model.live.debounce.300ms' => 'search','placeholder' => 'Search NIK, Name, Customer, Model...','icon' => 'magnifying-glass','clearable' => true], [], ['clearable'], [], $__this ?? (isset($this) ? $this : null)); ?>
-<?php $__blaze->popData(); ?>
+                <?php ob_start(); ?><div class="w-full relative block group/input" data-flux-input>
+                            <div class="pointer-events-none absolute top-0 bottom-0 border-s border-transparent flex items-center justify-center text-xs text-zinc-400/75 dark:text-white/60 ps-3 start-0">
+                    <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd"/>
+</svg>
+
+                        </div>
+            
+            <input
+                type="text"
+                
+                class="w-full border block disabled:shadow-none dark:shadow-none appearance-none text-base sm:text-sm rounded-lg py-2 h-10 leading-[1.375rem] ps-10 pe-10 bg-white dark:bg-white/10 dark:disabled:bg-white/[7%] text-zinc-700 disabled:text-zinc-500 placeholder-zinc-400 disabled:placeholder-zinc-400/70 dark:text-zinc-300 dark:disabled:text-zinc-400 dark:placeholder-zinc-400 dark:disabled:placeholder-zinc-500 shadow-xs border-zinc-200 border-b-zinc-300/80 disabled:border-b-zinc-200 dark:border-white/10 dark:disabled:border-white/5 data-invalid:shadow-none data-invalid:border-red-500 dark:data-invalid:border-red-500 disabled:data-invalid:border-red-500 dark:disabled:data-invalid:border-red-500" wire:model.live.debounce.300ms="search" placeholder="Search NIK, Name, Customer, Model..."
+                 name="search"                                                 <?php if (isset($scope)) $__scope = $scope; ?><?php $scope = array (
+  'name' => 'search',
+  'invalid' => false,
+); ?>
+                <?php if ($scope['invalid'] || ($scope['name'] && $errors->has($scope['name']))): ?>
+                aria-invalid="true" data-invalid
+                <?php endif; ?>
+                <?php if (isset($__scope)) { $scope = $__scope; unset($__scope); } ?>
+                data-flux-control
+                data-flux-group-target
+                 wire:loading.class="pe-16"                  wire:target="search"             >
+
+                            <div class="absolute top-0 bottom-0 flex items-center gap-x-1.5 pe-2 border-e border-transparent end-0 text-xs text-zinc-400">
+                    
+                                            <svg class="shrink-0 [:where(&amp;)]:size-5 animate-spin" wire:loading="" wire:target="search" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true" data-slot="icon">
+    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+</svg>
+                            
+                                            <button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-8 text-sm rounded-md gap-2 w-8 inline-flex -ms-1.5 -me-1.5 bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white       -me-1 [[data-flux-input]:has(input:placeholder-shown)_&amp;]:hidden [[data-flux-input]:has(input[disabled])_&amp;]:hidden" data-flux-button="data-flux-button" x-data="fluxInputClearable" x-on:click="clear()" tabindex="-1" aria-label="Clear input" data-flux-clear-button="data-flux-clear-button">
+        <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"/>
+</svg>
+    </button>
+                    
+                    
+                    
+                    
+                    
+                                    </div>
+                    </div>
+<?php echo ltrim(ob_get_clean()); ?>
             </div>
             <div class="flex items-center gap-2 w-full sm:w-auto">
                 <button type="button" @click="toggleFilter()"
@@ -238,7 +283,7 @@
                     <span x-text="filterOpen ? 'Hide Filter' : 'Unhide Filter'"></span>
                 </button>
                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($search || $filterDepartment || $filterShift || $filterGroup || $filterSection || $filterCustomer || $filterModel || $filterResult || $filterDateFrom || $filterDateTo): ?>
-                    <?php ob_start(); ?><button type="button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-10 text-sm rounded-lg ps-3 pe-4 inline-flex  bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-500 text-white  shadow-[inset_0px_1px_var(--color-red-500),inset_0px_2px_--theme(--color-white/.15)] dark:shadow-none [[data-flux-button-group]_&amp;]:border-e [:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-0 [[data-flux-button-group]_&amp;]:border-red-600 dark:[[data-flux-button-group]_&amp;]:border-red-900/25 *:transition-opacity [&amp;[data-loading]&gt;:not([data-flux-loading-indicator])]:opacity-0 [&amp;[data-flux-loading]&gt;:not([data-flux-loading-indicator])]:opacity-0 [&amp;[data-loading]&gt;[data-flux-loading-indicator]]:opacity-100 [&amp;[data-flux-loading]&gt;[data-flux-loading-indicator]]:opacity-100 data-loading:pointer-events-none data-flux-loading:pointer-events-none  whitespace-nowrap bg-red-600 hover:bg-red-700 text-white" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target" wire:target="resetFilters" wire:loading.attr="data-flux-loading" wire:click="resetFilters">
+                    <?php ob_start(); ?><button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-10 text-sm rounded-lg gap-2 ps-3 pe-4 inline-flex  bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-500 text-white  shadow-[inset_0px_1px_var(--color-red-500),inset_0px_2px_--theme(--color-white/.15)] dark:shadow-none [[data-flux-button-group]_&amp;]:border-e [:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-0 [[data-flux-button-group]_&amp;]:border-red-600 dark:[[data-flux-button-group]_&amp;]:border-red-900/25 *:transition-opacity [&amp;[data-loading]&gt;:not([data-flux-loading-indicator])]:opacity-0 [&amp;[data-flux-loading]&gt;:not([data-flux-loading-indicator])]:opacity-0 [&amp;[data-loading]&gt;[data-flux-loading-indicator]]:opacity-100 [&amp;[data-flux-loading]&gt;[data-flux-loading-indicator]]:opacity-100 data-loading:pointer-events-none data-flux-loading:pointer-events-none   whitespace-nowrap bg-red-600 hover:bg-red-700 text-white" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target" wire:target="resetFilters" wire:loading.attr="data-flux-loading" wire:click="resetFilters">
         <div class="absolute inset-0 flex items-center justify-center opacity-0" data-flux-loading-indicator>
                 <svg class="shrink-0 [:where(&amp;)]:size-4 animate-spin" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true" data-slot="icon">
     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>

@@ -1,13 +1,14 @@
+<?php # [BlazeVersion]:{v3} ?>
 <?php
-if (!function_exists('__6740e79bcfc0bc5cc674a95a75cd90e1')):
-function __6740e79bcfc0bc5cc674a95a75cd90e1($__blaze, $__data = [], $__slots = [], $__bound = [], $__keys = [], $__this = null) {
+if (!function_exists('__e7c758d29b0d30d6bc737b89fbcf03d8')):
+function __e7c758d29b0d30d6bc737b89fbcf03d8($__blaze, $__data = [], $__attributes = [], $__slots = [], $__this = null) {
 $__env = $__blaze->env;
 
 if (($__data['attributes'] ?? null) instanceof \Illuminate\View\ComponentAttributeBag) { $__data = $__data + $__data['attributes']->all(); unset($__data['attributes']); }
 extract($__slots, EXTR_SKIP); unset($__slots);
 extract($__data, EXTR_SKIP);
-$attributes = \Livewire\Blaze\Runtime\BlazeAttributeBag::make($__data, $__bound, $__keys);
-unset($__data, $__bound, $__keys);
+$attributes = new \Livewire\Blaze\Runtime\BlazeAttributeBag($__attributes);
+unset($__data, $__attributes);
 ob_start();
 ?>
 
@@ -44,12 +45,12 @@ $classes = Flux::classes('border-0 [print-color-adjust:exact]')
 ?>
 
 <?php if ($text): ?>
-    <div data-orientation="<?php echo e($orientation); ?>" class="flex items-center w-full" role="none" data-flux-separator>
-        <div <?php echo e($attributes->class([$classes, 'grow'])); ?>></div>
+    <div data-orientation="<?php echo e($orientation); ?>" role="none" <?php echo e($attributes->class('flex items-center w-full')); ?> data-flux-separator>
+        <div class="<?php echo e($classes); ?> grow"></div>
 
         <span class="shrink mx-6 font-medium text-sm text-zinc-500 dark:text-zinc-300 whitespace-nowrap"><?php echo e($text); ?></span>
 
-        <div <?php echo e($attributes->class([$classes, 'grow'])); ?>></div>
+        <div class="<?php echo e($classes); ?> grow"></div>
     </div>
 <?php else: ?>
     <div data-orientation="<?php echo e($orientation); ?>" role="none" <?php echo e($attributes->class($classes, 'shrink-0')); ?> data-flux-separator></div>

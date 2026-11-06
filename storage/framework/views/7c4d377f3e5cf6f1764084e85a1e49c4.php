@@ -1,19 +1,20 @@
-<?php # [BlazeFolded]:{flux::badge}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/badge/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::card}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/card/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::badge}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/badge/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::card}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/card/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::badge}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/badge/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::card}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/card/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::badge}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/badge/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::card}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/card/index.blade.php}:{1776985208} ?>
+<?php # [BlazeVersion]:{v3} ?>
+<?php # [BlazeFolded]:{flux::badge}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/badge/index.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::icon}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::card}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/card/index.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::badge}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/badge/index.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::icon}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::card}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/card/index.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::badge}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/badge/index.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::icon}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::card}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/card/index.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::badge}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/badge/index.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::icon}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::card}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/card/index.blade.php}:{1792593958} ?>
 <?php if (isset($component)) { $__componentOriginal4847b66943f6ddd1eb8418f83be8fb5d = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal4847b66943f6ddd1eb8418f83be8fb5d = $attributes; } ?>
 <?php $component = App\View\Components\Home\Inbox::resolve([] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -46,7 +47,7 @@
 <?php echo ltrim(ob_get_clean()); ?>
                     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                 </div>
-                <?php ob_start(); ?><a href="/dcc/submissions?status=Waiting+Received" data-flux-button="data-flux-button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-10 text-sm rounded-lg ps-3 pe-4 inline-flex  bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white">
+                <?php ob_start(); ?><a href="/dcc/submissions?status=Waiting+Received" data-flux-button="data-flux-button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-10 text-sm rounded-lg gap-2 ps-3 pe-4 inline-flex  bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white">
         <svg class="shrink-0 [:where(&amp;)]:size-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
   <path fill-rule="evenodd" d="M2 8a.75.75 0 0 1 .75-.75h8.69L8.22 4.03a.75.75 0 0 1 1.06-1.06l4.5 4.5a.75.75 0 0 1 0 1.06l-4.5 4.5a.75.75 0 0 1-1.06-1.06l3.22-3.22H2.75A.75.75 0 0 1 2 8Z" clip-rule="evenodd"/>
 </svg>
@@ -61,7 +62,10 @@
 <?php echo ltrim(ob_get_clean()); ?>
             </div>
 
-            <?php ob_start(); ?><div class="[:where(&amp;)]:bg-white dark:[:where(&amp;)]:bg-white/10 border border-zinc-200 dark:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl p-6 h-full shadow-lg hover:shadow-xl transition-shadow duration-300" data-flux-card>
+            <?php ob_start(); ?><div
+    class="border bg-clip-padding dark:bg-clip-border [:where(&amp;)]:border-zinc-900/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:shadow-xs dark:[:where(&amp;)]:shadow-none relative after:pointer-events-none after:absolute after:inset-0 after:rounded-[calc(var(--flux-card-radius)-1px)] after:inset-ring [:where(&amp;)]:after:inset-ring-white/25 dark:after:hidden after:[mask-image:linear-gradient(to_bottom,black,transparent)] [:where(&amp;)]:bg-white dark:[:where(&amp;)]:bg-white/10 p-6 h-full shadow-lg hover:shadow-xl transition-shadow duration-300" data-flux-card-body-variant="seamless" data-flux-card-variant="default"
+    data-flux-card
+>
     <?php ob_start(); ?>
                 <div class="overflow-x-auto">
                     <table class="w-full">
@@ -121,20 +125,20 @@
                                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($submission->due_date): ?>
                                             <div class="space-y-1">
                                                 <div class="text-sm"><?php echo e($submission->due_date->format('Y-m-d')); ?></div>
-                                                <?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/badge/index.blade.php', $__blaze->compiledPath.'/6b0011e2f83d04930b97e5f6feda22dd.php'); ?>
-<?php if (isset($__slots6b0011e2f83d04930b97e5f6feda22dd)) { $__slotsStack6b0011e2f83d04930b97e5f6feda22dd[] = $__slots6b0011e2f83d04930b97e5f6feda22dd; } ?>
-<?php if (isset($__attrs6b0011e2f83d04930b97e5f6feda22dd)) { $__attrsStack6b0011e2f83d04930b97e5f6feda22dd[] = $__attrs6b0011e2f83d04930b97e5f6feda22dd; } ?>
-<?php $__attrs6b0011e2f83d04930b97e5f6feda22dd = ['color' => e($badgeColor),'size' => 'sm']; ?>
-<?php $__slots6b0011e2f83d04930b97e5f6feda22dd = []; ?>
-<?php $__blaze->pushData($__attrs6b0011e2f83d04930b97e5f6feda22dd); ?>
+                                                <?php if (!function_exists('_7477cdf3e599b95879e647f1be0a7b24')) { require $__blaze->compile('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/badge/index.blade.php'); } ?>
+<?php if (isset($__slots7477cdf3e599b95879e647f1be0a7b24)) { $__slotsStack7477cdf3e599b95879e647f1be0a7b24[] = $__slots7477cdf3e599b95879e647f1be0a7b24; } ?>
+<?php if (isset($__data7477cdf3e599b95879e647f1be0a7b24)) { $__dataStack7477cdf3e599b95879e647f1be0a7b24[] = $__data7477cdf3e599b95879e647f1be0a7b24; } ?>
+<?php $__data7477cdf3e599b95879e647f1be0a7b24 = ['color' => e($badgeColor),'size' => 'sm']; ?>
+<?php $__slots7477cdf3e599b95879e647f1be0a7b24 = []; ?>
+<?php $__blaze->pushData($__data7477cdf3e599b95879e647f1be0a7b24); ?>
 <?php ob_start(); ?>
                                                     <?php echo e($dueDateLabel['label']); ?>
 
-                                                <?php $__slots6b0011e2f83d04930b97e5f6feda22dd['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
-<?php $__blaze->pushSlots($__slots6b0011e2f83d04930b97e5f6feda22dd); ?>
-<?php _6b0011e2f83d04930b97e5f6feda22dd($__blaze, $__attrs6b0011e2f83d04930b97e5f6feda22dd, $__slots6b0011e2f83d04930b97e5f6feda22dd, [], [], $__this ?? (isset($this) ? $this : null)); ?>
-<?php if (! empty($__slotsStack6b0011e2f83d04930b97e5f6feda22dd)) { $__slots6b0011e2f83d04930b97e5f6feda22dd = array_pop($__slotsStack6b0011e2f83d04930b97e5f6feda22dd); } ?>
-<?php if (! empty($__attrsStack6b0011e2f83d04930b97e5f6feda22dd)) { $__attrs6b0011e2f83d04930b97e5f6feda22dd = array_pop($__attrsStack6b0011e2f83d04930b97e5f6feda22dd); } ?>
+                                                <?php $__slots7477cdf3e599b95879e647f1be0a7b24['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slots7477cdf3e599b95879e647f1be0a7b24); ?>
+<?php _7477cdf3e599b95879e647f1be0a7b24($__blaze, $__data7477cdf3e599b95879e647f1be0a7b24, ['color' => $__data7477cdf3e599b95879e647f1be0a7b24['color'], 'size' => 'sm'], $__slots7477cdf3e599b95879e647f1be0a7b24, $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStack7477cdf3e599b95879e647f1be0a7b24)) { $__slots7477cdf3e599b95879e647f1be0a7b24 = array_pop($__slotsStack7477cdf3e599b95879e647f1be0a7b24); } ?>
+<?php if (! empty($__dataStack7477cdf3e599b95879e647f1be0a7b24)) { $__data7477cdf3e599b95879e647f1be0a7b24 = array_pop($__dataStack7477cdf3e599b95879e647f1be0a7b24); } ?>
 <?php $__blaze->popData(); ?>
                                             </div>
                                         <?php else: ?>
@@ -142,20 +146,20 @@
                                         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </td>
                                     <td class="px-4 py-3">
-                                        <?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/badge/index.blade.php', $__blaze->compiledPath.'/6b0011e2f83d04930b97e5f6feda22dd.php'); ?>
-<?php if (isset($__slots6b0011e2f83d04930b97e5f6feda22dd)) { $__slotsStack6b0011e2f83d04930b97e5f6feda22dd[] = $__slots6b0011e2f83d04930b97e5f6feda22dd; } ?>
-<?php if (isset($__attrs6b0011e2f83d04930b97e5f6feda22dd)) { $__attrsStack6b0011e2f83d04930b97e5f6feda22dd[] = $__attrs6b0011e2f83d04930b97e5f6feda22dd; } ?>
-<?php $__attrs6b0011e2f83d04930b97e5f6feda22dd = ['color' => e($submission->statusColor),'size' => 'sm']; ?>
-<?php $__slots6b0011e2f83d04930b97e5f6feda22dd = []; ?>
-<?php $__blaze->pushData($__attrs6b0011e2f83d04930b97e5f6feda22dd); ?>
+                                        <?php if (!function_exists('_7477cdf3e599b95879e647f1be0a7b24')) { require $__blaze->compile('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/badge/index.blade.php'); } ?>
+<?php if (isset($__slots7477cdf3e599b95879e647f1be0a7b24)) { $__slotsStack7477cdf3e599b95879e647f1be0a7b24[] = $__slots7477cdf3e599b95879e647f1be0a7b24; } ?>
+<?php if (isset($__data7477cdf3e599b95879e647f1be0a7b24)) { $__dataStack7477cdf3e599b95879e647f1be0a7b24[] = $__data7477cdf3e599b95879e647f1be0a7b24; } ?>
+<?php $__data7477cdf3e599b95879e647f1be0a7b24 = ['color' => e($submission->statusColor),'size' => 'sm']; ?>
+<?php $__slots7477cdf3e599b95879e647f1be0a7b24 = []; ?>
+<?php $__blaze->pushData($__data7477cdf3e599b95879e647f1be0a7b24); ?>
 <?php ob_start(); ?>
                                             <?php echo e($submission->status); ?>
 
-                                        <?php $__slots6b0011e2f83d04930b97e5f6feda22dd['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
-<?php $__blaze->pushSlots($__slots6b0011e2f83d04930b97e5f6feda22dd); ?>
-<?php _6b0011e2f83d04930b97e5f6feda22dd($__blaze, $__attrs6b0011e2f83d04930b97e5f6feda22dd, $__slots6b0011e2f83d04930b97e5f6feda22dd, [], [], $__this ?? (isset($this) ? $this : null)); ?>
-<?php if (! empty($__slotsStack6b0011e2f83d04930b97e5f6feda22dd)) { $__slots6b0011e2f83d04930b97e5f6feda22dd = array_pop($__slotsStack6b0011e2f83d04930b97e5f6feda22dd); } ?>
-<?php if (! empty($__attrsStack6b0011e2f83d04930b97e5f6feda22dd)) { $__attrs6b0011e2f83d04930b97e5f6feda22dd = array_pop($__attrsStack6b0011e2f83d04930b97e5f6feda22dd); } ?>
+                                        <?php $__slots7477cdf3e599b95879e647f1be0a7b24['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slots7477cdf3e599b95879e647f1be0a7b24); ?>
+<?php _7477cdf3e599b95879e647f1be0a7b24($__blaze, $__data7477cdf3e599b95879e647f1be0a7b24, ['color' => $__data7477cdf3e599b95879e647f1be0a7b24['color'], 'size' => 'sm'], $__slots7477cdf3e599b95879e647f1be0a7b24, $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStack7477cdf3e599b95879e647f1be0a7b24)) { $__slots7477cdf3e599b95879e647f1be0a7b24 = array_pop($__slotsStack7477cdf3e599b95879e647f1be0a7b24); } ?>
+<?php if (! empty($__dataStack7477cdf3e599b95879e647f1be0a7b24)) { $__data7477cdf3e599b95879e647f1be0a7b24 = array_pop($__dataStack7477cdf3e599b95879e647f1be0a7b24); } ?>
 <?php $__blaze->popData(); ?>
                                     </td>
                                     <td class="px-4 py-3">
@@ -208,7 +212,7 @@
 <?php echo ltrim(ob_get_clean()); ?>
                     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                 </div>
-                <?php ob_start(); ?><a href="/dcc/submissions?distributed=Waiting+Distribute" data-flux-button="data-flux-button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-10 text-sm rounded-lg ps-3 pe-4 inline-flex  bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white">
+                <?php ob_start(); ?><a href="/dcc/submissions?distributed=Waiting+Distribute" data-flux-button="data-flux-button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-10 text-sm rounded-lg gap-2 ps-3 pe-4 inline-flex  bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white">
         <svg class="shrink-0 [:where(&amp;)]:size-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
   <path fill-rule="evenodd" d="M2 8a.75.75 0 0 1 .75-.75h8.69L8.22 4.03a.75.75 0 0 1 1.06-1.06l4.5 4.5a.75.75 0 0 1 0 1.06l-4.5 4.5a.75.75 0 0 1-1.06-1.06l3.22-3.22H2.75A.75.75 0 0 1 2 8Z" clip-rule="evenodd"/>
 </svg>
@@ -223,7 +227,10 @@
 <?php echo ltrim(ob_get_clean()); ?>
             </div>
 
-            <?php ob_start(); ?><div class="[:where(&amp;)]:bg-white dark:[:where(&amp;)]:bg-white/10 border border-zinc-200 dark:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl p-6 h-full shadow-lg hover:shadow-xl transition-shadow duration-300" data-flux-card>
+            <?php ob_start(); ?><div
+    class="border bg-clip-padding dark:bg-clip-border [:where(&amp;)]:border-zinc-900/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:shadow-xs dark:[:where(&amp;)]:shadow-none relative after:pointer-events-none after:absolute after:inset-0 after:rounded-[calc(var(--flux-card-radius)-1px)] after:inset-ring [:where(&amp;)]:after:inset-ring-white/25 dark:after:hidden after:[mask-image:linear-gradient(to_bottom,black,transparent)] [:where(&amp;)]:bg-white dark:[:where(&amp;)]:bg-white/10 p-6 h-full shadow-lg hover:shadow-xl transition-shadow duration-300" data-flux-card-body-variant="seamless" data-flux-card-variant="default"
+    data-flux-card
+>
     <?php ob_start(); ?>
                 <div class="overflow-x-auto">
                     <table class="w-full">
@@ -283,20 +290,20 @@
                                         <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($submission->due_date): ?>
                                             <div class="space-y-1">
                                                 <div class="text-sm"><?php echo e($submission->due_date->format('Y-m-d')); ?></div>
-                                                <?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/badge/index.blade.php', $__blaze->compiledPath.'/6b0011e2f83d04930b97e5f6feda22dd.php'); ?>
-<?php if (isset($__slots6b0011e2f83d04930b97e5f6feda22dd)) { $__slotsStack6b0011e2f83d04930b97e5f6feda22dd[] = $__slots6b0011e2f83d04930b97e5f6feda22dd; } ?>
-<?php if (isset($__attrs6b0011e2f83d04930b97e5f6feda22dd)) { $__attrsStack6b0011e2f83d04930b97e5f6feda22dd[] = $__attrs6b0011e2f83d04930b97e5f6feda22dd; } ?>
-<?php $__attrs6b0011e2f83d04930b97e5f6feda22dd = ['color' => e($badgeColor),'size' => 'sm']; ?>
-<?php $__slots6b0011e2f83d04930b97e5f6feda22dd = []; ?>
-<?php $__blaze->pushData($__attrs6b0011e2f83d04930b97e5f6feda22dd); ?>
+                                                <?php if (!function_exists('_7477cdf3e599b95879e647f1be0a7b24')) { require $__blaze->compile('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/badge/index.blade.php'); } ?>
+<?php if (isset($__slots7477cdf3e599b95879e647f1be0a7b24)) { $__slotsStack7477cdf3e599b95879e647f1be0a7b24[] = $__slots7477cdf3e599b95879e647f1be0a7b24; } ?>
+<?php if (isset($__data7477cdf3e599b95879e647f1be0a7b24)) { $__dataStack7477cdf3e599b95879e647f1be0a7b24[] = $__data7477cdf3e599b95879e647f1be0a7b24; } ?>
+<?php $__data7477cdf3e599b95879e647f1be0a7b24 = ['color' => e($badgeColor),'size' => 'sm']; ?>
+<?php $__slots7477cdf3e599b95879e647f1be0a7b24 = []; ?>
+<?php $__blaze->pushData($__data7477cdf3e599b95879e647f1be0a7b24); ?>
 <?php ob_start(); ?>
                                                     <?php echo e($dueDateLabel['label']); ?>
 
-                                                <?php $__slots6b0011e2f83d04930b97e5f6feda22dd['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
-<?php $__blaze->pushSlots($__slots6b0011e2f83d04930b97e5f6feda22dd); ?>
-<?php _6b0011e2f83d04930b97e5f6feda22dd($__blaze, $__attrs6b0011e2f83d04930b97e5f6feda22dd, $__slots6b0011e2f83d04930b97e5f6feda22dd, [], [], $__this ?? (isset($this) ? $this : null)); ?>
-<?php if (! empty($__slotsStack6b0011e2f83d04930b97e5f6feda22dd)) { $__slots6b0011e2f83d04930b97e5f6feda22dd = array_pop($__slotsStack6b0011e2f83d04930b97e5f6feda22dd); } ?>
-<?php if (! empty($__attrsStack6b0011e2f83d04930b97e5f6feda22dd)) { $__attrs6b0011e2f83d04930b97e5f6feda22dd = array_pop($__attrsStack6b0011e2f83d04930b97e5f6feda22dd); } ?>
+                                                <?php $__slots7477cdf3e599b95879e647f1be0a7b24['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slots7477cdf3e599b95879e647f1be0a7b24); ?>
+<?php _7477cdf3e599b95879e647f1be0a7b24($__blaze, $__data7477cdf3e599b95879e647f1be0a7b24, ['color' => $__data7477cdf3e599b95879e647f1be0a7b24['color'], 'size' => 'sm'], $__slots7477cdf3e599b95879e647f1be0a7b24, $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStack7477cdf3e599b95879e647f1be0a7b24)) { $__slots7477cdf3e599b95879e647f1be0a7b24 = array_pop($__slotsStack7477cdf3e599b95879e647f1be0a7b24); } ?>
+<?php if (! empty($__dataStack7477cdf3e599b95879e647f1be0a7b24)) { $__data7477cdf3e599b95879e647f1be0a7b24 = array_pop($__dataStack7477cdf3e599b95879e647f1be0a7b24); } ?>
 <?php $__blaze->popData(); ?>
                                             </div>
                                         <?php else: ?>
@@ -304,20 +311,20 @@
                                         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </td>
                                     <td class="px-4 py-3">
-                                        <?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/badge/index.blade.php', $__blaze->compiledPath.'/6b0011e2f83d04930b97e5f6feda22dd.php'); ?>
-<?php if (isset($__slots6b0011e2f83d04930b97e5f6feda22dd)) { $__slotsStack6b0011e2f83d04930b97e5f6feda22dd[] = $__slots6b0011e2f83d04930b97e5f6feda22dd; } ?>
-<?php if (isset($__attrs6b0011e2f83d04930b97e5f6feda22dd)) { $__attrsStack6b0011e2f83d04930b97e5f6feda22dd[] = $__attrs6b0011e2f83d04930b97e5f6feda22dd; } ?>
-<?php $__attrs6b0011e2f83d04930b97e5f6feda22dd = ['color' => e($submission->statusColor),'size' => 'sm']; ?>
-<?php $__slots6b0011e2f83d04930b97e5f6feda22dd = []; ?>
-<?php $__blaze->pushData($__attrs6b0011e2f83d04930b97e5f6feda22dd); ?>
+                                        <?php if (!function_exists('_7477cdf3e599b95879e647f1be0a7b24')) { require $__blaze->compile('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/badge/index.blade.php'); } ?>
+<?php if (isset($__slots7477cdf3e599b95879e647f1be0a7b24)) { $__slotsStack7477cdf3e599b95879e647f1be0a7b24[] = $__slots7477cdf3e599b95879e647f1be0a7b24; } ?>
+<?php if (isset($__data7477cdf3e599b95879e647f1be0a7b24)) { $__dataStack7477cdf3e599b95879e647f1be0a7b24[] = $__data7477cdf3e599b95879e647f1be0a7b24; } ?>
+<?php $__data7477cdf3e599b95879e647f1be0a7b24 = ['color' => e($submission->statusColor),'size' => 'sm']; ?>
+<?php $__slots7477cdf3e599b95879e647f1be0a7b24 = []; ?>
+<?php $__blaze->pushData($__data7477cdf3e599b95879e647f1be0a7b24); ?>
 <?php ob_start(); ?>
                                             <?php echo e($submission->status); ?>
 
-                                        <?php $__slots6b0011e2f83d04930b97e5f6feda22dd['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
-<?php $__blaze->pushSlots($__slots6b0011e2f83d04930b97e5f6feda22dd); ?>
-<?php _6b0011e2f83d04930b97e5f6feda22dd($__blaze, $__attrs6b0011e2f83d04930b97e5f6feda22dd, $__slots6b0011e2f83d04930b97e5f6feda22dd, [], [], $__this ?? (isset($this) ? $this : null)); ?>
-<?php if (! empty($__slotsStack6b0011e2f83d04930b97e5f6feda22dd)) { $__slots6b0011e2f83d04930b97e5f6feda22dd = array_pop($__slotsStack6b0011e2f83d04930b97e5f6feda22dd); } ?>
-<?php if (! empty($__attrsStack6b0011e2f83d04930b97e5f6feda22dd)) { $__attrs6b0011e2f83d04930b97e5f6feda22dd = array_pop($__attrsStack6b0011e2f83d04930b97e5f6feda22dd); } ?>
+                                        <?php $__slots7477cdf3e599b95879e647f1be0a7b24['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slots7477cdf3e599b95879e647f1be0a7b24); ?>
+<?php _7477cdf3e599b95879e647f1be0a7b24($__blaze, $__data7477cdf3e599b95879e647f1be0a7b24, ['color' => $__data7477cdf3e599b95879e647f1be0a7b24['color'], 'size' => 'sm'], $__slots7477cdf3e599b95879e647f1be0a7b24, $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStack7477cdf3e599b95879e647f1be0a7b24)) { $__slots7477cdf3e599b95879e647f1be0a7b24 = array_pop($__slotsStack7477cdf3e599b95879e647f1be0a7b24); } ?>
+<?php if (! empty($__dataStack7477cdf3e599b95879e647f1be0a7b24)) { $__data7477cdf3e599b95879e647f1be0a7b24 = array_pop($__dataStack7477cdf3e599b95879e647f1be0a7b24); } ?>
 <?php $__blaze->popData(); ?>
                                     </td>
                                     <td class="px-4 py-3">
@@ -370,7 +377,7 @@
 <?php echo ltrim(ob_get_clean()); ?>
                     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                 </div>
-                <?php ob_start(); ?><a href="/ticket/list?pic_approval=Waiting+Approval" data-flux-button="data-flux-button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-10 text-sm rounded-lg ps-3 pe-4 inline-flex  bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white">
+                <?php ob_start(); ?><a href="/ticket/list?pic_approval=Waiting+Approval" data-flux-button="data-flux-button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-10 text-sm rounded-lg gap-2 ps-3 pe-4 inline-flex  bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white">
         <svg class="shrink-0 [:where(&amp;)]:size-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
   <path fill-rule="evenodd" d="M2 8a.75.75 0 0 1 .75-.75h8.69L8.22 4.03a.75.75 0 0 1 1.06-1.06l4.5 4.5a.75.75 0 0 1 0 1.06l-4.5 4.5a.75.75 0 0 1-1.06-1.06l3.22-3.22H2.75A.75.75 0 0 1 2 8Z" clip-rule="evenodd"/>
 </svg>
@@ -385,7 +392,10 @@
 <?php echo ltrim(ob_get_clean()); ?>
             </div>
 
-            <?php ob_start(); ?><div class="[:where(&amp;)]:bg-white dark:[:where(&amp;)]:bg-white/10 border border-zinc-200 dark:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl p-6 h-full shadow-lg hover:shadow-xl transition-shadow duration-300" data-flux-card>
+            <?php ob_start(); ?><div
+    class="border bg-clip-padding dark:bg-clip-border [:where(&amp;)]:border-zinc-900/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:shadow-xs dark:[:where(&amp;)]:shadow-none relative after:pointer-events-none after:absolute after:inset-0 after:rounded-[calc(var(--flux-card-radius)-1px)] after:inset-ring [:where(&amp;)]:after:inset-ring-white/25 dark:after:hidden after:[mask-image:linear-gradient(to_bottom,black,transparent)] [:where(&amp;)]:bg-white dark:[:where(&amp;)]:bg-white/10 p-6 h-full shadow-lg hover:shadow-xl transition-shadow duration-300" data-flux-card-body-variant="seamless" data-flux-card-variant="default"
+    data-flux-card
+>
     <?php ob_start(); ?>
                 <div class="overflow-x-auto">
                     <table class="w-full min-w-max">
@@ -565,7 +575,7 @@
 <?php echo ltrim(ob_get_clean()); ?>
                     <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                 </div>
-                <?php ob_start(); ?><a href="/ticket/list?user_approval=Waiting+Approval" data-flux-button="data-flux-button" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-10 text-sm rounded-lg ps-3 pe-4 inline-flex  bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white">
+                <?php ob_start(); ?><a href="/ticket/list?user_approval=Waiting+Approval" data-flux-button="data-flux-button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-10 text-sm rounded-lg gap-2 ps-3 pe-4 inline-flex  bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white">
         <svg class="shrink-0 [:where(&amp;)]:size-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
   <path fill-rule="evenodd" d="M2 8a.75.75 0 0 1 .75-.75h8.69L8.22 4.03a.75.75 0 0 1 1.06-1.06l4.5 4.5a.75.75 0 0 1 0 1.06l-4.5 4.5a.75.75 0 0 1-1.06-1.06l3.22-3.22H2.75A.75.75 0 0 1 2 8Z" clip-rule="evenodd"/>
 </svg>
@@ -580,7 +590,10 @@
 <?php echo ltrim(ob_get_clean()); ?>
             </div>
 
-            <?php ob_start(); ?><div class="[:where(&amp;)]:bg-white dark:[:where(&amp;)]:bg-white/10 border border-zinc-200 dark:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl p-6 h-full shadow-lg hover:shadow-xl transition-shadow duration-300" data-flux-card>
+            <?php ob_start(); ?><div
+    class="border bg-clip-padding dark:bg-clip-border [:where(&amp;)]:border-zinc-900/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:shadow-xs dark:[:where(&amp;)]:shadow-none relative after:pointer-events-none after:absolute after:inset-0 after:rounded-[calc(var(--flux-card-radius)-1px)] after:inset-ring [:where(&amp;)]:after:inset-ring-white/25 dark:after:hidden after:[mask-image:linear-gradient(to_bottom,black,transparent)] [:where(&amp;)]:bg-white dark:[:where(&amp;)]:bg-white/10 p-6 h-full shadow-lg hover:shadow-xl transition-shadow duration-300" data-flux-card-body-variant="seamless" data-flux-card-variant="default"
+    data-flux-card
+>
     <?php ob_start(); ?>
                 <div class="overflow-x-auto">
                     <table class="w-full min-w-max">

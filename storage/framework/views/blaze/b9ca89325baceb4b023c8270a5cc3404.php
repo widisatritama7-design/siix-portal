@@ -1,13 +1,14 @@
+<?php # [BlazeVersion]:{v3} ?>
 <?php
-if (!function_exists('__b9ca89325baceb4b023c8270a5cc3404')):
-function __b9ca89325baceb4b023c8270a5cc3404($__blaze, $__data = [], $__slots = [], $__bound = [], $__keys = [], $__this = null) {
+if (!function_exists('__89a20a20b3c2f9edfc78148bcbc85509')):
+function __89a20a20b3c2f9edfc78148bcbc85509($__blaze, $__data = [], $__attributes = [], $__slots = [], $__this = null) {
 $__env = $__blaze->env;
 
 if (($__data['attributes'] ?? null) instanceof \Illuminate\View\ComponentAttributeBag) { $__data = $__data + $__data['attributes']->all(); unset($__data['attributes']); }
 extract($__slots, EXTR_SKIP); unset($__slots);
 extract($__data, EXTR_SKIP);
-$attributes = \Livewire\Blaze\Runtime\BlazeAttributeBag::make($__data, $__bound, $__keys);
-unset($__data, $__bound, $__keys);
+$attributes = new \Livewire\Blaze\Runtime\BlazeAttributeBag($__attributes);
+unset($__data, $__attributes);
 ob_start();
 ?>
 

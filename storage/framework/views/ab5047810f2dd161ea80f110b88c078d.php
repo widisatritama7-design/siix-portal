@@ -1,3 +1,4 @@
+<?php # [BlazeVersion]:{v3} ?>
 <!DOCTYPE html>
 <html lang="en">
     <head>

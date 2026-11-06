@@ -1,13 +1,14 @@
+<?php # [BlazeVersion]:{v3} ?>
 <?php
-if (!function_exists('__fad05d57e1e0bf8b6251725acbf0d97e')):
-function __fad05d57e1e0bf8b6251725acbf0d97e($__blaze, $__data = [], $__slots = [], $__bound = [], $__keys = [], $__this = null) {
+if (!function_exists('__19e9f12f8a300195bcfcda1eb1bbca00')):
+function __19e9f12f8a300195bcfcda1eb1bbca00($__blaze, $__data = [], $__attributes = [], $__slots = [], $__this = null) {
 $__env = $__blaze->env;
 $__slots['slot'] ??= new \Illuminate\View\ComponentSlot('');
 if (($__data['attributes'] ?? null) instanceof \Illuminate\View\ComponentAttributeBag) { $__data = $__data + $__data['attributes']->all(); unset($__data['attributes']); }
 extract($__slots, EXTR_SKIP); unset($__slots);
 extract($__data, EXTR_SKIP);
-$attributes = \Livewire\Blaze\Runtime\BlazeAttributeBag::make($__data, $__bound, $__keys);
-unset($__data, $__bound, $__keys);
+$attributes = new \Livewire\Blaze\Runtime\BlazeAttributeBag($__attributes);
+unset($__data, $__attributes);
 ob_start();
 ?>
 
@@ -52,7 +53,7 @@ unset($__defaults);
 $iconLeading = $icon ??= $iconLeading;
 
 // Button should be a square if it has no text contents...
-$square ??= $slot->isEmpty();
+$square ??= $slot->isEmpty() && ! ($iconLeading && $iconTrailing);
 
 // Size-up icons in square/icon-only buttons... (xs buttons just get micro size/style...)
 $iconVariant ??= ($size === 'xs')
@@ -89,56 +90,83 @@ if ($loading && $type !== 'submit' && ! $isJsMethod) {
     }
 }
 
+$isColored = $color
+    && in_array($variant, ['filled', 'outline', 'ghost', 'subtle'], true)
+    && ! in_array($color, ['slate', 'gray', 'zinc', 'neutral', 'stone', 'mauve', 'olive', 'mist', 'taupe'], true);
+
 $classes = Flux::classes()
-    ->add('relative items-center font-medium justify-center gap-2 whitespace-nowrap')
-    ->add('disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none')
+    ->add('relative items-center font-medium justify-center whitespace-nowrap')
+    ->add('disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none')
     ->add(match ($align) {
         'start' => 'justify-start',
         'center' => 'justify-center',
         'end' => 'justify-end',
     })
     ->add(match ($size) { // Size...
-        'base' => 'h-10 text-sm rounded-lg' . ' ' . (
+        'base' => 'h-10 text-sm rounded-lg gap-2' . ' ' . (
             $square
                 ? 'w-10'
                 // If we have an icon, we want to reduce the padding on the side that has the icon...
                 : ($iconLeading && $iconLeading !== '' ? 'ps-3' : 'ps-4') . ' ' . ($iconTrailing && $iconTrailing !== '' ? 'pe-3' : 'pe-4')
         ),
-        'sm' => 'h-8 text-sm rounded-md' . ' ' . ($square ? 'w-8' : 'px-3'),
-        'xs' => 'h-6 text-xs rounded-md' . ' ' . ($square ? 'w-6' : 'px-2'),
+        'sm' => 'h-8 text-sm rounded-md gap-2' . ' ' . (
+            $square
+                ? 'w-8'
+                : ($iconLeading && $iconLeading !== '' ? 'ps-2' : 'ps-3') . ' ' . ($iconTrailing && $iconTrailing !== '' ? 'pe-2' : 'pe-3')
+        ),
+        'xs' => 'h-6 text-xs rounded-md gap-1' . ' ' . (
+            $square
+                ? 'w-6'
+                : ($iconLeading && $iconLeading !== '' ? 'ps-1' : 'ps-2') . ' ' . ($iconTrailing && $iconTrailing !== '' ? 'pe-1' : 'pe-2')
+        ),
     })
     ->add('inline-flex') // Buttons are inline by default but links are blocks, so inline-flex is needed here to ensure link-buttons are displayed the same as buttons...
     ->add($inset ? match ($size) { // Inset...
         'base' => $square
             ? Flux::applyInset($inset, top: '-mt-2.5', right: '-me-2.5', bottom: '-mb-2.5', left: '-ms-2.5')
-            : Flux::applyInset($inset, top: '-mt-2.5', right: '-me-4', bottom: '-mb-3', left: '-ms-4'),
+            : Flux::applyInset($inset, top: '-mt-2.5', right: ($iconTrailing && $iconTrailing !== '' ? '-me-3' : '-me-4'), bottom: '-mb-3', left: ($iconLeading && $iconLeading !== '' ? '-ms-3' : '-ms-4')),
         'sm' => $square
             ? Flux::applyInset($inset, top: '-mt-1.5', right: '-me-1.5', bottom: '-mb-1.5', left: '-ms-1.5')
-            : Flux::applyInset($inset, top: '-mt-1.5', right: '-me-3', bottom: '-mb-1.5', left: '-ms-3'),
+            : Flux::applyInset($inset, top: '-mt-1.5', right: ($iconTrailing && $iconTrailing !== '' ? '-me-2' : '-me-3'), bottom: '-mb-1.5', left: ($iconLeading && $iconLeading !== '' ? '-ms-2' : '-ms-3')),
         'xs' => $square
             ? Flux::applyInset($inset, top: '-mt-1', right: '-me-1', bottom: '-mb-1', left: '-ms-1')
-            : Flux::applyInset($inset, top: '-mt-1', right: '-me-2', bottom: '-mb-1', left: '-ms-2'),
+            : Flux::applyInset($inset, top: '-mt-1', right: ($iconTrailing && $iconTrailing !== '' ? '-me-1' : '-me-2'), bottom: '-mb-1', left: ($iconLeading && $iconLeading !== '' ? '-ms-1' : '-ms-2')),
     } : '')
-    ->add(match ($variant) { // Background color...
-        'primary' => 'bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)]',
-        'filled' => 'bg-zinc-800/5 hover:bg-zinc-800/10 dark:bg-white/10 dark:hover:bg-white/20',
-        'outline' => 'bg-white hover:bg-zinc-50 dark:bg-zinc-700 dark:hover:bg-zinc-600/75',
-        'danger' => 'bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-500',
-        'ghost' => 'bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15',
-        'subtle' => 'bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15',
+    ->add(match (true) { // Background color...
+        $isColored && $variant === 'filled' => 'bg-[color-mix(in_oklab,_var(--color-button-soft),_transparent_80%)] hover:bg-[color-mix(in_oklab,_var(--color-button-soft),_transparent_70%)] dark:bg-[color-mix(in_oklab,_var(--color-button-soft),_transparent_60%)] dark:hover:bg-[color-mix(in_oklab,_var(--color-button-soft),_transparent_50%)]',
+        $isColored && $variant === 'outline' => 'bg-white hover:bg-[color-mix(in_oklab,_var(--color-button-soft)_6%,_white)] dark:bg-zinc-700 dark:hover:bg-[color-mix(in_oklab,_var(--color-accent-content)_10%,_var(--color-zinc-700))]',
+        $isColored && $variant === 'ghost' => 'bg-transparent hover:bg-[color-mix(in_oklab,_var(--color-button-soft),_transparent_80%)] active:bg-[color-mix(in_oklab,_var(--color-button-soft),_transparent_70%)] dark:hover:bg-[color-mix(in_oklab,_var(--color-button-soft),_transparent_60%)] dark:active:bg-[color-mix(in_oklab,_var(--color-button-soft),_transparent_50%)]',
+        $isColored && $variant === 'subtle' => 'bg-transparent hover:bg-(--color-button-tint) dark:hover:bg-[color-mix(in_oklab,_var(--color-button-deep),_transparent_28%)]',
+        default => match ($variant) {
+            'primary' => 'bg-[var(--color-accent)] hover:bg-[color-mix(in_oklab,_var(--color-accent),_transparent_10%)]',
+            'filled' => 'bg-zinc-800/5 hover:bg-zinc-800/10 dark:bg-white/10 dark:hover:bg-white/20',
+            'outline' => 'bg-white hover:bg-zinc-50 dark:bg-zinc-700 dark:hover:bg-zinc-600/75',
+            'danger' => 'bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-500',
+            'ghost' => 'bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15',
+            'subtle' => 'bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15',
+        },
     })
-    ->add(match ($variant) { // Text color...
-        'primary' => 'text-[var(--color-accent-foreground)]',
-        'filled' => 'text-zinc-800 dark:text-white',
-        'outline' => 'text-zinc-800 dark:text-white',
-        'danger' => 'text-white',
-        'ghost' => 'text-zinc-800 dark:text-white',
-        'subtle' => 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white',
+    ->add(match (true) { // Text color...
+        $isColored && $variant === 'filled' => 'text-(--color-button-strong) dark:text-(--color-button-soft-foreground)',
+        $isColored && $variant === 'outline' => 'text-(--color-button-strong) dark:text-(--color-accent-content)',
+        $isColored && $variant === 'ghost' => 'text-(--color-button-strong) dark:text-(--color-button-muted)',
+        $isColored && $variant === 'subtle' => 'text-[color-mix(in_oklab,_var(--color-accent-content),_var(--color-zinc-500)_46%)] hover:text-(--color-button-strong) dark:text-[color-mix(in_oklab,_var(--color-button-muted),_var(--color-zinc-400)_48%)] dark:hover:text-(--color-button-muted)',
+        default => match ($variant) {
+            'primary' => 'text-[var(--color-accent-foreground)]',
+            'filled' => 'text-zinc-800 dark:text-white',
+            'outline' => 'text-zinc-800 dark:text-white',
+            'danger' => 'text-white',
+            'ghost' => 'text-zinc-800 dark:text-white',
+            'subtle' => 'text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white',
+        },
     })
-    ->add(match ($variant) { // Border color...
-        'primary' => 'border border-black/10 dark:border-0',
-        'outline' => 'border border-zinc-200 hover:border-zinc-200 border-b-zinc-300/80 dark:border-zinc-600 dark:hover:border-zinc-600',
-         default => '',
+    ->add(match (true) { // Border color...
+        $isColored && $variant === 'outline' => 'border border-[color-mix(in_oklab,_var(--color-button-border)_18%,_var(--color-zinc-200))] border-b-[color-mix(in_oklab,_color-mix(in_oklab,_var(--color-button-border)_26%,_var(--color-zinc-300))_80%,_transparent)] hover:border-[color-mix(in_oklab,_var(--color-button-border)_28%,_var(--color-zinc-200))] hover:border-b-[color-mix(in_oklab,_var(--color-button-border)_36%,_var(--color-zinc-200))] dark:border-[color-mix(in_oklab,_var(--color-accent-content)_22%,_var(--color-zinc-600))] dark:border-b-[color-mix(in_oklab,_var(--color-accent-content)_30%,_var(--color-zinc-600))] dark:hover:border-[color-mix(in_oklab,_var(--color-accent-content)_32%,_var(--color-zinc-600))] dark:hover:border-b-[color-mix(in_oklab,_var(--color-accent-content)_40%,_var(--color-zinc-600))]',
+        default => match ($variant) {
+            'primary' => 'border border-black/10 dark:border-0',
+            'outline' => 'border border-zinc-200 hover:border-zinc-200 disabled:border-zinc-200 border-b-zinc-300/80 dark:border-zinc-600 dark:hover:border-zinc-600 dark:disabled:border-zinc-600',
+            default => '',
+        },
     })
     ->add(match ($variant) { // Shadows...
         'primary' => 'shadow-[inset_0px_1px_--theme(--color-white/.2)]',
@@ -156,7 +184,7 @@ $classes = Flux::classes()
         'outline' => '[[data-flux-button-group]_&]:border-s-0 [:is([data-flux-button-group]>&:first-child,_[data-flux-button-group]_:first-child>&)]:border-s-[1px]',
         'filled' => '[[data-flux-button-group]_&]:border-e [:is([data-flux-button-group]>&:last-child,_[data-flux-button-group]_:last-child>&)]:border-e-0 [[data-flux-button-group]_&]:border-zinc-200/80 dark:[[data-flux-button-group]_&]:border-zinc-900/50',
         'danger' => '[[data-flux-button-group]_&]:border-e [:is([data-flux-button-group]>&:last-child,_[data-flux-button-group]_:last-child>&)]:border-e-0 [[data-flux-button-group]_&]:border-red-600 dark:[[data-flux-button-group]_&]:border-red-900/25',
-        'primary' => '[[data-flux-button-group]_&]:border-e-0 [:is([data-flux-button-group]>&:last-child,_[data-flux-button-group]_:last-child>&)]:border-e-[1px] dark:[:is([data-flux-button-group]>&:last-child,_[data-flux-button-group]_:last-child>&)]:border-e-0 dark:[:is([data-flux-button-group]>&:last-child,_[data-flux-button-group]_:last-child>&)]:border-s-[1px] [:is([data-flux-button-group]>&:not(:first-child),_[data-flux-button-group]_:not(:first-child)>&)]:border-s-[color-mix(in_srgb,var(--color-accent-foreground),transparent_85%)]',
+        'primary' => '[[data-flux-button-group]_&]:border-e-0 [:is([data-flux-button-group]>&:last-child,_[data-flux-button-group]_:last-child>&)]:border-e-[1px] dark:[:is([data-flux-button-group]>&:last-child,_[data-flux-button-group]_:last-child>&)]:border-e-0 [:is([data-flux-button-group]>&:not(:first-child),_[data-flux-button-group]_:not(:first-child)>&)]:border-s-[1px]! [:is([data-flux-button-group]>&:not(:first-child),_[data-flux-button-group]_:not(:first-child)>&)]:border-s-[color-mix(in_srgb,var(--color-accent-foreground),transparent_85%)]',
     })
     ->add($loading ? [ // Loading states...
         '*:transition-opacity',
@@ -164,7 +192,7 @@ $classes = Flux::classes()
         $type === 'submit' ? '[&[disabled]>[data-flux-loading-indicator]]:opacity-100' : '[&[data-loading]>[data-flux-loading-indicator]]:opacity-100 [&[data-flux-loading]>[data-flux-loading-indicator]]:opacity-100',
         $type === 'submit' ? '[&[disabled]]:pointer-events-none' : 'data-loading:pointer-events-none data-flux-loading:pointer-events-none',
     ] : [])
-    ->add($variant === 'primary' ? match ($color) {
+    ->add(($variant === 'primary' || $isColored) ? match ($color) {
         'slate' => '[--color-accent:var(--color-slate-800)] [--color-accent-content:var(--color-slate-800)] [--color-accent-foreground:var(--color-white)] dark:[--color-accent:var(--color-white)] dark:[--color-accent-content:var(--color-white)] dark:[--color-accent-foreground:var(--color-slate-800)]',
         'gray' => '[--color-accent:var(--color-gray-800)] [--color-accent-content:var(--color-gray-800)] [--color-accent-foreground:var(--color-white)] dark:[--color-accent:var(--color-white)] dark:[--color-accent-content:var(--color-white)] dark:[--color-accent-foreground:var(--color-gray-800)]',
         'zinc' => '[--color-accent:var(--color-zinc-800)] [--color-accent-content:var(--color-zinc-800)] [--color-accent-foreground:var(--color-white)] dark:[--color-accent:var(--color-white)] dark:[--color-accent-content:var(--color-white)] dark:[--color-accent-foreground:var(--color-zinc-800)]',
@@ -193,6 +221,26 @@ $classes = Flux::classes()
         'rose' => '[--color-accent:var(--color-rose-500)] [--color-accent-content:var(--color-rose-500)] [--color-accent-foreground:var(--color-white)] dark:[--color-accent:var(--color-rose-500)] dark:[--color-accent-content:var(--color-rose-400)] dark:[--color-accent-foreground:var(--color-white)]',
         default => '',
     } : '')
+    ->add($isColored ? match ($color) {
+        'red' => '[--color-button-tint:var(--color-red-50)] [--color-button-soft-foreground:var(--color-red-200)] [--color-button-muted:var(--color-red-300)] [--color-button-soft:var(--color-red-400)] [--color-button-border:var(--color-red-500)] [--color-button-strong:var(--color-red-700)] [--color-button-deep:var(--color-red-950)]',
+        'orange' => '[--color-button-tint:var(--color-orange-50)] [--color-button-soft-foreground:var(--color-orange-200)] [--color-button-muted:var(--color-orange-300)] [--color-button-soft:var(--color-orange-400)] [--color-button-border:var(--color-orange-500)] [--color-button-strong:var(--color-orange-700)] [--color-button-deep:var(--color-orange-950)]',
+        'amber' => '[--color-button-tint:var(--color-amber-50)] [--color-button-soft-foreground:var(--color-amber-200)] [--color-button-muted:var(--color-amber-300)] [--color-button-soft:var(--color-amber-400)] [--color-button-border:var(--color-amber-500)] [--color-button-strong:var(--color-amber-700)] [--color-button-deep:var(--color-amber-950)]',
+        'yellow' => '[--color-button-tint:var(--color-yellow-50)] [--color-button-soft-foreground:var(--color-yellow-200)] [--color-button-muted:var(--color-yellow-300)] [--color-button-soft:var(--color-yellow-400)] [--color-button-border:var(--color-yellow-500)] [--color-button-strong:var(--color-yellow-700)] [--color-button-deep:var(--color-yellow-950)]',
+        'lime' => '[--color-button-tint:var(--color-lime-50)] [--color-button-soft-foreground:var(--color-lime-200)] [--color-button-muted:var(--color-lime-300)] [--color-button-soft:var(--color-lime-400)] [--color-button-border:var(--color-lime-500)] [--color-button-strong:var(--color-lime-700)] [--color-button-deep:var(--color-lime-950)]',
+        'green' => '[--color-button-tint:var(--color-green-50)] [--color-button-soft-foreground:var(--color-green-200)] [--color-button-muted:var(--color-green-300)] [--color-button-soft:var(--color-green-400)] [--color-button-border:var(--color-green-500)] [--color-button-strong:var(--color-green-700)] [--color-button-deep:var(--color-green-950)]',
+        'emerald' => '[--color-button-tint:var(--color-emerald-50)] [--color-button-soft-foreground:var(--color-emerald-200)] [--color-button-muted:var(--color-emerald-300)] [--color-button-soft:var(--color-emerald-400)] [--color-button-border:var(--color-emerald-500)] [--color-button-strong:var(--color-emerald-700)] [--color-button-deep:var(--color-emerald-950)]',
+        'teal' => '[--color-button-tint:var(--color-teal-50)] [--color-button-soft-foreground:var(--color-teal-200)] [--color-button-muted:var(--color-teal-300)] [--color-button-soft:var(--color-teal-400)] [--color-button-border:var(--color-teal-500)] [--color-button-strong:var(--color-teal-700)] [--color-button-deep:var(--color-teal-950)]',
+        'cyan' => '[--color-button-tint:var(--color-cyan-50)] [--color-button-soft-foreground:var(--color-cyan-200)] [--color-button-muted:var(--color-cyan-300)] [--color-button-soft:var(--color-cyan-400)] [--color-button-border:var(--color-cyan-500)] [--color-button-strong:var(--color-cyan-700)] [--color-button-deep:var(--color-cyan-950)]',
+        'sky' => '[--color-button-tint:var(--color-sky-50)] [--color-button-soft-foreground:var(--color-sky-200)] [--color-button-muted:var(--color-sky-300)] [--color-button-soft:var(--color-sky-400)] [--color-button-border:var(--color-sky-500)] [--color-button-strong:var(--color-sky-700)] [--color-button-deep:var(--color-sky-950)]',
+        'blue' => '[--color-button-tint:var(--color-blue-50)] [--color-button-soft-foreground:var(--color-blue-200)] [--color-button-muted:var(--color-blue-300)] [--color-button-soft:var(--color-blue-400)] [--color-button-border:var(--color-blue-500)] [--color-button-strong:var(--color-blue-700)] [--color-button-deep:var(--color-blue-950)]',
+        'indigo' => '[--color-button-tint:var(--color-indigo-50)] [--color-button-soft-foreground:var(--color-indigo-200)] [--color-button-muted:var(--color-indigo-300)] [--color-button-soft:var(--color-indigo-400)] [--color-button-border:var(--color-indigo-500)] [--color-button-strong:var(--color-indigo-700)] [--color-button-deep:var(--color-indigo-950)]',
+        'violet' => '[--color-button-tint:var(--color-violet-50)] [--color-button-soft-foreground:var(--color-violet-200)] [--color-button-muted:var(--color-violet-300)] [--color-button-soft:var(--color-violet-400)] [--color-button-border:var(--color-violet-500)] [--color-button-strong:var(--color-violet-700)] [--color-button-deep:var(--color-violet-950)]',
+        'purple' => '[--color-button-tint:var(--color-purple-50)] [--color-button-soft-foreground:var(--color-purple-200)] [--color-button-muted:var(--color-purple-300)] [--color-button-soft:var(--color-purple-400)] [--color-button-border:var(--color-purple-500)] [--color-button-strong:var(--color-purple-700)] [--color-button-deep:var(--color-purple-950)]',
+        'fuchsia' => '[--color-button-tint:var(--color-fuchsia-50)] [--color-button-soft-foreground:var(--color-fuchsia-200)] [--color-button-muted:var(--color-fuchsia-300)] [--color-button-soft:var(--color-fuchsia-400)] [--color-button-border:var(--color-fuchsia-500)] [--color-button-strong:var(--color-fuchsia-700)] [--color-button-deep:var(--color-fuchsia-950)]',
+        'pink' => '[--color-button-tint:var(--color-pink-50)] [--color-button-soft-foreground:var(--color-pink-200)] [--color-button-muted:var(--color-pink-300)] [--color-button-soft:var(--color-pink-400)] [--color-button-border:var(--color-pink-500)] [--color-button-strong:var(--color-pink-700)] [--color-button-deep:var(--color-pink-950)]',
+        'rose' => '[--color-button-tint:var(--color-rose-50)] [--color-button-soft-foreground:var(--color-rose-200)] [--color-button-muted:var(--color-rose-300)] [--color-button-soft:var(--color-rose-400)] [--color-button-border:var(--color-rose-500)] [--color-button-strong:var(--color-rose-700)] [--color-button-deep:var(--color-rose-950)]',
+        default => '',
+    } : '')
     ;
 
     // Exempt subtle and ghost buttons from receiving border roundness overrides from button.group...
@@ -201,33 +249,35 @@ $classes = Flux::classes()
     ]);
 ?>
 
-<?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/with-tooltip.blade.php', $__blaze->compiledPath.'/61bc94f66e133c8c88763f97d4c55076.php'); ?>
-<?php if (isset($__slots61bc94f66e133c8c88763f97d4c55076)) { $__slotsStack61bc94f66e133c8c88763f97d4c55076[] = $__slots61bc94f66e133c8c88763f97d4c55076; } ?>
-<?php if (isset($__attrs61bc94f66e133c8c88763f97d4c55076)) { $__attrsStack61bc94f66e133c8c88763f97d4c55076[] = $__attrs61bc94f66e133c8c88763f97d4c55076; } ?>
-<?php $__attrs61bc94f66e133c8c88763f97d4c55076 = ['attributes' => $attributes]; ?>
-<?php $__slots61bc94f66e133c8c88763f97d4c55076 = []; ?>
-<?php $__blaze->pushData($__attrs61bc94f66e133c8c88763f97d4c55076); ?>
+<?php if (!function_exists('__dcaa7d49c97f4816e18375c175bec83a')) { require $__blaze->compile('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/with-tooltip.blade.php'); } ?>
+<?php if (isset($__slotsdcaa7d49c97f4816e18375c175bec83a)) { $__slotsStackdcaa7d49c97f4816e18375c175bec83a[] = $__slotsdcaa7d49c97f4816e18375c175bec83a; } ?>
+<?php if (isset($__datadcaa7d49c97f4816e18375c175bec83a)) { $__dataStackdcaa7d49c97f4816e18375c175bec83a[] = $__datadcaa7d49c97f4816e18375c175bec83a; } ?>
+<?php $__datadcaa7d49c97f4816e18375c175bec83a = ['attributes' => $attributes]; ?>
+<?php $__slotsdcaa7d49c97f4816e18375c175bec83a = []; ?>
+<?php $__blaze->pushData($__datadcaa7d49c97f4816e18375c175bec83a); ?>
 <?php ob_start(); ?>
-    <?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button-or-link-pure.blade.php', $__blaze->compiledPath.'/456a8a952c91dd5f727236a9bcd63c5d.php'); ?>
-<?php if (isset($__slots456a8a952c91dd5f727236a9bcd63c5d)) { $__slotsStack456a8a952c91dd5f727236a9bcd63c5d[] = $__slots456a8a952c91dd5f727236a9bcd63c5d; } ?>
-<?php if (isset($__attrs456a8a952c91dd5f727236a9bcd63c5d)) { $__attrsStack456a8a952c91dd5f727236a9bcd63c5d[] = $__attrs456a8a952c91dd5f727236a9bcd63c5d; } ?>
-<?php $__attrs456a8a952c91dd5f727236a9bcd63c5d = ['type' => $type,'attributes' => $attributes->class($classes),'dataFluxButton' => true]; ?>
-<?php $__slots456a8a952c91dd5f727236a9bcd63c5d = []; ?>
-<?php $__blaze->pushData($__attrs456a8a952c91dd5f727236a9bcd63c5d); ?>
+    <?php if (!function_exists('__c30cec21fb0488998435e4ed46878614')) { require $__blaze->compile('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button-or-link-pure.blade.php'); } ?>
+<?php if (isset($__slotsc30cec21fb0488998435e4ed46878614)) { $__slotsStackc30cec21fb0488998435e4ed46878614[] = $__slotsc30cec21fb0488998435e4ed46878614; } ?>
+<?php if (isset($__datac30cec21fb0488998435e4ed46878614)) { $__dataStackc30cec21fb0488998435e4ed46878614[] = $__datac30cec21fb0488998435e4ed46878614; } ?>
+<?php $__datac30cec21fb0488998435e4ed46878614 = ['type' => $type,'attributes' => $attributes->class($classes),'dataFluxButton' => true]; ?>
+<?php $__slotsc30cec21fb0488998435e4ed46878614 = []; ?>
+<?php $__blaze->pushData($__datac30cec21fb0488998435e4ed46878614); ?>
 <?php ob_start(); ?>
         <?php if ($loading): ?>
             <div class="absolute inset-0 flex items-center justify-center opacity-0" data-flux-loading-indicator>
-                <?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php', $__blaze->compiledPath.'/ebfb27feae87a3d873cb5ef75a09aacc.php'); ?>
-<?php $__blaze->pushData(['icon' => 'loading','variant' => $iconVariant,'class' => $iconClasses]); ?>
-<?php __ebfb27feae87a3d873cb5ef75a09aacc($__blaze, ['icon' => 'loading','variant' => $iconVariant,'class' => $iconClasses], [], ['variant', 'class'], [], $__this ?? (isset($this) ? $this : null)); ?>
+                <?php if (!function_exists('__adf4f9f4d4b9749b7256198b8759ef9f')) { require $__blaze->compile('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php'); } ?>
+<?php $__componentData = ['icon' => 'loading','variant' => $iconVariant,'class' => $iconClasses]; ?>
+<?php $__blaze->pushData($__componentData); ?>
+<?php __adf4f9f4d4b9749b7256198b8759ef9f($__blaze, $__componentData, ['icon' => 'loading', 'variant' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($__componentData['variant']), 'class' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($__componentData['class'])], [], $__this ?? (isset($this) ? $this : null)); ?>
 <?php $__blaze->popData(); ?>
             </div>
         <?php endif; ?>
 
         <?php if (is_string($iconLeading) && $iconLeading !== ''): ?>
-            <?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php', $__blaze->compiledPath.'/ebfb27feae87a3d873cb5ef75a09aacc.php'); ?>
-<?php $__blaze->pushData(['icon' => $iconLeading,'variant' => $iconVariant,'class' => $iconClasses]); ?>
-<?php __ebfb27feae87a3d873cb5ef75a09aacc($__blaze, ['icon' => $iconLeading,'variant' => $iconVariant,'class' => $iconClasses], [], ['icon', 'variant', 'class'], [], $__this ?? (isset($this) ? $this : null)); ?>
+            <?php if (!function_exists('__adf4f9f4d4b9749b7256198b8759ef9f')) { require $__blaze->compile('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php'); } ?>
+<?php $__componentData = ['icon' => $iconLeading,'variant' => $iconVariant,'class' => $iconClasses]; ?>
+<?php $__blaze->pushData($__componentData); ?>
+<?php __adf4f9f4d4b9749b7256198b8759ef9f($__blaze, $__componentData, ['icon' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($__componentData['icon']), 'variant' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($__componentData['variant']), 'class' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($__componentData['class'])], [], $__this ?? (isset($this) ? $this : null)); ?>
 <?php $__blaze->popData(); ?>
         <?php elseif ($iconLeading): ?>
             <?php echo e($iconLeading); ?>
@@ -250,25 +300,26 @@ $classes = Flux::classes()
         <?php if (is_string($iconTrailing) && $iconTrailing !== ''): ?>
             
             <?php $iconClasses->add($square ? '' : '-ms-1'); ?>
-            <?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php', $__blaze->compiledPath.'/ebfb27feae87a3d873cb5ef75a09aacc.php'); ?>
-<?php $__blaze->pushData(['icon' => $iconTrailing,'variant' => $iconTrailingVariant,'class' => $iconTrailingClasses]); ?>
-<?php __ebfb27feae87a3d873cb5ef75a09aacc($__blaze, ['icon' => $iconTrailing,'variant' => $iconTrailingVariant,'class' => $iconTrailingClasses], [], ['icon', 'variant', 'class'], [], $__this ?? (isset($this) ? $this : null)); ?>
+            <?php if (!function_exists('__adf4f9f4d4b9749b7256198b8759ef9f')) { require $__blaze->compile('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php'); } ?>
+<?php $__componentData = ['icon' => $iconTrailing,'variant' => $iconTrailingVariant,'class' => $iconTrailingClasses]; ?>
+<?php $__blaze->pushData($__componentData); ?>
+<?php __adf4f9f4d4b9749b7256198b8759ef9f($__blaze, $__componentData, ['icon' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($__componentData['icon']), 'variant' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($__componentData['variant']), 'class' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($__componentData['class'])], [], $__this ?? (isset($this) ? $this : null)); ?>
 <?php $__blaze->popData(); ?>
         <?php elseif ($iconTrailing): ?>
             <?php echo e($iconTrailing); ?>
 
         <?php endif; ?>
-    <?php $__slots456a8a952c91dd5f727236a9bcd63c5d['slot'] = new \Illuminate\View\ComponentSlot($__blaze->processPassthroughContent('trim', trim(ob_get_clean())), []); ?>
-<?php $__blaze->pushSlots($__slots456a8a952c91dd5f727236a9bcd63c5d); ?>
-<?php __456a8a952c91dd5f727236a9bcd63c5d($__blaze, $__attrs456a8a952c91dd5f727236a9bcd63c5d, $__slots456a8a952c91dd5f727236a9bcd63c5d, ['type', 'attributes', 'dataFluxButton'], ['dataFluxButton' => 'data-flux-button'], $__this ?? (isset($this) ? $this : null)); ?>
-<?php if (! empty($__slotsStack456a8a952c91dd5f727236a9bcd63c5d)) { $__slots456a8a952c91dd5f727236a9bcd63c5d = array_pop($__slotsStack456a8a952c91dd5f727236a9bcd63c5d); } ?>
-<?php if (! empty($__attrsStack456a8a952c91dd5f727236a9bcd63c5d)) { $__attrs456a8a952c91dd5f727236a9bcd63c5d = array_pop($__attrsStack456a8a952c91dd5f727236a9bcd63c5d); } ?>
+    <?php $__slotsc30cec21fb0488998435e4ed46878614['slot'] = new \Illuminate\View\ComponentSlot($__blaze->processPassthroughContent('trim', trim(ob_get_clean())), []); ?>
+<?php $__blaze->pushSlots($__slotsc30cec21fb0488998435e4ed46878614); ?>
+<?php __c30cec21fb0488998435e4ed46878614($__blaze, $__datac30cec21fb0488998435e4ed46878614, $__blaze->mergeAttributes(['type' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($__datac30cec21fb0488998435e4ed46878614['type']), 'attributes' => $__datac30cec21fb0488998435e4ed46878614['attributes'], 'data-flux-button' => true]), $__slotsc30cec21fb0488998435e4ed46878614, $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStackc30cec21fb0488998435e4ed46878614)) { $__slotsc30cec21fb0488998435e4ed46878614 = array_pop($__slotsStackc30cec21fb0488998435e4ed46878614); } ?>
+<?php if (! empty($__dataStackc30cec21fb0488998435e4ed46878614)) { $__datac30cec21fb0488998435e4ed46878614 = array_pop($__dataStackc30cec21fb0488998435e4ed46878614); } ?>
 <?php $__blaze->popData(); ?>
-<?php $__slots61bc94f66e133c8c88763f97d4c55076['slot'] = new \Illuminate\View\ComponentSlot($__blaze->processPassthroughContent('trim', trim(ob_get_clean())), []); ?>
-<?php $__blaze->pushSlots($__slots61bc94f66e133c8c88763f97d4c55076); ?>
-<?php __61bc94f66e133c8c88763f97d4c55076($__blaze, $__attrs61bc94f66e133c8c88763f97d4c55076, $__slots61bc94f66e133c8c88763f97d4c55076, ['attributes'], [], $__this ?? (isset($this) ? $this : null)); ?>
-<?php if (! empty($__slotsStack61bc94f66e133c8c88763f97d4c55076)) { $__slots61bc94f66e133c8c88763f97d4c55076 = array_pop($__slotsStack61bc94f66e133c8c88763f97d4c55076); } ?>
-<?php if (! empty($__attrsStack61bc94f66e133c8c88763f97d4c55076)) { $__attrs61bc94f66e133c8c88763f97d4c55076 = array_pop($__attrsStack61bc94f66e133c8c88763f97d4c55076); } ?>
+<?php $__slotsdcaa7d49c97f4816e18375c175bec83a['slot'] = new \Illuminate\View\ComponentSlot($__blaze->processPassthroughContent('trim', trim(ob_get_clean())), []); ?>
+<?php $__blaze->pushSlots($__slotsdcaa7d49c97f4816e18375c175bec83a); ?>
+<?php __dcaa7d49c97f4816e18375c175bec83a($__blaze, $__datadcaa7d49c97f4816e18375c175bec83a, $__blaze->mergeAttributes(['attributes' => $__datadcaa7d49c97f4816e18375c175bec83a['attributes']]), $__slotsdcaa7d49c97f4816e18375c175bec83a, $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStackdcaa7d49c97f4816e18375c175bec83a)) { $__slotsdcaa7d49c97f4816e18375c175bec83a = array_pop($__slotsStackdcaa7d49c97f4816e18375c175bec83a); } ?>
+<?php if (! empty($__dataStackdcaa7d49c97f4816e18375c175bec83a)) { $__datadcaa7d49c97f4816e18375c175bec83a = array_pop($__dataStackdcaa7d49c97f4816e18375c175bec83a); } ?>
 <?php $__blaze->popData(); ?>
 <?php
 echo $__blaze->processPassthroughContent('ltrim', ltrim(ob_get_clean()));

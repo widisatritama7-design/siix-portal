@@ -1,14 +1,15 @@
+<?php # [BlazeVersion]:{v3} ?>
 <?php
-if (!function_exists('__558b10eac2f25b4923dd0316cb1cfd7c')):
-function __558b10eac2f25b4923dd0316cb1cfd7c($__blaze, $__data = [], $__slots = [], $__bound = [], $__keys = [], $__this = null) {
+if (!function_exists('__f08485867005d31c4cf6de3403933508')):
+function __f08485867005d31c4cf6de3403933508($__blaze, $__data = [], $__attributes = [], $__slots = [], $__this = null) {
 $__env = $__blaze->env;
 $errors = $__blaze->errors;
 $__slots['slot'] ??= new \Illuminate\View\ComponentSlot('');
 if (($__data['attributes'] ?? null) instanceof \Illuminate\View\ComponentAttributeBag) { $__data = $__data + $__data['attributes']->all(); unset($__data['attributes']); }
 extract($__slots, EXTR_SKIP); unset($__slots);
 extract($__data, EXTR_SKIP);
-$attributes = \Livewire\Blaze\Runtime\BlazeAttributeBag::make($__data, $__bound, $__keys);
-unset($__data, $__bound, $__keys);
+$attributes = new \Livewire\Blaze\Runtime\BlazeAttributeBag($__attributes);
+unset($__data, $__attributes);
 ob_start();
 ?>
 
@@ -44,7 +45,8 @@ $classes = Flux::classes()
     // Make the placeholder match the text color of standard input placeholders...
     ->add('has-[option.placeholder:checked]:text-zinc-400 dark:has-[option.placeholder:checked]:text-zinc-400')
     // Options on Windows don't inherit dark mode styles, so we need to force them...
-    ->add('dark:[&>option]:bg-zinc-700 dark:[&>option]:text-white')
+    // Matched as descendants rather than children so options inside an <optgroup> are covered too...
+    ->add('dark:[&_option]:bg-zinc-700 dark:[&_option]:text-white')
     ->add('disabled:shadow-none')
     ->add($invalid
         ? 'border border-red-500'

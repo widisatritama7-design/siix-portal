@@ -1,4 +1,6 @@
-<?php # [BlazeFolded]:{flux::label}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/label.blade.php}:{1776985208} ?>
+<?php # [BlazeVersion]:{v3} ?>
+<?php # [BlazeFolded]:{flux::label}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/label.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::textarea}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/textarea.blade.php}:{1792593958} ?>
 
 <div x-data="{ open: false }"
     x-on:open-modal-delete.window="open = true"
@@ -34,10 +36,21 @@
     
     </ui-label>
 <?php echo ltrim(ob_get_clean()); ?>
-                    <?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/textarea.blade.php', $__blaze->compiledPath.'/94345100219c384088bc615bcd8fde6c.php'); ?>
-<?php $__blaze->pushData(['wire:model' => 'deleteReason','rows' => '3','placeholder' => 'Alasan hapus...']); ?>
-<?php _94345100219c384088bc615bcd8fde6c($__blaze, ['wire:model' => 'deleteReason','rows' => '3','placeholder' => 'Alasan hapus...'], [], [], [], $__this ?? (isset($this) ? $this : null)); ?>
-<?php $__blaze->popData(); ?>
+                    <?php ob_start(); ?><textarea
+        class="block p-3 w-full shadow-xs disabled:shadow-none border rounded-lg bg-white dark:bg-white/10 dark:disabled:bg-white/[7%] resize-y  text-base sm:text-sm text-zinc-700 disabled:text-zinc-500 placeholder-zinc-400 disabled:placeholder-zinc-400/70 dark:text-zinc-300 dark:disabled:text-zinc-400 dark:placeholder-zinc-400 dark:disabled:placeholder-zinc-500 border-zinc-200 border-b-zinc-300/80 dark:border-white/10 data-invalid:shadow-none data-invalid:border-red-500 dark:data-invalid:border-red-500" wire:model="deleteReason" placeholder="Alasan hapus..."
+        rows="3"
+         name="deleteReason"         <?php if (isset($scope)) $__scope = $scope; ?><?php $scope = array (
+  'name' => 'deleteReason',
+  'invalid' => false,
+); ?>
+        <?php if ($scope['invalid'] || ($scope['name'] && $errors->has($scope['name']))): ?>
+        aria-invalid="true" data-invalid
+        <?php endif; ?>
+        <?php if (isset($__scope)) { $scope = $__scope; unset($__scope); } ?>
+        data-flux-control
+        data-flux-textarea
+    ></textarea>
+<?php echo ltrim(ob_get_clean()); ?>
                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ['deleteReason'];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :

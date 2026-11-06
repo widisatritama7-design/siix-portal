@@ -1,3 +1,4 @@
+<?php # [BlazeVersion]:{v3} ?>
 
 <div x-data="{ open: false }"
     x-on:open-modal-error.window="open = true"

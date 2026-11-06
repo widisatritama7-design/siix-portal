@@ -575,193 +575,252 @@
 
     <!-- ==================== SEDANG TEST ==================== -->
     @if($isStarted && !$isFinished)
-    <flux:card class="p-6 shadow-lg">
+        <flux:card class="p-6 shadow-lg">
 
-        @if($remainingSeconds !== null && $remainingSeconds <= 300 && $remainingSeconds > 0)
-        <div class="mb-4 rounded-xl bg-yellow-50 dark:bg-yellow-950/20 border-2 border-yellow-300 dark:border-yellow-700 p-4 flex items-center gap-3">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-yellow-600 dark:text-yellow-400 flex-shrink-0">
-                <path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
-            </svg>
-            <div>
-                <div class="text-sm font-bold text-yellow-800 dark:text-yellow-300">Waktu Hampir Habis!</div>
-                <div class="text-xs text-yellow-700 dark:text-yellow-400">
-                    Sisa waktu kurang dari 5 menit. Segera submit jawaban Anda.
+            @if($remainingSeconds !== null && $remainingSeconds <= 300 && $remainingSeconds > 0)
+            <div class="mb-4 rounded-xl bg-yellow-50 dark:bg-yellow-950/20 border-2 border-yellow-300 dark:border-yellow-700 p-4 flex items-center gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 text-yellow-600 dark:text-yellow-400 flex-shrink-0">
+                    <path fill-rule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003ZM12 8.25a.75.75 0 0 1 .75.75v3.75a.75.75 0 0 1-1.5 0V9a.75.75 0 0 1 .75-.75Zm0 8.25a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
+                </svg>
+                <div>
+                    <div class="text-sm font-bold text-yellow-800 dark:text-yellow-300">Waktu Hampir Habis!</div>
+                    <div class="text-xs text-yellow-700 dark:text-yellow-400">
+                        Sisa waktu kurang dari 5 menit. Segera submit jawaban Anda.
+                    </div>
+                </div>
+            </div>
+            @endif
+
+            {{-- Header — Tambah Tombol Submit di Kanan --}}
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 pb-4 border-b border-zinc-200 dark:border-zinc-700">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-blue-600 dark:text-blue-400">
+                            <path d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32L19.513 8.2Z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-bold text-zinc-800 dark:text-white">Jawaban Anda</h2>
+                        <p class="text-xs text-zinc-500 dark:text-zinc-400">Isi minimal 1 baris. Kosongkan baris yang tidak dipakai. Urutan bebas.</p>
+                    </div>
+                </div>
+
+                {{-- Tombol Submit Test (Pindahan) --}}
+                <flux:button wire:click="confirmSubmit" variant="primary" icon="check-circle" class="bg-blue-600 hover:bg-blue-700 !px-6 w-full sm:w-auto">
+                    Submit Test
+                </flux:button>
+            </div>
+
+            <div class="mb-4 p-3 rounded-lg bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 flex items-start gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5">
+                    <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 0 1 .67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 1 1-.671-1.34l.041-.022ZM12 9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
+                </svg>
+                <p class="text-xs text-blue-800 dark:text-blue-300">
+                    <strong>Tips:</strong> Isi daftar defect item + component location yang Anda temukan.
+                    <strong>Urutan tidak penting</strong> — yang penting isinya sesuai dengan kunci.
+                </p>
+            </div>
+
+            <div class="space-y-3">
+                @foreach($userAnswers as $i => $row)
+                <div class="flex gap-3 items-start p-3 rounded-lg bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700" wire:key="row-{{ $i }}">
+                    <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">
+                        <span class="text-sm font-bold text-blue-600 dark:text-blue-400">{{ $i + 1 }}</span>
+                    </div>
+                    <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
+
+                        {{-- ============ SEARCHABLE DEFECT PICKER ============ --}}
+                        <div x-data="{
+                                open: false,
+                                search: '',
+                                selectedId: @entangle('userAnswers.' . $i . '.deffect_item_id'),
+                                selectedName: '',
+                                options: @js($deffects->map(fn($d) => ['id' => (string) $d->id, 'name' => $d->deffect_item_name])->values()),
+                                get filtered() {
+                                    if (this.search === '') return this.options;
+                                    const s = this.search.toLowerCase();
+                                    return this.options.filter(o => o.name.toLowerCase().includes(s));
+                                },
+                                pick(opt) {
+                                    this.selectedId = opt.id;
+                                    this.selectedName = opt.name;
+                                    this.search = '';
+                                    this.open = false;
+                                },
+                                clear() {
+                                    this.selectedId = '';
+                                    this.selectedName = '';
+                                    this.search = '';
+                                },
+                                init() {
+                                    const found = this.options.find(o => String(o.id) === String(this.selectedId));
+                                    this.selectedName = found ? found.name : '';
+                                    this.$watch('selectedId', v => {
+                                        const f = this.options.find(o => String(o.id) === String(v));
+                                        this.selectedName = f ? f.name : '';
+                                    });
+                                }
+                            }"
+                            @click.outside="open = false"
+                            class="relative">
+
+                            {{-- Trigger --}}
+                            <button type="button" @click="open = !open"
+                                class="w-full flex items-center justify-between gap-2 px-3 py-2.5
+                                    border border-zinc-300 dark:border-zinc-700 rounded-lg
+                                    bg-white dark:bg-zinc-800 text-left text-sm
+                                    focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                                    hover:border-zinc-400 dark:hover:border-zinc-600 transition-all">
+                                <span class="truncate"
+                                    :class="selectedName ? 'text-zinc-800 dark:text-white' : 'text-zinc-400'"
+                                    x-text="selectedName || 'Pilih defect item...'"></span>
+                                <div class="flex items-center gap-1 flex-shrink-0">
+                                    <template x-if="selectedId">
+                                        <span @click.stop="clear()"
+                                            class="text-zinc-400 hover:text-red-500 transition-colors cursor-pointer">
+                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                                                <path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                                            </svg>
+                                        </span>
+                                    </template>
+                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                                        class="w-4 h-4 text-zinc-400 transition-transform duration-200"
+                                        :class="open ? 'rotate-180' : ''">
+                                        <path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                            </button>
+
+                            {{-- Dropdown --}}
+                            <div x-show="open" x-cloak
+                                x-transition:enter="transition ease-out duration-150"
+                                x-transition:enter-start="opacity-0 -translate-y-1"
+                                x-transition:enter-end="opacity-100 translate-y-0"
+                                class="absolute z-50 mt-1 w-full bg-white dark:bg-zinc-800
+                                    border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-xl
+                                    overflow-hidden">
+
+                                {{-- Search Box --}}
+                                <div class="p-2 border-b border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900/50">
+                                    <div class="relative">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
+                                            class="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-400">
+                                            <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd" />
+                                        </svg>
+                                        <input type="text" x-model="search" x-ref="searchInput"
+                                            @keydown.escape="open = false"
+                                            placeholder="Cari defect..."
+                                            class="w-full pl-8 pr-2 py-1.5 text-sm rounded-md
+                                                border border-zinc-300 dark:border-zinc-700
+                                                bg-white dark:bg-zinc-800
+                                                focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                                                dark:text-white">
+                                    </div>
+                                </div>
+
+                                {{-- Options --}}
+                                <div class="max-h-56 overflow-y-auto">
+                                    <template x-for="opt in filtered" :key="opt.id">
+                                        <button type="button" @click="pick(opt)"
+                                            class="w-full text-left px-3 py-2 text-sm
+                                                hover:bg-blue-50 dark:hover:bg-blue-950/30
+                                                transition-colors flex items-center justify-between gap-2"
+                                            :class="String(selectedId) === String(opt.id)
+                                                ? 'bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-300 font-semibold'
+                                                : 'text-zinc-700 dark:text-zinc-300'">
+                                            <span class="truncate" x-text="opt.name"></span>
+                                            <template x-if="String(selectedId) === String(opt.id)">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-blue-600 flex-shrink-0">
+                                                    <path fill-rule="evenodd" d="M19.916 4.626a.75.75 0 0 1 .208 1.04l-9 13.5a.75.75 0 0 1-1.154.114l-6-6a.75.75 0 0 1 1.06-1.06l5.353 5.353 8.493-12.74a.75.75 0 0 1 1.04-.207Z" clip-rule="evenodd" />
+                                                </svg>
+                                            </template>
+                                        </button>
+                                    </template>
+
+                                    <div x-show="filtered.length === 0"
+                                        class="px-3 py-6 text-center text-xs text-zinc-400 italic">
+                                        Tidak ada defect yang cocok
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- ============ COMPONENT LOCATION (TETAP SAMA) ============ --}}
+                        <flux:input wire:model="userAnswers.{{ $i }}.component_location"
+                            placeholder="Component location (e.g. CN4)" class="uppercase" />
+                    </div>
+                    @if(count($userAnswers) > 1)
+                    <flux:button wire:click="removeRow({{ $i }})" size="sm" icon="trash"
+                        variant="primary" color="red" class="!p-2 flex-shrink-0" />
+                    @endif
+                </div>
+                @endforeach
+            </div>
+
+            {{-- ✅ Footer: Tambah Baris (kiri) + Submit Test (kanan) --}}
+            <div class="mt-6 flex justify-between items-center pt-4 border-t border-zinc-200 dark:border-zinc-700">
+                <flux:button wire:click="addRow" size="sm" icon="plus" variant="primary" class="bg-blue-600 hover:bg-blue-700">
+                    Tambah Baris
+                </flux:button>
+            </div>
+        </flux:card>
+
+        <!-- ==================== MODAL KONFIRMASI SUBMIT ==================== -->
+        @if($showSubmitModal)
+        <div x-data x-cloak
+            class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+            <div class="bg-white dark:bg-zinc-900 rounded-2xl shadow-2xl max-w-md w-full overflow-hidden"
+                @click.outside="$wire.cancelSubmit()">
+
+                <div class="bg-gradient-to-r from-blue-600 to-indigo-600 p-5 text-white flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center border-2 border-white/40 flex-shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                            <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 0 1 .67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 1 1-.671-1.34l.041-.022ZM12 9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h2 class="text-lg font-bold">Konfirmasi Submit</h2>
+                        <p class="text-xs text-blue-100">Pastikan jawaban sudah benar</p>
+                    </div>
+                </div>
+
+                <div class="p-5 space-y-3">
+                    <p class="text-sm text-zinc-700 dark:text-zinc-300">
+                        Apakah Anda yakin ingin <strong>submit</strong> test ini?
+                    </p>
+
+                    <div class="p-3 rounded-lg bg-amber-50 dark:bg-amber-950/20 border border-amber-300 dark:border-amber-700 text-xs text-amber-800 dark:text-amber-300">
+                        <strong>Perhatian:</strong> Setelah submit, jawaban <strong>tidak bisa diubah</strong> dan akan masuk ke proses review QC.
+                    </div>
+
+                    @php
+                        $filledCount = collect($userAnswers)
+                            ->filter(fn ($r) => !empty($r['deffect_item_id']) && !empty($r['component_location']))
+                            ->count();
+                        $totalRows = count($userAnswers);
+                    @endphp
+
+                    <div class="flex items-center gap-2 text-xs text-zinc-600 dark:text-zinc-400">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-blue-500">
+                            <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm13.36-1.814a.75.75 0 1 0-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 0 0-1.06 1.06l2.25 2.25a.75.75 0 0 0 1.14-.094l3.75-5.25Z" clip-rule="evenodd" />
+                        </svg>
+                        <span>Jawaban terisi: <strong>{{ $filledCount }}</strong> dari {{ $totalRows }} baris</span>
+                    </div>
+                </div>
+
+                <div class="p-4 border-t border-zinc-200 dark:border-zinc-700 flex justify-end gap-2 bg-zinc-50 dark:bg-zinc-800/50">
+                    <button type="button" wire:click="cancelSubmit"
+                        class="px-4 py-2 rounded-lg bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-700 dark:hover:bg-zinc-600 text-zinc-700 dark:text-zinc-300 text-sm font-medium">
+                        Batal
+                    </button>
+                    <button type="button" wire:click="confirmSubmitYes"
+                        class="px-5 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold">
+                        Ya, Submit Sekarang
+                    </button>
                 </div>
             </div>
         </div>
         @endif
-
-        {{-- Header — TANPA tombol Tambah Baris --}}
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-6 pb-4 border-b border-zinc-200 dark:border-zinc-700">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-blue-600 dark:text-blue-400">
-                        <path d="M21.731 2.269a2.625 2.625 0 0 0-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 0 0 0-3.712ZM19.513 8.199l-3.712-3.712-12.15 12.15a5.25 5.25 0 0 0-1.32 2.214l-.8 2.685a.75.75 0 0 0 .933.933l2.685-.8a5.25 5.25 0 0 0 2.214-1.32L19.513 8.2Z" />
-                    </svg>
-                </div>
-                <div>
-                    <h2 class="text-lg font-bold text-zinc-800 dark:text-white">Jawaban Anda</h2>
-                    <p class="text-xs text-zinc-500 dark:text-zinc-400">Isi defect item + component location. Urutan bebas.</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="mb-4 p-3 rounded-lg bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 flex items-start gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5">
-                <path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12Zm8.706-1.442c1.146-.573 2.437.463 2.126 1.706l-.709 2.836.042-.02a.75.75 0 0 1 .67 1.34l-.04.022c-1.147.573-2.438-.463-2.127-1.706l.71-2.836-.042.02a.75.75 0 1 1-.671-1.34l.041-.022ZM12 9a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" clip-rule="evenodd" />
-            </svg>
-            <p class="text-xs text-blue-800 dark:text-blue-300">
-                <strong>Tips:</strong> Isi daftar defect item + component location yang Anda temukan.
-                <strong>Urutan tidak penting</strong> — yang penting isinya sesuai dengan kunci.
-            </p>
-        </div>
-
-        <div class="space-y-3">
-            @foreach($userAnswers as $i => $row)
-            <div class="flex gap-3 items-start p-3 rounded-lg bg-zinc-50 dark:bg-zinc-800/50 border border-zinc-200 dark:border-zinc-700" wire:key="row-{{ $i }}">
-                <div class="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center flex-shrink-0">
-                    <span class="text-sm font-bold text-blue-600 dark:text-blue-400">{{ $i + 1 }}</span>
-                </div>
-                <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-3">
-
-                    {{-- ============ SEARCHABLE DEFECT PICKER ============ --}}
-                    <div x-data="{
-                            open: false,
-                            search: '',
-                            selectedId: @entangle('userAnswers.' . $i . '.deffect_item_id'),
-                            selectedName: '',
-                            options: @js($deffects->map(fn($d) => ['id' => (string) $d->id, 'name' => $d->deffect_item_name])->values()),
-                            get filtered() {
-                                if (this.search === '') return this.options;
-                                const s = this.search.toLowerCase();
-                                return this.options.filter(o => o.name.toLowerCase().includes(s));
-                            },
-                            pick(opt) {
-                                this.selectedId = opt.id;
-                                this.selectedName = opt.name;
-                                this.search = '';
-                                this.open = false;
-                            },
-                            clear() {
-                                this.selectedId = '';
-                                this.selectedName = '';
-                                this.search = '';
-                            },
-                            init() {
-                                const found = this.options.find(o => String(o.id) === String(this.selectedId));
-                                this.selectedName = found ? found.name : '';
-                                this.$watch('selectedId', v => {
-                                    const f = this.options.find(o => String(o.id) === String(v));
-                                    this.selectedName = f ? f.name : '';
-                                });
-                            }
-                        }"
-                        @click.outside="open = false"
-                        class="relative">
-
-                        {{-- Trigger --}}
-                        <button type="button" @click="open = !open"
-                            class="w-full flex items-center justify-between gap-2 px-3 py-2.5
-                                border border-zinc-300 dark:border-zinc-700 rounded-lg
-                                bg-white dark:bg-zinc-800 text-left text-sm
-                                focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-                                hover:border-zinc-400 dark:hover:border-zinc-600 transition-all">
-                            <span class="truncate"
-                                :class="selectedName ? 'text-zinc-800 dark:text-white' : 'text-zinc-400'"
-                                x-text="selectedName || 'Pilih defect item...'"></span>
-                            <div class="flex items-center gap-1 flex-shrink-0">
-                                <template x-if="selectedId">
-                                    <span @click.stop="clear()"
-                                        class="text-zinc-400 hover:text-red-500 transition-colors cursor-pointer">
-                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
-                                            <path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 0 1 1.06 0L12 10.94l5.47-5.47a.75.75 0 1 1 1.06 1.06L13.06 12l5.47 5.47a.75.75 0 1 1-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 0 1-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                                        </svg>
-                                    </span>
-                                </template>
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-                                    class="w-4 h-4 text-zinc-400 transition-transform duration-200"
-                                    :class="open ? 'rotate-180' : ''">
-                                    <path fill-rule="evenodd" d="M12.53 16.28a.75.75 0 0 1-1.06 0l-7.5-7.5a.75.75 0 0 1 1.06-1.06L12 14.69l6.97-6.97a.75.75 0 1 1 1.06 1.06l-7.5 7.5Z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                        </button>
-
-                        {{-- Dropdown --}}
-                        <div x-show="open" x-cloak
-                            x-transition:enter="transition ease-out duration-150"
-                            x-transition:enter-start="opacity-0 -translate-y-1"
-                            x-transition:enter-end="opacity-100 translate-y-0"
-                            class="absolute z-50 mt-1 w-full bg-white dark:bg-zinc-800
-                                border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-xl
-                                overflow-hidden">
-
-                            {{-- Search Box --}}
-                            <div class="p-2 border-b border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900/50">
-                                <div class="relative">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"
-                                        class="w-4 h-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-400">
-                                        <path fill-rule="evenodd" d="M10.5 3.75a6.75 6.75 0 1 0 0 13.5 6.75 6.75 0 0 0 0-13.5ZM2.25 10.5a8.25 8.25 0 1 1 14.59 5.28l4.69 4.69a.75.75 0 1 1-1.06 1.06l-4.69-4.69A8.25 8.25 0 0 1 2.25 10.5Z" clip-rule="evenodd" />
-                                    </svg>
-                                    <input type="text" x-model="search" x-ref="searchInput"
-                                        @keydown.escape="open = false"
-                                        placeholder="Cari defect..."
-                                        class="w-full pl-8 pr-2 py-1.5 text-sm rounded-md
-                                            border border-zinc-300 dark:border-zinc-700
-                                            bg-white dark:bg-zinc-800
-                                            focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-                                            dark:text-white">
-                                </div>
-                            </div>
-
-                            {{-- Options --}}
-                            <div class="max-h-56 overflow-y-auto">
-                                <template x-for="opt in filtered" :key="opt.id">
-                                    <button type="button" @click="pick(opt)"
-                                        class="w-full text-left px-3 py-2 text-sm
-                                            hover:bg-blue-50 dark:hover:bg-blue-950/30
-                                            transition-colors flex items-center justify-between gap-2"
-                                        :class="String(selectedId) === String(opt.id)
-                                            ? 'bg-blue-50 dark:bg-blue-950/30 text-blue-700 dark:text-blue-300 font-semibold'
-                                            : 'text-zinc-700 dark:text-zinc-300'">
-                                        <span class="truncate" x-text="opt.name"></span>
-                                        <template x-if="String(selectedId) === String(opt.id)">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-blue-600 flex-shrink-0">
-                                                <path fill-rule="evenodd" d="M19.916 4.626a.75.75 0 0 1 .208 1.04l-9 13.5a.75.75 0 0 1-1.154.114l-6-6a.75.75 0 0 1 1.06-1.06l5.353 5.353 8.493-12.74a.75.75 0 0 1 1.04-.207Z" clip-rule="evenodd" />
-                                            </svg>
-                                        </template>
-                                    </button>
-                                </template>
-
-                                <div x-show="filtered.length === 0"
-                                    class="px-3 py-6 text-center text-xs text-zinc-400 italic">
-                                    Tidak ada defect yang cocok
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- ============ COMPONENT LOCATION (TETAP SAMA) ============ --}}
-                    <flux:input wire:model="userAnswers.{{ $i }}.component_location"
-                        placeholder="Component location (e.g. CN4)" class="uppercase" />
-                </div>
-                @if(count($userAnswers) > 1)
-                <flux:button wire:click="removeRow({{ $i }})" size="sm" icon="trash"
-                    variant="primary" color="red" class="!p-2 flex-shrink-0" />
-                @endif
-            </div>
-            @endforeach
-        </div>
-
-        {{-- ✅ Footer: Tambah Baris (kiri) + Submit Test (kanan) --}}
-        <div class="mt-6 flex justify-between items-center pt-4 border-t border-zinc-200 dark:border-zinc-700">
-            <flux:button wire:click="addRow" size="sm" icon="plus" variant="primary" class="bg-blue-600 hover:bg-blue-700">
-                Tambah Baris
-            </flux:button>
-            <flux:button wire:click="submit" variant="primary" icon="check-circle" class="bg-blue-600 hover:bg-blue-700 !px-6">
-                Submit Test
-            </flux:button>
-        </div>
-    </flux:card>
     @endif
 
     <!-- ==================== HASIL ==================== -->

@@ -1,13 +1,14 @@
+<?php # [BlazeVersion]:{v3} ?>
 <?php
-if (!function_exists('__6b0011e2f83d04930b97e5f6feda22dd')):
-function __6b0011e2f83d04930b97e5f6feda22dd($__blaze, $__data = [], $__slots = [], $__bound = [], $__keys = [], $__this = null) {
+if (!function_exists('__7477cdf3e599b95879e647f1be0a7b24')):
+function __7477cdf3e599b95879e647f1be0a7b24($__blaze, $__data = [], $__attributes = [], $__slots = [], $__this = null) {
 $__env = $__blaze->env;
 $__slots['slot'] ??= new \Illuminate\View\ComponentSlot('');
 if (($__data['attributes'] ?? null) instanceof \Illuminate\View\ComponentAttributeBag) { $__data = $__data + $__data['attributes']->all(); unset($__data['attributes']); }
 extract($__slots, EXTR_SKIP); unset($__slots);
 extract($__data, EXTR_SKIP);
-$attributes = \Livewire\Blaze\Runtime\BlazeAttributeBag::make($__data, $__bound, $__keys);
-unset($__data, $__bound, $__keys);
+$attributes = new \Livewire\Blaze\Runtime\BlazeAttributeBag($__attributes);
+unset($__data, $__attributes);
 ob_start();
 ?>
 
@@ -110,17 +111,18 @@ $classes = Flux::classes()
     });
 ?>
 
-<?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button-or-div.blade.php', $__blaze->compiledPath.'/6c59210563a6bcbbb59ec1e8ebc42fc2.php'); ?>
-<?php if (isset($__slots6c59210563a6bcbbb59ec1e8ebc42fc2)) { $__slotsStack6c59210563a6bcbbb59ec1e8ebc42fc2[] = $__slots6c59210563a6bcbbb59ec1e8ebc42fc2; } ?>
-<?php if (isset($__attrs6c59210563a6bcbbb59ec1e8ebc42fc2)) { $__attrsStack6c59210563a6bcbbb59ec1e8ebc42fc2[] = $__attrs6c59210563a6bcbbb59ec1e8ebc42fc2; } ?>
-<?php $__attrs6c59210563a6bcbbb59ec1e8ebc42fc2 = ['attributes' => $attributes->class($classes),'dataFluxBadge' => true]; ?>
-<?php $__slots6c59210563a6bcbbb59ec1e8ebc42fc2 = []; ?>
-<?php $__blaze->pushData($__attrs6c59210563a6bcbbb59ec1e8ebc42fc2); ?>
+<?php if (!function_exists('__fabb8c1c18824e31683ec77aff544412')) { require $__blaze->compile('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button-or-div.blade.php'); } ?>
+<?php if (isset($__slotsfabb8c1c18824e31683ec77aff544412)) { $__slotsStackfabb8c1c18824e31683ec77aff544412[] = $__slotsfabb8c1c18824e31683ec77aff544412; } ?>
+<?php if (isset($__datafabb8c1c18824e31683ec77aff544412)) { $__dataStackfabb8c1c18824e31683ec77aff544412[] = $__datafabb8c1c18824e31683ec77aff544412; } ?>
+<?php $__datafabb8c1c18824e31683ec77aff544412 = ['attributes' => $attributes->class($classes),'dataFluxBadge' => true]; ?>
+<?php $__slotsfabb8c1c18824e31683ec77aff544412 = []; ?>
+<?php $__blaze->pushData($__datafabb8c1c18824e31683ec77aff544412); ?>
 <?php ob_start(); ?>
     <?php if (is_string($icon) && $icon !== ''): ?>
-        <?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php', $__blaze->compiledPath.'/ebfb27feae87a3d873cb5ef75a09aacc.php'); ?>
-<?php $__blaze->pushData(['icon' => $icon,'variant' => $iconVariant,'class' => $iconClasses,'dataFluxBadgeIcon' => true]); ?>
-<?php __ebfb27feae87a3d873cb5ef75a09aacc($__blaze, ['icon' => $icon,'variant' => $iconVariant,'class' => $iconClasses,'dataFluxBadgeIcon' => true], [], ['icon', 'variant', 'class', 'dataFluxBadgeIcon'], ['dataFluxBadgeIcon' => 'data-flux-badge-icon'], $__this ?? (isset($this) ? $this : null)); ?>
+        <?php if (!function_exists('__adf4f9f4d4b9749b7256198b8759ef9f')) { require $__blaze->compile('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php'); } ?>
+<?php $__componentData = ['icon' => $icon,'variant' => $iconVariant,'class' => $iconClasses,'dataFluxBadgeIcon' => true]; ?>
+<?php $__blaze->pushData($__componentData); ?>
+<?php __adf4f9f4d4b9749b7256198b8759ef9f($__blaze, $__componentData, ['icon' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($__componentData['icon']), 'variant' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($__componentData['variant']), 'class' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($__componentData['class']), 'data-flux-badge-icon' => true], [], $__this ?? (isset($this) ? $this : null)); ?>
 <?php $__blaze->popData(); ?>
     <?php else: ?>
         <?php echo e($icon); ?>
@@ -133,9 +135,10 @@ $classes = Flux::classes()
     <?php if ($iconTrailing): ?>
         <div class="ps-1 flex items-center" data-flux-badge-icon:trailing>
             <?php if (is_string($iconTrailing)): ?>
-                <?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php', $__blaze->compiledPath.'/ebfb27feae87a3d873cb5ef75a09aacc.php'); ?>
-<?php $__blaze->pushData(['icon' => $iconTrailing,'variant' => $iconVariant,'class' => $iconClasses]); ?>
-<?php __ebfb27feae87a3d873cb5ef75a09aacc($__blaze, ['icon' => $iconTrailing,'variant' => $iconVariant,'class' => $iconClasses], [], ['icon', 'variant', 'class'], [], $__this ?? (isset($this) ? $this : null)); ?>
+                <?php if (!function_exists('__adf4f9f4d4b9749b7256198b8759ef9f')) { require $__blaze->compile('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php'); } ?>
+<?php $__componentData = ['icon' => $iconTrailing,'variant' => $iconVariant,'class' => $iconClasses]; ?>
+<?php $__blaze->pushData($__componentData); ?>
+<?php __adf4f9f4d4b9749b7256198b8759ef9f($__blaze, $__componentData, ['icon' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($__componentData['icon']), 'variant' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($__componentData['variant']), 'class' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($__componentData['class'])], [], $__this ?? (isset($this) ? $this : null)); ?>
 <?php $__blaze->popData(); ?>
             <?php else: ?>
                 <?php echo e($iconTrailing); ?>
@@ -143,11 +146,11 @@ $classes = Flux::classes()
             <?php endif; ?>
         </div>
     <?php endif; ?>
-<?php $__slots6c59210563a6bcbbb59ec1e8ebc42fc2['slot'] = new \Illuminate\View\ComponentSlot($__blaze->processPassthroughContent('trim', trim(ob_get_clean())), []); ?>
-<?php $__blaze->pushSlots($__slots6c59210563a6bcbbb59ec1e8ebc42fc2); ?>
-<?php __6c59210563a6bcbbb59ec1e8ebc42fc2($__blaze, $__attrs6c59210563a6bcbbb59ec1e8ebc42fc2, $__slots6c59210563a6bcbbb59ec1e8ebc42fc2, ['attributes', 'dataFluxBadge'], ['dataFluxBadge' => 'data-flux-badge'], $__this ?? (isset($this) ? $this : null)); ?>
-<?php if (! empty($__slotsStack6c59210563a6bcbbb59ec1e8ebc42fc2)) { $__slots6c59210563a6bcbbb59ec1e8ebc42fc2 = array_pop($__slotsStack6c59210563a6bcbbb59ec1e8ebc42fc2); } ?>
-<?php if (! empty($__attrsStack6c59210563a6bcbbb59ec1e8ebc42fc2)) { $__attrs6c59210563a6bcbbb59ec1e8ebc42fc2 = array_pop($__attrsStack6c59210563a6bcbbb59ec1e8ebc42fc2); } ?>
+<?php $__slotsfabb8c1c18824e31683ec77aff544412['slot'] = new \Illuminate\View\ComponentSlot($__blaze->processPassthroughContent('trim', trim(ob_get_clean())), []); ?>
+<?php $__blaze->pushSlots($__slotsfabb8c1c18824e31683ec77aff544412); ?>
+<?php __fabb8c1c18824e31683ec77aff544412($__blaze, $__datafabb8c1c18824e31683ec77aff544412, $__blaze->mergeAttributes(['attributes' => $__datafabb8c1c18824e31683ec77aff544412['attributes'], 'data-flux-badge' => true]), $__slotsfabb8c1c18824e31683ec77aff544412, $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStackfabb8c1c18824e31683ec77aff544412)) { $__slotsfabb8c1c18824e31683ec77aff544412 = array_pop($__slotsStackfabb8c1c18824e31683ec77aff544412); } ?>
+<?php if (! empty($__dataStackfabb8c1c18824e31683ec77aff544412)) { $__datafabb8c1c18824e31683ec77aff544412 = array_pop($__dataStackfabb8c1c18824e31683ec77aff544412); } ?>
 <?php $__blaze->popData(); ?>
 <?php
 echo $__blaze->processPassthroughContent('ltrim', ltrim(ob_get_clean()));

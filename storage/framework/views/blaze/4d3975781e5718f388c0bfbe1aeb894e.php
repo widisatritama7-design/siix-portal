@@ -1,21 +1,23 @@
+<?php # [BlazeVersion]:{v3} ?>
 <?php
-if (!function_exists('__4d3975781e5718f388c0bfbe1aeb894e')):
-function __4d3975781e5718f388c0bfbe1aeb894e($__blaze, $__data = [], $__slots = [], $__bound = [], $__keys = [], $__this = null) {
+if (!function_exists('__3338843ff87dda96dddeda3d4279bc49')):
+function __3338843ff87dda96dddeda3d4279bc49($__blaze, $__data = [], $__attributes = [], $__slots = [], $__this = null) {
 $__env = $__blaze->env;
 $__slots['slot'] ??= new \Illuminate\View\ComponentSlot('');
 if (($__data['attributes'] ?? null) instanceof \Illuminate\View\ComponentAttributeBag) { $__data = $__data + $__data['attributes']->all(); unset($__data['attributes']); }
 extract($__slots, EXTR_SKIP); unset($__slots);
 extract($__data, EXTR_SKIP);
-$attributes = \Livewire\Blaze\Runtime\BlazeAttributeBag::make($__data, $__bound, $__keys);
-unset($__data, $__bound, $__keys);
+$attributes = new \Livewire\Blaze\Runtime\BlazeAttributeBag($__attributes);
+$__delegateData = $__data;
+unset($__data, $__attributes);
 ob_start();
 ?>
 
 
 <?php
 $__awareDefaults = [ 'variant', 'indicator' ];
-$variant = $__blaze->getConsumableData('variant'); unset($attributes['variant']);
-$indicator = $__blaze->getConsumableData('indicator'); unset($attributes['indicator']);
+$variant = $__blaze->getConsumableData('variant');
+$indicator = $__blaze->getConsumableData('indicator');
 unset($__awareDefaults);
 ?>
 
@@ -35,37 +37,39 @@ $variant = $variant !== 'default' && Flux::componentExists('select.variants.' . 
 ?>
 
 <?php $__resolved = $__blaze->resolve('flux::' . 'select.option.variants.' . $variant); ?>
-<?php $__blaze->pushData($attributes->all()); ?>
+<?php $__delegatedData = $__delegateData ?? $__env->getCurrentComponentData(); ?>
+<?php $__blaze->pushData($__delegatedData); ?>
 <?php if ($__resolved !== false): ?>
-<?php if (isset($__slots270aed46ead0eaa26bbb7430286841b3)) { $__slotsStack270aed46ead0eaa26bbb7430286841b3[] = $__slots270aed46ead0eaa26bbb7430286841b3; } ?>
-<?php $__slots270aed46ead0eaa26bbb7430286841b3 = []; ?>
-<?php ob_start(); ?><?php echo e($slot); ?><?php $__slots270aed46ead0eaa26bbb7430286841b3['slot'] = new \Illuminate\View\ComponentSlot($__blaze->processPassthroughContent('trim', trim(ob_get_clean())), []); ?>
-<?php $__slots270aed46ead0eaa26bbb7430286841b3 = array_merge($__blaze->mergedComponentSlots(), $__slots270aed46ead0eaa26bbb7430286841b3); ?>
-<?php ('__' . $__resolved)($__blaze, $attributes->all(), $__slots270aed46ead0eaa26bbb7430286841b3, [], [], $__this ?? (isset($this) ? $this : null)); ?>
-<?php if (! empty($__slotsStack270aed46ead0eaa26bbb7430286841b3)) { $__slots270aed46ead0eaa26bbb7430286841b3 = array_pop($__slotsStack270aed46ead0eaa26bbb7430286841b3); } ?>
+<?php if (isset($__slotsebc292d5aa182ed9e88acc56fcd01d76)) { $__slotsStackebc292d5aa182ed9e88acc56fcd01d76[] = $__slotsebc292d5aa182ed9e88acc56fcd01d76; } ?>
+<?php $__slotsebc292d5aa182ed9e88acc56fcd01d76 = []; ?>
+<?php ob_start(); ?><?php echo e($slot); ?><?php $__slotsebc292d5aa182ed9e88acc56fcd01d76['slot'] = new \Illuminate\View\ComponentSlot($__blaze->processPassthroughContent('trim', trim(ob_get_clean())), []); ?>
+<?php $__slotsebc292d5aa182ed9e88acc56fcd01d76 = array_merge($__blaze->mergedComponentSlots(), $__slotsebc292d5aa182ed9e88acc56fcd01d76); ?>
+<?php ('__' . $__resolved)($__blaze, $__delegatedData, $attributes->getAttributes(), $__slotsebc292d5aa182ed9e88acc56fcd01d76, $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStackebc292d5aa182ed9e88acc56fcd01d76)) { $__slotsebc292d5aa182ed9e88acc56fcd01d76 = array_pop($__slotsStackebc292d5aa182ed9e88acc56fcd01d76); } ?>
 <?php else: ?>
-<?php if (!Flux::componentExists($name = 'select.option.variants.' . $variant)) throw new \Exception("Flux component [{$name}] does not exist."); ?><?php if (isset($component)) { $__componentOriginal0c793dac3b0f3858ef7a5fdb4e001894 = $component; } ?>
-<?php if (isset($attributes)) { $__attributesOriginal0c793dac3b0f3858ef7a5fdb4e001894 = $attributes; } ?>
-<?php $component = Illuminate\View\AnonymousComponent::resolve([
-    'view' => (app()->version() >= 12 ? hash('xxh128', 'flux') : md5('flux')) . '::' . 'select.option.variants.' . $variant,
-    'data' => $__env->getCurrentComponentData(),
-] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
-<?php $component->withName('flux::' . 'select.option.variants.' . $variant); ?>
+<?php if (! Flux::componentExists(('select.option.variants.' . $variant))) throw new \Exception('Flux component [' . ('select.option.variants.' . $variant) . '] does not exist.'); ?>
+<?php if (isset($component)) { $__componentOriginal7b652cb3474c4d116ae68e3f703c1d27 = $component; } ?>
+<?php if (isset($attributes)) { $__attributesOriginal7b652cb3474c4d116ae68e3f703c1d27 = $attributes; } ?>
+<?php $component = Illuminate\View\AnonymousComponent::resolve(['view' => (app()->version() >= 12 ? hash('xxh128', 'flux') : md5('flux')) . '::' . ('select.option.variants.' . $variant), 'data' => array_merge($__delegatedData, $__blaze->mergedComponentSlots())] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
+<?php $component->withName('flux::' . ('select.option.variants.' . $variant)); ?>
 <?php if ($component->shouldRender()): ?>
 <?php $__env->startComponent($component->resolveView(), $component->data()); ?>
-<?php $component->withAttributes($attributes->getAttributes()); ?><?php echo e($slot); ?> <?php echo $__env->renderComponent(); ?>
+<?php $component->withAttributes($attributes->getAttributes()); ?>
+<?php echo e($slot); ?>
+
+<?php echo $__env->renderComponent(); ?>
 <?php endif; ?>
-<?php if (isset($__attributesOriginal0c793dac3b0f3858ef7a5fdb4e001894)): ?>
-<?php $attributes = $__attributesOriginal0c793dac3b0f3858ef7a5fdb4e001894; ?>
-<?php unset($__attributesOriginal0c793dac3b0f3858ef7a5fdb4e001894); ?>
+<?php if (isset($__attributesOriginal7b652cb3474c4d116ae68e3f703c1d27)): ?>
+<?php $attributes = $__attributesOriginal7b652cb3474c4d116ae68e3f703c1d27; ?>
+<?php unset($__attributesOriginal7b652cb3474c4d116ae68e3f703c1d27); ?>
 <?php endif; ?>
-<?php if (isset($__componentOriginal0c793dac3b0f3858ef7a5fdb4e001894)): ?>
-<?php $component = $__componentOriginal0c793dac3b0f3858ef7a5fdb4e001894; ?>
-<?php unset($__componentOriginal0c793dac3b0f3858ef7a5fdb4e001894); ?>
+<?php if (isset($__componentOriginal7b652cb3474c4d116ae68e3f703c1d27)): ?>
+<?php $component = $__componentOriginal7b652cb3474c4d116ae68e3f703c1d27; ?>
+<?php unset($__componentOriginal7b652cb3474c4d116ae68e3f703c1d27); ?>
 <?php endif; ?>
 <?php endif; ?>
 <?php $__blaze->popData(); ?>
-<?php unset($__resolved) ?>
+<?php unset($__resolved, $__delegatedData) ?>
 <?php
 echo $__blaze->processPassthroughContent('ltrim', ltrim(ob_get_clean()));
 } endif; ?><?php /**PATH /www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/select/option/index.blade.php ENDPATH**/ ?>

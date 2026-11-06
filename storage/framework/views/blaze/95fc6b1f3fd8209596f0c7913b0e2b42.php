@@ -1,13 +1,14 @@
+<?php # [BlazeVersion]:{v3} ?>
 <?php
-if (!function_exists('__95fc6b1f3fd8209596f0c7913b0e2b42')):
-function __95fc6b1f3fd8209596f0c7913b0e2b42($__blaze, $__data = [], $__slots = [], $__bound = [], $__keys = [], $__this = null) {
+if (!function_exists('__b9a8d86fc9e8c7ffccb30bc3dfb12502')):
+function __b9a8d86fc9e8c7ffccb30bc3dfb12502($__blaze, $__data = [], $__attributes = [], $__slots = [], $__this = null) {
 $__env = $__blaze->env;
 $__slots['slot'] ??= new \Illuminate\View\ComponentSlot('');
 if (($__data['attributes'] ?? null) instanceof \Illuminate\View\ComponentAttributeBag) { $__data = $__data + $__data['attributes']->all(); unset($__data['attributes']); }
 extract($__slots, EXTR_SKIP); unset($__slots);
 extract($__data, EXTR_SKIP);
-$attributes = \Livewire\Blaze\Runtime\BlazeAttributeBag::make($__data, $__bound, $__keys);
-unset($__data, $__bound, $__keys);
+$attributes = new \Livewire\Blaze\Runtime\BlazeAttributeBag($__attributes);
+unset($__data, $__attributes);
 ob_start();
 ?>
 
@@ -37,7 +38,7 @@ if ($sticky) {
 ?>
 
 <header <?php echo e($attributes->class($classes)); ?> data-flux-header>
-    <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($container): ?>
+    <?php if ($container) : ?>
         <div class="mx-auto w-full h-full [:where(&)]:max-w-7xl px-6 lg:px-8 flex items-center">
             <?php echo e($slot); ?>
 
@@ -45,7 +46,7 @@ if ($sticky) {
     <?php else: ?>
         <?php echo e($slot); ?>
 
-    <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+    <?php endif; ?>
 </header>
 <?php
 echo $__blaze->processPassthroughContent('ltrim', ltrim(ob_get_clean()));

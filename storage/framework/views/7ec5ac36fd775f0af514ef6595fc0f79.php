@@ -1,3 +1,10 @@
+<?php # [BlazeVersion]:{v3} ?>
+<?php # [BlazeFolded]:{flux::input}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/input/index.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::input}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/input/index.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::input}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/input/index.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::input}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/input/index.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::input}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/input/index.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::textarea}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/textarea.blade.php}:{1792593958} ?>
 <?php $attributes ??= new \Illuminate\View\ComponentAttributeBag;
 
 $__newAttributes = [];
@@ -496,10 +503,26 @@ unset($__defined_vars, $__key, $__value); ?>
                                     </div>
                                 <?php else: ?>
                                     <div class="relative">
-                                        <?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/input/index.blade.php', $__blaze->compiledPath.'/f9ce25dced5c86c906351e8ca96b9cbb.php'); ?>
-<?php $__blaze->pushData(['type' => 'number','step' => '0.01','min' => '0','max' => '100','wire:model.blur' => e($key).'.filling_ratio','placeholder' => '0 - 100','class' => 'pr-9 !text-center !text-lg !font-bold']); ?>
-<?php _f9ce25dced5c86c906351e8ca96b9cbb($__blaze, ['type' => 'number','step' => '0.01','min' => '0','max' => '100','wire:model.blur' => e($key).'.filling_ratio','placeholder' => '0 - 100','class' => 'pr-9 !text-center !text-lg !font-bold'], [], [], [], $__this ?? (isset($this) ? $this : null)); ?>
-<?php $__blaze->popData(); ?>
+                                        <?php ob_start(); ?><div class="w-full relative block group/input pr-9 !text-center !text-lg !font-bold" data-flux-input>
+            
+            <input
+                type="number"
+                
+                class="w-full border block disabled:shadow-none dark:shadow-none appearance-none text-base sm:text-sm rounded-lg py-2 h-10 leading-[1.375rem] ps-3 pe-3 bg-white dark:bg-white/10 dark:disabled:bg-white/[7%] text-zinc-700 disabled:text-zinc-500 placeholder-zinc-400 disabled:placeholder-zinc-400/70 dark:text-zinc-300 dark:disabled:text-zinc-400 dark:placeholder-zinc-400 dark:disabled:placeholder-zinc-500 shadow-xs border-zinc-200 border-b-zinc-300/80 disabled:border-b-zinc-200 dark:border-white/10 dark:disabled:border-white/5 data-invalid:shadow-none data-invalid:border-red-500 dark:data-invalid:border-red-500 disabled:data-invalid:border-red-500 dark:disabled:data-invalid:border-red-500" step="0.01" min="0" max="100" wire:model.blur="<?php echo e($key); ?>.filling_ratio" placeholder="0 - 100"
+                 name="<?php echo e($key); ?>.filling_ratio"                                                 <?php if (isset($scope)) $__scope = $scope; ?><?php $scope = array (
+  'name' => e($key).'.filling_ratio',
+  'invalid' => false,
+); ?>
+                <?php if ($scope['invalid'] || ($scope['name'] && $errors->has($scope['name']))): ?>
+                aria-invalid="true" data-invalid
+                <?php endif; ?>
+                <?php if (isset($__scope)) { $scope = $__scope; unset($__scope); } ?>
+                data-flux-control
+                data-flux-group-target
+                                            >
+
+                    </div>
+<?php echo ltrim(ob_get_clean()); ?>
                                         <span class="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-zinc-400 font-bold">%</span>
                                     </div>
                                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ["$key.filling_ratio"];
@@ -523,10 +546,38 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($ngDetailReadonly): ?>
                                     <div class="text-2xl font-bold font-mono text-amber-700 dark:text-amber-300"><?php echo e($items['qty_hold'] ?? 0); ?></div>
                                 <?php else: ?>
-                                    <?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/input/index.blade.php', $__blaze->compiledPath.'/f9ce25dced5c86c906351e8ca96b9cbb.php'); ?>
-<?php $__blaze->pushData(['type' => 'number','min' => '0','wire:model.live.debounce.300ms' => e($key).'.qty_hold','class' => '!text-center !text-lg !font-bold']); ?>
-<?php _f9ce25dced5c86c906351e8ca96b9cbb($__blaze, ['type' => 'number','min' => '0','wire:model.live.debounce.300ms' => e($key).'.qty_hold','class' => '!text-center !text-lg !font-bold'], [], [], [], $__this ?? (isset($this) ? $this : null)); ?>
-<?php $__blaze->popData(); ?>
+                                    <?php ob_start(); ?><div class="w-full relative block group/input !text-center !text-lg !font-bold" data-flux-input>
+            
+            <input
+                type="number"
+                
+                class="w-full border block disabled:shadow-none dark:shadow-none appearance-none text-base sm:text-sm rounded-lg py-2 h-10 leading-[1.375rem] ps-3 pe-3 bg-white dark:bg-white/10 dark:disabled:bg-white/[7%] text-zinc-700 disabled:text-zinc-500 placeholder-zinc-400 disabled:placeholder-zinc-400/70 dark:text-zinc-300 dark:disabled:text-zinc-400 dark:placeholder-zinc-400 dark:disabled:placeholder-zinc-500 shadow-xs border-zinc-200 border-b-zinc-300/80 disabled:border-b-zinc-200 dark:border-white/10 dark:disabled:border-white/5 data-invalid:shadow-none data-invalid:border-red-500 dark:data-invalid:border-red-500 disabled:data-invalid:border-red-500 dark:disabled:data-invalid:border-red-500" min="0" wire:model.live.debounce.300ms="<?php echo e($key); ?>.qty_hold"                 name="<?php echo e($key); ?>.qty_hold"                                                 <?php if (isset($scope)) $__scope = $scope; ?><?php $scope = array (
+  'name' => e($key).'.qty_hold',
+  'invalid' => false,
+); ?>
+                <?php if ($scope['invalid'] || ($scope['name'] && $errors->has($scope['name']))): ?>
+                aria-invalid="true" data-invalid
+                <?php endif; ?>
+                <?php if (isset($__scope)) { $scope = $__scope; unset($__scope); } ?>
+                data-flux-control
+                data-flux-group-target
+                 wire:loading.class="pe-10"                  wire:target="<?php echo e($key); ?>.qty_hold"             >
+
+                            <div class="absolute top-0 bottom-0 flex items-center gap-x-1.5 pe-2 border-e border-transparent end-0 text-xs text-zinc-400">
+                    
+                                            <svg class="shrink-0 [:where(&amp;)]:size-5 animate-spin" wire:loading="" wire:target="<?php echo e($key); ?>.qty_hold" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true" data-slot="icon">
+    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+</svg>
+                            
+                    
+                    
+                    
+                    
+                    
+                                    </div>
+                    </div>
+<?php echo ltrim(ob_get_clean()); ?>
                                 <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                             </div>
                         </div>
@@ -540,10 +591,38 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($ngDetailReadonly): ?>
                                     <div class="text-2xl font-bold text-emerald-700 dark:text-emerald-300"><?php echo e($items['status_after_check']['ok'] ?? 0); ?></div>
                                 <?php else: ?>
-                                    <?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/input/index.blade.php', $__blaze->compiledPath.'/f9ce25dced5c86c906351e8ca96b9cbb.php'); ?>
-<?php $__blaze->pushData(['type' => 'number','min' => '0','wire:model.live.debounce.300ms' => e($key).'.status_after_check.ok','class' => '!border-emerald-300 focus:!border-emerald-500 !text-center !text-lg !font-bold']); ?>
-<?php _f9ce25dced5c86c906351e8ca96b9cbb($__blaze, ['type' => 'number','min' => '0','wire:model.live.debounce.300ms' => e($key).'.status_after_check.ok','class' => '!border-emerald-300 focus:!border-emerald-500 !text-center !text-lg !font-bold'], [], [], [], $__this ?? (isset($this) ? $this : null)); ?>
-<?php $__blaze->popData(); ?>
+                                    <?php ob_start(); ?><div class="w-full relative block group/input !border-emerald-300 focus:!border-emerald-500 !text-center !text-lg !font-bold" data-flux-input>
+            
+            <input
+                type="number"
+                
+                class="w-full border block disabled:shadow-none dark:shadow-none appearance-none text-base sm:text-sm rounded-lg py-2 h-10 leading-[1.375rem] ps-3 pe-3 bg-white dark:bg-white/10 dark:disabled:bg-white/[7%] text-zinc-700 disabled:text-zinc-500 placeholder-zinc-400 disabled:placeholder-zinc-400/70 dark:text-zinc-300 dark:disabled:text-zinc-400 dark:placeholder-zinc-400 dark:disabled:placeholder-zinc-500 shadow-xs border-zinc-200 border-b-zinc-300/80 disabled:border-b-zinc-200 dark:border-white/10 dark:disabled:border-white/5 data-invalid:shadow-none data-invalid:border-red-500 dark:data-invalid:border-red-500 disabled:data-invalid:border-red-500 dark:disabled:data-invalid:border-red-500" min="0" wire:model.live.debounce.300ms="<?php echo e($key); ?>.status_after_check.ok"                 name="<?php echo e($key); ?>.status_after_check.ok"                                                 <?php if (isset($scope)) $__scope = $scope; ?><?php $scope = array (
+  'name' => e($key).'.status_after_check.ok',
+  'invalid' => false,
+); ?>
+                <?php if ($scope['invalid'] || ($scope['name'] && $errors->has($scope['name']))): ?>
+                aria-invalid="true" data-invalid
+                <?php endif; ?>
+                <?php if (isset($__scope)) { $scope = $__scope; unset($__scope); } ?>
+                data-flux-control
+                data-flux-group-target
+                 wire:loading.class="pe-10"                  wire:target="<?php echo e($key); ?>.status_after_check.ok"             >
+
+                            <div class="absolute top-0 bottom-0 flex items-center gap-x-1.5 pe-2 border-e border-transparent end-0 text-xs text-zinc-400">
+                    
+                                            <svg class="shrink-0 [:where(&amp;)]:size-5 animate-spin" wire:loading="" wire:target="<?php echo e($key); ?>.status_after_check.ok" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true" data-slot="icon">
+    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+</svg>
+                            
+                    
+                    
+                    
+                    
+                    
+                                    </div>
+                    </div>
+<?php echo ltrim(ob_get_clean()); ?>
                                 <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                             </div>
                         </div>
@@ -557,10 +636,38 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                 <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($ngDetailReadonly): ?>
                                     <div class="text-2xl font-bold text-red-700 dark:text-red-300"><?php echo e($items['status_after_check']['ng'] ?? 0); ?></div>
                                 <?php else: ?>
-                                    <?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/input/index.blade.php', $__blaze->compiledPath.'/f9ce25dced5c86c906351e8ca96b9cbb.php'); ?>
-<?php $__blaze->pushData(['type' => 'number','min' => '0','wire:model.live.debounce.300ms' => e($key).'.status_after_check.ng','class' => '!border-red-300 focus:!border-red-500 !text-center !text-lg !font-bold']); ?>
-<?php _f9ce25dced5c86c906351e8ca96b9cbb($__blaze, ['type' => 'number','min' => '0','wire:model.live.debounce.300ms' => e($key).'.status_after_check.ng','class' => '!border-red-300 focus:!border-red-500 !text-center !text-lg !font-bold'], [], [], [], $__this ?? (isset($this) ? $this : null)); ?>
-<?php $__blaze->popData(); ?>
+                                    <?php ob_start(); ?><div class="w-full relative block group/input !border-red-300 focus:!border-red-500 !text-center !text-lg !font-bold" data-flux-input>
+            
+            <input
+                type="number"
+                
+                class="w-full border block disabled:shadow-none dark:shadow-none appearance-none text-base sm:text-sm rounded-lg py-2 h-10 leading-[1.375rem] ps-3 pe-3 bg-white dark:bg-white/10 dark:disabled:bg-white/[7%] text-zinc-700 disabled:text-zinc-500 placeholder-zinc-400 disabled:placeholder-zinc-400/70 dark:text-zinc-300 dark:disabled:text-zinc-400 dark:placeholder-zinc-400 dark:disabled:placeholder-zinc-500 shadow-xs border-zinc-200 border-b-zinc-300/80 disabled:border-b-zinc-200 dark:border-white/10 dark:disabled:border-white/5 data-invalid:shadow-none data-invalid:border-red-500 dark:data-invalid:border-red-500 disabled:data-invalid:border-red-500 dark:disabled:data-invalid:border-red-500" min="0" wire:model.live.debounce.300ms="<?php echo e($key); ?>.status_after_check.ng"                 name="<?php echo e($key); ?>.status_after_check.ng"                                                 <?php if (isset($scope)) $__scope = $scope; ?><?php $scope = array (
+  'name' => e($key).'.status_after_check.ng',
+  'invalid' => false,
+); ?>
+                <?php if ($scope['invalid'] || ($scope['name'] && $errors->has($scope['name']))): ?>
+                aria-invalid="true" data-invalid
+                <?php endif; ?>
+                <?php if (isset($__scope)) { $scope = $__scope; unset($__scope); } ?>
+                data-flux-control
+                data-flux-group-target
+                 wire:loading.class="pe-10"                  wire:target="<?php echo e($key); ?>.status_after_check.ng"             >
+
+                            <div class="absolute top-0 bottom-0 flex items-center gap-x-1.5 pe-2 border-e border-transparent end-0 text-xs text-zinc-400">
+                    
+                                            <svg class="shrink-0 [:where(&amp;)]:size-5 animate-spin" wire:loading="" wire:target="<?php echo e($key); ?>.status_after_check.ng" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true" data-slot="icon">
+    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+</svg>
+                            
+                    
+                    
+                    
+                    
+                    
+                                    </div>
+                    </div>
+<?php echo ltrim(ob_get_clean()); ?>
                                 <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                             </div>
                         </div>
@@ -643,10 +750,50 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
                                         <?php $ncpList = $this->getNcpListFor($key); ?>
                                         <div class="mt-3 rounded-xl overflow-hidden border border-indigo-300 dark:border-indigo-700 bg-white dark:bg-zinc-900 shadow-lg">
                                             <div class="p-3 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 border-b border-indigo-200 dark:border-indigo-800">
-                                                <?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/input/index.blade.php', $__blaze->compiledPath.'/f9ce25dced5c86c906351e8ca96b9cbb.php'); ?>
-<?php $__blaze->pushData(['wire:model.live.debounce.300ms' => 'ncpSearches.'.e($key),'placeholder' => 'Cari NCP...','icon' => 'magnifying-glass','clearable' => true]); ?>
-<?php _f9ce25dced5c86c906351e8ca96b9cbb($__blaze, ['wire:model.live.debounce.300ms' => 'ncpSearches.'.e($key),'placeholder' => 'Cari NCP...','icon' => 'magnifying-glass','clearable' => true], [], ['clearable'], [], $__this ?? (isset($this) ? $this : null)); ?>
-<?php $__blaze->popData(); ?>
+                                                <?php ob_start(); ?><div class="w-full relative block group/input" data-flux-input>
+                            <div class="pointer-events-none absolute top-0 bottom-0 border-s border-transparent flex items-center justify-center text-xs text-zinc-400/75 dark:text-white/60 ps-3 start-0">
+                    <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 1 0 0 11 5.5 5.5 0 0 0 0-11ZM2 9a7 7 0 1 1 12.452 4.391l3.328 3.329a.75.75 0 1 1-1.06 1.06l-3.329-3.328A7 7 0 0 1 2 9Z" clip-rule="evenodd"/>
+</svg>
+
+                        </div>
+            
+            <input
+                type="text"
+                
+                class="w-full border block disabled:shadow-none dark:shadow-none appearance-none text-base sm:text-sm rounded-lg py-2 h-10 leading-[1.375rem] ps-10 pe-10 bg-white dark:bg-white/10 dark:disabled:bg-white/[7%] text-zinc-700 disabled:text-zinc-500 placeholder-zinc-400 disabled:placeholder-zinc-400/70 dark:text-zinc-300 dark:disabled:text-zinc-400 dark:placeholder-zinc-400 dark:disabled:placeholder-zinc-500 shadow-xs border-zinc-200 border-b-zinc-300/80 disabled:border-b-zinc-200 dark:border-white/10 dark:disabled:border-white/5 data-invalid:shadow-none data-invalid:border-red-500 dark:data-invalid:border-red-500 disabled:data-invalid:border-red-500 dark:disabled:data-invalid:border-red-500" wire:model.live.debounce.300ms="ncpSearches.<?php echo e($key); ?>" placeholder="Cari NCP..."
+                 name="ncpSearches.<?php echo e($key); ?>"                                                 <?php if (isset($scope)) $__scope = $scope; ?><?php $scope = array (
+  'name' => 'ncpSearches.'.e($key),
+  'invalid' => false,
+); ?>
+                <?php if ($scope['invalid'] || ($scope['name'] && $errors->has($scope['name']))): ?>
+                aria-invalid="true" data-invalid
+                <?php endif; ?>
+                <?php if (isset($__scope)) { $scope = $__scope; unset($__scope); } ?>
+                data-flux-control
+                data-flux-group-target
+                 wire:loading.class="pe-16"                  wire:target="ncpSearches.<?php echo e($key); ?>"             >
+
+                            <div class="absolute top-0 bottom-0 flex items-center gap-x-1.5 pe-2 border-e border-transparent end-0 text-xs text-zinc-400">
+                    
+                                            <svg class="shrink-0 [:where(&amp;)]:size-5 animate-spin" wire:loading="" wire:target="ncpSearches.<?php echo e($key); ?>" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true" data-slot="icon">
+    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+</svg>
+                            
+                                            <button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-8 text-sm rounded-md gap-2 w-8 inline-flex -ms-1.5 -me-1.5 bg-transparent hover:bg-zinc-800/5 dark:hover:bg-white/15 text-zinc-500 hover:text-zinc-800 dark:text-zinc-400 dark:hover:text-white       -me-1 [[data-flux-input]:has(input:placeholder-shown)_&amp;]:hidden [[data-flux-input]:has(input[disabled])_&amp;]:hidden" data-flux-button="data-flux-button" x-data="fluxInputClearable" x-on:click="clear()" tabindex="-1" aria-label="Clear input" data-flux-clear-button="data-flux-clear-button">
+        <svg class="shrink-0 [:where(&amp;)]:size-5" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+  <path d="M6.28 5.22a.75.75 0 0 0-1.06 1.06L8.94 10l-3.72 3.72a.75.75 0 1 0 1.06 1.06L10 11.06l3.72 3.72a.75.75 0 1 0 1.06-1.06L11.06 10l3.72-3.72a.75.75 0 0 0-1.06-1.06L10 8.94 6.28 5.22Z"/>
+</svg>
+    </button>
+                    
+                    
+                    
+                    
+                    
+                                    </div>
+                    </div>
+<?php echo ltrim(ob_get_clean()); ?>
                                             </div>
                                             <div class="overflow-x-auto">
                                                 <table class="w-full text-xs">
@@ -835,10 +982,21 @@ unset($__errorArgs, $__bag); ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendB
 
                                     </div>
                                 <?php else: ?>
-                                    <?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/textarea.blade.php', $__blaze->compiledPath.'/94345100219c384088bc615bcd8fde6c.php'); ?>
-<?php $__blaze->pushData(['wire:model.blur' => e($key).'.remarks','rows' => '3','placeholder' => 'Tulis keterangan...']); ?>
-<?php _94345100219c384088bc615bcd8fde6c($__blaze, ['wire:model.blur' => e($key).'.remarks','rows' => '3','placeholder' => 'Tulis keterangan...'], [], [], [], $__this ?? (isset($this) ? $this : null)); ?>
-<?php $__blaze->popData(); ?>
+                                    <?php ob_start(); ?><textarea
+        class="block p-3 w-full shadow-xs disabled:shadow-none border rounded-lg bg-white dark:bg-white/10 dark:disabled:bg-white/[7%] resize-y  text-base sm:text-sm text-zinc-700 disabled:text-zinc-500 placeholder-zinc-400 disabled:placeholder-zinc-400/70 dark:text-zinc-300 dark:disabled:text-zinc-400 dark:placeholder-zinc-400 dark:disabled:placeholder-zinc-500 border-zinc-200 border-b-zinc-300/80 dark:border-white/10 data-invalid:shadow-none data-invalid:border-red-500 dark:data-invalid:border-red-500" wire:model.blur="<?php echo e($key); ?>.remarks" placeholder="Tulis keterangan..."
+        rows="3"
+         name="<?php echo e($key); ?>.remarks"         <?php if (isset($scope)) $__scope = $scope; ?><?php $scope = array (
+  'name' => e($key).'.remarks',
+  'invalid' => false,
+); ?>
+        <?php if ($scope['invalid'] || ($scope['name'] && $errors->has($scope['name']))): ?>
+        aria-invalid="true" data-invalid
+        <?php endif; ?>
+        <?php if (isset($__scope)) { $scope = $__scope; unset($__scope); } ?>
+        data-flux-control
+        data-flux-textarea
+    ></textarea>
+<?php echo ltrim(ob_get_clean()); ?>
                                     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php $__errorArgs = ["$key.remarks"];
 $__bag = $errors->getBag($__errorArgs[1] ?? 'default');
 if ($__bag->has($__errorArgs[0])) :

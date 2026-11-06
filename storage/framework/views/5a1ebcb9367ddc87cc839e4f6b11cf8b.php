@@ -1,33 +1,34 @@
-<?php # [BlazeFolded]:{flux::breadcrumbs.item}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/breadcrumbs/item.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::breadcrumbs.item}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/breadcrumbs/item.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::breadcrumbs}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/breadcrumbs/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::badge}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/badge/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::badge}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/badge/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::badge}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/badge/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::card}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/card/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::badge}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/badge/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::badge}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/badge/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::card}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/card/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php}:{1776985208} ?>
+<?php # [BlazeVersion]:{v3} ?>
+<?php # [BlazeFolded]:{flux::breadcrumbs.item}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/breadcrumbs/item.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::breadcrumbs.item}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/breadcrumbs/item.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::breadcrumbs}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/breadcrumbs/index.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::icon}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::badge}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/badge/index.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::badge}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/badge/index.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::badge}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/badge/index.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::card}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/card/index.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::icon}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::badge}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/badge/index.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::badge}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/badge/index.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::card}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/card/index.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::icon}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php}:{1792593958} ?>
 <div class="p-1 space-y-2">
     <!-- Breadcrumbs -->
     <?php ob_start(); ?><div class="flex" data-flux-breadcrumbs>
     <?php ob_start(); ?>
-        <?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/breadcrumbs/item.blade.php', $__blaze->compiledPath.'/b843a539037c1542dedc5bd82236e28a.php'); ?>
-<?php if (isset($__slotsb843a539037c1542dedc5bd82236e28a)) { $__slotsStackb843a539037c1542dedc5bd82236e28a[] = $__slotsb843a539037c1542dedc5bd82236e28a; } ?>
-<?php if (isset($__attrsb843a539037c1542dedc5bd82236e28a)) { $__attrsStackb843a539037c1542dedc5bd82236e28a[] = $__attrsb843a539037c1542dedc5bd82236e28a; } ?>
-<?php $__attrsb843a539037c1542dedc5bd82236e28a = ['href' => e(route('dashboard')),'wire:navigate' => true,'separator' => 'slash']; ?>
-<?php $__slotsb843a539037c1542dedc5bd82236e28a = []; ?>
-<?php $__blaze->pushData($__attrsb843a539037c1542dedc5bd82236e28a); ?>
+        <?php if (!function_exists('_1e458aebbd4033357c172a25595afd62')) { require $__blaze->compile('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/breadcrumbs/item.blade.php'); } ?>
+<?php if (isset($__slots1e458aebbd4033357c172a25595afd62)) { $__slotsStack1e458aebbd4033357c172a25595afd62[] = $__slots1e458aebbd4033357c172a25595afd62; } ?>
+<?php if (isset($__data1e458aebbd4033357c172a25595afd62)) { $__dataStack1e458aebbd4033357c172a25595afd62[] = $__data1e458aebbd4033357c172a25595afd62; } ?>
+<?php $__data1e458aebbd4033357c172a25595afd62 = ['href' => e(route('dashboard')),'wire:navigate' => true,'separator' => 'slash']; ?>
+<?php $__slots1e458aebbd4033357c172a25595afd62 = []; ?>
+<?php $__blaze->pushData($__data1e458aebbd4033357c172a25595afd62); ?>
 <?php ob_start(); ?>
             Dashboard
-        <?php $__slotsb843a539037c1542dedc5bd82236e28a['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
-<?php $__blaze->pushSlots($__slotsb843a539037c1542dedc5bd82236e28a); ?>
-<?php _b843a539037c1542dedc5bd82236e28a($__blaze, $__attrsb843a539037c1542dedc5bd82236e28a, $__slotsb843a539037c1542dedc5bd82236e28a, ['wire:navigate'], [], $__this ?? (isset($this) ? $this : null)); ?>
-<?php if (! empty($__slotsStackb843a539037c1542dedc5bd82236e28a)) { $__slotsb843a539037c1542dedc5bd82236e28a = array_pop($__slotsStackb843a539037c1542dedc5bd82236e28a); } ?>
-<?php if (! empty($__attrsStackb843a539037c1542dedc5bd82236e28a)) { $__attrsb843a539037c1542dedc5bd82236e28a = array_pop($__attrsStackb843a539037c1542dedc5bd82236e28a); } ?>
+        <?php $__slots1e458aebbd4033357c172a25595afd62['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slots1e458aebbd4033357c172a25595afd62); ?>
+<?php _1e458aebbd4033357c172a25595afd62($__blaze, $__data1e458aebbd4033357c172a25595afd62, ['href' => $__data1e458aebbd4033357c172a25595afd62['href'], 'wire:navigate' => true, 'separator' => 'slash'], $__slots1e458aebbd4033357c172a25595afd62, $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStack1e458aebbd4033357c172a25595afd62)) { $__slots1e458aebbd4033357c172a25595afd62 = array_pop($__slotsStack1e458aebbd4033357c172a25595afd62); } ?>
+<?php if (! empty($__dataStack1e458aebbd4033357c172a25595afd62)) { $__data1e458aebbd4033357c172a25595afd62 = array_pop($__dataStack1e458aebbd4033357c172a25595afd62); } ?>
 <?php $__blaze->popData(); ?>
         <?php ob_start(); ?><div class="flex items-center text-sm font-medium group/breadcrumb font-semibold text-blue-600 dark:text-blue-400" data-flux-breadcrumbs-item>
             <div class="text-gray-500 dark:text-white/80">
@@ -37,11 +38,11 @@
 
                     </div>
     
-    <!--[if BLOCK]><![endif]-->        <svg class="shrink-0 [:where(&amp;)]:size-5 mx-1 text-zinc-300 dark:text-white/80 group-last/breadcrumb:hidden rtl:-scale-x-100" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+            <svg class="shrink-0 [:where(&amp;)]:size-5 mx-1 text-zinc-300 dark:text-white/80 group-last/breadcrumb:hidden rtl:-scale-x-100" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
   <path fill-rule="evenodd" d="M12.528 3.047a.75.75 0 0 1 .449.961L8.433 16.504a.75.75 0 1 1-1.41-.512l4.544-12.496a.75.75 0 0 1 .961-.449Z" clip-rule="evenodd"/>
 </svg>
 
-            <!--[if ENDBLOCK]><![endif]--></div>
+            </div>
 <?php echo ltrim(ob_get_clean()); ?>
         <?php ob_start(); ?><div class="flex items-center text-sm font-medium group/breadcrumb font-semibold text-blue-600 dark:text-blue-400" data-flux-breadcrumbs-item>
             <div class="text-gray-500 dark:text-white/80">
@@ -51,11 +52,11 @@
 
                     </div>
     
-    <!--[if BLOCK]><![endif]-->        <svg class="shrink-0 [:where(&amp;)]:size-5 mx-1 text-zinc-300 dark:text-white/80 group-last/breadcrumb:hidden rtl:-scale-x-100" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
+            <svg class="shrink-0 [:where(&amp;)]:size-5 mx-1 text-zinc-300 dark:text-white/80 group-last/breadcrumb:hidden rtl:-scale-x-100" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" data-slot="icon">
   <path fill-rule="evenodd" d="M12.528 3.047a.75.75 0 0 1 .449.961L8.433 16.504a.75.75 0 1 1-1.41-.512l4.544-12.496a.75.75 0 0 1 .961-.449Z" clip-rule="evenodd"/>
 </svg>
 
-            <!--[if ENDBLOCK]><![endif]--></div>
+            </div>
 <?php echo ltrim(ob_get_clean()); ?>
     <?php echo trim(ob_get_clean()); ?>
 
@@ -212,7 +213,10 @@
 
     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($hasFiltered): ?>
     
-    <?php ob_start(); ?><div class="[:where(&amp;)]:bg-white dark:[:where(&amp;)]:bg-white/10 border border-zinc-200 dark:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl p-0 shadow-lg flex flex-col overflow-hidden" data-flux-card>
+    <?php ob_start(); ?><div
+    class="border bg-clip-padding dark:bg-clip-border [:where(&amp;)]:border-zinc-900/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:shadow-xs dark:[:where(&amp;)]:shadow-none relative after:pointer-events-none after:absolute after:inset-0 after:rounded-[calc(var(--flux-card-radius)-1px)] after:inset-ring [:where(&amp;)]:after:inset-ring-white/25 dark:after:hidden after:[mask-image:linear-gradient(to_bottom,black,transparent)] [:where(&amp;)]:bg-white dark:[:where(&amp;)]:bg-white/10 p-0 shadow-lg flex flex-col overflow-hidden" data-flux-card-body-variant="seamless" data-flux-card-variant="default"
+    data-flux-card
+>
     <?php ob_start(); ?>
         <div class="relative px-6 py-4 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 overflow-hidden">
             <div class="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-white/10"></div>
@@ -294,20 +298,20 @@
                                         $attempt = $item['attempt'] ?? 1;
                                         $maxAttempt = $item['max_attempt'] ?? 2;
                                     ?>
-                                    <?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/badge/index.blade.php', $__blaze->compiledPath.'/6b0011e2f83d04930b97e5f6feda22dd.php'); ?>
-<?php if (isset($__slots6b0011e2f83d04930b97e5f6feda22dd)) { $__slotsStack6b0011e2f83d04930b97e5f6feda22dd[] = $__slots6b0011e2f83d04930b97e5f6feda22dd; } ?>
-<?php if (isset($__attrs6b0011e2f83d04930b97e5f6feda22dd)) { $__attrsStack6b0011e2f83d04930b97e5f6feda22dd[] = $__attrs6b0011e2f83d04930b97e5f6feda22dd; } ?>
-<?php $__attrs6b0011e2f83d04930b97e5f6feda22dd = ['size' => 'sm','color' => e($attempt > 1 ? 'purple' : 'zinc')]; ?>
-<?php $__slots6b0011e2f83d04930b97e5f6feda22dd = []; ?>
-<?php $__blaze->pushData($__attrs6b0011e2f83d04930b97e5f6feda22dd); ?>
+                                    <?php if (!function_exists('_7477cdf3e599b95879e647f1be0a7b24')) { require $__blaze->compile('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/badge/index.blade.php'); } ?>
+<?php if (isset($__slots7477cdf3e599b95879e647f1be0a7b24)) { $__slotsStack7477cdf3e599b95879e647f1be0a7b24[] = $__slots7477cdf3e599b95879e647f1be0a7b24; } ?>
+<?php if (isset($__data7477cdf3e599b95879e647f1be0a7b24)) { $__dataStack7477cdf3e599b95879e647f1be0a7b24[] = $__data7477cdf3e599b95879e647f1be0a7b24; } ?>
+<?php $__data7477cdf3e599b95879e647f1be0a7b24 = ['size' => 'sm','color' => e($attempt > 1 ? 'purple' : 'zinc')]; ?>
+<?php $__slots7477cdf3e599b95879e647f1be0a7b24 = []; ?>
+<?php $__blaze->pushData($__data7477cdf3e599b95879e647f1be0a7b24); ?>
 <?php ob_start(); ?>
                                         <?php echo e($attempt); ?> / <?php echo e($maxAttempt); ?>
 
-                                    <?php $__slots6b0011e2f83d04930b97e5f6feda22dd['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
-<?php $__blaze->pushSlots($__slots6b0011e2f83d04930b97e5f6feda22dd); ?>
-<?php _6b0011e2f83d04930b97e5f6feda22dd($__blaze, $__attrs6b0011e2f83d04930b97e5f6feda22dd, $__slots6b0011e2f83d04930b97e5f6feda22dd, [], [], $__this ?? (isset($this) ? $this : null)); ?>
-<?php if (! empty($__slotsStack6b0011e2f83d04930b97e5f6feda22dd)) { $__slots6b0011e2f83d04930b97e5f6feda22dd = array_pop($__slotsStack6b0011e2f83d04930b97e5f6feda22dd); } ?>
-<?php if (! empty($__attrsStack6b0011e2f83d04930b97e5f6feda22dd)) { $__attrs6b0011e2f83d04930b97e5f6feda22dd = array_pop($__attrsStack6b0011e2f83d04930b97e5f6feda22dd); } ?>
+                                    <?php $__slots7477cdf3e599b95879e647f1be0a7b24['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slots7477cdf3e599b95879e647f1be0a7b24); ?>
+<?php _7477cdf3e599b95879e647f1be0a7b24($__blaze, $__data7477cdf3e599b95879e647f1be0a7b24, ['size' => 'sm', 'color' => $__data7477cdf3e599b95879e647f1be0a7b24['color']], $__slots7477cdf3e599b95879e647f1be0a7b24, $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStack7477cdf3e599b95879e647f1be0a7b24)) { $__slots7477cdf3e599b95879e647f1be0a7b24 = array_pop($__slotsStack7477cdf3e599b95879e647f1be0a7b24); } ?>
+<?php if (! empty($__dataStack7477cdf3e599b95879e647f1be0a7b24)) { $__data7477cdf3e599b95879e647f1be0a7b24 = array_pop($__dataStack7477cdf3e599b95879e647f1be0a7b24); } ?>
 <?php $__blaze->popData(); ?>
                                 </td>
                                 <td class="px-3 py-3 text-center">
@@ -338,17 +342,17 @@
                                         $pct = $item['percentage'];
                                         $color = $pct >= 80 ? 'green' : ($pct >= 60 ? 'yellow' : ($pct >= 40 ? 'orange' : 'red'));
                                     ?>
-                                    <?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/badge/index.blade.php', $__blaze->compiledPath.'/6b0011e2f83d04930b97e5f6feda22dd.php'); ?>
-<?php if (isset($__slots6b0011e2f83d04930b97e5f6feda22dd)) { $__slotsStack6b0011e2f83d04930b97e5f6feda22dd[] = $__slots6b0011e2f83d04930b97e5f6feda22dd; } ?>
-<?php if (isset($__attrs6b0011e2f83d04930b97e5f6feda22dd)) { $__attrsStack6b0011e2f83d04930b97e5f6feda22dd[] = $__attrs6b0011e2f83d04930b97e5f6feda22dd; } ?>
-<?php $__attrs6b0011e2f83d04930b97e5f6feda22dd = ['size' => 'sm','color' => e($color)]; ?>
-<?php $__slots6b0011e2f83d04930b97e5f6feda22dd = []; ?>
-<?php $__blaze->pushData($__attrs6b0011e2f83d04930b97e5f6feda22dd); ?>
-<?php ob_start(); ?><?php echo e($pct); ?>%<?php $__slots6b0011e2f83d04930b97e5f6feda22dd['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
-<?php $__blaze->pushSlots($__slots6b0011e2f83d04930b97e5f6feda22dd); ?>
-<?php _6b0011e2f83d04930b97e5f6feda22dd($__blaze, $__attrs6b0011e2f83d04930b97e5f6feda22dd, $__slots6b0011e2f83d04930b97e5f6feda22dd, [], [], $__this ?? (isset($this) ? $this : null)); ?>
-<?php if (! empty($__slotsStack6b0011e2f83d04930b97e5f6feda22dd)) { $__slots6b0011e2f83d04930b97e5f6feda22dd = array_pop($__slotsStack6b0011e2f83d04930b97e5f6feda22dd); } ?>
-<?php if (! empty($__attrsStack6b0011e2f83d04930b97e5f6feda22dd)) { $__attrs6b0011e2f83d04930b97e5f6feda22dd = array_pop($__attrsStack6b0011e2f83d04930b97e5f6feda22dd); } ?>
+                                    <?php if (!function_exists('_7477cdf3e599b95879e647f1be0a7b24')) { require $__blaze->compile('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/badge/index.blade.php'); } ?>
+<?php if (isset($__slots7477cdf3e599b95879e647f1be0a7b24)) { $__slotsStack7477cdf3e599b95879e647f1be0a7b24[] = $__slots7477cdf3e599b95879e647f1be0a7b24; } ?>
+<?php if (isset($__data7477cdf3e599b95879e647f1be0a7b24)) { $__dataStack7477cdf3e599b95879e647f1be0a7b24[] = $__data7477cdf3e599b95879e647f1be0a7b24; } ?>
+<?php $__data7477cdf3e599b95879e647f1be0a7b24 = ['size' => 'sm','color' => e($color)]; ?>
+<?php $__slots7477cdf3e599b95879e647f1be0a7b24 = []; ?>
+<?php $__blaze->pushData($__data7477cdf3e599b95879e647f1be0a7b24); ?>
+<?php ob_start(); ?><?php echo e($pct); ?>%<?php $__slots7477cdf3e599b95879e647f1be0a7b24['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slots7477cdf3e599b95879e647f1be0a7b24); ?>
+<?php _7477cdf3e599b95879e647f1be0a7b24($__blaze, $__data7477cdf3e599b95879e647f1be0a7b24, ['size' => 'sm', 'color' => $__data7477cdf3e599b95879e647f1be0a7b24['color']], $__slots7477cdf3e599b95879e647f1be0a7b24, $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStack7477cdf3e599b95879e647f1be0a7b24)) { $__slots7477cdf3e599b95879e647f1be0a7b24 = array_pop($__slotsStack7477cdf3e599b95879e647f1be0a7b24); } ?>
+<?php if (! empty($__dataStack7477cdf3e599b95879e647f1be0a7b24)) { $__data7477cdf3e599b95879e647f1be0a7b24 = array_pop($__dataStack7477cdf3e599b95879e647f1be0a7b24); } ?>
 <?php $__blaze->popData(); ?>
                                 </td>
                             </tr>
@@ -380,7 +384,10 @@
 <?php echo ltrim(ob_get_clean()); ?>
 
     
-    <?php ob_start(); ?><div class="[:where(&amp;)]:bg-white dark:[:where(&amp;)]:bg-white/10 border border-zinc-200 dark:border-white/10 [:where(&amp;)]:p-6 [:where(&amp;)]:rounded-xl p-0 shadow-lg flex flex-col overflow-hidden" data-flux-card>
+    <?php ob_start(); ?><div
+    class="border bg-clip-padding dark:bg-clip-border [:where(&amp;)]:border-zinc-900/10 dark:[:where(&amp;)]:border-white/10 [:where(&amp;)]:shadow-xs dark:[:where(&amp;)]:shadow-none relative after:pointer-events-none after:absolute after:inset-0 after:rounded-[calc(var(--flux-card-radius)-1px)] after:inset-ring [:where(&amp;)]:after:inset-ring-white/25 dark:after:hidden after:[mask-image:linear-gradient(to_bottom,black,transparent)] [:where(&amp;)]:bg-white dark:[:where(&amp;)]:bg-white/10 p-0 shadow-lg flex flex-col overflow-hidden" data-flux-card-body-variant="seamless" data-flux-card-variant="default"
+    data-flux-card
+>
     <?php ob_start(); ?>
         <div class="relative px-6 py-4 bg-gradient-to-r from-rose-600 via-pink-600 to-fuchsia-600 overflow-hidden">
             <div class="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-white/10"></div>

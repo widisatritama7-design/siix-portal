@@ -1,13 +1,14 @@
+<?php # [BlazeVersion]:{v3} ?>
 <?php
-if (!function_exists('__84e9b17acc90e578a6a5f07f642ca0ec')):
-function __84e9b17acc90e578a6a5f07f642ca0ec($__blaze, $__data = [], $__slots = [], $__bound = [], $__keys = [], $__this = null) {
+if (!function_exists('__f505acc67734011012a95c5eab25900e')):
+function __f505acc67734011012a95c5eab25900e($__blaze, $__data = [], $__attributes = [], $__slots = [], $__this = null) {
 $__env = $__blaze->env;
 $__slots['slot'] ??= new \Illuminate\View\ComponentSlot('');
 if (($__data['attributes'] ?? null) instanceof \Illuminate\View\ComponentAttributeBag) { $__data = $__data + $__data['attributes']->all(); unset($__data['attributes']); }
 extract($__slots, EXTR_SKIP); unset($__slots);
 extract($__data, EXTR_SKIP);
-$attributes = \Livewire\Blaze\Runtime\BlazeAttributeBag::make($__data, $__bound, $__keys);
-unset($__data, $__bound, $__keys);
+$attributes = new \Livewire\Blaze\Runtime\BlazeAttributeBag($__attributes);
+unset($__data, $__attributes);
 ob_start();
 ?>
 
@@ -26,10 +27,12 @@ unset($__defaults);
 
 <?php
 $classes = Flux::classes()
-    ->add('py-3 px-3 first:ps-0 last:pe-0 text-sm')
+    ->add('[:where(&)]:py-3 [:where(&)]:px-3 first:ps-0 last:pe-0 text-sm')
     ->add(match($align) {
-        'center' => 'text-center',
-        'end' => 'text-end',
+        'center' => 'text-center [&>*]:mx-auto',
+        'end' => 'text-end [&>*]:ms-auto',
+        // Right is @deprecated but needed for backwards compatibility...
+        'right' => 'text-end [&>*]:ms-auto',
         default => '',
     })
     ->add(match ($variant) {

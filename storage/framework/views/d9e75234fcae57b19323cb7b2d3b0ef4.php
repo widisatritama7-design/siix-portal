@@ -1,7 +1,8 @@
-<?php # [BlazeFolded]:{flux::separator}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/separator.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::navbar}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/navbar/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::header}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/header.blade.php}:{1776985208} ?>
+<?php # [BlazeVersion]:{v3} ?>
+<?php # [BlazeFolded]:{flux::separator}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/separator.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::button}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::navbar}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/navbar/index.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::header}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/header.blade.php}:{1792593958} ?>
 <!DOCTYPE html>
 <html lang="<?php echo e(str_replace('_', '-', app()->getLocale())); ?>" class="dark">
 <head>
@@ -133,6 +134,71 @@
         .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
             background: #52525b;
         }
+        @keyframes panah-keluar-masuk {
+            0%, 100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            40% {
+                transform: translateX(8px); /* Panah bergerak keluar ke kanan */
+                opacity: 0; /* Panah memudar saat keluar */
+            }
+            60% {
+                transform: translateX(-8px); /* Panah muncul dari kiri (dalam kotak) */
+                opacity: 0; 
+            }
+            80% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .animate-panah-logout {
+            animation: panah-keluar-masuk 1.5s ease-in-out infinite;
+        }
+        /* Top bar glassmorphism effect */
+        .topbar-glass {
+            transition: background-color 0.3s ease, backdrop-filter 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .topbar-glass.scrolled {
+            background-color: rgba(255, 255, 255, 0.72) !important;
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom-color: rgba(0, 0, 0, 0.08) !important;
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04);
+        }
+
+        .dark .topbar-glass.scrolled {
+            background-color: rgba(0, 0, 0, 0.65) !important;
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
+            border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+            box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04);
+        }
+        /* Floating sidebar glassmorphism effect */
+        .sidebar-glass {
+            transition: background-color 0.3s ease, backdrop-filter 0.3s ease, border-color 0.3s ease;
+        }
+
+        /* Saat floating (collapsed + hover) → solid */
+        .sidebar-floating {
+            background-color: #ffffff !important;
+            border-right-color: rgba(0, 0, 0, 0.08) !important;
+            box-shadow: 8px 0 32px rgba(0, 0, 0, 0.12) !important;
+        }
+
+        .dark .sidebar-floating {
+            background-color: #18181b !important;
+            border-right-color: rgba(255, 255, 255, 0.08) !important;
+            box-shadow: 8px 0 32px rgba(0, 0, 0, 0.4) !important;
+        }
+
+        /* Pastikan konten di dalam sidebar tetap solid (tidak ikut transparan) */
+        .sidebar-floating nav,
+        .sidebar-floating .sidebar-header {
+            background-color: transparent;
+        }
     </style>
 </head>
 
@@ -144,6 +210,7 @@
         <div class="overlay" :class="{'open': sidebarOpen && isMobile}" @click="closeMobileSidebar"></div>
 
         <!-- Backdrop saat sidebar floating di desktop -->
+        <!-- Backdrop saat sidebar floating di desktop -->
         <div x-show="!isMobile && isHovering && !sidebarPinned"
             x-transition:enter="transition ease-out duration-200"
             x-transition:enter-start="opacity-0"
@@ -151,27 +218,30 @@
             x-transition:leave="transition ease-in duration-150"
             x-transition:leave-start="opacity-100"
             x-transition:leave-end="opacity-0"
-            class="fixed inset-0 bg-black/20 z-40"
+            class="fixed inset-0 z-40"
+            style="background-color: rgba(0, 0, 0, 0.15); backdrop-filter: blur(2px); -webkit-backdrop-filter: blur(2px);"
             x-cloak></div>
         
-        <!-- SIDEBAR -->
         <aside x-ref="sidebar"
             @mouseenter="handleMouseEnter"
             @mouseleave="handleMouseLeave"
-            class="bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-700 shadow-lg h-screen overflow-hidden sidebar-transition flex flex-col"
+            class="sidebar-glass bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-700 shadow-lg h-screen overflow-hidden sidebar-transition flex flex-col"
             :class="{
                 // Posisi: selalu fixed (mobile & desktop)
-                'fixed top-0 left-0 z-40': true, // <--- UBAH DARI z-50 KE z-40
+                'fixed top-0 left-0 z-40': true,
 
                 // Width
                 'w-64': (isMobile && sidebarOpen) || (!isMobile && (sidebarPinned || isHovering)),
                 'w-20': !isMobile && !sidebarPinned && !isHovering,
 
                 // Visibilitas mobile
-                'hidden': isMobile && !sidebarOpen
+                'hidden': isMobile && !sidebarOpen,
+
+                // Glass effect saat floating (collapsed + hover)
+                'sidebar-floating': !isMobile && isHovering && !sidebarPinned
             }"
             :style="(!isMobile && isHovering && !sidebarPinned) 
-                ? 'transition: width 0.2s ease-in-out; box-shadow: 8px 0 24px rgba(0,0,0,0.15);' 
+                ? 'transition: width 0.2s ease-in-out, background-color 0.3s ease, backdrop-filter 0.3s ease;' 
                 : 'transition: width 0.3s ease-in-out;'">
             
             <!-- Sidebar Header -->
@@ -180,8 +250,9 @@
                     'justify-between': isMobile && sidebarOpen,
                     'justify-center': (!isMobile && (sidebarOpen || (isHovering && !sidebarPinned))) || (isMobile && !sidebarOpen)
                 }">
-                <!-- Logo - Hanya tampil saat sidebar terbuka atau saat hover pada mode collapsed -->
-                <div x-show="sidebarOpen || !isMobile || (isHovering && !sidebarPinned && !sidebarOpen)" 
+                
+                <!-- Logo Utama (tampil saat expanded / hover) -->
+                <div x-show="(sidebarOpen || isMobile || (isHovering && !sidebarPinned))" 
                     x-cloak
                     class="flex justify-center w-full"
                     :class="{'hidden': !sidebarOpen && !isHovering && !sidebarPinned}">
@@ -190,6 +261,19 @@
                             src="<?php echo e(asset('images/logo-siix.png')); ?>" 
                             alt="SIIX Portal" 
                             class="h-11 w-auto object-contain image-rendering-auto"
+                        />
+                    </a>
+                </div>
+
+                <!-- Favicon (tampil saat collapsed & tidak hover) -->
+                <div x-show="!isMobile && !sidebarOpen && !isHovering && !sidebarPinned"
+                    x-cloak
+                    class="flex justify-center w-full mt-1">
+                    <a href="/" wire:navigate class="inline-block">
+                        <img 
+                            src="<?php echo e(asset('images/favicon.png')); ?>" 
+                            alt="SIIX" 
+                            class="h-7 w-7 object-contain"
                         />
                     </a>
                 </div>
@@ -490,40 +574,537 @@
                         class="mt-1 relative">
                         <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
                         <div class="space-y-1 ml-[30px]">
-                            
-                            <!-- ESD Monitoring -->
-                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view esd-monitoring')): ?>
-                            <a href="<?php echo e(route('esd.calendar')); ?>" wire:navigate
-                            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('esd.calendar') ? 'menu-active' : ''); ?>">
-                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
-                                    <path d="m20.798 11.012-3.188 3.416L9.462 6.28l4.24-4.542a.75.75 0 0 1 1.272.71L12.982 9.75h7.268a.75.75 0 0 1 .548 1.262ZM3.202 12.988 6.39 9.572l8.148 8.148-4.24 4.542a.75.75 0 0 1-1.272-.71l1.992-7.302H3.75a.75.75 0 0 1-.548-1.262ZM3.53 2.47a.75.75 0 0 0-1.06 1.06l18 18a.75.75 0 1 0 1.06-1.06l-18-18Z" />
-                                </svg>
-                                <span class="truncate">ESD Monitoring</span>
-                            </a>
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->any(['view esd-monitoring'])): ?>
+                            <!-- ========== SUB GROUP: ESD MONITORING (dengan grup existing) ========== -->
+                            <div class="relative w-full">
+                                <button @click="toggleGroup('esdMonitoringMenu')"
+                                        class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                    <div class="flex items-center gap-2">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                            <path d="m20.798 11.012-3.188 3.416L9.462 6.28l4.24-4.542a.75.75 0 0 1 1.272.71L12.982 9.75h7.268a.75.75 0 0 1 .548 1.262ZM3.202 12.988 6.39 9.572l8.148 8.148-4.24 4.542a.75.75 0 0 1-1.272-.71l1.992-7.302H3.75a.75.75 0 0 1-.548-1.262ZM3.53 2.47a.75.75 0 0 0-1.06 1.06l18 18a.75.75 0 1 0 1.06-1.06l-18-18Z" />
+                                        </svg>
+                                        <span x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                            class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">ESD Monitoring</span>
+                                    </div>
+                                    <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                        class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0"
+                                        :class="{'rotate-180': groups.esdMonitoringMenu.open}"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </button>
+
+                                <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.esdMonitoringMenu.open"
+                                    x-collapse class="mt-1 relative">
+                                    <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+                                    <div class="space-y-1 ml-[24px]">
+
+                                        <!-- ===== ESD Management ===== -->
+                                        <div class="relative w-full">
+                                            <button @click="toggleGroup('esdManagement')"
+                                                    class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                                <div class="flex items-center gap-2">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                        <path d="M18.75 12.75h1.5a.75.75 0 0 0 0-1.5h-1.5a.75.75 0 0 0 0 1.5ZM12 6a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 12 6ZM12 18a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 12 18ZM3.75 6.75h1.5a.75.75 0 1 0 0-1.5h-1.5a.75.75 0 0 0 0 1.5ZM5.25 18.75h-1.5a.75.75 0 0 1 0-1.5h1.5a.75.75 0 0 1 0 1.5ZM3 12a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 3 12ZM9 3.75a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5ZM12.75 12a2.25 2.25 0 1 1 4.5 0 2.25 2.25 0 0 1-4.5 0ZM9 15.75a2.25 2.25 0 1 0 0 4.5 2.25 2.25 0 0 0 0-4.5Z" />
+                                                    </svg>
+                                                    <span x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                        class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">Management</span>
+                                                </div>
+                                                <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                    class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0"
+                                                    :class="{'rotate-180': groups.esdManagement.open}"
+                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                </svg>
+                                            </button>
+                                            <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.esdManagement.open"
+                                                x-collapse class="mt-1 relative">
+                                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+                                                <div class="space-y-1 ml-[24px]">
+                                                    <a href="<?php echo e(route('esd.calendar')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.calendar') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.calendar') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Calendar</span>
+                                                    </a>
+                                                    <a href="<?php echo e(route('esd.events')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.events') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.events') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Event</span>
+                                                    </a>
+                                                    <a href="<?php echo e(route('esd.lockers')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.lockers') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.lockers') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Locker</span>
+                                                    </a>
+                                                    <a href="<?php echo e(route('esd.product-qualifications')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.product-qualifications') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.product-qualifications') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Product Qualification</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- ===== Stock Management ===== -->
+                                        <div class="relative w-full">
+                                            <button @click="toggleGroup('esdStock')"
+                                                    class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                                <div class="flex items-center gap-2">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                        <path d="M10.464 8.746c.227-.18.497-.311.786-.394v2.795a2.252 2.252 0 0 1-.786-.393c-.394-.313-.546-.681-.546-1.004 0-.323.152-.691.546-1.004ZM12.75 15.662v-2.824c.347.085.664.228.921.421.427.32.579.686.579.991 0 .305-.152.671-.579.991a2.534 2.534 0 0 1-.921.42Z" />
+                                                        <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25ZM12.75 6a.75.75 0 0 0-1.5 0v.816a3.836 3.836 0 0 0-1.72.756c-.712.566-1.112 1.35-1.112 2.178 0 .829.4 1.612 1.113 2.178.502.4 1.102.647 1.719.756v2.978a2.536 2.536 0 0 1-.921-.421l-.879-.66a.75.75 0 0 0-.9 1.2l.879.66c.533.4 1.169.645 1.821.75V18a.75.75 0 0 0 1.5 0v-.81a4.124 4.124 0 0 0 1.821-.749c.745-.559 1.179-1.344 1.179-2.191 0-.847-.434-1.632-1.179-2.191a4.122 4.122 0 0 0-1.821-.75V8.354c.29.082.559.213.786.393l.415.33a.75.75 0 0 0 .933-1.175l-.415-.33a3.836 3.836 0 0 0-1.719-.755V6Z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    <span x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                        class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">Stock</span>
+                                                </div>
+                                                <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                    class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0"
+                                                    :class="{'rotate-180': groups.esdStock.open}"
+                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                </svg>
+                                            </button>
+                                            <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.esdStock.open"
+                                                x-collapse class="mt-1 relative">
+                                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+                                                <div class="space-y-1 ml-[24px]">
+                                                    <a href="<?php echo e(route('esd.materials')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.materials') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.materials') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Material</span>
+                                                    </a>
+                                                    <a href="<?php echo e(route('esd.transactions')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.transactions') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.transactions') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Transaction</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- ===== Yearly ===== -->
+                                        <div class="relative w-full">
+                                            <button @click="toggleGroup('esdYearly')"
+                                                    class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                                <div class="flex items-center gap-2">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                        <path fill-rule="evenodd" d="M6.75 2.25A.75.75 0 0 1 7.5 3v1.5h9V3A.75.75 0 0 1 18 3v1.5h.75a3 3 0 0 1 3 3v11.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V7.5a3 3 0 0 1 3-3H6V3a.75.75 0 0 1 .75-.75Zm13.5 9a1.5 1.5 0 0 0-1.5-1.5H5.25a1.5 1.5 0 0 0-1.5 1.5v7.5a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5v-7.5Z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    <span x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                        class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">Yearly</span>
+                                                </div>
+                                                <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                    class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0"
+                                                    :class="{'rotate-180': groups.esdYearly.open}"
+                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                </svg>
+                                            </button>
+                                            <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.esdYearly.open"
+                                                x-collapse class="mt-1 relative">
+                                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+                                                <div class="space-y-1 ml-[24px]">
+                                                    <a href="<?php echo e(route('esd.floorings')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.floorings') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.floorings') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Flooring</span>
+                                                    </a>
+                                                    <a href="<?php echo e(route('esd.garments')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.garments') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.garments') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Garment</span>
+                                                    </a>
+                                                    <a href="<?php echo e(route('esd.ground-monitor-boxs')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.ground-monitor-boxs') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.ground-monitor-boxs') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Ground Monitor Box</span>
+                                                    </a>
+                                                    <a href="<?php echo e(route('esd.jigs')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.jigs') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.jigs') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Jig</span>
+                                                    </a>
+                                                    <a href="<?php echo e(route('esd.packagings')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.packagings') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.packagings') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Packaging</span>
+                                                    </a>
+                                                    <a href="<?php echo e(route('esd.solderings')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.solderings') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.solderings') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Soldering</span>
+                                                    </a>
+                                                    <a href="<?php echo e(route('esd.scissors')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.scissors') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.scissors') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Scissors</span>
+                                                    </a>
+                                                    <a href="<?php echo e(route('esd.worksurfaces')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.worksurfaces') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.worksurfaces') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Worksurface</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- ===== Monthly ===== -->
+                                        <div class="relative w-full">
+                                            <button @click="toggleGroup('esdMonthly')"
+                                                    class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                                <div class="flex items-center gap-2">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                        <path d="M12.75 12.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM7.5 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM8.25 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM9.75 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM10.5 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM12 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM12.75 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM14.25 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM15 17.25a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM16.5 15.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM15 12.75a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0ZM16.5 13.5a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Z" />
+                                                        <path fill-rule="evenodd" d="M6.75 2.25A.75.75 0 0 1 7.5 3v1.5h9V3A.75.75 0 0 1 18 3v1.5h.75a3 3 0 0 1 3 3v11.25a3 3 0 0 1-3 3H5.25a3 3 0 0 1-3-3V7.5a3 3 0 0 1 3-3H6V3a.75.75 0 0 1 .75-.75Zm-3 9.75v7.5a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5v-7.5h-16.5Z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    <span x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                        class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">Monthly</span>
+                                                </div>
+                                                <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                    class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0"
+                                                    :class="{'rotate-180': groups.esdMonthly.open}"
+                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                </svg>
+                                            </button>
+                                            <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.esdMonthly.open"
+                                                x-collapse class="mt-1 relative">
+                                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+                                                <div class="space-y-1 ml-[24px]">
+                                                    <a href="<?php echo e(route('esd.equipment-grounds')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.equipment-grounds') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.equipment-grounds') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Equipment Ground</span>
+                                                    </a>
+                                                    <a href="<?php echo e(route('esd.ionizers')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.ionizers') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.ionizers') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Ionizer</span>
+                                                    </a>
+                                                    <a href="<?php echo e(route('esd.wrist-straps')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.wrist-straps') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.wrist-straps') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Wrist Strap</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- ===== 3 Month (lanjutan) ===== -->
+                                        <div class="relative w-full">
+                                            <button @click="toggleGroup('esdThreeMonth')"
+                                                    class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                                <div class="flex items-center gap-2">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                        <path d="M12 11.993a.75.75 0 0 0-.75.75v.006c0 .414.336.75.75.75h.006a.75.75 0 0 0 .75-.75v-.006a.75.75 0 0 0-.75-.75H12ZM12 16.494a.75.75 0 0 0-.75.75v.005c0 .414.335.75.75.75h.005a.75.75 0 0 0 .75-.75v-.005a.75.75 0 0 0-.75-.75H12ZM8.999 17.244a.75.75 0 0 1 .75-.75h.006a.75.75 0 0 1 .75.75v.006a.75.75 0 0 1-.75.75h-.006a.75.75 0 0 1-.75-.75v-.006ZM7.499 16.494a.75.75 0 0 0-.75.75v.005c0 .414.336.75.75.75h.005a.75.75 0 0 0 .75-.75v-.005a.75.75 0 0 0-.75-.75H7.5ZM13.499 14.997a.75.75 0 0 1 .75-.75h.006a.75.75 0 0 1 .75.75v.005a.75.75 0 0 1-.75.75h-.006a.75.75 0 0 1-.75-.75v-.005ZM14.25 16.494a.75.75 0 0 0-.75.75v.006c0 .414.335.75.75.75h.005a.75.75 0 0 0 .75-.75v-.006a.75.75 0 0 0-.75-.75h-.005ZM15.75 14.995a.75.75 0 0 1 .75-.75h.005a.75.75 0 0 1 .75.75v.006a.75.75 0 0 1-.75.75H16.5a.75.75 0 0 1-.75-.75v-.006ZM13.498 12.743a.75.75 0 0 1 .75-.75h2.25a.75.75 0 1 1 0 1.5h-2.25a.75.75 0 0 1-.75-.75ZM6.748 14.993a.75.75 0 0 1 .75-.75h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1-.75-.75Z" />
+                                                        <path fill-rule="evenodd" d="M18 2.993a.75.75 0 0 0-1.5 0v1.5h-9V2.994a.75.75 0 1 0-1.5 0v1.497h-.752a3 3 0 0 0-3 3v11.252a3 3 0 0 0 3 3h13.5a3 3 0 0 0 3-3V7.492a3 3 0 0 0-3-3H18V2.993ZM3.748 18.743v-7.5a1.5 1.5 0 0 1 1.5-1.5h13.5a1.5 1.5 0 0 1 1.5 1.5v7.5a1.5 1.5 0 0 1-1.5 1.5h-13.5a1.5 1.5 0 0 1-1.5-1.5Z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    <span x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                        class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">3 Month</span>
+                                                </div>
+                                                <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                    class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0"
+                                                    :class="{'rotate-180': groups.esdThreeMonth.open}"
+                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                </svg>
+                                            </button>
+                                            <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.esdThreeMonth.open"
+                                                x-collapse class="mt-1 relative">
+                                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+                                                <div class="space-y-1 ml-[24px]">
+                                                    <a href="<?php echo e(route('esd.magazines')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.magazines') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.magazines') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Magazine</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- ===== Weekly ===== -->
+                                        <div class="relative w-full">
+                                            <button @click="toggleGroup('esdWeekly')"
+                                                    class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                                <div class="flex items-center gap-2">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                        <path fill-rule="evenodd" d="M1.5 5.625c0-1.036.84-1.875 1.875-1.875h17.25c1.035 0 1.875.84 1.875 1.875v12.75c0 1.035-.84 1.875-1.875 1.875H3.375A1.875 1.875 0 0 1 1.5 18.375V5.625ZM21 9.375A.375.375 0 0 0 20.625 9h-7.5a.375.375 0 0 0-.375.375v1.5c0 .207.168.375.375.375h7.5a.375.375 0 0 0 .375-.375v-1.5Zm0 3.75a.375.375 0 0 0-.375-.375h-7.5a.375.375 0 0 0-.375.375v1.5c0 .207.168.375.375.375h7.5a.375.375 0 0 0 .375-.375v-1.5Zm0 3.75a.375.375 0 0 0-.375-.375h-7.5a.375.375 0 0 0-.375.375v1.5c0 .207.168.375.375.375h7.5a.375.375 0 0 0 .375-.375v-1.5ZM10.875 18.75a.375.375 0 0 0 .375-.375v-1.5a.375.375 0 0 0-.375-.375h-7.5a.375.375 0 0 0-.375.375v1.5c0 .207.168.375.375.375h7.5ZM3.375 15h7.5a.375.375 0 0 0 .375-.375v-1.5a.375.375 0 0 0-.375-.375h-7.5a.375.375 0 0 0-.375.375v1.5c0 .207.168.375.375.375Zm0-3.75h7.5a.375.375 0 0 0 .375-.375v-1.5A.375.375 0 0 0 10.875 9h-7.5A.375.375 0 0 0 3 9.375v1.5c0 .207.168.375.375.375Z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    <span x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                        class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">Weekly</span>
+                                                </div>
+                                                <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                    class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0"
+                                                    :class="{'rotate-180': groups.esdWeekly.open}"
+                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                </svg>
+                                            </button>
+                                            <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.esdWeekly.open"
+                                                x-collapse class="mt-1 relative">
+                                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+                                                <div class="space-y-1 ml-[24px]">
+                                                    <a href="<?php echo e(route('esd.showers')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.showers') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.showers') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Shower</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- ===== Daily ===== -->
+                                        <div class="relative w-full">
+                                            <button @click="toggleGroup('esdDaily')"
+                                                    class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                                <div class="flex items-center gap-2">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                        <path fill-rule="evenodd" d="M4.755 10.059a7.5 7.5 0 0 1 12.548-3.364l1.903 1.903h-3.183a.75.75 0 1 0 0 1.5h4.992a.75.75 0 0 0 .75-.75V4.356a.75.75 0 0 0-1.5 0v3.18l-1.9-1.9A9 9 0 0 0 3.306 9.67a.75.75 0 1 0 1.45.388Zm15.408 3.352a.75.75 0 0 0-.919.53 7.5 7.5 0 0 1-12.548 3.364l-1.902-1.903h3.183a.75.75 0 0 0 0-1.5H2.984a.75.75 0 0 0-.75.75v4.992a.75.75 0 0 0 1.5 0v-3.18l1.9 1.9a9 9 0 0 0 15.059-4.035.75.75 0 0 0-.53-.918Z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    <span x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                        class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">Daily</span>
+                                                </div>
+                                                <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                    class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0"
+                                                    :class="{'rotate-180': groups.esdDaily.open}"
+                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                </svg>
+                                            </button>
+                                            <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.esdDaily.open"
+                                                x-collapse class="mt-1 relative">
+                                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+                                                <div class="space-y-1 ml-[24px]">
+                                                    <a href="<?php echo e(route('esd.insulatif-checks')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.insulatif-checks') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.insulatif-checks') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Insulatif Check</span>
+                                                    </a>
+                                                    <a href="<?php echo e(route('esd.patrols')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.patrols') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.patrols') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Patrol</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!-- ===== New Admission ===== -->
+                                        <div class="relative w-full">
+                                            <button @click="toggleGroup('esdNewAdmission')"
+                                                    class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                                <div class="flex items-center gap-2">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                        <path fill-rule="evenodd" d="M9.75 6.75h-3a3 3 0 0 0-3 3v7.5a3 3 0 0 0 3 3h7.5a3 3 0 0 0 3-3v-7.5a3 3 0 0 0-3-3h-3V1.5a.75.75 0 0 0-1.5 0v5.25Zm0 0h1.5v5.69l1.72-1.72a.75.75 0 1 1 1.06 1.06l-3 3a.75.75 0 0 1-1.06 0l-3-3a.75.75 0 1 1 1.06-1.06l1.72 1.72V6.75Z" clip-rule="evenodd" />
+                                                        <path d="M7.151 21.75a2.999 2.999 0 0 0 2.599 1.5h7.5a3 3 0 0 0 3-3v-7.5c0-1.11-.603-2.08-1.5-2.599v7.099a4.5 4.5 0 0 1-4.5 4.5H7.151Z" />
+                                                    </svg>
+                                                    <span x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                        class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">New Admission</span>
+                                                </div>
+                                                <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                    class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0"
+                                                    :class="{'rotate-180': groups.esdNewAdmission.open}"
+                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                </svg>
+                                            </button>
+                                            <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.esdNewAdmission.open"
+                                                x-collapse class="mt-1 relative">
+                                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+                                                <div class="space-y-1 ml-[24px]">
+                                                    <a href="<?php echo e(route('esd.gloves')); ?>" wire:navigate
+                                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg transition-colors <?php echo e(request()->routeIs('esd.gloves') ? 'menu-active' : 'text-zinc-600 dark:text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800'); ?>">
+                                                        <span class="w-2 h-2 rounded-full <?php echo e(request()->routeIs('esd.gloves') ? 'bg-blue-500' : 'bg-zinc-400 dark:bg-zinc-500'); ?>"></span>
+                                                        <span class="truncate">Glove</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
                             <?php endif; ?>
-                            
-                            <!-- MTC Monitoring -->
-                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view mtc-monitoring')): ?>
-                            <a href="<?php echo e(route('mtc.daily-dashboard')); ?>" wire:navigate
-                            class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('mtc.daily-dashboard') ? 'menu-active' : ''); ?>">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cog-icon lucide-cog w-4 h-4">
-                                    <path d="M11 10.27 7 3.34"/>
-                                    <path d="m11 13.73-4 6.93"/>
-                                    <path d="M12 22v-2"/>
-                                    <path d="M12 2v2"/>
-                                    <path d="M14 12h8"/>
-                                    <path d="m17 20.66-1-1.73"/>
-                                    <path d="m17 3.34-1 1.73"/>
-                                    <path d="M2 12h2"/>
-                                    <path d="m20.66 17-1.73-1"/>
-                                    <path d="m20.66 7-1.73 1"/>
-                                    <path d="m3.34 17 1.73-1"/>
-                                    <path d="m3.34 7 1.73 1"/>
-                                    <circle cx="12" cy="12" r="2"/>
-                                    <circle cx="12" cy="12" r="8"/>
-                                </svg>
-                                <span class="truncate">MTC Monitoring</span>
-                            </a>
+
+                            <!-- MTC Monitoring as SUB GROUP -->
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->any(['view mtc-monitoring'])): ?>
+                            <div class="relative w-full">
+                                <!-- SUB GRUP 2: MTC Monitoring -->
+                                <button @click="toggleGroup('mtcMonitoring')"
+                                        class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                    <div class="flex items-center gap-2">
+                                        <!-- Icon MTC (cog) -->
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-cog-icon lucide-cog w-4 h-4">
+                                            <path d="M11 10.27 7 3.34"/>
+                                            <path d="m11 13.73-4 6.93"/>
+                                            <path d="M12 22v-2"/>
+                                            <path d="M12 2v2"/>
+                                            <path d="M14 12h8"/>
+                                            <path d="m17 20.66-1-1.73"/>
+                                            <path d="m17 3.34-1 1.73"/>
+                                            <path d="M2 12h2"/>
+                                            <path d="m20.66 17-1.73-1"/>
+                                            <path d="m20.66 7-1.73 1"/>
+                                            <path d="m3.34 17 1.73-1"/>
+                                            <path d="m3.34 7 1.73 1"/>
+                                            <circle cx="12" cy="12" r="2"/>
+                                            <circle cx="12" cy="12" r="8"/>
+                                        </svg>
+                                        <span x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                            class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">MTC Monitoring</span>
+                                    </div>
+                                    <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                        class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0"
+                                        :class="{'rotate-180': groups.mtcMonitoring.open}"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </button>
+
+                                <!-- Konten Sub Grup 2: MTC Monitoring -->
+                                <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.mtcMonitoring.open"
+                                    x-collapse
+                                    class="mt-1 relative">
+                                    <!-- Garis vertikal Sub Grup 2 -->
+                                    <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+
+                                    <div class="space-y-1 ml-[24px]">
+
+                                        <!-- ========== SUB GRUP 3: MONITORING ========== -->
+                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->any(['view mtc-monitoring'])): ?>
+                                        <div class="relative w-full">
+                                            <button @click="toggleGroup('mtcMonitoringMenu')"
+                                                    class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                                <div class="flex items-center gap-2">
+                                                    <!-- Icon Monitoring (chart) -->
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                        <path fill-rule="evenodd" d="M2.25 13.5a8.25 8.25 0 0 1 8.25-8.25.75.75 0 0 1 .75.75v6.75H18a.75.75 0 0 1 .75.75 8.25 8.25 0 0 1-16.5 0Z" clip-rule="evenodd" />
+                                                        <path fill-rule="evenodd" d="M12.75 3a.75.75 0 0 1 .75-.75 8.25 8.25 0 0 1 8.25 8.25.75.75 0 0 1-.75.75h-7.5a.75.75 0 0 1-.75-.75V3Z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    <span x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                        class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">Monitoring</span>
+                                                </div>
+                                                <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                    class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0"
+                                                    :class="{'rotate-180': groups.mtcMonitoringMenu.open}"
+                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                </svg>
+                                            </button>
+
+                                            <!-- Items Sub Grup 3: Monitoring -->
+                                            <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.mtcMonitoringMenu.open"
+                                                x-collapse
+                                                class="mt-1 relative">
+                                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+
+                                                <div class="space-y-1 ml-[24px]">
+                                                    <!-- Daily Dashboard -->
+                                                    <a href="<?php echo e(route('mtc.daily-dashboard')); ?>" wire:navigate
+                                                    class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('mtc.daily-dashboard') ? 'menu-active' : ''); ?>">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                            <path fill-rule="evenodd" d="M7.502 6h7.128A3.375 3.375 0 0 1 18 9.375v9.375a3 3 0 0 0 3-3V6.108c0-1.505-1.125-2.811-2.664-2.94a48.972 48.972 0 0 0-.673-.05A3 3 0 0 0 15 1.5h-1.5a3 3 0 0 0-2.663 1.618c-.225.015-.45.032-.673.05C8.662 3.295 7.554 4.542 7.502 6ZM13.5 3A1.5 1.5 0 0 0 12 4.5h4.5A1.5 1.5 0 0 0 15 3h-1.5Z" clip-rule="evenodd" />
+                                                            <path fill-rule="evenodd" d="M3 9.375C3 8.339 3.84 7.5 4.875 7.5h9.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-9.75A1.875 1.875 0 0 1 3 20.625V9.375Zm9.586 4.594a.75.75 0 0 0-1.172-.938l-2.476 3.096-.908-.907a.75.75 0 0 0-1.06 1.06l1.5 1.5a.75.75 0 0 0 1.116-.062l3-3.75Z" clip-rule="evenodd" />
+                                                        </svg>
+                                                        <span class="truncate">Daily Routine</span>
+                                                    </a>
+
+                                                    <!-- Stencil Dashboard -->
+                                                    <a href="<?php echo e(route('mtc.stencil-dashboard')); ?>" wire:navigate
+                                                    class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('mtc.stencil-dashboard') ? 'menu-active' : ''); ?>">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                            <path fill-rule="evenodd" d="M3 4.875C3 3.839 3.84 3 4.875 3h4.5c1.036 0 1.875.84 1.875 1.875v4.5c0 1.036-.84 1.875-1.875 1.875h-4.5A1.875 1.875 0 0 1 3 9.375v-4.5ZM4.875 4.5a.375.375 0 0 0-.375.375v4.5c0 .207.168.375.375.375h4.5a.375.375 0 0 0 .375-.375v-4.5a.375.375 0 0 0-.375-.375h-4.5Zm7.875.375c0-1.036.84-1.875 1.875-1.875h4.5C20.16 3 21 3.84 21 4.875v4.5c0 1.036-.84 1.875-1.875 1.875h-4.5a1.875 1.875 0 0 1-1.875-1.875v-4.5Zm1.875-.375a.375.375 0 0 0-.375.375v4.5c0 .207.168.375.375.375h4.5a.375.375 0 0 0 .375-.375v-4.5a.375.375 0 0 0-.375-.375h-4.5ZM6 6.75A.75.75 0 0 1 6.75 6h.75a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-.75.75h-.75A.75.75 0 0 1 6 7.5v-.75Zm9.75 0A.75.75 0 0 1 16.5 6h.75a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-.75.75h-.75a.75.75 0 0 1-.75-.75v-.75ZM3 14.625c0-1.036.84-1.875 1.875-1.875h4.5c1.036 0 1.875.84 1.875 1.875v4.5c0 1.035-.84 1.875-1.875 1.875h-4.5A1.875 1.875 0 0 1 3 19.125v-4.5Zm1.875-.375a.375.375 0 0 0-.375.375v4.5c0 .207.168.375.375.375h4.5a.375.375 0 0 0 .375-.375v-4.5a.375.375 0 0 0-.375-.375h-4.5Zm7.875-.75a.75.75 0 0 1 .75-.75h.75a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-.75.75h-.75a.75.75 0 0 1-.75-.75v-.75Zm6 0a.75.75 0 0 1 .75-.75h.75a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-.75.75h-.75a.75.75 0 0 1-.75-.75v-.75ZM6 16.5a.75.75 0 0 1 .75-.75h.75a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-.75.75h-.75a.75.75 0 0 1-.75-.75v-.75Zm9.75 0a.75.75 0 0 1 .75-.75h.75a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-.75.75h-.75a.75.75 0 0 1-.75-.75v-.75Zm-3 3a.75.75 0 0 1 .75-.75h.75a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-.75.75h-.75a.75.75 0 0 1-.75-.75v-.75Zm6 0a.75.75 0 0 1 .75-.75h.75a.75.75 0 0 1 .75.75v.75a.75.75 0 0 1-.75.75h-.75a.75.75 0 0 1-.75-.75v-.75Z" clip-rule="evenodd" />
+                                                        </svg>
+                                                        <span class="truncate">Stencil</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <?php endif; ?>
+
+                                        <!-- ========== SUB GRUP 3: MASTER ========== -->
+                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->any(['view mtc-monitoring'])): ?>
+                                        <div class="relative w-full">
+                                            <button @click="toggleGroup('mtcMaster')"
+                                                    class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                                <div class="flex items-center gap-2">
+                                                    <!-- Icon Master (database) -->
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                        <path d="M21 6.375c0 2.692-4.03 4.875-9 4.875S3 9.067 3 6.375 7.03 1.5 12 1.5s9 2.183 9 4.875Z" />
+                                                        <path d="M12 12.75c2.685 0 5.19-.586 7.078-1.609a8.283 8.283 0 0 0 1.897-1.384c.016.121.025.244.025.368C21 12.817 16.97 15 12 15s-9-2.183-9-4.875c0-.124.009-.247.025-.368a8.285 8.285 0 0 0 1.897 1.384C6.809 12.164 9.315 12.75 12 12.75Z" />
+                                                        <path d="M12 16.5c2.685 0 5.19-.586 7.078-1.609a8.282 8.282 0 0 0 1.897-1.384c.016.121.025.244.025.368 0 2.692-4.03 4.875-9 4.875s-9-2.183-9-4.875c0-.124.009-.247.025-.368a8.284 8.284 0 0 0 1.897 1.384C6.809 15.914 9.315 16.5 12 16.5Z" />
+                                                        <path d="M12 20.25c2.685 0 5.19-.586 7.078-1.609a8.282 8.282 0 0 0 1.897-1.384c.016.121.025.244.025.368 0 2.692-4.03 4.875-9 4.875s-9-2.183-9-4.875c0-.124.009-.247.025-.368a8.284 8.284 0 0 0 1.897 1.384C6.809 19.664 9.315 20.25 12 20.25Z" />
+                                                    </svg>
+                                                    <span x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                        class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">Master</span>
+                                                </div>
+                                                <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)"
+                                                    class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0"
+                                                    :class="{'rotate-180': groups.mtcMaster.open}"
+                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                </svg>
+                                            </button>
+
+                                            <!-- Items Sub Grup 3: Master -->
+                                            <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.mtcMaster.open"
+                                                x-collapse
+                                                class="mt-1 relative">
+                                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+
+                                                <div class="space-y-1 ml-[24px]">
+                                                    <!-- Master Areas -->
+                                                    <a href="<?php echo e(route('mtc.master-areas')); ?>" wire:navigate
+                                                    class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('mtc.master-areas') ? 'menu-active' : ''); ?>">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                            <path fill-rule="evenodd" d="M8.161 2.58a1.875 1.875 0 0 1 1.678 0l4.993 2.498c.106.052.23.052.336 0l3.869-1.935A1.875 1.875 0 0 1 21.75 4.82v12.485c0 .71-.401 1.36-1.037 1.677l-4.875 2.437a1.875 1.875 0 0 1-1.676 0l-4.994-2.497a.375.375 0 0 0-.336 0l-3.868 1.935A1.875 1.875 0 0 1 2.25 19.18V6.695c0-.71.401-1.36 1.036-1.677l4.875-2.437ZM9 6a.75.75 0 0 1 .75.75V15a.75.75 0 0 1-1.5 0V6.75A.75.75 0 0 1 9 6Zm6.75 3a.75.75 0 0 0-1.5 0v8.25a.75.75 0 0 0 1.5 0V9Z" clip-rule="evenodd" />
+                                                        </svg>
+                                                        <span class="truncate">Master Area</span>
+                                                    </a>
+
+                                                    <!-- Master Locations -->
+                                                    <a href="<?php echo e(route('mtc.master-locations')); ?>" wire:navigate
+                                                    class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('mtc.master-locations') ? 'menu-active' : ''); ?>">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                            <path fill-rule="evenodd" d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd" />
+                                                        </svg>
+                                                        <span class="truncate">Master Location</span>
+                                                    </a>
+
+                                                    <!-- Master Lines -->
+                                                    <a href="<?php echo e(route('mtc.master-lines')); ?>" wire:navigate
+                                                    class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('mtc.master-lines') ? 'menu-active' : ''); ?>">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                            <path fill-rule="evenodd" d="M3 5.25a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 5.25Zm0 4.5A.75.75 0 0 1 3.75 9h16.5a.75.75 0 0 1 0 1.5H3.75A.75.75 0 0 1 3 9.75Zm0 4.5a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75a.75.75 0 0 1-.75-.75Zm0 4.5a.75.75 0 0 1 .75-.75h16.5a.75.75 0 0 1 0 1.5H3.75a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
+                                                        </svg>
+                                                        <span class="truncate">Master Line</span>
+                                                    </a>
+
+                                                    <!-- Master Machines -->
+                                                    <a href="<?php echo e(route('mtc.master-machines')); ?>" wire:navigate
+                                                    class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('mtc.master-machines') ? 'menu-active' : ''); ?>">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                            <path d="M3.75 6a2.25 2.25 0 0 0-2.25 2.25v9a2.25 2.25 0 0 0 2.25 2.25h16.5A2.25 2.25 0 0 0 22.5 17.25v-9A2.25 2.25 0 0 0 20.25 6H3.75ZM4.5 9a.75.75 0 0 1 .75-.75h.75a.75.75 0 0 1 0 1.5h-.75A.75.75 0 0 1 4.5 9Zm1.5 3.75a.75.75 0 0 0 0 1.5h.75a.75.75 0 0 0 0-1.5h-.75Zm-1.5 3.75a.75.75 0 0 1 .75-.75h.75a.75.75 0 0 1 0 1.5h-.75a.75.75 0 0 1-.75-.75ZM9.75 9a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5A.75.75 0 0 1 9.75 9Zm0 3.75a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5a.75.75 0 0 1-.75-.75Zm0 3.75a.75.75 0 0 1 .75-.75h7.5a.75.75 0 0 1 0 1.5h-7.5a.75.75 0 0 1-.75-.75Z" />
+                                                        </svg>
+                                                        <span class="truncate">Master Machine</span>
+                                                    </a>
+
+                                                    <!-- Stencil Master -->
+                                                    <a href="<?php echo e(route('mtc.stencil.index')); ?>" wire:navigate
+                                                    class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('mtc.stencil.index') ? 'menu-active' : ''); ?>">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                            <path fill-rule="evenodd" d="M1.5 7.125c0-1.036.84-1.875 1.875-1.875h6c1.036 0 1.875.84 1.875 1.875v3.75c0 1.036-.84 1.875-1.875 1.875h-6A1.875 1.875 0 0 1 1.5 10.875v-3.75Zm12 1.5c0-1.036.84-1.875 1.875-1.875h5.25c1.035 0 1.875.84 1.875 1.875v8.25c0 1.035-.84 1.875-1.875 1.875h-5.25a1.875 1.875 0 0 1-1.875-1.875v-8.25ZM3 16.125c0-1.036.84-1.875 1.875-1.875h5.25c1.036 0 1.875.84 1.875 1.875v2.25c0 1.035-.84 1.875-1.875 1.875h-5.25A1.875 1.875 0 0 1 3 18.375v-2.25Z" clip-rule="evenodd" />
+                                                        </svg>
+                                                        <span class="truncate">Master Stencil</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <?php endif; ?>
+
+                                    </div>
+                                </div>
+                            </div>
                             <?php endif; ?>
 
                             <!-- ========== SUB GROUP: UTILITY MONITORING ========== -->
@@ -723,54 +1304,53 @@
                                     </svg>
                                 </button>
                                 
-                                <!-- Sub-group items for FCT Monitoring -->
-                                <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.fctMonitoring.open" 
-                                    x-collapse 
-                                    class="mt-1 relative">
-                                    <!-- Sub garis vertikal untuk FCT items -->
-                                    <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+                            <-- Sub-group items for FCT Monitoring -->
+                            <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.fctMonitoring.open" 
+                                x-collapse 
+                                class="mt-1 relative">
+                                <!-- Sub garis vertikal untuk FCT items -->
+                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+                                
+                                <div class="space-y-1 ml-[24px]">
+                                    <!-- FCT -->
+                                    <a href="<?php echo e(route('pcb-scan.fct')); ?>" wire:navigate
+                                    class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('pcb-scan.fct') ? 'menu-active' : ''); ?>">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                            <path d="M16.5 7.5h-9v9h9v-9Z" />
+                                            <path fill-rule="evenodd" d="M8.25 2.25A.75.75 0 0 1 9 3v.75h2.25V3a.75.75 0 0 1 1.5 0v.75H15V3a.75.75 0 0 1 1.5 0v.75h.75a3 3 0 0 1 3 3v.75H21A.75.75 0 0 1 21 9h-.75v2.25H21a.75.75 0 0 1 0 1.5h-.75V15H21a.75.75 0 0 1 0 1.5h-.75v.75a3 3 0 0 1-3 3h-.75V21a.75.75 0 0 1-1.5 0v-.75h-2.25V21a.75.75 0 0 1-1.5 0v-.75H9V21a.75.75 0 0 1-1.5 0v-.75h-.75a3 3 0 0 1-3-3v-.75H3A.75.75 0 0 1 3 15h.75v-2.25H3a.75.75 0 0 1 0-1.5h.75V9H3a.75.75 0 0 1 0-1.5h.75v-.75a3 3 0 0 1 3-3h.75V3a.75.75 0 0 1 .75-.75ZM6 6.75A.75.75 0 0 1 6.75 6h10.5a.75.75 0 0 1 .75.75v10.5a.75.75 0 0 1-.75.75H6.75a.75.75 0 0 1-.75-.75V6.75Z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span class="truncate">FCT</span>
+                                    </a>
                                     
-                                    <div class="space-y-1 ml-[24px]">
-                                        <!-- FCT -->
-                                        <a href="<?php echo e(route('pcb-scan.fct')); ?>" wire:navigate
-                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('pcb-scan.fct') ? 'menu-active' : ''); ?>">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
-                                                <path d="M16.5 7.5h-9v9h9v-9Z" />
-                                                <path fill-rule="evenodd" d="M8.25 2.25A.75.75 0 0 1 9 3v.75h2.25V3a.75.75 0 0 1 1.5 0v.75H15V3a.75.75 0 0 1 1.5 0v.75h.75a3 3 0 0 1 3 3v.75H21A.75.75 0 0 1 21 9h-.75v2.25H21a.75.75 0 0 1 0 1.5h-.75V15H21a.75.75 0 0 1 0 1.5h-.75v.75a3 3 0 0 1-3 3h-.75V21a.75.75 0 0 1-1.5 0v-.75h-2.25V21a.75.75 0 0 1-1.5 0v-.75H9V21a.75.75 0 0 1-1.5 0v-.75h-.75a3 3 0 0 1-3-3v-.75H3A.75.75 0 0 1 3 15h.75v-2.25H3a.75.75 0 0 1 0-1.5h.75V9H3a.75.75 0 0 1 0-1.5h.75v-.75a3 3 0 0 1 3-3h.75V3a.75.75 0 0 1 .75-.75ZM6 6.75A.75.75 0 0 1 6.75 6h10.5a.75.75 0 0 1 .75.75v10.5a.75.75 0 0 1-.75.75H6.75a.75.75 0 0 1-.75-.75V6.75Z" clip-rule="evenodd" />
-                                            </svg>
-                                            <span class="truncate">FCT</span>
-                                        </a>
-                                        
-                                        <!-- LED Test -->
-                                        <a href="<?php echo e(route('pcb-scan.led-test')); ?>" wire:navigate
-                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('pcb-scan.led-test') ? 'menu-active' : ''); ?>">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
-                                                <path fill-rule="evenodd" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" clip-rule="evenodd" />
-                                            </svg>
-                                            <span class="truncate">LED Test</span>
-                                        </a>
-                                        
-                                        <!-- Visual Inspection -->
-                                        <a href="<?php echo e(route('pcb-scan.visual-inspection')); ?>" wire:navigate
-                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('pcb-scan.visual-inspection') ? 'menu-active' : ''); ?>">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
-                                                <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
-                                                <path fill-rule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.49 4.467-5.705 7.69-10.675 7.69-4.973 0-9.19-3.223-10.678-7.69a2.25 2.25 0 010-1.113zM17.25 12a5.25 5.25 0 11-10.5 0 5.25 5.25 0 0110.5 0z" clip-rule="evenodd" />
-                                            </svg>
-                                            <span class="truncate">Visual Inspection</span>
-                                        </a>
-                                        
-                                        <!-- Leader -->
-                                        <a href="<?php echo e(route('pcb-scan.leader.index')); ?>" wire:navigate
-                                        class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('pcb-scan.leader.index') ? 'menu-active' : ''); ?>">
-                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
-                                                <path fill-rule="evenodd" d="M12.516 2.17a.75.75 0 00-1.032 0 11.209 11.209 0 01-7.877 3.08.75.75 0 00-.722.515A12.74 12.74 0 002.25 9.75c0 5.942 4.064 10.933 9.563 12.348a.749.749 0 00.374 0c5.499-1.415 9.563-6.406 9.563-12.348 0-1.39-.223-2.73-.635-3.985a.75.75 0 00-.722-.516 11.209 11.209 0 01-7.877-3.08zM12 9a.75.75 0 01.75.75v2.25h2.25a.75.75 0 010 1.5h-2.25v2.25a.75.75 0 01-1.5 0v-2.25H9a.75.75 0 010-1.5h2.25V9.75A.75.75 0 0112 9z" clip-rule="evenodd" />
-                                            </svg>
-                                            <span class="truncate">Leader</span>
-                                        </a>
-                                    </div>
+                                    <!-- LED Test -->
+                                    <a href="<?php echo e(route('pcb-scan.led-test')); ?>" wire:navigate
+                                    class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('pcb-scan.led-test') ? 'menu-active' : ''); ?>">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                            <path fill-rule="evenodd" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span class="truncate">LED Test</span>
+                                    </a>
+                                    
+                                    <!-- Visual Inspection -->
+                                    <a href="<?php echo e(route('pcb-scan.visual-inspection')); ?>" wire:navigate
+                                    class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('pcb-scan.visual-inspection') ? 'menu-active' : ''); ?>">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                            <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" />
+                                            <path fill-rule="evenodd" d="M1.323 11.447C2.811 6.976 7.028 3.75 12.001 3.75c4.97 0 9.185 3.223 10.675 7.69.12.362.12.752 0 1.113-1.49 4.467-5.705 7.69-10.675 7.69-4.973 0-9.19-3.223-10.678-7.69a2.25 2.25 0 010-1.113zM17.25 12a5.25 5.25 0 11-10.5 0 5.25 5.25 0 0110.5 0z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span class="truncate">Visual Inspection</span>
+                                    </a>
+                                    
+                                    <!-- Leader -->
+                                    <a href="<?php echo e(route('pcb-scan.leader.index')); ?>" wire:navigate
+                                    class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('pcb-scan.leader.index') ? 'menu-active' : ''); ?>">
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                            <path fill-rule="evenodd" d="M12.516 2.17a.75.75 0 00-1.032 0 11.209 11.209 0 01-7.877 3.08.75.75 0 00-.722.515A12.74 12.74 0 002.25 9.75c0 5.942 4.064 10.933 9.563 12.348a.749.749 0 00.374 0c5.499-1.415 9.563-6.406 9.563-12.348 0-1.39-.223-2.73-.635-3.985a.75.75 0 00-.722-.516 11.209 11.209 0 01-7.877-3.08zM12 9a.75.75 0 01.75.75v2.25h2.25a.75.75 0 010 1.5h-2.25v2.25a.75.75 0 01-1.5 0v-2.25H9a.75.75 0 010-1.5h2.25V9.75A.75.75 0 0112 9z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span class="truncate">Leader</span>
+                                    </a>
                                 </div>
-                            <!--</div>-->
+                            </div>
                             
                             <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->any(['view wip'])): ?>
                             <!-- WIP Monitoring as SUB GROUP -->
@@ -973,6 +1553,153 @@
                                         </a>
                                         <?php endif; ?>
                                         
+                                    </div>
+                                </div>
+                            </div>
+                            <?php endif; ?>
+
+                            <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->any(['view tray monitoring'])): ?>
+                            <!-- ========== SUB GROUP: TRAY MONITORING ========== -->
+                            <div class="relative w-full">
+                                <button @click="toggleGroup('trayMonitoring')" 
+                                        class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                    <div class="flex items-center gap-2">
+                                        <!-- Icon Tray (box stack) -->
+                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                            <path d="M3.375 3C2.339 3 1.5 3.84 1.5 4.875v.75c0 1.036.84 1.875 1.875 1.875h17.25c1.035 0 1.875-.84 1.875-1.875v-.75C22.5 3.839 21.66 3 20.625 3H3.375Z" />
+                                            <path fill-rule="evenodd" d="m3.087 9 .54 9.176A3 3 0 0 0 6.62 21h10.757a3 3 0 0 0 2.995-2.824L20.913 9H3.087Zm6.163 3.75A.75.75 0 0 1 10 12h4a.75.75 0 0 1 0 1.5h-4a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
+                                        </svg>
+                                        <span x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)" 
+                                            class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">Tray Monitoring</span>
+                                    </div>
+                                    <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)" 
+                                        class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0"
+                                        :class="{'rotate-180': groups.trayMonitoring.open}"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </button>
+
+                                <!-- Sub-group items Tray Monitoring -->
+                                <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.trayMonitoring.open" 
+                                    x-collapse 
+                                    class="mt-1 relative">
+                                    <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+                                    
+                                    <div class="space-y-1 ml-[24px]">
+
+                                        <!-- ========== SUB SUB GROUP: MASTER ========== -->
+                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->any(['view master rack', 'view master locator', 'view master tray'])): ?>
+                                        <div class="relative w-full">
+                                            <button @click="toggleGroup('trayMaster')" 
+                                                    class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                                <div class="flex items-center gap-2">
+                                                    <!-- Icon Master (database) -->
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                        <path d="M21 6.375c0 2.692-4.03 4.875-9 4.875S3 9.067 3 6.375 7.03 1.5 12 1.5s9 2.183 9 4.875Z" />
+                                                        <path d="M12 12.75c2.685 0 5.19-.586 7.078-1.609a8.283 8.283 0 0 0 1.897-1.384c.016.121.025.244.025.368C21 12.817 16.97 15 12 15s-9-2.183-9-4.875c0-.124.009-.247.025-.368a8.285 8.285 0 0 0 1.897 1.384C6.809 12.164 9.315 12.75 12 12.75Z" />
+                                                        <path d="M12 16.5c2.685 0 5.19-.586 7.078-1.609a8.282 8.282 0 0 0 1.897-1.384c.016.121.025.244.025.368 0 2.692-4.03 4.875-9 4.875s-9-2.183-9-4.875c0-.124.009-.247.025-.368a8.284 8.284 0 0 0 1.897 1.384C6.809 15.914 9.315 16.5 12 16.5Z" />
+                                                        <path d="M12 20.25c2.685 0 5.19-.586 7.078-1.609a8.282 8.282 0 0 0 1.897-1.384c.016.121.025.244.025.368 0 2.692-4.03 4.875-9 4.875s-9-2.183-9-4.875c0-.124.009-.247.025-.368a8.284 8.284 0 0 0 1.897 1.384C6.809 19.664 9.315 20.25 12 20.25Z" />
+                                                    </svg>
+                                                    <span x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)" 
+                                                        class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">Master</span>
+                                                </div>
+                                                <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)" 
+                                                    class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0"
+                                                    :class="{'rotate-180': groups.trayMaster.open}"
+                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                </svg>
+                                            </button>
+
+                                            <!-- Items Master -->
+                                            <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.trayMaster.open" 
+                                                x-collapse 
+                                                class="mt-1 relative">
+                                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+                                                
+                                                <div class="space-y-1 ml-[24px]">
+                                                    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view master rack')): ?>
+                                                    <!-- Master Rack -->
+                                                    <a href="<?php echo e(route('prod.tray.master-rack')); ?>" wire:navigate
+                                                    class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('prod.tray.master-rack') ? 'menu-active' : ''); ?>">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                            <path d="M5.507 4.048A3 3 0 0 1 7.785 3h8.43a3 3 0 0 1 2.278 1.048l1.722 2.008A4.533 4.533 0 0 0 19.5 6h-15c-.243 0-.482.02-.715.056l1.722-2.008Z" />
+                                                            <path fill-rule="evenodd" d="M1.5 10.5a3 3 0 0 1 3-3h15a3 3 0 1 1 0 6h-15a3 3 0 0 1-3-3Zm15 0a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Zm2.25.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM4.5 15a3 3 0 1 0 0 6h15a3 3 0 1 0 0-6h-15Zm11.25 3.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5ZM19.5 18a.75.75 0 1 1-1.5 0 .75.75 0 0 1 1.5 0Z" clip-rule="evenodd" />
+                                                        </svg>
+                                                        <span class="truncate">Master Rack</span>
+                                                    </a>
+                                                    <?php endif; ?>
+
+                                                    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view master locator')): ?>
+                                                    <!-- Master Locator -->
+                                                    <a href="<?php echo e(route('prod.tray.master-locator')); ?>" wire:navigate
+                                                    class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('prod.tray.master-locator') ? 'menu-active' : ''); ?>">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                            <path fill-rule="evenodd" d="m11.54 22.351.07.04.028.016a.76.76 0 0 0 .723 0l.028-.015.071-.041a16.975 16.975 0 0 0 1.144-.742 19.58 19.58 0 0 0 2.683-2.282c1.944-1.99 3.963-4.98 3.963-8.827a8.25 8.25 0 0 0-16.5 0c0 3.846 2.02 6.837 3.963 8.827a19.58 19.58 0 0 0 2.682 2.282 16.975 16.975 0 0 0 1.145.742ZM12 13.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" clip-rule="evenodd" />
+                                                        </svg>
+                                                        <span class="truncate">Master Locator</span>
+                                                    </a>
+                                                    <?php endif; ?>
+
+                                                    <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->check('view master tray')): ?>
+                                                    <!-- Master Tray -->
+                                                    <a href="<?php echo e(route('prod.tray.master-tray')); ?>" wire:navigate
+                                                    class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('prod.tray.master-tray') ? 'menu-active' : ''); ?>">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                            <path d="M3.375 3C2.339 3 1.5 3.84 1.5 4.875v.75c0 1.036.84 1.875 1.875 1.875h17.25c1.035 0 1.875-.84 1.875-1.875v-.75C22.5 3.839 21.66 3 20.625 3H3.375Z" />
+                                                            <path fill-rule="evenodd" d="m3.087 9 .54 9.176A3 3 0 0 0 6.62 21h10.757a3 3 0 0 0 2.995-2.824L20.913 9H3.087Zm6.163 3.75A.75.75 0 0 1 10 12h4a.75.75 0 0 1 0 1.5h-4a.75.75 0 0 1-.75-.75Z" clip-rule="evenodd" />
+                                                        </svg>
+                                                        <span class="truncate">Master Tray</span>
+                                                    </a>
+                                                    <?php endif; ?>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <?php endif; ?>
+
+                                        <!-- ========== SUB SUB GROUP: TRANSACTION ========== -->
+                                        <?php if (app(\Illuminate\Contracts\Auth\Access\Gate::class)->any(['view tray transaction'])): ?>
+                                        <div class="relative w-full">
+                                            <button @click="toggleGroup('trayTransaction')" 
+                                                    class="w-full flex items-center justify-between px-3 py-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                                                <div class="flex items-center gap-2">
+                                                    <!-- Icon Transaction (arrows) -->
+                                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                        <path fill-rule="evenodd" d="M15.97 2.47a.75.75 0 0 1 1.06 0l4.5 4.5a.75.75 0 0 1 0 1.06l-4.5 4.5a.75.75 0 1 1-1.06-1.06l3.22-3.22H7.5a.75.75 0 0 1 0-1.5h11.69l-3.22-3.22a.75.75 0 0 1 0-1.06Zm-7.94 9a.75.75 0 0 1 0 1.06l-3.22 3.22H16.5a.75.75 0 0 1 0 1.5H4.81l3.22 3.22a.75.75 0 1 1-1.06 1.06l-4.5-4.5a.75.75 0 0 1 0-1.06l4.5-4.5a.75.75 0 0 1 1.06 0Z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    <span x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)" 
+                                                        class="text-sm font-medium text-zinc-700 dark:text-zinc-300 whitespace-nowrap">Transaction</span>
+                                                </div>
+                                                <svg x-show="(sidebarOpen || isMobile) || (isHovering && !sidebarPinned)" 
+                                                    class="w-4 h-4 transition-transform duration-200 text-zinc-500 flex-shrink-0"
+                                                    :class="{'rotate-180': groups.trayTransaction.open}"
+                                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                                </svg>
+                                            </button>
+
+                                            <!-- Items Transaction -->
+                                            <div x-show="((sidebarOpen || isMobile) || (isHovering && !sidebarPinned)) && groups.trayTransaction.open" 
+                                                x-collapse 
+                                                class="mt-1 relative">
+                                                <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-[20px]"></div>
+                                                
+                                                <div class="space-y-1 ml-[24px]">
+                                                    <!-- Transaction In -->
+                                                    <a href="<?php echo e(route('prod.tray.transaction')); ?>" wire:navigate
+                                                    class="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-600 dark:text-zinc-400 transition-colors <?php echo e(request()->routeIs('prod.tray.transaction') ? 'menu-active' : ''); ?>">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="size-4">
+                                                            <path fill-rule="evenodd" d="M12 2.25a.75.75 0 0 1 .75.75v11.69l3.22-3.22a.75.75 0 1 1 1.06 1.06l-4.5 4.5a.75.75 0 0 1-1.06 0l-4.5-4.5a.75.75 0 1 1 1.06-1.06l3.22 3.22V3a.75.75 0 0 1 .75-.75Zm-9 13.5a.75.75 0 0 1 .75.75v2.25a1.5 1.5 0 0 0 1.5 1.5h13.5a1.5 1.5 0 0 0 1.5-1.5V16.5a.75.75 0 0 1 1.5 0v2.25a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V16.5a.75.75 0 0 1 .75-.75Z" clip-rule="evenodd" />
+                                                        </svg>
+                                                        <span class="truncate">Tray Transaction</span>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <?php endif; ?>
+
                                     </div>
                                 </div>
                             </div>
@@ -1759,23 +2486,60 @@
                 
             </nav>
         </aside>
+
+        <!-- TOMBOL COLLAPSE DESKTOP (letaknya SETELAH sidebar) -->
+        <button @click="toggleSidebar" 
+            class="hidden md:flex fixed top-8.5 z-40 items-center justify-center 
+                w-9 h-9 rounded-full 
+                bg-gray-200 dark:bg-black
+                border border-gray-300 dark:border-gray-800
+                shadow-sm hover:shadow-md 
+                hover:bg-gray-300 dark:hover:bg-gray-900
+                transition-all duration-300 ease-in-out group"
+            :style="`left: ${(sidebarPinned || isHovering) ? '256px' : '80px'}; transform: translate(-50%, -50%);`">
+            
+            <!-- Inner circle (biru) — glow dihilangkan -->
+            <span class="flex items-center justify-center w-6 h-6 rounded-full 
+                bg-blue-500 dark:bg-blue-600 
+                border border-blue-600 dark:border-blue-500
+                shadow-sm
+                transition-all duration-300 ease-out
+                group-hover:scale-110">
+                <!-- 
+                    Kalau mau glow biru balik, tambahkan di class span:
+                    group-hover:scale-125
+                    group-hover:shadow-lg
+                    group-hover:shadow-blue-500/50
+                -->
+                <svg class="w-3.5 h-3.5 text-white transition-transform duration-300" 
+                    :class="(sidebarPinned || isHovering) ? 'rotate-0' : 'rotate-180'"
+                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"></path>
+                </svg>
+            </span>
+        </button>
         
         <div class="min-w-0 flex-1 transition-[margin] duration-300 ease-in-out"
              :class="isMobile ? 'ml-0' : (sidebarPinned ? 'ml-64' : 'ml-20')">
             <main class="min-w-0 bg-gray-100 dark:bg-black w-full min-h-screen flex flex-col">
-                <?php ob_start(); ?><header class="[grid-area:header] z-10 min-h-14 flex items-center px-6 lg:px-8 sticky top-0 z-10 block! bg-white dark:bg-black border-b border-zinc-200 dark:border-zinc-800 p-0! m-0! w-full shadow-sm" data-flux-header>
+                <?php ob_start(); ?><header class="[grid-area:header] z-10 min-h-14 flex items-center px-6 lg:px-8 topbar-glass sticky top-0 z-10 block! bg-white dark:bg-black border-b border-zinc-200 dark:border-zinc-800 p-0! m-0! w-full shadow-sm" x-data="{ scrolled: false }" x-init="const onScroll = () => { scrolled = scrollY > 10; };
+                        window.addEventListener('scroll', onScroll, { passive: true });
+                        onScroll();" :class="{ 'scrolled': scrolled }" data-flux-header>
             <?php ob_start(); ?>
-                    <?php ob_start(); ?><nav class="flex items-center gap-1 py-3  flex items-center justify-between px-3 lg:px-4 mx-0!" data-flux-navbar>
+                    <?php ob_start(); ?><nav class="flex items-center gap-0.5 py-3  flex items-center justify-between px-3 lg:px-4 mx-0!" data-flux-navbar>
     <?php ob_start(); ?>
-                        <div class="flex items-center gap-3">
-                            <button @click="toggleSidebar" 
-                                    class="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
+                        <div class="flex items-center gap-4"> <!-- Atau gap-5 -->
+                            <!-- Tombol Menu Khusus Mobile -->
+                            <button @click="sidebarOpen = !sidebarOpen" 
+                                class="flex md:hidden p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
                                 <svg class="w-5 h-5 text-zinc-600 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
                                 </svg>
                             </button>
-                            
-                            <?php
+
+                            <!-- BUNGKUS NOTIFIKASI DENGAN DIV DAN BERI JARAK KIRI (ml-2 / ml-3 / ml-4) -->
+                            <div class="ml-3 md:ml-0">
+                                <?php
 $__split = function ($name, $params = []) {
     return [$name, $params];
 };
@@ -1801,6 +2565,7 @@ unset($__params);
 unset($__componentSlots);
 unset($__split);
 ?>
+                            </div>
                         </div>
                         
                         <div class="flex items-center gap-1 sm:gap-2">
@@ -1825,43 +2590,68 @@ unset($__split);
 <?php echo ltrim(ob_get_clean()); ?>
                             
                             <button 
-                                x-data
-                                @click="$flux.dark = ! $flux.dark"
-                                class="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+                                x-data="{ rotating: false }"
+                                @click="
+                                    rotating = true;
+                                    $flux.dark = !$flux.dark;
+                                    setTimeout(() => rotating = false, 500);
+                                "
+                                class="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors relative overflow-hidden"
                                 :aria-label="$flux.dark ? 'Switch to light mode' : 'Switch to dark mode'">
-                                <svg x-show="!$flux.dark" class="w-5 h-5 text-zinc-600 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                                </svg>
-                                <svg x-show="$flux.dark" class="w-5 h-5 text-zinc-600 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
-                                </svg>
+
+                                <!-- Container dengan animasi rotasi -->
+                                <div 
+                                    class="relative w-5 h-5 transition-transform duration-500 ease-in-out"
+                                    :class="rotating ? 'rotate-[360deg]' : 'rotate-0'">
+                                    
+                                    <!-- Icon Matahari (tampil saat mode DARK) -->
+                                    <svg 
+                                        class="absolute inset-0 w-5 h-5 text-zinc-600 dark:text-zinc-400 transition-all duration-300 ease-in-out"
+                                        :class="$flux.dark ? 'opacity-100 scale-100 rotate-0' : 'opacity-0 scale-50 rotate-90'"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                    </svg>
+
+                                    <!-- Icon Bulan (tampil saat mode LIGHT) -->
+                                    <svg 
+                                        class="absolute inset-0 w-5 h-5 text-zinc-600 dark:text-zinc-400 transition-all duration-300 ease-in-out"
+                                        :class="$flux.dark ? 'opacity-0 scale-50 -rotate-90' : 'opacity-100 scale-100 rotate-0'"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                                    </svg>
+                                </div>
                             </button>
                             
                             <!-- Tombol Logout - Hanya tampil jika user bukan guest -->
                             <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if(auth()->guard()->check()): ?>
-                            <form method="POST" action="<?php echo e(route('logout')); ?>">
-                                <?php echo csrf_field(); ?>
-                                <?php ob_start(); ?><button type="submit" class="relative items-center font-medium justify-center gap-2 whitespace-nowrap disabled:opacity-75 dark:disabled:opacity-75 disabled:cursor-default disabled:pointer-events-none justify-center h-8 text-sm rounded-md px-3 inline-flex  bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-500 text-white  shadow-[inset_0px_1px_var(--color-red-500),inset_0px_2px_--theme(--color-white/.15)] dark:shadow-none [[data-flux-button-group]_&amp;]:border-e [:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-0 [[data-flux-button-group]_&amp;]:border-red-600 dark:[[data-flux-button-group]_&amp;]:border-red-900/25 *:transition-opacity [&amp;[disabled]&gt;:not([data-flux-loading-indicator])]:opacity-0 [&amp;[disabled]&gt;[data-flux-loading-indicator]]:opacity-100 [&amp;[disabled]]:pointer-events-none" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target">
-        <div class="absolute inset-0 flex items-center justify-center opacity-0" data-flux-loading-indicator>
-                <svg class="shrink-0 [:where(&amp;)]:size-4 animate-spin" data-flux-icon xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true" data-slot="icon">
-    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-</svg>
-                    </div>
-        
-                    <svg class="shrink-0 [:where(&amp;)]:size-4" data-flux-icon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true" data-slot="icon">
-  <path fill-rule="evenodd" d="M2 8a.75.75 0 0 1 .75-.75h8.69L8.22 4.03a.75.75 0 0 1 1.06-1.06l4.5 4.5a.75.75 0 0 1 0 1.06l-4.5 4.5a.75.75 0 0 1-1.06-1.06l3.22-3.22H2.75A.75.75 0 0 1 2 8Z" clip-rule="evenodd"/>
-</svg>
+                            <?php ob_start(); ?><button type="button" class="relative items-center font-medium justify-center whitespace-nowrap disabled:opacity-50 dark:disabled:opacity-50 disabled:cursor-default disabled:pointer-events-none disabled:shadow-none justify-center h-8 text-sm rounded-md gap-2 ps-3 pe-3 inline-flex  bg-red-500 hover:bg-red-600 dark:bg-red-600 dark:hover:bg-red-500 text-white  shadow-[inset_0px_1px_var(--color-red-500),inset_0px_2px_--theme(--color-white/.15)] dark:shadow-none [[data-flux-button-group]_&amp;]:border-e [:is([data-flux-button-group]&gt;&amp;:last-child,_[data-flux-button-group]_:last-child&gt;&amp;)]:border-e-0 [[data-flux-button-group]_&amp;]:border-red-600 dark:[[data-flux-button-group]_&amp;]:border-red-900/25    relative overflow-hidden transition-all duration-300" data-flux-button="data-flux-button" data-flux-group-target="data-flux-group-target" x-data="{ loggingOut: false }" @click="if (loggingOut) return;
+                                    loggingOut = true;
+                                    setTimeout(() => {
+                                        $dispatch('show-logout-modal');
+                                        loggingOut = false;
+                                    }, 200);">
+        <?php ob_start(); ?>
+                                
+                                <!-- Icon dengan animasi geser ke kanan -->
+                                <span class="inline-flex items-center gap-1.5 relative">
+                                    <svg 
+                                        class="w-4 h-4 transition-all duration-500 ease-in-out"
+                                        :class="loggingOut ? 'translate-x-[120px] opacity-0' : 'translate-x-0 opacity-100'"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                                    </svg>
+                                    <span 
+                                        class="hidden lg:inline transition-all duration-500 ease-in-out whitespace-nowrap"
+                                        :class="loggingOut ? 'translate-x-8 opacity-0' : 'translate-x-0 opacity-100'">
+                                        <?php echo e(__('Logout')); ?>
 
-                
-                    
-            
-            <span><?php ob_start(); ?>
-                                    <span class="hidden lg:inline"><?php echo e(__('Logout')); ?></span>
-                                <?php echo trim(ob_get_clean()); ?></span>
+                                    </span>
+                                </span>
+                            <?php echo trim(ob_get_clean()); ?>
+
     </button>
 <?php echo ltrim(ob_get_clean()); ?>
-                            </form>
                             <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                         </div>
                     <?php echo trim(ob_get_clean()); ?>
@@ -1878,6 +2668,118 @@ unset($__split);
 
                 </div>
             </main>
+        </div>
+    </div>
+
+    
+    <div x-data="{ 
+            showLogoutModal: false, 
+            timer: null, 
+            duration: 10000, 
+            startTime: 0,
+            remainingTime: 10000,
+            
+            openModal() {
+                this.showLogoutModal = true;
+                this.remainingTime = this.duration;
+                this.startTime = Date.now();
+                this.startTimer();
+            },
+            
+            closeModal() {
+                this.showLogoutModal = false;
+                clearInterval(this.timer);
+            },
+            
+            startTimer() {
+                clearInterval(this.timer);
+                this.timer = setInterval(() => {
+                    const elapsed = Date.now() - this.startTime;
+                    const remaining = Math.max(0, this.duration - elapsed);
+                    this.remainingTime = remaining;
+
+                    if (remaining <= 0) {
+                        this.closeModal();
+                    }
+                }, 50); // Update setiap 50ms agar progress bar mulus
+            }
+        }"
+        x-on:show-logout-modal.window="openModal()"
+        x-on:keydown.escape.window="closeModal()"
+        x-show="showLogoutModal"
+        x-cloak
+        class="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+
+        
+        <div x-show="showLogoutModal"
+            x-transition:enter="transition ease-out duration-200"
+            x-transition:enter-start="opacity-0"
+            x-transition:enter-end="opacity-100"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100"
+            x-transition:leave-end="opacity-0"
+            @click="closeModal()"
+            class="absolute inset-0 bg-black/60"
+            style="backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);"></div>
+
+        
+        <div x-show="showLogoutModal"
+            x-transition:enter="transition ease-out duration-300"
+            x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+            x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+            x-transition:leave="transition ease-in duration-150"
+            x-transition:leave-start="opacity-100 scale-100 translate-y-0"
+            x-transition:leave-end="opacity-0 scale-95 translate-y-4"
+            class="relative bg-white dark:bg-zinc-900 rounded-xl shadow-2xl w-full max-w-sm pt-6 px-6 pb-8 border border-zinc-200 dark:border-zinc-700 text-center overflow-hidden">
+            
+            
+            <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 dark:bg-red-900/30 mb-5">
+                <svg class="w-8 h-8 text-red-600 dark:text-red-400 overflow-visible" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    
+                    
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                    
+                    
+                    <g class="animate-panah-logout">
+                        <path d="M16 17l5-5-5-5" />
+                        <path d="M21 12H9" />
+                    </g>
+
+                </svg>
+            </div>
+
+            
+            <h3 class="text-xl font-bold text-zinc-900 dark:text-zinc-100 mb-2">Confirm Logout</h3>
+            <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-6">
+                Are you sure you want to log out of this account? You will need to log in again to access the system.
+            </p>
+
+            
+            <div class="flex flex-col-reverse sm:flex-row justify-center gap-3 w-full mb-6">
+                <button type="button"
+                        @click="closeModal()"
+                        class="w-full sm:w-auto px-5 py-2.5 text-sm font-medium rounded-lg text-zinc-700 dark:text-zinc-300 bg-zinc-100 dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 transition-colors">
+                    Cancel
+                </button>
+
+                <form method="POST" action="<?php echo e(route('logout')); ?>" class="w-full sm:w-auto m-0">
+                    <?php echo csrf_field(); ?>
+                    <button type="submit"
+                            class="w-full px-5 py-2.5 text-sm font-medium rounded-lg text-white bg-red-600 hover:bg-red-700 transition-colors inline-flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
+                        </svg>
+                        Yes, Logout
+                    </button>
+                </form>
+            </div>
+
+            
+            <div class="absolute bottom-3 left-6 right-6 h-1.5 bg-zinc-100 dark:bg-zinc-800 rounded-full overflow-hidden">
+                <div class="h-full bg-red-500 transition-all duration-75 ease-linear rounded-full"
+                    :style="`width: ${(remainingTime / duration) * 100}%`"></div>
+            </div>
         </div>
     </div>
 
@@ -1926,6 +2828,22 @@ unset($__split);
                     patrolMonitoring: { open: false },
                     utilityMonitoring: { open: false },
                     dailyReportUtility: { open: false },
+                    // ===== TAMBAHKAN INI =====
+                    mtcMonitoring: { open: false },       // Sub Grup 2
+                    mtcMonitoringMenu: { open: false },   // Sub Grup 3 - Monitoring
+                    mtcMaster: { open: false },           // Sub Grup 3 - Master
+                    trayMonitoring: { open: false },
+                    trayMaster: { open: false },
+                    trayTransaction: { open: false },
+                    esdMonitoringMenu: { open: false },
+                    esdManagement: { open: false },
+                    esdStock: { open: false },
+                    esdYearly: { open: false },
+                    esdMonthly: { open: false },
+                    esdThreeMonth: { open: false },
+                    esdWeekly: { open: false },
+                    esdDaily: { open: false },
+                    esdNewAdmission: { open: false },
                 },
                 
                 init() {
@@ -1982,7 +2900,18 @@ unset($__split);
                     });
 
                     // 5. Load state group menu (accordion)
-                    const groupNames = ['home', 'maintenance', 'production', 'dcc', 'hr', 'hrMaster', 'hrForm', 'hrReport', 'ticketing', 'settings', 'auth', 'wipMonitoring', 'msMonitoring', 'fctMonitoring', 'qaqc', 'qaqcMaster', 'qaqcForm', 'qaqcReport', 'uniformMonitoring', 'absenceMonitoring', 'lockerMonitoring', 'patrolMonitoring', 'utilityMonitoring', 'dailyReportUtility'];
+                    // 5. Load state group menu (accordion)
+                    const groupNames = [
+                        'home', 'maintenance', 'production', 'dcc', 'hr', 'hrMaster', 'hrForm', 
+                        'hrReport', 'ticketing', 'settings', 'auth', 'wipMonitoring', 'msMonitoring', 
+                        'fctMonitoring', 'qaqc', 'qaqcMaster', 'qaqcForm', 'qaqcReport', 
+                        'uniformMonitoring', 'absenceMonitoring', 'lockerMonitoring', 'patrolMonitoring', 
+                        'utilityMonitoring', 'dailyReportUtility',
+                        'mtcMonitoring', 'mtcMonitoringMenu', 'mtcMaster',
+                        'trayMonitoring', 'trayMaster', 'trayTransaction',
+                        'esdMonitoringMenu', 'esdManagement', 'esdStock', 'esdYearly',
+                        'esdMonthly', 'esdThreeMonth', 'esdWeekly', 'esdDaily', 'esdNewAdmission'
+                    ];
                     groupNames.forEach(groupName => {
                         const saved = localStorage.getItem(`sidebar_group_${groupName}`);
                         if (saved !== null) {

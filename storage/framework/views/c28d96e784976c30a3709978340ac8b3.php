@@ -1,3 +1,4 @@
+<?php # [BlazeVersion]:{v3} ?>
     <?php $layout->viewContext->mergeIntoNewEnvironment($__env); ?>
 
     <?php $__env->startComponent($layout->view, $layout->params); ?>

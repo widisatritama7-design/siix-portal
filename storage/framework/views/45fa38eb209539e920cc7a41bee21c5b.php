@@ -1,13 +1,14 @@
+<?php # [BlazeVersion]:{v3} ?>
 <?php
-if (!function_exists('_45fa38eb209539e920cc7a41bee21c5b')):
-function _45fa38eb209539e920cc7a41bee21c5b($__blaze, $__data = [], $__slots = [], $__bound = [], $__keys = [], $__this = null) {
+if (!function_exists('_dd4b32a8ed2597149f86231d807b6085')):
+function _dd4b32a8ed2597149f86231d807b6085($__blaze, $__data = [], $__attributes = [], $__slots = [], $__this = null) {
 $__env = $__blaze->env;
 $errors = $__blaze->errors;
 if (($__data['attributes'] ?? null) instanceof \Illuminate\View\ComponentAttributeBag) { $__data = $__data + $__data['attributes']->all(); unset($__data['attributes']); }
 extract($__slots, EXTR_SKIP); unset($__slots);
 extract($__data, EXTR_SKIP);
-$attributes = \Livewire\Blaze\Runtime\BlazeAttributeBag::make($__data, $__bound, $__keys);
-unset($__data, $__bound, $__keys);
+$attributes = new \Livewire\Blaze\Runtime\BlazeAttributeBag($__attributes);
+unset($__data, $__attributes);
 ob_start();
 ?>
 
@@ -50,9 +51,10 @@ $classes = Flux::classes('mt-3 text-sm font-medium text-red-500 dark:text-red-40
 <div role="alert" aria-live="polite" aria-atomic="true" <?php echo e($attributes->class($classes)); ?> data-flux-error>
     <?php if ($message) : ?>
         <?php if ($icon) : ?>
-            <?php $blaze_memoized_key = \Livewire\Blaze\Memoizer\Memo::key("flux::icon", ['name' => $icon, 'variant' => 'mini', 'class' => 'inline']); ?><?php if ($blaze_memoized_key !== null && \Livewire\Blaze\Memoizer\Memo::has($blaze_memoized_key)) : ?><?php echo \Livewire\Blaze\Memoizer\Memo::get($blaze_memoized_key); ?><?php else : ?><?php ob_start(); ?><?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php', $__blaze->compiledPath.'/ebfb27feae87a3d873cb5ef75a09aacc.php'); ?>
-<?php $__blaze->pushData(['name' => $icon,'variant' => 'mini','class' => 'inline']); ?>
-<?php _ebfb27feae87a3d873cb5ef75a09aacc($__blaze, ['name' => $icon,'variant' => 'mini','class' => 'inline'], [], ['name'], [], $__this ?? (isset($this) ? $this : null)); ?>
+            <?php $blaze_memoized_key = \Livewire\Blaze\Memoizer\Memo::key("flux::icon", ['name' => $icon, 'variant' => 'mini', 'class' => 'inline']); ?><?php if ($blaze_memoized_key !== null && \Livewire\Blaze\Memoizer\Memo::has($blaze_memoized_key)) : ?><?php echo \Livewire\Blaze\Memoizer\Memo::get($blaze_memoized_key); ?><?php else : ?><?php ob_start(); ?><?php if (!function_exists('_adf4f9f4d4b9749b7256198b8759ef9f')) { require $__blaze->compile('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php'); } ?>
+<?php $__componentData = ['name' => $icon,'variant' => 'mini','class' => 'inline']; ?>
+<?php $__blaze->pushData($__componentData); ?>
+<?php _adf4f9f4d4b9749b7256198b8759ef9f($__blaze, $__componentData, ['name' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($__componentData['name']), 'variant' => 'mini', 'class' => 'inline'], [], $__this ?? (isset($this) ? $this : null)); ?>
 <?php $__blaze->popData(); ?><?php $blaze_memoized_html = ob_get_clean(); ?><?php if ($blaze_memoized_key !== null) { \Livewire\Blaze\Memoizer\Memo::put($blaze_memoized_key, $blaze_memoized_html); } ?><?php echo $blaze_memoized_html; ?><?php endif; ?>
         <?php endif; ?>
 

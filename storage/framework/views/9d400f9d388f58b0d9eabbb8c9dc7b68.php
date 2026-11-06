@@ -1,7 +1,8 @@
-<?php # [BlazeFolded]:{flux::icon.star}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/star.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.star}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/star.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.star}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/star.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::icon.arrow-right}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/arrow-right.blade.php}:{1776985208} ?>
+<?php # [BlazeVersion]:{v3} ?>
+<?php # [BlazeFolded]:{flux::icon.star}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/star.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::icon.star}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/star.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::icon.star}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/star.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::icon.arrow-right}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/arrow-right.blade.php}:{1792593958} ?>
 
 <div>
     <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($notification): ?>
@@ -13,9 +14,10 @@
                         <?php echo $notification->icon; ?>
 
                     <?php else: ?>
-                        <?php $blaze_memoized_key = \Livewire\Blaze\Memoizer\Memo::key("flux::icon", ['name' => $notification->icon, 'class' => 'w-4 h-4 mr-1.5']); ?><?php if ($blaze_memoized_key !== null && \Livewire\Blaze\Memoizer\Memo::has($blaze_memoized_key)) : ?><?php echo \Livewire\Blaze\Memoizer\Memo::get($blaze_memoized_key); ?><?php else : ?><?php ob_start(); ?><?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php', $__blaze->compiledPath.'/ebfb27feae87a3d873cb5ef75a09aacc.php'); ?>
-<?php $__blaze->pushData(['name' => $notification->icon,'class' => 'w-4 h-4 mr-1.5']); ?>
-<?php _ebfb27feae87a3d873cb5ef75a09aacc($__blaze, ['name' => $notification->icon,'class' => 'w-4 h-4 mr-1.5'], [], ['name'], [], $__this ?? (isset($this) ? $this : null)); ?>
+                        <?php $blaze_memoized_key = \Livewire\Blaze\Memoizer\Memo::key("flux::icon", ['name' => $notification->icon, 'class' => 'w-4 h-4 mr-1.5']); ?><?php if ($blaze_memoized_key !== null && \Livewire\Blaze\Memoizer\Memo::has($blaze_memoized_key)) : ?><?php echo \Livewire\Blaze\Memoizer\Memo::get($blaze_memoized_key); ?><?php else : ?><?php ob_start(); ?><?php if (!function_exists('_adf4f9f4d4b9749b7256198b8759ef9f')) { require $__blaze->compile('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php'); } ?>
+<?php $__componentData = ['name' => $notification->icon,'class' => 'w-4 h-4 mr-1.5']; ?>
+<?php $__blaze->pushData($__componentData); ?>
+<?php _adf4f9f4d4b9749b7256198b8759ef9f($__blaze, $__componentData, ['name' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($__componentData['name']), 'class' => 'w-4 h-4 mr-1.5'], [], $__this ?? (isset($this) ? $this : null)); ?>
 <?php $__blaze->popData(); ?><?php $blaze_memoized_html = ob_get_clean(); ?><?php if ($blaze_memoized_key !== null) { \Livewire\Blaze\Memoizer\Memo::put($blaze_memoized_key, $blaze_memoized_html); } ?><?php echo $blaze_memoized_html; ?><?php endif; ?>
                     <?php endif; ?>
                 <?php else: ?>
@@ -52,9 +54,10 @@
                         <?php echo str_replace('class="', 'class="w-5 h-5 ', $notification->icon); ?>
 
                     <?php else: ?>
-                        <?php $blaze_memoized_key = \Livewire\Blaze\Memoizer\Memo::key("flux::icon", ['name' => $notification->icon, 'class' => 'w-5 h-5']); ?><?php if ($blaze_memoized_key !== null && \Livewire\Blaze\Memoizer\Memo::has($blaze_memoized_key)) : ?><?php echo \Livewire\Blaze\Memoizer\Memo::get($blaze_memoized_key); ?><?php else : ?><?php ob_start(); ?><?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php', $__blaze->compiledPath.'/ebfb27feae87a3d873cb5ef75a09aacc.php'); ?>
-<?php $__blaze->pushData(['name' => $notification->icon,'class' => 'w-5 h-5']); ?>
-<?php _ebfb27feae87a3d873cb5ef75a09aacc($__blaze, ['name' => $notification->icon,'class' => 'w-5 h-5'], [], ['name'], [], $__this ?? (isset($this) ? $this : null)); ?>
+                        <?php $blaze_memoized_key = \Livewire\Blaze\Memoizer\Memo::key("flux::icon", ['name' => $notification->icon, 'class' => 'w-5 h-5']); ?><?php if ($blaze_memoized_key !== null && \Livewire\Blaze\Memoizer\Memo::has($blaze_memoized_key)) : ?><?php echo \Livewire\Blaze\Memoizer\Memo::get($blaze_memoized_key); ?><?php else : ?><?php ob_start(); ?><?php if (!function_exists('_adf4f9f4d4b9749b7256198b8759ef9f')) { require $__blaze->compile('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php'); } ?>
+<?php $__componentData = ['name' => $notification->icon,'class' => 'w-5 h-5']; ?>
+<?php $__blaze->pushData($__componentData); ?>
+<?php _adf4f9f4d4b9749b7256198b8759ef9f($__blaze, $__componentData, ['name' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($__componentData['name']), 'class' => 'w-5 h-5'], [], $__this ?? (isset($this) ? $this : null)); ?>
 <?php $__blaze->popData(); ?><?php $blaze_memoized_html = ob_get_clean(); ?><?php if ($blaze_memoized_key !== null) { \Livewire\Blaze\Memoizer\Memo::put($blaze_memoized_key, $blaze_memoized_html); } ?><?php echo $blaze_memoized_html; ?><?php endif; ?>
                     <?php endif; ?>
                 <?php else: ?>
@@ -84,9 +87,10 @@
                                     <?php echo str_replace('class="', 'class="w-5 h-5 ' . $notification->getIconColorClasses() . ' ', $notification->icon); ?>
 
                                 <?php else: ?>
-                                    <?php $blaze_memoized_key = \Livewire\Blaze\Memoizer\Memo::key("flux::icon", ['name' => $notification->icon, 'class' => 'w-5 h-5 '.e($notification->getIconColorClasses())]); ?><?php if ($blaze_memoized_key !== null && \Livewire\Blaze\Memoizer\Memo::has($blaze_memoized_key)) : ?><?php echo \Livewire\Blaze\Memoizer\Memo::get($blaze_memoized_key); ?><?php else : ?><?php ob_start(); ?><?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php', $__blaze->compiledPath.'/ebfb27feae87a3d873cb5ef75a09aacc.php'); ?>
-<?php $__blaze->pushData(['name' => $notification->icon,'class' => 'w-5 h-5 '.e($notification->getIconColorClasses())]); ?>
-<?php _ebfb27feae87a3d873cb5ef75a09aacc($__blaze, ['name' => $notification->icon,'class' => 'w-5 h-5 '.e($notification->getIconColorClasses())], [], ['name'], [], $__this ?? (isset($this) ? $this : null)); ?>
+                                    <?php $blaze_memoized_key = \Livewire\Blaze\Memoizer\Memo::key("flux::icon", ['name' => $notification->icon, 'class' => 'w-5 h-5 '.e($notification->getIconColorClasses())]); ?><?php if ($blaze_memoized_key !== null && \Livewire\Blaze\Memoizer\Memo::has($blaze_memoized_key)) : ?><?php echo \Livewire\Blaze\Memoizer\Memo::get($blaze_memoized_key); ?><?php else : ?><?php ob_start(); ?><?php if (!function_exists('_adf4f9f4d4b9749b7256198b8759ef9f')) { require $__blaze->compile('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/index.blade.php'); } ?>
+<?php $__componentData = ['name' => $notification->icon,'class' => 'w-5 h-5 '.e($notification->getIconColorClasses())]; ?>
+<?php $__blaze->pushData($__componentData); ?>
+<?php _adf4f9f4d4b9749b7256198b8759ef9f($__blaze, $__componentData, ['name' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($__componentData['name']), 'class' => $__componentData['class']], [], $__this ?? (isset($this) ? $this : null)); ?>
 <?php $__blaze->popData(); ?><?php $blaze_memoized_html = ob_get_clean(); ?><?php if ($blaze_memoized_key !== null) { \Livewire\Blaze\Memoizer\Memo::put($blaze_memoized_key, $blaze_memoized_html); } ?><?php echo $blaze_memoized_html; ?><?php endif; ?>
                                 <?php endif; ?>
                             <?php else: ?>

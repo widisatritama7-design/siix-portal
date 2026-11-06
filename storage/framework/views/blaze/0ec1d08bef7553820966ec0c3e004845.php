@@ -1,13 +1,14 @@
+<?php # [BlazeVersion]:{v3} ?>
 <?php
-if (!function_exists('__0ec1d08bef7553820966ec0c3e004845')):
-function __0ec1d08bef7553820966ec0c3e004845($__blaze, $__data = [], $__slots = [], $__bound = [], $__keys = [], $__this = null) {
+if (!function_exists('__9ee2fd4a5daf329e401e6e13434d5db8')):
+function __9ee2fd4a5daf329e401e6e13434d5db8($__blaze, $__data = [], $__attributes = [], $__slots = [], $__this = null) {
 $__env = $__blaze->env;
 $__slots['slot'] ??= new \Illuminate\View\ComponentSlot('');
 if (($__data['attributes'] ?? null) instanceof \Illuminate\View\ComponentAttributeBag) { $__data = $__data + $__data['attributes']->all(); unset($__data['attributes']); }
 extract($__slots, EXTR_SKIP); unset($__slots);
 extract($__data, EXTR_SKIP);
-$attributes = \Livewire\Blaze\Runtime\BlazeAttributeBag::make($__data, $__bound, $__keys);
-unset($__data, $__bound, $__keys);
+$attributes = new \Livewire\Blaze\Runtime\BlazeAttributeBag($__attributes);
+unset($__data, $__attributes);
 ob_start();
 ?>
 
@@ -15,22 +16,33 @@ ob_start();
 <?php
 $__defaults = [
     'container' => null,
+    'inset' => false,
 ];
 $container ??= $attributes['container'] ?? $__defaults['container']; unset($attributes['container']);
+$inset ??= $attributes['inset'] ?? $__defaults['inset']; unset($attributes['inset']);
 unset($__defaults);
 ?>
 
 <?php
 $classes = Flux::classes('[grid-area:main]')
-    ->add('p-6 lg:p-8')
+    ->add($inset ? 'p-6 lg:p-10' : 'p-6 lg:p-8')
+    ->add($inset ? 'min-w-0 min-h-0 [:where(&)]:bg-white dark:[:where(&)]:bg-zinc-800 lg:m-2 lg:rounded-xl lg:border lg:[:where(&)]:border-zinc-200 lg:shadow-xs dark:lg:[:where(&)]:border-zinc-700' : '')
+    ->add($inset ? 'lg:overflow-y-auto lg:overscroll-contain' : '')
     ->add('[[data-flux-container]_&]:px-0') // If there is a wrapping container, let IT handle the x padding...
-    ->add($container ? 'mx-auto w-full [:where(&)]:max-w-7xl' : '')
+    ->add($container && ! $inset ? 'mx-auto w-full [:where(&)]:max-w-7xl' : '')
     ;
 ?>
 
-<div <?php echo e($attributes->class($classes)); ?> data-flux-main>
-    <?php echo e($slot); ?>
+<div <?php echo e($attributes->class($classes)); ?> data-flux-main <?php if($inset): ?> data-flux-main-inset <?php endif; ?>>
+    <?php if ($container && $inset): ?>
+        <div class="mx-auto w-full [:where(&)]:max-w-7xl">
+            <?php echo e($slot); ?>
 
+        </div>
+    <?php else: ?>
+        <?php echo e($slot); ?>
+
+    <?php endif; ?>
 </div>
 <?php
 echo $__blaze->processPassthroughContent('ltrim', ltrim(ob_get_clean()));

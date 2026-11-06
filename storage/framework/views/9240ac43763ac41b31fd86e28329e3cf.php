@@ -1,7 +1,8 @@
-<?php # [BlazeFolded]:{flux::navlist}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/navlist/index.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::separator}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/separator.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::heading}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/heading.blade.php}:{1776985208} ?>
-<?php # [BlazeFolded]:{flux::subheading}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/subheading.blade.php}:{1776985208} ?>
+<?php # [BlazeVersion]:{v3} ?>
+<?php # [BlazeFolded]:{flux::navlist}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/navlist/index.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::separator}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/separator.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::heading}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/heading.blade.php}:{1792593958} ?>
+<?php # [BlazeFolded]:{flux::subheading}:{/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/subheading.blade.php}:{1792593958} ?>
 <div 
     x-data="{
         sidebarOpen: JSON.parse(localStorage.getItem('sidebarOpen') ?? 'true'),
@@ -86,18 +87,14 @@
             <?php ob_start(); ?><?php $__blaze->pushData(['ariaLabel' => 'Settings', 'class' => 'w-full']); $__env->pushConsumableComponentData(['ariaLabel' => 'Settings', 'class' => 'w-full']); ?><nav class="flex flex-col overflow-visible min-h-auto w-full" aria-label="Settings" data-flux-navlist>
     <?php ob_start(); ?>
                 <!-- Profile -->
-                <?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/navlist/item.blade.php', $__blaze->compiledPath.'/cd85d69875c7d98622a91354fd65386f.php'); ?>
-<?php if (isset($__slotscd85d69875c7d98622a91354fd65386f)) { $__slotsStackcd85d69875c7d98622a91354fd65386f[] = $__slotscd85d69875c7d98622a91354fd65386f; } ?>
-<?php if (isset($__attrscd85d69875c7d98622a91354fd65386f)) { $__attrsStackcd85d69875c7d98622a91354fd65386f[] = $__attrscd85d69875c7d98622a91354fd65386f; } ?>
-<?php $__attrscd85d69875c7d98622a91354fd65386f = ['href' => route('profile.edit'),'wire:navigate' => true,'active' => request()->routeIs('profile.edit'),'title' => 'Profile','class' => 'w-full']; ?>
-<?php $__slotscd85d69875c7d98622a91354fd65386f = []; ?>
-<?php $__blaze->pushData($__attrscd85d69875c7d98622a91354fd65386f); ?>
+                <?php if (!function_exists('_f407008f347b4f41660bf2f946c3feb3')) { require $__blaze->compile('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/navlist/item.blade.php'); } ?>
+<?php if (isset($__slotsf407008f347b4f41660bf2f946c3feb3)) { $__slotsStackf407008f347b4f41660bf2f946c3feb3[] = $__slotsf407008f347b4f41660bf2f946c3feb3; } ?>
+<?php if (isset($__dataf407008f347b4f41660bf2f946c3feb3)) { $__dataStackf407008f347b4f41660bf2f946c3feb3[] = $__dataf407008f347b4f41660bf2f946c3feb3; } ?>
+<?php $__dataf407008f347b4f41660bf2f946c3feb3 = ['href' => route('profile.edit'),'wire:navigate' => true,'active' => request()->routeIs('profile.edit'),'title' => 'Profile','class' => 'w-full']; ?>
+<?php $__slotsf407008f347b4f41660bf2f946c3feb3 = []; ?>
+<?php $__blaze->pushData($__dataf407008f347b4f41660bf2f946c3feb3); ?>
 <?php ob_start(); ?>
-                                         <span x-show="sidebarOpen" class="truncate">
-                        Profile
-                    </span>
-                <?php $__slotscd85d69875c7d98622a91354fd65386f['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
-<?php ob_start(); ?>
+                     <?php ob_start(); ?>
                         <?php if (isset($component)) { $__componentOriginal643fe1b47aec0b76658e1a0200b34b2c = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal643fe1b47aec0b76658e1a0200b34b2c = $attributes; } ?>
 <?php $component = BladeUI\Icons\Components\Svg::resolve([] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -120,26 +117,26 @@
 <?php $component = $__componentOriginal643fe1b47aec0b76658e1a0200b34b2c; ?>
 <?php unset($__componentOriginal643fe1b47aec0b76658e1a0200b34b2c); ?>
 <?php endif; ?>
-                    <?php $__slotscd85d69875c7d98622a91354fd65386f['icon'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
-<?php $__blaze->pushSlots($__slotscd85d69875c7d98622a91354fd65386f); ?>
-<?php _cd85d69875c7d98622a91354fd65386f($__blaze, $__attrscd85d69875c7d98622a91354fd65386f, $__slotscd85d69875c7d98622a91354fd65386f, ['href', 'wire:navigate', 'active'], [], $__this ?? (isset($this) ? $this : null)); ?>
-<?php if (! empty($__slotsStackcd85d69875c7d98622a91354fd65386f)) { $__slotscd85d69875c7d98622a91354fd65386f = array_pop($__slotsStackcd85d69875c7d98622a91354fd65386f); } ?>
-<?php if (! empty($__attrsStackcd85d69875c7d98622a91354fd65386f)) { $__attrscd85d69875c7d98622a91354fd65386f = array_pop($__attrsStackcd85d69875c7d98622a91354fd65386f); } ?>
+                    <?php $__slotsf407008f347b4f41660bf2f946c3feb3['icon'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+                    <span x-show="sidebarOpen" class="truncate">
+                        Profile
+                    </span>
+                <?php $__slotsf407008f347b4f41660bf2f946c3feb3['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slotsf407008f347b4f41660bf2f946c3feb3); ?>
+<?php _f407008f347b4f41660bf2f946c3feb3($__blaze, $__dataf407008f347b4f41660bf2f946c3feb3, ['href' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($__dataf407008f347b4f41660bf2f946c3feb3['href']), 'wire:navigate' => true, 'active' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($__dataf407008f347b4f41660bf2f946c3feb3['active']), 'title' => 'Profile', 'class' => 'w-full'], $__slotsf407008f347b4f41660bf2f946c3feb3, $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStackf407008f347b4f41660bf2f946c3feb3)) { $__slotsf407008f347b4f41660bf2f946c3feb3 = array_pop($__slotsStackf407008f347b4f41660bf2f946c3feb3); } ?>
+<?php if (! empty($__dataStackf407008f347b4f41660bf2f946c3feb3)) { $__dataf407008f347b4f41660bf2f946c3feb3 = array_pop($__dataStackf407008f347b4f41660bf2f946c3feb3); } ?>
 <?php $__blaze->popData(); ?>
 
                 <!-- Security -->
-                <?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/navlist/item.blade.php', $__blaze->compiledPath.'/cd85d69875c7d98622a91354fd65386f.php'); ?>
-<?php if (isset($__slotscd85d69875c7d98622a91354fd65386f)) { $__slotsStackcd85d69875c7d98622a91354fd65386f[] = $__slotscd85d69875c7d98622a91354fd65386f; } ?>
-<?php if (isset($__attrscd85d69875c7d98622a91354fd65386f)) { $__attrsStackcd85d69875c7d98622a91354fd65386f[] = $__attrscd85d69875c7d98622a91354fd65386f; } ?>
-<?php $__attrscd85d69875c7d98622a91354fd65386f = ['href' => route('security.edit'),'wire:navigate' => true,'active' => request()->routeIs('security.edit'),'title' => 'Security','class' => 'w-full']; ?>
-<?php $__slotscd85d69875c7d98622a91354fd65386f = []; ?>
-<?php $__blaze->pushData($__attrscd85d69875c7d98622a91354fd65386f); ?>
+                <?php if (!function_exists('_f407008f347b4f41660bf2f946c3feb3')) { require $__blaze->compile('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/navlist/item.blade.php'); } ?>
+<?php if (isset($__slotsf407008f347b4f41660bf2f946c3feb3)) { $__slotsStackf407008f347b4f41660bf2f946c3feb3[] = $__slotsf407008f347b4f41660bf2f946c3feb3; } ?>
+<?php if (isset($__dataf407008f347b4f41660bf2f946c3feb3)) { $__dataStackf407008f347b4f41660bf2f946c3feb3[] = $__dataf407008f347b4f41660bf2f946c3feb3; } ?>
+<?php $__dataf407008f347b4f41660bf2f946c3feb3 = ['href' => route('security.edit'),'wire:navigate' => true,'active' => request()->routeIs('security.edit'),'title' => 'Security','class' => 'w-full']; ?>
+<?php $__slotsf407008f347b4f41660bf2f946c3feb3 = []; ?>
+<?php $__blaze->pushData($__dataf407008f347b4f41660bf2f946c3feb3); ?>
 <?php ob_start(); ?>
-                                         <span x-show="sidebarOpen" class="truncate">
-                        Security
-                    </span>
-                <?php $__slotscd85d69875c7d98622a91354fd65386f['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
-<?php ob_start(); ?>
+                     <?php ob_start(); ?>
                         <?php if (isset($component)) { $__componentOriginal643fe1b47aec0b76658e1a0200b34b2c = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal643fe1b47aec0b76658e1a0200b34b2c = $attributes; } ?>
 <?php $component = BladeUI\Icons\Components\Svg::resolve([] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -162,26 +159,26 @@
 <?php $component = $__componentOriginal643fe1b47aec0b76658e1a0200b34b2c; ?>
 <?php unset($__componentOriginal643fe1b47aec0b76658e1a0200b34b2c); ?>
 <?php endif; ?>
-                    <?php $__slotscd85d69875c7d98622a91354fd65386f['icon'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
-<?php $__blaze->pushSlots($__slotscd85d69875c7d98622a91354fd65386f); ?>
-<?php _cd85d69875c7d98622a91354fd65386f($__blaze, $__attrscd85d69875c7d98622a91354fd65386f, $__slotscd85d69875c7d98622a91354fd65386f, ['href', 'wire:navigate', 'active'], [], $__this ?? (isset($this) ? $this : null)); ?>
-<?php if (! empty($__slotsStackcd85d69875c7d98622a91354fd65386f)) { $__slotscd85d69875c7d98622a91354fd65386f = array_pop($__slotsStackcd85d69875c7d98622a91354fd65386f); } ?>
-<?php if (! empty($__attrsStackcd85d69875c7d98622a91354fd65386f)) { $__attrscd85d69875c7d98622a91354fd65386f = array_pop($__attrsStackcd85d69875c7d98622a91354fd65386f); } ?>
+                    <?php $__slotsf407008f347b4f41660bf2f946c3feb3['icon'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+                    <span x-show="sidebarOpen" class="truncate">
+                        Security
+                    </span>
+                <?php $__slotsf407008f347b4f41660bf2f946c3feb3['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slotsf407008f347b4f41660bf2f946c3feb3); ?>
+<?php _f407008f347b4f41660bf2f946c3feb3($__blaze, $__dataf407008f347b4f41660bf2f946c3feb3, ['href' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($__dataf407008f347b4f41660bf2f946c3feb3['href']), 'wire:navigate' => true, 'active' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($__dataf407008f347b4f41660bf2f946c3feb3['active']), 'title' => 'Security', 'class' => 'w-full'], $__slotsf407008f347b4f41660bf2f946c3feb3, $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStackf407008f347b4f41660bf2f946c3feb3)) { $__slotsf407008f347b4f41660bf2f946c3feb3 = array_pop($__slotsStackf407008f347b4f41660bf2f946c3feb3); } ?>
+<?php if (! empty($__dataStackf407008f347b4f41660bf2f946c3feb3)) { $__dataf407008f347b4f41660bf2f946c3feb3 = array_pop($__dataStackf407008f347b4f41660bf2f946c3feb3); } ?>
 <?php $__blaze->popData(); ?>
 
                 <!-- Passkey -->
-                <?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/navlist/item.blade.php', $__blaze->compiledPath.'/cd85d69875c7d98622a91354fd65386f.php'); ?>
-<?php if (isset($__slotscd85d69875c7d98622a91354fd65386f)) { $__slotsStackcd85d69875c7d98622a91354fd65386f[] = $__slotscd85d69875c7d98622a91354fd65386f; } ?>
-<?php if (isset($__attrscd85d69875c7d98622a91354fd65386f)) { $__attrsStackcd85d69875c7d98622a91354fd65386f[] = $__attrscd85d69875c7d98622a91354fd65386f; } ?>
-<?php $__attrscd85d69875c7d98622a91354fd65386f = ['href' => route('settings.passkeys'),'wire:navigate' => true,'active' => request()->routeIs('settings.passkeys'),'title' => 'Passkey','class' => 'w-full']; ?>
-<?php $__slotscd85d69875c7d98622a91354fd65386f = []; ?>
-<?php $__blaze->pushData($__attrscd85d69875c7d98622a91354fd65386f); ?>
+                <?php if (!function_exists('_f407008f347b4f41660bf2f946c3feb3')) { require $__blaze->compile('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/navlist/item.blade.php'); } ?>
+<?php if (isset($__slotsf407008f347b4f41660bf2f946c3feb3)) { $__slotsStackf407008f347b4f41660bf2f946c3feb3[] = $__slotsf407008f347b4f41660bf2f946c3feb3; } ?>
+<?php if (isset($__dataf407008f347b4f41660bf2f946c3feb3)) { $__dataStackf407008f347b4f41660bf2f946c3feb3[] = $__dataf407008f347b4f41660bf2f946c3feb3; } ?>
+<?php $__dataf407008f347b4f41660bf2f946c3feb3 = ['href' => route('settings.passkeys'),'wire:navigate' => true,'active' => request()->routeIs('settings.passkeys'),'title' => 'Passkey','class' => 'w-full']; ?>
+<?php $__slotsf407008f347b4f41660bf2f946c3feb3 = []; ?>
+<?php $__blaze->pushData($__dataf407008f347b4f41660bf2f946c3feb3); ?>
 <?php ob_start(); ?>
-                                         <span x-show="sidebarOpen" class="truncate">
-                        Passkey
-                    </span>
-                <?php $__slotscd85d69875c7d98622a91354fd65386f['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
-<?php ob_start(); ?>
+                     <?php ob_start(); ?>
                         <?php if (isset($component)) { $__componentOriginal643fe1b47aec0b76658e1a0200b34b2c = $component; } ?>
 <?php if (isset($attributes)) { $__attributesOriginal643fe1b47aec0b76658e1a0200b34b2c = $attributes; } ?>
 <?php $component = BladeUI\Icons\Components\Svg::resolve([] + (isset($attributes) && $attributes instanceof Illuminate\View\ComponentAttributeBag ? $attributes->all() : [])); ?>
@@ -204,11 +201,15 @@
 <?php $component = $__componentOriginal643fe1b47aec0b76658e1a0200b34b2c; ?>
 <?php unset($__componentOriginal643fe1b47aec0b76658e1a0200b34b2c); ?>
 <?php endif; ?>
-                    <?php $__slotscd85d69875c7d98622a91354fd65386f['icon'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
-<?php $__blaze->pushSlots($__slotscd85d69875c7d98622a91354fd65386f); ?>
-<?php _cd85d69875c7d98622a91354fd65386f($__blaze, $__attrscd85d69875c7d98622a91354fd65386f, $__slotscd85d69875c7d98622a91354fd65386f, ['href', 'wire:navigate', 'active'], [], $__this ?? (isset($this) ? $this : null)); ?>
-<?php if (! empty($__slotsStackcd85d69875c7d98622a91354fd65386f)) { $__slotscd85d69875c7d98622a91354fd65386f = array_pop($__slotsStackcd85d69875c7d98622a91354fd65386f); } ?>
-<?php if (! empty($__attrsStackcd85d69875c7d98622a91354fd65386f)) { $__attrscd85d69875c7d98622a91354fd65386f = array_pop($__attrsStackcd85d69875c7d98622a91354fd65386f); } ?>
+                    <?php $__slotsf407008f347b4f41660bf2f946c3feb3['icon'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+                    <span x-show="sidebarOpen" class="truncate">
+                        Passkey
+                    </span>
+                <?php $__slotsf407008f347b4f41660bf2f946c3feb3['slot'] = new \Illuminate\View\ComponentSlot(trim(ob_get_clean()), []); ?>
+<?php $__blaze->pushSlots($__slotsf407008f347b4f41660bf2f946c3feb3); ?>
+<?php _f407008f347b4f41660bf2f946c3feb3($__blaze, $__dataf407008f347b4f41660bf2f946c3feb3, ['href' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($__dataf407008f347b4f41660bf2f946c3feb3['href']), 'wire:navigate' => true, 'active' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($__dataf407008f347b4f41660bf2f946c3feb3['active']), 'title' => 'Passkey', 'class' => 'w-full'], $__slotsf407008f347b4f41660bf2f946c3feb3, $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStackf407008f347b4f41660bf2f946c3feb3)) { $__slotsf407008f347b4f41660bf2f946c3feb3 = array_pop($__slotsStackf407008f347b4f41660bf2f946c3feb3); } ?>
+<?php if (! empty($__dataStackf407008f347b4f41660bf2f946c3feb3)) { $__dataf407008f347b4f41660bf2f946c3feb3 = array_pop($__dataStackf407008f347b4f41660bf2f946c3feb3); } ?>
 <?php $__blaze->popData(); ?>
             <?php echo trim(ob_get_clean()); ?>
 

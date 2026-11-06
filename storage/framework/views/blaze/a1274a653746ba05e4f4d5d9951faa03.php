@@ -1,13 +1,14 @@
+<?php # [BlazeVersion]:{v3} ?>
 <?php
-if (!function_exists('__a1274a653746ba05e4f4d5d9951faa03')):
-function __a1274a653746ba05e4f4d5d9951faa03($__blaze, $__data = [], $__slots = [], $__bound = [], $__keys = [], $__this = null) {
+if (!function_exists('__ecc47c434ae58cb0aa9d6dd71897ac40')):
+function __ecc47c434ae58cb0aa9d6dd71897ac40($__blaze, $__data = [], $__attributes = [], $__slots = [], $__this = null) {
 $__env = $__blaze->env;
 
 if (($__data['attributes'] ?? null) instanceof \Illuminate\View\ComponentAttributeBag) { $__data = $__data + $__data['attributes']->all(); unset($__data['attributes']); }
 extract($__slots, EXTR_SKIP); unset($__slots);
 extract($__data, EXTR_SKIP);
-$attributes = \Livewire\Blaze\Runtime\BlazeAttributeBag::make($__data, $__bound, $__keys);
-unset($__data, $__bound, $__keys);
+$attributes = new \Livewire\Blaze\Runtime\BlazeAttributeBag($__attributes);
+unset($__data, $__attributes);
 ob_start();
 ?>
 
@@ -31,22 +32,23 @@ $attributes = $attributes->merge([
 ]);
 ?>
 
-<?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php', $__blaze->compiledPath.'/fad05d57e1e0bf8b6251725acbf0d97e.php'); ?>
-<?php if (isset($__slotsfad05d57e1e0bf8b6251725acbf0d97e)) { $__slotsStackfad05d57e1e0bf8b6251725acbf0d97e[] = $__slotsfad05d57e1e0bf8b6251725acbf0d97e; } ?>
-<?php if (isset($__attrsfad05d57e1e0bf8b6251725acbf0d97e)) { $__attrsStackfad05d57e1e0bf8b6251725acbf0d97e[] = $__attrsfad05d57e1e0bf8b6251725acbf0d97e; } ?>
-<?php $__attrsfad05d57e1e0bf8b6251725acbf0d97e = ['attributes' => $attributes,'size' => $size === 'sm' || $size === 'xs' ? 'xs' : 'sm','xData' => 'fluxInputClearable','xOn:click' => 'clear()','tabindex' => '-1','ariaLabel' => e(__('Clear input')),'dataFluxClearButton' => true]; ?>
-<?php $__slotsfad05d57e1e0bf8b6251725acbf0d97e = []; ?>
-<?php $__blaze->pushData($__attrsfad05d57e1e0bf8b6251725acbf0d97e); ?>
+<?php if (!function_exists('__19e9f12f8a300195bcfcda1eb1bbca00')) { require $__blaze->compile('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/button/index.blade.php'); } ?>
+<?php if (isset($__slots19e9f12f8a300195bcfcda1eb1bbca00)) { $__slotsStack19e9f12f8a300195bcfcda1eb1bbca00[] = $__slots19e9f12f8a300195bcfcda1eb1bbca00; } ?>
+<?php if (isset($__data19e9f12f8a300195bcfcda1eb1bbca00)) { $__dataStack19e9f12f8a300195bcfcda1eb1bbca00[] = $__data19e9f12f8a300195bcfcda1eb1bbca00; } ?>
+<?php $__data19e9f12f8a300195bcfcda1eb1bbca00 = ['attributes' => $attributes,'size' => $size === 'sm' || $size === 'xs' ? 'xs' : 'sm','xData' => 'fluxInputClearable','xOn:click' => 'clear()','tabindex' => '-1','ariaLabel' => e(__('Clear input')),'dataFluxClearButton' => true]; ?>
+<?php $__slots19e9f12f8a300195bcfcda1eb1bbca00 = []; ?>
+<?php $__blaze->pushData($__data19e9f12f8a300195bcfcda1eb1bbca00); ?>
 <?php ob_start(); ?>
-    <?php $__blaze->ensureRequired('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-mark.blade.php', $__blaze->compiledPath.'/8ab3d4ab785ad4fa49ce98d7dfbe8d39.php'); ?>
-<?php $__blaze->pushData(['variant' => $iconVariant]); ?>
-<?php __8ab3d4ab785ad4fa49ce98d7dfbe8d39($__blaze, ['variant' => $iconVariant], [], ['variant'], [], $__this ?? (isset($this) ? $this : null)); ?>
+    <?php if (!function_exists('__32faceab033f640da906bff24d008dfe')) { require $__blaze->compile('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-mark.blade.php'); } ?>
+<?php $__componentData = ['variant' => $iconVariant]; ?>
+<?php $__blaze->pushData($__componentData); ?>
+<?php __32faceab033f640da906bff24d008dfe($__blaze, $__componentData, ['variant' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($__componentData['variant'])], [], $__this ?? (isset($this) ? $this : null)); ?>
 <?php $__blaze->popData(); ?>
-<?php $__slotsfad05d57e1e0bf8b6251725acbf0d97e['slot'] = new \Illuminate\View\ComponentSlot($__blaze->processPassthroughContent('trim', trim(ob_get_clean())), []); ?>
-<?php $__blaze->pushSlots($__slotsfad05d57e1e0bf8b6251725acbf0d97e); ?>
-<?php __fad05d57e1e0bf8b6251725acbf0d97e($__blaze, $__attrsfad05d57e1e0bf8b6251725acbf0d97e, $__slotsfad05d57e1e0bf8b6251725acbf0d97e, ['attributes', 'size', 'dataFluxClearButton'], ['xData' => 'x-data', 'xOn:click' => 'x-on:click', 'ariaLabel' => 'aria-label', 'dataFluxClearButton' => 'data-flux-clear-button'], $__this ?? (isset($this) ? $this : null)); ?>
-<?php if (! empty($__slotsStackfad05d57e1e0bf8b6251725acbf0d97e)) { $__slotsfad05d57e1e0bf8b6251725acbf0d97e = array_pop($__slotsStackfad05d57e1e0bf8b6251725acbf0d97e); } ?>
-<?php if (! empty($__attrsStackfad05d57e1e0bf8b6251725acbf0d97e)) { $__attrsfad05d57e1e0bf8b6251725acbf0d97e = array_pop($__attrsStackfad05d57e1e0bf8b6251725acbf0d97e); } ?>
+<?php $__slots19e9f12f8a300195bcfcda1eb1bbca00['slot'] = new \Illuminate\View\ComponentSlot($__blaze->processPassthroughContent('trim', trim(ob_get_clean())), []); ?>
+<?php $__blaze->pushSlots($__slots19e9f12f8a300195bcfcda1eb1bbca00); ?>
+<?php __19e9f12f8a300195bcfcda1eb1bbca00($__blaze, $__data19e9f12f8a300195bcfcda1eb1bbca00, $__blaze->mergeAttributes(['attributes' => $__data19e9f12f8a300195bcfcda1eb1bbca00['attributes'], 'size' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($__data19e9f12f8a300195bcfcda1eb1bbca00['size']), 'x-data' => 'fluxInputClearable', 'x-on:click' => 'clear()', 'tabindex' => '-1', 'aria-label' => $__data19e9f12f8a300195bcfcda1eb1bbca00['ariaLabel'], 'data-flux-clear-button' => true]), $__slots19e9f12f8a300195bcfcda1eb1bbca00, $__this ?? (isset($this) ? $this : null)); ?>
+<?php if (! empty($__slotsStack19e9f12f8a300195bcfcda1eb1bbca00)) { $__slots19e9f12f8a300195bcfcda1eb1bbca00 = array_pop($__slotsStack19e9f12f8a300195bcfcda1eb1bbca00); } ?>
+<?php if (! empty($__dataStack19e9f12f8a300195bcfcda1eb1bbca00)) { $__data19e9f12f8a300195bcfcda1eb1bbca00 = array_pop($__dataStack19e9f12f8a300195bcfcda1eb1bbca00); } ?>
 <?php $__blaze->popData(); ?>
 <?php
 echo $__blaze->processPassthroughContent('ltrim', ltrim(ob_get_clean()));
