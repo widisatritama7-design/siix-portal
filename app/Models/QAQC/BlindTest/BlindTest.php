@@ -18,6 +18,14 @@ class BlindTest extends EloquentModel
 
     protected $table = 'tb_qaqc_blind_test';
 
+    // ==================== DELETE REASONS ====================
+    public const DELETE_REASONS = [
+        'salah_submit'    => 'Salah Submit',
+        'waktu_habis'     => 'Waktu Habis (After 2X Test)',
+        'urgensi_running' => 'Urgensi Running',
+        'server_error'    => 'Server/Web Error',
+    ];
+
     protected $fillable = [
         'employee_id', 'shift', 'group', 'section', 'question_id',
         'question_ids',
@@ -31,7 +39,7 @@ class BlindTest extends EloquentModel
         'check_by_prod', 'check_by_prod_at',
         'acknowledge_by_spv', 'acknowledge_by_spv_at',
         'acknowledge_qc_spv', 'acknowledge_qc_spv_at',
-        'created_by', 'updated_by', 'deleted_by', 'deleted_reason',
+        'created_by', 'updated_by', 'deleted_by', 'deleted_reason', 'deleted_reason_code',
 
         // Attempt columns
         'attempt', 'max_attempt',
@@ -150,6 +158,24 @@ class BlindTest extends EloquentModel
         $m = floor($this->duration_seconds / 60);
         $s = $this->duration_seconds % 60;
         return sprintf('%02d:%02d', $m, $s);
+    }
+
+    /**
+     * Label alasan hapus yang enak dibaca.
+     * Prioritas: teks custom (deleted_reason) → label default dari kode.
+     */
+    public function getDeletedReasonLabelAttribute(): ?string
+    {
+        if ($this->deleted_reason) {
+            return $this->deleted_reason;
+        }
+
+        if ($this->deleted_reason_code) {
+            return self::DELETE_REASONS[$this->deleted_reason_code]
+                ?? $this->deleted_reason_code;
+        }
+
+        return null;
     }
 
     // ==================== DEADLINE HELPERS ====================

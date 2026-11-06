@@ -299,6 +299,8 @@
             const goDashboardBtn = document.getElementById('go-dashboard');
             const countdownEl = document.getElementById('countdown');
             const successCountdownBar = document.getElementById('success-countdown-bar');
+            const successTitleEl = document.querySelector('#login-success-modal h3');
+            const successDescEl = document.querySelector('#login-success-modal p');
 
             // Modal error
             const errorModal = document.getElementById('login-error-modal');
@@ -312,12 +314,16 @@
             const errorCountdownNumber = document.getElementById('error-countdown-number');
 
             // ============================================================
-            // KONSTANTA
+            // KONSTANTA & STATE
             // ============================================================
             const DASHBOARD_URL = '/main-dashboard';
+            const TWO_FACTOR_URL = '/two-factor-challenge'; // sesuaikan route Laravel Anda
             const COUNTDOWN_SECONDS = 3;
             const ERROR_AUTO_CLOSE_SECONDS = 3;
             const NIK_MAX_LENGTH = 16;
+
+            let redirectUrl = DASHBOARD_URL;
+            let requiresTwoFactor = false;
 
             let countdownRaf = null;
             let countdownStarted = false;
@@ -416,7 +422,7 @@
                     }
 
                     if (remainingMs <= 0) {
-                        window.location.assign(DASHBOARD_URL);
+                        window.location.assign(redirectUrl);
                         return;
                     }
 
@@ -445,6 +451,22 @@
             const showSuccessModal = () => {
                 clearErrorTimers();
                 hideErrorModal();
+
+                // --- Update teks berdasarkan 2FA ---
+                if (successTitleEl && successDescEl) {
+                    if (requiresTwoFactor) {
+                        successTitleEl.textContent = '{{ __("Verifikasi Diperlukan") }}';
+                        successDescEl.textContent = '{{ __("Silakan masukkan kode dari Google Authenticator.") }}';
+                    } else {
+                        successTitleEl.textContent = '{{ __("Login Berhasil") }}';
+                        successDescEl.textContent = '{{ __("Selamat datang! Anda akan diarahkan ke dashboard.") }}';
+                    }
+                }
+                if (goDashboardBtn) {
+                    goDashboardBtn.textContent = requiresTwoFactor
+                        ? '{{ __("Ke Verifikasi 2FA") }}'
+                        : '{{ __("Ke Dashboard") }}';
+                }
 
                 modal.classList.remove('is-visible');
                 circle.style.animation = 'none';
@@ -477,19 +499,18 @@
                 }, 350);
 
                 // 2. Mulai countdown bar & angka secara instan (0ms)
-                // Jangan diberi delay agar bar langsung menyusut (tidak stack diam)
                 setTimeout(() => {
                     if (!countdownStarted) {
                         countdownStarted = true;
                         startSuccessCountdownVisual();
                         startSuccessNumberCountdown();
                     }
-                }, 0); 
+                }, 0);
             };
 
             goDashboardBtn?.addEventListener('click', () => {
                 if (countdownRaf) cancelAnimationFrame(countdownRaf);
-                window.location.assign(DASHBOARD_URL);
+                window.location.assign(redirectUrl);
             });
 
             // ============================================================
@@ -620,9 +641,9 @@
                 setTimeout(() => {
                     startErrorCountdownVisual();
                     startErrorNumberCountdown();
-                }, 0); // <--- Diubah menjadi 0ms agar tidak stack
+                }, 0);
 
-                // Auto close setelah 3 detik (dihitung presisi dari 0ms)
+                // Auto close setelah 3 detik
                 errorAutoCloseTimer = setTimeout(() => {
                     hideErrorModal();
                 }, ERROR_AUTO_CLOSE_SECONDS * 1000);
@@ -678,14 +699,38 @@
             };
 
             // ============================================================
+            // Helper: parsing info 2FA dari respons
+            // ============================================================
+            const parseAuthResponse = (data) => {
+                // Sesuaikan dengan bentuk response server Anda.
+                // Contoh: { "two_factor": true, "redirect": "/two-factor-challenge" }
+                const needs2fa = data?.two_factor === true
+                    || data?.requires_two_factor === true
+                    || data?.data?.two_factor === true
+                    || data?.data?.requires_two_factor === true;
+
+                const url = data?.redirect
+                    || data?.redirect_url
+                    || data?.data?.redirect
+                    || data?.data?.redirect_url
+                    || null;
+
+                if (needs2fa) {
+                    requiresTwoFactor = true;
+                    redirectUrl = url || TWO_FACTOR_URL;
+                } else {
+                    requiresTwoFactor = false;
+                    redirectUrl = url || DASHBOARD_URL;
+                }
+            };
+
+            // ============================================================
             // Submit via fetch
             // ============================================================
             form?.addEventListener('submit', async (e) => {
                 e.preventDefault();
 
-                if (!validateNik()) {
-                    return;
-                }
+                if (!validateNik()) return;
 
                 submitBtn.disabled = true;
                 spinner.classList.remove('hidden');
@@ -701,16 +746,33 @@
                             'Accept': 'application/json',
                         },
                         credentials: 'same-origin',
-                        redirect: 'manual'
+                        // ⚠️ TIDAK pakai redirect: 'manual'
                     });
 
-                    if (response.ok || response.type === 'opaqueredirect' || response.status === 302 || response.status === 0) {
+                    const data = await response.json().catch(() => ({}));
+
+                    // 1) Butuh 2FA
+                    if (response.ok && data.two_factor === true) {
+                        requiresTwoFactor = true;
+                        redirectUrl = data.redirect || '/two-factor-challenge';
                         showSuccessModal();
                         return;
                     }
 
-                    const msg = await extractErrorMessage(response);
+                    // 2) Sukses tanpa 2FA
+                    if (response.ok && data.two_factor === false) {
+                        requiresTwoFactor = false;
+                        redirectUrl = data.redirect || '/main-dashboard';
+                        showSuccessModal();
+                        return;
+                    }
+
+                    // 3) Gagal (validasi / credentials salah)
+                    const msg = data?.errors
+                        ? Object.values(data.errors)[0]?.[0]
+                        : (data?.message || 'NIK atau password yang Anda masukkan salah.');
                     showErrorModal(msg);
+
                 } catch (err) {
                     console.error(err);
                     form.submit();
@@ -747,7 +809,17 @@
                 passkeyBtn.textContent = 'Menunggu autentikasi...';
 
                 try {
-                    await window.Passkeys.verify({ remember: rememberMe() });
+                    const result = await window.Passkeys.verify({ remember: rememberMe() });
+
+                    // Deteksi 2FA dari response passkey
+                    if (result && (result.two_factor === true || result.requires_two_factor === true
+                        || result.data?.two_factor === true || result.data?.requires_two_factor === true)) {
+                        parseAuthResponse(result);
+                    } else {
+                        requiresTwoFactor = false;
+                        redirectUrl = result?.redirect || result?.redirect_url || DASHBOARD_URL;
+                    }
+
                     showSuccessModal();
                 } catch (error) {
                     console.error('Passkey login error:', error);

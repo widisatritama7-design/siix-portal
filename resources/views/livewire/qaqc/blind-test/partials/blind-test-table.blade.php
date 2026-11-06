@@ -315,12 +315,10 @@
                                         @endcan
 
                                         @can('delete blind test')
-                                            @if($bt->status === 'pending')
-                                                <flux:tooltip content="Delete" position="top">
-                                                    <flux:button size="sm" icon="trash" variant="danger" color="red" class="!p-2"
-                                                        wire:click="confirmDelete({{ $bt->id }})" />
-                                                </flux:tooltip>
-                                            @endif
+                                            <flux:tooltip content="Delete" position="top">
+                                                <flux:button size="sm" icon="trash" variant="danger" color="red" class="!p-2"
+                                                    wire:click="confirmDelete({{ $bt->id }})" />
+                                            </flux:tooltip>
                                         @endcan
                                     </div>
                                 @endif

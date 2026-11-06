@@ -74,7 +74,9 @@ class BlindTestManagement extends Component
     // ==================== MODAL STATE ====================
     public $modalTitle = 'Create Blind Test';
     public $blindTestToDelete = null;
-    public $deleteReason = '';
+    public $deleteReason = '';           // keterangan tambahan (opsional)
+    public $deleteReasonCode = '';       // ← BARU: kode alasan
+    public $deleteOtp = '';              // ← BARU: kode Google Authenticator
     public $viewData = null;
 
     public const SECTIONS = ['QC', 'SMT', 'BE', 'MI'];
@@ -636,7 +638,6 @@ class BlindTestManagement extends Component
         $this->dispatch('open-modal-view');
     }
 
-    /* ================= DELETE ================= */
     public function confirmDelete($id)
     {
         if (!auth()->user()->can('delete blind test')) {
@@ -644,14 +645,17 @@ class BlindTestManagement extends Component
             return;
         }
 
-        $bt = BlindTest::find($id);
-        if (!$bt || $bt->status !== 'pending') {
-            $this->dispatch('notify', message: 'Test tidak bisa dihapus!', type: 'error');
+        $bt = BlindTest::find($id); 
+        if (!$bt) {
+            $this->dispatch('notify', message: 'Test tidak ditemukan!', type: 'error');
             return;
         }
 
         $this->blindTestToDelete = $bt;
-        $this->deleteReason = '';
+        $this->deleteReasonCode  = '';
+        $this->deleteReason      = '';
+        $this->deleteOtp         = '';
+        $this->resetValidation();
         $this->dispatch('open-modal-delete');
     }
 
@@ -662,36 +666,87 @@ class BlindTestManagement extends Component
             return;
         }
 
-        if (empty($this->deleteReason)) {
-            $this->dispatch('notify', message: 'Alasan hapus wajib diisi!', type: 'error');
+        // Validasi input
+        $this->validate([
+            'deleteReasonCode' => 'required|in:' . implode(',', array_keys(BlindTest::DELETE_REASONS)),
+            'deleteReason'     => 'nullable|string|max:500',
+            'deleteOtp'        => 'required|digits:6',
+        ], [
+            'deleteReasonCode.required' => 'Alasan hapus wajib dipilih!',
+            'deleteReasonCode.in'       => 'Alasan hapus tidak valid!',
+            'deleteOtp.required'        => 'Kode Google Authenticator wajib diisi!',
+            'deleteOtp.digits'          => 'Kode Google Authenticator harus 6 digit!',
+        ]);
+
+        // Verifikasi Google Authenticator (Fortify)
+        if (!$this->verifyGoogleAuthenticator($this->deleteOtp)) {
+            $this->addError('deleteOtp', 'Kode Google Authenticator tidak valid atau sudah kedaluwarsa!');
+            $this->dispatch('notify', message: 'Kode Google Authenticator tidak valid!', type: 'error');
             return;
         }
 
-        $bt = BlindTest::find($this->blindTestToDelete->id);
-        if (!$bt || $bt->status !== 'pending') {
-            $this->dispatch('notify', message: 'Test tidak bisa dihapus!', type: 'error');
-            $this->blindTestToDelete = null;
-            $this->deleteReason = '';
-            $this->dispatch('close-modal-delete');
+        $bt = BlindTest::find($this->blindTestToDelete->id ?? null);
+        if (!$bt) {
+            $this->dispatch('notify', message: 'Test tidak ditemukan!', type: 'error');
+            $this->resetDeleteState();
             return;
         }
 
-        $bt->deleted_by = auth()->id();
-        $bt->deleted_reason = $this->deleteReason;
+        // Soft delete dengan reason
+        $bt->deleted_by          = auth()->id();
+        $bt->deleted_reason_code = $this->deleteReasonCode;
+        $bt->deleted_reason      = $this->deleteReason
+            ?: BlindTest::DELETE_REASONS[$this->deleteReasonCode];
         $bt->save();
         $bt->delete();
 
-        $this->blindTestToDelete = null;
-        $this->deleteReason = '';
+        $this->resetDeleteState();
         $this->dispatch('notify', message: 'Blind test deleted successfully!');
         $this->dispatch('close-modal-delete');
     }
 
     public function cancelDelete()
     {
-        $this->blindTestToDelete = null;
-        $this->deleteReason = '';
+        $this->resetDeleteState();
         $this->dispatch('close-modal-delete');
+    }
+
+    protected function resetDeleteState(): void
+    {
+        $this->blindTestToDelete = null;
+        $this->deleteReasonCode  = '';
+        $this->deleteReason      = '';
+        $this->deleteOtp         = '';
+        $this->resetValidation();
+    }
+
+    /**
+     * Verifikasi kode TOTP Google Authenticator via Laravel Fortify.
+     */
+    protected function verifyGoogleAuthenticator(string $code): bool
+    {
+        $user = auth()->user();
+
+        if (!$user || empty($user->two_factor_secret)) {
+            return false;
+        }
+
+        try {
+            // Fortify menyimpan two_factor_secret dalam keadaan terenkripsi.
+            // Kalau model User sudah punya cast 'encrypted', baris decrypt() bisa dihapus.
+            $secret = decrypt($user->two_factor_secret);
+
+            return app(\Laravel\Fortify\TwoFactorAuthenticationProvider::class)
+                ->verify($secret, $code);
+        } catch (\Throwable $e) {
+            \Log::error('2FA verify error: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    public function getIs2faEnabledProperty(): bool
+    {
+        return !empty(auth()->user()->two_factor_secret);
     }
 
     /* ================= APPROVAL ================= */
