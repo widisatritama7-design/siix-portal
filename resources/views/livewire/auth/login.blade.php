@@ -809,18 +809,25 @@
                 passkeyBtn.textContent = 'Menunggu autentikasi...';
 
                 try {
-                    const result = await window.Passkeys.verify({ remember: rememberMe() });
+                    // 1. Verifikasi Passkey (Laravel otomatis login penuh di sini)
+                    await window.Passkeys.verify({ remember: rememberMe() });
 
-                    // Deteksi 2FA dari response passkey
-                    if (result && (result.two_factor === true || result.requires_two_factor === true
-                        || result.data?.two_factor === true || result.data?.requires_two_factor === true)) {
-                        parseAuthResponse(result);
+                    // 2. Cek manual apakah user ini punya 2FA aktif
+                    const checkRes = await fetch('/auth/passkey-2fa-check', {
+                        headers: { 'Accept': 'application/json' }
+                    });
+                    const checkData = await checkRes.json();
+
+                    if (checkData.requires_2fa) {
+                        requiresTwoFactor = true;
+                        redirectUrl = TWO_FACTOR_URL;
                     } else {
                         requiresTwoFactor = false;
-                        redirectUrl = result?.redirect || result?.redirect_url || DASHBOARD_URL;
+                        redirectUrl = DASHBOARD_URL;
                     }
 
                     showSuccessModal();
+
                 } catch (error) {
                     console.error('Passkey login error:', error);
                     showErrorModal(error?.message || 'Login passkey gagal atau dibatalkan. Silakan coba lagi.');

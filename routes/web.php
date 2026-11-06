@@ -97,10 +97,30 @@ use App\Livewire\PROD\Tray\MasterRackManagement;
 use App\Livewire\PROD\Tray\MasterLocatorManagement;
 use App\Livewire\PROD\Tray\MasterTrayManagement;
 use App\Livewire\PROD\Tray\TransactionManagement;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
 
 Route::get('/', function () {
     return redirect('/login');
 })->name('home');
+
+Route::get('/auth/passkey-2fa-check', function (Request $request) {
+    $user = Auth::user();
+    
+    if ($user && $user->two_factor_secret && $user->two_factor_confirmed_at) {
+        // Simpan ID user ke session sementara agar Fortify tahu siapa yang mau verifikasi 2FA
+        $request->session()->put('login.id', $user->id);
+        $request->session()->put('login.remember', false);
+
+        // Cabut login penuh
+        Auth::logout();
+        $request->session()->regenerate();
+
+        return response()->json(['requires_2fa' => true]);
+    }
+
+    return response()->json(['requires_2fa' => false]);
+})->middleware('web')->name('passkey.2fa.check');
 
 Route::middleware(['auth', 'verified'])->group(function () {
 

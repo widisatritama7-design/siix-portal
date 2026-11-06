@@ -118,6 +118,15 @@ class BlindTestManagement extends Component
     public function updatedFilterDateTo()     { $this->resetPage(); }
     public function updatedBankMonth()        { /* tidak perlu resetPage */ }
 
+    /**
+     * Membersihkan error OTP setiap kali user mengetik ulang.
+     * Mencegah error "tumpang tindih" / bertumpuk.
+     */
+    public function updatedDeleteOtp()
+    {
+        $this->resetValidation('deleteOtp');
+    }
+
     public function mount()
     {
         $this->calendarMonth = now()->format('Y-m');
@@ -682,6 +691,10 @@ class BlindTestManagement extends Component
         if (!$this->verifyGoogleAuthenticator($this->deleteOtp)) {
             $this->addError('deleteOtp', 'Kode Google Authenticator tidak valid atau sudah kedaluwarsa!');
             $this->dispatch('notify', message: 'Kode Google Authenticator tidak valid!', type: 'error');
+            
+            // Kosongkan input OTP agar user bisa langsung ketik ulang
+            $this->deleteOtp = ''; 
+            
             return;
         }
 
