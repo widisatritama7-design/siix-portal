@@ -18,167 +18,177 @@
                 </div>
             @endif
 
-            {{-- Informasi --}}
-            <flux:card class="space-y-3">
-                <div class="flex items-start gap-3">
-                    <flux:icon
-                        name="shield-check"
-                        class="mt-1 size-6 text-green-600"
-                    />
+            {{-- Grid 2 Kolom --}}
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
 
-                    <div class="space-y-1">
-                        <flux:heading size="lg">
-                            {{ __('Secure Login') }}
-                        </flux:heading>
-
-                        <flux:text>
-                            {{ __('Gunakan passkey untuk login tanpa perlu memasukkan NIK dan password. Autentikasi dapat menggunakan sidik jari, pengenalan wajah, atau PIN perangkat.') }}
-                        </flux:text>
-                    </div>
-                </div>
-            </flux:card>
-
-            {{-- Tambah Passkey --}}
-            <flux:card class="space-y-5">
-                <div>
-                    <flux:heading size="lg">
-                        {{ __('Register New Passkey') }}
-                    </flux:heading>
-
-                    <flux:text class="mt-1">
-                        {{ __('Daftarkan perangkat baru untuk akun Anda.') }}
-                    </flux:text>
-                </div>
-
-                <flux:input
-                    id="passkey-name"
-                    :label="__('Passkey Name')"
-                    placeholder="Contoh: Laptop Kantor"
-                    value="Perangkat Saya"
-                />
-
-                <div
-                    x-data="{
-                        busy: false,
-                        message: '',
-                        isError: false,
-                        async register() {
-                            if (!window.registerPasskey) {
-                                this.message = 'Passkey module belum siap. Coba refresh halaman.';
-                                this.isError = true;
-                                return;
-                            }
-                            this.busy = true;
-                            this.message = '';
-                            try {
-                                const name = document.getElementById('passkey-name').value.trim() || 'Perangkat Saya';
-                                await window.registerPasskey(name);
-                                this.message = 'Passkey berhasil didaftarkan.';
-                                this.isError = false;
-                                setTimeout(() => window.location.reload(), 800);
-                            } catch (e) {
-                                console.error(e);
-                                this.message = e?.message || 'Pendaftaran passkey gagal atau dibatalkan.';
-                                this.isError = true;
-                            } finally {
-                                this.busy = false;
-                            }
-                        }
-                    }"
-                >
-                    <flux:button
-                        type="button"
-                        variant="primary"
-                        icon="finger-print"
-                        x-on:click="register()"
-                        x-bind:disabled="busy"
-                    >
-                        {{ __('Register Passkey') }}
-                    </flux:button>
-
-                    <flux:text
-                        x-show="message"
-                        x-text="message"
-                        x-bind:class="isError ? 'text-red-600 mt-3' : 'text-green-600 mt-3'"
-                    />
-                </div>
-            </flux:card>
-
-            {{-- Daftar Passkey --}}
-            <flux:card class="space-y-5">
-                <div>
-                    <flux:heading size="lg">
-                        {{ __('Registered Passkeys') }}
-                    </flux:heading>
-
-                    <flux:text class="mt-1">
-                        {{ __('Daftar passkey yang terhubung dengan akun Anda.') }}
-                    </flux:text>
-                </div>
-
-                @php
-                    $passkeys = auth()->user()->passkeys()->latest()->get();
-                @endphp
-
-                @forelse ($passkeys as $passkey)
-                    <div
-                        wire:key="passkey-{{ $passkey->id }}"
-                        class="flex flex-col gap-4 border-t border-zinc-200 pt-4 first:border-t-0 first:pt-0 sm:flex-row sm:items-center sm:justify-between dark:border-zinc-700"
-                    >
+                <!-- ===== KOLOM KIRI ===== -->
+                <div class="flex flex-col gap-6">
+                    
+                    {{-- Informasi --}}
+                    <flux:card class="space-y-3 !p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
                         <div class="flex items-start gap-3">
-                            <div class="rounded-lg bg-zinc-100 p-3 dark:bg-zinc-800">
-                                <flux:icon
-                                    name="finger-print"
-                                    class="size-5"
-                                />
-                            </div>
-
+                            <flux:icon
+                                name="shield-check"
+                                class="mt-1 size-6 text-green-600 shrink-0"
+                            />
                             <div class="space-y-1">
-                                <flux:heading>
-                                    {{ $passkey->name ?: 'Passkey' }}
+                                <flux:heading size="lg">
+                                    {{ __('Secure Login') }}
                                 </flux:heading>
-
-                                <flux:text class="text-xs">
-                                    {{ __('Registered') }}:
-                                    {{ $passkey->created_at?->format('d M Y H:i') ?? '-' }}
+                                <flux:text>
+                                    {{ __('Gunakan passkey untuk login tanpa perlu memasukkan NIK dan password. Autentikasi dapat menggunakan sidik jari, pengenalan wajah, atau PIN perangkat.') }}
                                 </flux:text>
-
-                                @if ($passkey->last_used_at)
-                                    <flux:text class="text-xs">
-                                        {{ __('Last used') }}:
-                                        {{ $passkey->last_used_at->format('d M Y H:i') }}
-                                    </flux:text>
-                                @endif
                             </div>
                         </div>
+                    </flux:card>
 
-                        {{-- Tombol hapus memicu modal --}}
-                        <flux:button
-                            type="button"
-                            variant="danger"
-                            size="sm"
-                            wire:click="confirmDelete({{ $passkey->id }})"
-                        >
-                            {{ __('Delete') }}
-                        </flux:button>
-                    </div>
-                @empty
-                    <div class="rounded-lg border border-dashed border-zinc-300 p-6 text-center dark:border-zinc-700">
-                        <flux:icon
-                            name="finger-print"
-                            class="mx-auto size-10 text-zinc-400"
+                    {{-- Tambah Passkey --}}
+                    <flux:card class="space-y-5 !p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                        <div>
+                            <flux:heading size="lg">
+                                {{ __('Register New Passkey') }}
+                            </flux:heading>
+                            <flux:text class="mt-1">
+                                {{ __('Daftarkan perangkat baru untuk akun Anda.') }}
+                            </flux:text>
+                        </div>
+
+                        <flux:input
+                            id="passkey-name"
+                            :label="__('Passkey Name')"
+                            placeholder="Contoh: Laptop Kantor"
+                            value="Perangkat Saya"
                         />
 
-                        <flux:heading class="mt-3">
-                            {{ __('No passkeys registered') }}
-                        </flux:heading>
+                        <div
+                            x-data="{
+                                busy: false,
+                                message: '',
+                                isError: false,
+                                async register() {
+                                    if (!window.registerPasskey) {
+                                        this.message = 'Passkey module belum siap. Coba refresh halaman.';
+                                        this.isError = true;
+                                        return;
+                                    }
+                                    this.busy = true;
+                                    this.message = '';
+                                    try {
+                                        const name = document.getElementById('passkey-name').value.trim() || 'Perangkat Saya';
+                                        await window.registerPasskey(name);
+                                        this.message = 'Passkey berhasil didaftarkan.';
+                                        this.isError = false;
+                                        setTimeout(() => window.location.reload(), 800);
+                                    } catch (e) {
+                                        console.error(e);
+                                        this.message = e?.message || 'Pendaftaran passkey gagal atau dibatalkan.';
+                                        this.isError = true;
+                                    } finally {
+                                        this.busy = false;
+                                    }
+                                }
+                            }"
+                        >
+                            <flux:button
+                                type="button"
+                                variant="primary"
+                                icon="finger-print"
+                                x-on:click="register()"
+                                x-bind:disabled="busy"
+                            >
+                                {{ __('Register Passkey') }}
+                            </flux:button>
 
-                        <flux:text class="mt-1">
-                            {{ __('Daftarkan passkey pertama Anda melalui tombol di atas.') }}
-                        </flux:text>
-                    </div>
-                @endforelse
-            </flux:card>
+                            <flux:text
+                                x-show="message"
+                                x-text="message"
+                                x-bind:class="isError ? 'text-red-600 mt-3' : 'text-green-600 mt-3'"
+                            />
+                        </div>
+                    </flux:card>
+
+                </div>
+
+                <!-- ===== KOLOM KANAN ===== -->
+                <div class="h-full">
+                    
+                    {{-- Daftar Passkey --}}
+                    <flux:card class="space-y-5 h-full !p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
+                        <div>
+                            <flux:heading size="lg">
+                                {{ __('Registered Passkeys') }}
+                            </flux:heading>
+                            <flux:text class="mt-1">
+                                {{ __('Daftar passkey yang terhubung dengan akun Anda.') }}
+                            </flux:text>
+                        </div>
+
+                        @php
+                            $passkeys = auth()->user()->passkeys()->latest()->get();
+                        @endphp
+
+                        @forelse ($passkeys as $passkey)
+                            <div
+                                wire:key="passkey-{{ $passkey->id }}"
+                                class="flex flex-col gap-4 border-t border-zinc-200 pt-4 first:border-t-0 first:pt-0 sm:flex-row sm:items-center sm:justify-between dark:border-zinc-700"
+                            >
+                                <div class="flex items-start gap-3">
+                                    <div class="rounded-lg bg-zinc-100 p-3 dark:bg-zinc-800 shrink-0">
+                                        <flux:icon
+                                            name="finger-print"
+                                            class="size-5"
+                                        />
+                                    </div>
+
+                                    <div class="space-y-1">
+                                        <flux:heading>
+                                            {{ $passkey->name ?: 'Passkey' }}
+                                        </flux:heading>
+
+                                        <flux:text class="text-xs">
+                                            {{ __('Registered') }}:
+                                            {{ $passkey->created_at?->format('d M Y H:i') ?? '-' }}
+                                        </flux:text>
+
+                                        @if ($passkey->last_used_at)
+                                            <flux:text class="text-xs">
+                                                {{ __('Last used') }}:
+                                                {{ $passkey->last_used_at->format('d M Y H:i') }}
+                                            </flux:text>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                {{-- Tombol hapus memicu modal --}}
+                                <flux:button
+                                    type="button"
+                                    variant="danger"
+                                    size="sm"
+                                    wire:click="confirmDelete({{ $passkey->id }})"
+                                    class="w-full sm:w-auto shrink-0"
+                                >
+                                    {{ __('Delete') }}
+                                </flux:button>
+                            </div>
+                        @empty
+                            <div class="rounded-lg border border-dashed border-zinc-300 p-6 text-center dark:border-zinc-700 h-full flex flex-col justify-center items-center">
+                                <flux:icon
+                                    name="finger-print"
+                                    class="mx-auto size-10 text-zinc-400"
+                                />
+                                <flux:heading class="mt-3">
+                                    {{ __('No passkeys registered') }}
+                                </flux:heading>
+                                <flux:text class="mt-1">
+                                    {{ __('Daftarkan passkey pertama Anda melalui tombol di sebelah kiri.') }}
+                                </flux:text>
+                            </div>
+                        @endforelse
+                    </flux:card>
+
+                </div>
+
+            </div>
 
         </div>
     </x-settings.layout>

@@ -176,15 +176,19 @@
             transition: background-color 0.3s ease, backdrop-filter 0.3s ease, border-color 0.3s ease;
         }
 
-        /* Saat floating (collapsed + hover) → solid */
+        /* Saat floating (collapsed + hover) → transparan + blur */
         .sidebar-floating {
-            background-color: #ffffff !important;
+            background-color: rgba(255, 255, 255, 0.72) !important;
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
             border-right-color: rgba(0, 0, 0, 0.08) !important;
             box-shadow: 8px 0 32px rgba(0, 0, 0, 0.12) !important;
         }
 
         .dark .sidebar-floating {
-            background-color: #18181b !important;
+            background-color: rgba(24, 24, 27, 0.72) !important;
+            backdrop-filter: saturate(180%) blur(20px);
+            -webkit-backdrop-filter: saturate(180%) blur(20px);
             border-right-color: rgba(255, 255, 255, 0.08) !important;
             box-shadow: 8px 0 32px rgba(0, 0, 0, 0.4) !important;
         }
@@ -569,7 +573,7 @@
                         class="mt-1 relative">
                         <div class="absolute top-0 bottom-0 w-px bg-zinc-200 dark:bg-zinc-700 left-5"></div>
                         <div class="space-y-1 ml-[30px]">
-                            @canany(['view esd-monitoring'])
+                            
                             <!-- ========== SUB GROUP: ESD MONITORING (dengan grup existing) ========== -->
                             <div class="relative w-full">
                                 <button @click="toggleGroup('esdMonitoringMenu')"
@@ -919,8 +923,7 @@
                                     </div>
                                 </div>
                             </div>
-                            @endcanany
-
+                            
                             <!-- MTC Monitoring as SUB GROUP -->
                             @canany(['view mtc-monitoring'])
                             <div class="relative w-full">
@@ -2515,7 +2518,7 @@
         </button>
         
         <div class="min-w-0 flex-1 transition-[margin] duration-300 ease-in-out"
-             :class="isMobile ? 'ml-0' : (sidebarPinned ? 'ml-64' : 'ml-20')">
+            :class="isMobile ? 'ml-0' : (sidebarPinned ? 'ml-64' : 'ml-20')">
             <main class="min-w-0 bg-gray-100 dark:bg-black w-full min-h-screen flex flex-col">
                 <flux:header 
                     x-data="{ scrolled: false }"
@@ -2527,7 +2530,7 @@
                     class="topbar-glass sticky top-0 z-10 block! bg-white dark:bg-black border-b border-zinc-200 dark:border-zinc-800 p-0! m-0! w-full shadow-sm"
                     ::class="{ 'scrolled': scrolled }">
                     <flux:navbar class="flex items-center justify-between px-3 lg:px-4 mx-0!">
-                        <div class="flex items-center gap-4"> <!-- Atau gap-5 -->
+                        <div class="flex items-center gap-4">
                             <!-- Tombol Menu Khusus Mobile -->
                             <button @click="sidebarOpen = !sidebarOpen" 
                                 class="flex md:hidden p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
@@ -2536,13 +2539,14 @@
                                 </svg>
                             </button>
 
-                            <!-- BUNGKUS NOTIFIKASI DENGAN DIV DAN BERI JARAK KIRI (ml-2 / ml-3 / ml-4) -->
-                            <div class="ml-3 md:ml-0">
+                            <!-- Header Badge (tampil inline di kiri) -->
+                            <div class="ml-3 md:ml-6 flex flex-wrap items-center gap-1 max-w-[50vw]">
                                 <livewire:header-badge />
                             </div>
                         </div>
                         
                         <div class="flex items-center gap-1 sm:gap-2">
+                            <!-- Profile -->
                             <a href="{{ route('profile.edit') }}" 
                                 class="flex items-center gap-2 rounded-lg !p-2 lg:!p-2.5 
                                     text-zinc-700 dark:text-zinc-300 
@@ -2560,7 +2564,8 @@
                             </a>
 
                             <flux:separator vertical class="my-2" />
-                            
+
+                            {{-- Dark Mode Toggle --}}
                             <button 
                                 x-data="{ rotating: false }"
                                 @click="
@@ -2571,12 +2576,10 @@
                                 class="p-2 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors relative overflow-hidden"
                                 :aria-label="$flux.dark ? 'Switch to light mode' : 'Switch to dark mode'">
 
-                                <!-- Container dengan animasi rotasi -->
                                 <div 
                                     class="relative w-5 h-5 transition-transform duration-500 ease-in-out"
                                     :class="rotating ? 'rotate-[360deg]' : 'rotate-0'">
                                     
-                                    <!-- Icon Matahari (tampil saat mode DARK) -->
                                     <svg 
                                         class="absolute inset-0 w-5 h-5 text-zinc-600 dark:text-zinc-400 transition-all duration-300 ease-in-out"
                                         :class="$flux.dark ? 'opacity-100 scale-100 rotate-0' : 'opacity-0 scale-50 rotate-90'"
@@ -2584,7 +2587,6 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
                                     </svg>
 
-                                    <!-- Icon Bulan (tampil saat mode LIGHT) -->
                                     <svg 
                                         class="absolute inset-0 w-5 h-5 text-zinc-600 dark:text-zinc-400 transition-all duration-300 ease-in-out"
                                         :class="$flux.dark ? 'opacity-0 scale-50 -rotate-90' : 'opacity-100 scale-100 rotate-0'"
