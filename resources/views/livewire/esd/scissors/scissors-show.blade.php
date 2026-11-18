@@ -162,7 +162,7 @@
                                 </div>
                                 <div class="bg-green-50 dark:bg-green-950/30 rounded-lg p-3 flex-1 flex flex-col items-center justify-center">
                                     <p class="text-xl font-bold text-green-700 dark:text-green-400">
-                                        Monthly
+                                        Yearly
                                     </p>
                                 </div>
                             </div>
@@ -199,7 +199,7 @@
                                     <span class="text-xs text-zinc-500 dark:text-zinc-400">Document Reference</span>
                                 </div>
                                 <code class="text-sm font-mono font-bold text-zinc-800 dark:text-white bg-white dark:bg-zinc-900 px-3 py-1 rounded border border-zinc-200 dark:border-zinc-700">
-                                    QR-ADM-24-K004
+                                    QR-ENG-26-K007
                                 </code>
                             </div>
                         </div>

@@ -147,7 +147,7 @@ if (! $overflow) {
         <?php if ($name): ?> data-modal="<?php echo e($name); ?>" <?php endif; ?>
         <?php if ($flyout): ?> data-flux-flyout <?php endif; ?>
         <?php if ($overflow): ?> data-flux-modal-overflow <?php endif; ?>
-        [STARTCOMPILEDUNBLAZE:ppbvr9bvfs]<?php \Livewire\Blaze\Unblaze::storeScope("ppbvr9bvfs", scope: ['name' => $name]) ?><?php \Livewire\Blaze\Unblaze::storeReplacement("ppbvr9bvfs", "CiAgICAgICAgeC1kYXRhPSJmbHV4TW9kYWwoQGpzKCRzY29wZVsnbmFtZSddKSwgQGpzKGlzc2V0KCRfX2xpdmV3aXJlKSA/ICRfX2xpdmV3aXJlLT5nZXRJZCgpIDogbnVsbCkpIgogICAgICAgIA==") ?>[ENDCOMPILEDUNBLAZE:ppbvr9bvfs]
+        [STARTCOMPILEDUNBLAZE:JyIywm32RE]<?php \Livewire\Blaze\Unblaze::storeScope("JyIywm32RE", scope: ['name' => $name]) ?><?php \Livewire\Blaze\Unblaze::storeReplacement("JyIywm32RE", "CiAgICAgICAgeC1kYXRhPSJmbHV4TW9kYWwoQGpzKCRzY29wZVsnbmFtZSddKSwgQGpzKGlzc2V0KCRfX2xpdmV3aXJlKSA/ICRfX2xpdmV3aXJlLT5nZXRJZCgpIDogbnVsbCkpIgogICAgICAgIA==") ?>[ENDCOMPILEDUNBLAZE:JyIywm32RE]
         x-on:modal-show.document="handleShow($event)"
         x-on:modal-close.document="handleClose($event)"
     >

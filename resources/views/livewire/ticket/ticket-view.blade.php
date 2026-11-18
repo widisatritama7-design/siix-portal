@@ -88,14 +88,16 @@
                                         </div>
                                     </div>
                                 @else
-                                    <a href="{{ Storage::url($file) }}" target="_blank" class="group">
+                                    <div 
+                                        wire:click="openFileModal('{{ Storage::url($file) }}', '{{ $ticket->title }} - Attachment', '{{ $fileExtension }}')"
+                                        class="group cursor-pointer">
                                         <div class="w-20 h-20 bg-gray-100 dark:bg-zinc-800 rounded-lg flex flex-col items-center justify-center border border-gray-200 dark:border-zinc-700 shadow-md hover:shadow-xl transition-all duration-200 group-hover:scale-105 group-hover:bg-gray-200 dark:group-hover:bg-zinc-700">
                                             <svg class="w-8 h-8 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                             </svg>
-                                            <span class="text-xs text-gray-500 dark:text-gray-400 mt-1 uppercase">{{ strtoupper($fileExtension) }}</span>
+                                            <span class="text-xs text-gray-500 dark:text-gray-400 mt-1 uppercase font-semibold">{{ strtoupper($fileExtension) }}</span>
                                         </div>
-                                    </a>
+                                    </div>
                                 @endif
                             @endforeach
                         </div>
@@ -137,6 +139,160 @@
                             <!-- Footer with Download Button -->
                             <div class="p-3 border-t border-gray-200 dark:border-zinc-700 flex justify-end">
                                 <a href="{{ $imageModalUrl }}" 
+                                download
+                                class="px-3 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                    </svg>
+                                    Download
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
+
+            <!-- File Preview Modal -->
+            @if($showFileModal)
+            <div x-data="{ open: true }" 
+                x-show="open"
+                x-init="document.body.style.overflow = 'hidden'"
+                @keydown.escape.window="open = false; $wire.closeFileModal(); document.body.style.overflow = ''"
+                x-cloak>
+                <div class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center p-4"
+                    @click="open = false; $wire.closeFileModal(); document.body.style.overflow = ''">
+                    <div class="relative max-w-4xl w-full max-h-[90vh]" @click.stop>
+                        <div class="bg-white dark:bg-zinc-800 rounded-lg overflow-hidden shadow-xl border border-gray-200 dark:border-zinc-700 flex flex-col max-h-[90vh]">
+                            <!-- Header -->
+                            <div class="flex justify-between items-center p-3 border-b border-gray-200 dark:border-zinc-700 flex-shrink-0">
+                                <div class="flex items-center gap-2 ml-2">
+                                    <svg class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                    <span class="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase">
+                                        {{ $fileModalExtension }} File
+                                    </span>
+                                </div>
+                                <button 
+                                    @click="open = false; $wire.closeFileModal(); document.body.style.overflow = ''"
+                                    class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                    </svg>
+                                </button>
+                            </div>
+                                                        
+                            <div class="flex-1 overflow-auto p-3 bg-gray-100 dark:bg-zinc-800 flex items-center justify-center min-h-[300px]">
+                                @if($fileModalExtension === 'pdf')
+                                    {{-- PDF langsung embed --}}
+                                    <iframe src="{{ $fileModalUrl }}" 
+                                            class="w-full h-[70vh] rounded border border-gray-200 dark:border-zinc-700"
+                                            type="application/pdf"></iframe>
+
+                                @elseif(in_array($fileModalExtension, ['xlsx', 'xls', 'csv']))
+                                    {{-- ✅ Preview spreadsheet sebagai tabel --}}
+                                    <div class="w-full h-[70vh] overflow-auto bg-white dark:bg-zinc-900 rounded-lg border border-gray-200 dark:border-zinc-700">
+                                        @if($spreadsheetError)
+                                            <div class="p-6 text-center">
+                                                <div class="w-16 h-16 mx-auto mb-3 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
+                                                    <svg class="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                                                    </svg>
+                                                </div>
+                                                <p class="text-sm text-red-600 dark:text-red-400">{{ $spreadsheetError }}</p>
+                                                <p class="text-xs text-gray-500 mt-2">Silakan download untuk melihat isinya.</p>
+                                            </div>
+                                        @elseif($spreadsheetHasPreview)
+                                            {{-- Sheet Tabs untuk Excel multi-sheet --}}
+                                            @if(count($spreadsheetSheetNames) > 1)
+                                            <div class="sticky top-0 z-10 bg-gray-50 dark:bg-zinc-800 border-b border-gray-200 dark:border-zinc-700 px-2 pt-2 flex gap-1 overflow-x-auto">
+                                                @foreach($spreadsheetSheetNames as $idx => $sheetName)
+                                                    <button 
+                                                        wire:click="switchSpreadsheetSheet({{ $idx }})"
+                                                        class="px-3 py-1.5 text-xs font-medium rounded-t-lg whitespace-nowrap transition-colors
+                                                            {{ $spreadsheetActiveSheet === $idx 
+                                                                ? 'bg-white dark:bg-zinc-900 text-blue-600 dark:text-blue-400 border border-b-0 border-gray-200 dark:border-zinc-700' 
+                                                                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-zinc-700' }}">
+                                                        {{ $sheetName }}
+                                                    </button>
+                                                @endforeach
+                                            </div>
+                                            @endif
+
+                                            {{-- Tabel Data --}}
+                                            <table class="w-full text-xs border-collapse">
+                                                <thead class="sticky top-0 bg-blue-600 dark:bg-blue-500 text-white z-[5]">
+                                                    <tr>
+                                                        <th class="px-2 py-2 text-left font-semibold border-r border-blue-500 dark:border-blue-400 whitespace-nowrap w-8">#</th>
+                                                        @foreach($spreadsheetHeaders as $header)
+                                                            <th class="px-3 py-2 text-left font-semibold border-r border-blue-500 dark:border-blue-400 whitespace-nowrap">
+                                                                {{ $header !== null && $header !== '' ? $header : '-' }}
+                                                            </th>
+                                                        @endforeach
+                                                    </tr>
+                                                </thead>
+                                                <tbody class="divide-y divide-gray-200 dark:divide-zinc-700">
+                                                    @forelse($spreadsheetPreview as $rowIndex => $row)
+                                                        <tr class="hover:bg-blue-50 dark:hover:bg-blue-900/10 {{ $rowIndex % 2 === 0 ? 'bg-white dark:bg-zinc-900' : 'bg-gray-50 dark:bg-zinc-800/50' }}">
+                                                            <td class="px-2 py-1.5 text-gray-500 dark:text-gray-400 border-r border-gray-200 dark:border-zinc-700 font-mono">{{ $rowIndex + 1 }}</td>
+                                                            @foreach($spreadsheetHeaders as $colIndex => $header)
+                                                                <td class="px-3 py-1.5 text-gray-800 dark:text-gray-200 border-r border-gray-200 dark:border-zinc-700 max-w-xs truncate" title="{{ $row[$colIndex] ?? '' }}">
+                                                                    {{ $row[$colIndex] ?? '' }}
+                                                                </td>
+                                                            @endforeach
+                                                        </tr>
+                                                    @empty
+                                                        <tr>
+                                                            <td colspan="{{ count($spreadsheetHeaders) + 1 }}" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                                                                File kosong atau tidak memiliki data.
+                                                            </td>
+                                                        </tr>
+                                                    @endforelse
+                                                </tbody>
+                                            </table>
+
+                                            {{-- Info --}}
+                                            <div class="px-3 py-2 text-xs text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-zinc-700 bg-gray-50 dark:bg-zinc-800/50 sticky bottom-0">
+                                                Menampilkan {{ count($spreadsheetPreview) }} baris dari {{ count($spreadsheetSheetNames) > 1 ? 'sheet "'.$spreadsheetSheetNames[$spreadsheetActiveSheet].'"' : 'file' }}
+                                                (preview maksimal 200 baris)
+                                            </div>
+                                        @else
+                                            <div class="p-6 text-center text-sm text-gray-500">Memuat preview...</div>
+                                        @endif
+                                    </div>
+
+                                @elseif(in_array($fileModalExtension, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp']))
+                                    <img src="{{ $fileModalUrl }}" 
+                                        alt="{{ $fileModalTitle }}"
+                                        class="max-w-full max-h-[70vh] object-contain rounded">
+
+                                @else
+                                    {{-- File lain (doc, docx, dll) --}}
+                                    <div class="flex flex-col items-center justify-center p-8 text-center">
+                                        <div class="w-24 h-24 bg-white dark:bg-zinc-700 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
+                                            <svg class="w-12 h-12 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                                            </svg>
+                                        </div>
+                                        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-1">
+                                            {{ strtoupper($fileModalExtension) }} File
+                                        </h3>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-4 max-w-sm">
+                                            File ini tidak dapat dipreview langsung di browser. Silakan download untuk melihat isinya.
+                                        </p>
+                                    </div>
+                                @endif
+                            </div>
+                            
+                            <!-- Footer dengan Download -->
+                            <div class="p-3 border-t border-gray-200 dark:border-zinc-700 flex justify-end gap-2 flex-shrink-0">
+                                <button 
+                                    @click="open = false; $wire.closeFileModal(); document.body.style.overflow = ''"
+                                    class="px-3 py-1.5 border border-gray-300 dark:border-zinc-600 text-gray-700 dark:text-gray-300 text-sm rounded-lg hover:bg-gray-50 dark:hover:bg-zinc-700 transition-colors">
+                                    Close
+                                </button>
+                                <a href="{{ $fileModalUrl }}" 
                                 download
                                 class="px-3 py-1.5 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -291,12 +447,17 @@
                                         @endphp
                                         @if($files && is_array($files))
                                             @foreach($files as $file)
-                                                <a href="{{ Storage::url($file) }}" target="_blank" class="inline-flex items-center gap-1 px-3 py-1.5 bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-gray-300 rounded-lg border border-gray-200 dark:border-zinc-700 hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors text-sm">
+                                                @php
+                                                    $feedbackFileExt = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+                                                @endphp
+                                                <div 
+                                                    wire:click="openFileModal('{{ Storage::url($file) }}', 'Feedback File from {{ $feedback->user->name ?? 'User' }}', '{{ $feedbackFileExt }}')"
+                                                    class="cursor-pointer inline-flex items-center gap-1 px-3 py-1.5 bg-gray-100 dark:bg-zinc-800 text-gray-700 dark:text-gray-300 rounded-lg border border-gray-200 dark:border-zinc-700 hover:bg-gray-200 dark:hover:bg-zinc-700 transition-colors text-sm">
                                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                                     </svg>
-                                                    Download File
-                                                </a>
+                                                    {{ strtoupper($feedbackFileExt) }} File
+                                                </div>
                                             @endforeach
                                         @endif
                                     </div>
@@ -868,4 +1029,15 @@
         </div>
     </div>
     @endif
+
+    <style>
+        /* Table preview scroll */
+        .spreadsheet-preview table {
+            border-collapse: collapse;
+        }
+        .spreadsheet-preview th,
+        .spreadsheet-preview td {
+            border: 1px solid #e5e7eb;
+        }
+    </style>
 </div>

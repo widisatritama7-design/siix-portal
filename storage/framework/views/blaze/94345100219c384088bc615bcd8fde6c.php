@@ -58,7 +58,7 @@ $classes = Flux::classes()
 
         rows="<?php echo e($rows); ?>"
         <?php if(isset($name)): ?> name="<?php echo e($name); ?>" <?php endif; ?>
-        [STARTCOMPILEDUNBLAZE:JxPcMDaSuv]<?php \Livewire\Blaze\Unblaze::storeScope("JxPcMDaSuv", scope: ['name' => $name ?? null, 'invalid' => $invalid ?? false]) ?><?php \Livewire\Blaze\Unblaze::storeReplacement("JxPcMDaSuv", "CiAgICAgICAgPD9waHAgaWYgKCRzY29wZVsnaW52YWxpZCddIHx8ICgkc2NvcGVbJ25hbWUnXSAmJiAkZXJyb3JzLT5oYXMoJHNjb3BlWyduYW1lJ10pKSk6ID8+CiAgICAgICAgYXJpYS1pbnZhbGlkPSJ0cnVlIiBkYXRhLWludmFsaWQKICAgICAgICA8P3BocCBlbmRpZjsgPz4KICAgICAgICA=") ?>[ENDCOMPILEDUNBLAZE:JxPcMDaSuv]
+        [STARTCOMPILEDUNBLAZE:aFi7CjyXGi]<?php \Livewire\Blaze\Unblaze::storeScope("aFi7CjyXGi", scope: ['name' => $name ?? null, 'invalid' => $invalid ?? false]) ?><?php \Livewire\Blaze\Unblaze::storeReplacement("aFi7CjyXGi", "CiAgICAgICAgPD9waHAgaWYgKCRzY29wZVsnaW52YWxpZCddIHx8ICgkc2NvcGVbJ25hbWUnXSAmJiAkZXJyb3JzLT5oYXMoJHNjb3BlWyduYW1lJ10pKSk6ID8+CiAgICAgICAgYXJpYS1pbnZhbGlkPSJ0cnVlIiBkYXRhLWludmFsaWQKICAgICAgICA8P3BocCBlbmRpZjsgPz4KICAgICAgICA=") ?>[ENDCOMPILEDUNBLAZE:aFi7CjyXGi]
         data-flux-control
         data-flux-textarea
     ><?php echo e($slot); ?></textarea>

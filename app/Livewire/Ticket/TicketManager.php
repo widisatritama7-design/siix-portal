@@ -95,7 +95,8 @@ class TicketManager extends Component
             'email_user' => 'required|email',
             'registration_no' => 'nullable|string|max:50',
             'description' => 'required|min:10',
-            'files.*' => 'nullable|image|max:10240', // 10MB max
+            // Ganti dari 'nullable|image' menjadi mimes untuk gambar + dokumen
+            'files.*' => 'nullable|mimes:jpg,jpeg,png,gif,webp,bmp,pdf,doc,docx,xls,xlsx|max:10240',
             'priority' => 'required|in:Low,Medium,Urgent,Critical',
             'assigned_role' => 'required|string',
             'category_id' => 'required|exists:tb_tc_category_tickets,id',
@@ -114,6 +115,7 @@ class TicketManager extends Component
         'description.required' => 'Description is required.',
         'description.min' => 'Description must be at least 10 characters.',
         'files.*.image' => 'File must be an image.',
+        'files.*.mimes' => 'File must be JPG, PNG, PDF, DOC, DOCX, XLS, or XLSX.',
         'files.*.max' => 'File size must not exceed 10MB.',
         'priority.required' => 'Priority is required.',
         'category_id.required' => 'Category is required.',
@@ -391,7 +393,6 @@ class TicketManager extends Component
         ]);
     }
 
-    // Wizard Navigation
     public function nextStep()
     {
         if ($this->currentStep == 1) {
@@ -403,6 +404,7 @@ class TicketManager extends Component
         } elseif ($this->currentStep == 2) {
             $this->validate([
                 'description' => 'required|min:10',
+                'files.*' => 'nullable|mimes:jpg,jpeg,png,gif,webp,bmp,pdf,doc,docx,xls,xlsx|max:10240',
             ]);
         } elseif ($this->currentStep == 3) {
             $this->validate([
@@ -441,7 +443,6 @@ class TicketManager extends Component
     // Create Ticket
     public function createTicket()
     {
-        // Validasi hanya untuk field yang diperlukan saat create
         $this->validate([
             'title' => 'required|min:3|max:255',
             'email_user' => 'required|email',
@@ -449,9 +450,10 @@ class TicketManager extends Component
             'description' => 'required|min:10',
             'priority' => 'required|in:Low,Medium,Urgent,Critical',
             'category_id' => 'required|exists:tb_tc_category_tickets,id',
-            'files.*' => 'nullable|image|max:10240',
+            // Ubah di sini juga
+            'files.*' => 'nullable|mimes:jpg,jpeg,png,gif,webp,bmp,pdf,doc,docx,xls,xlsx|max:10240',
         ]);
-        
+
         try {
             // Handle file uploads
             $uploadedFiles = [];

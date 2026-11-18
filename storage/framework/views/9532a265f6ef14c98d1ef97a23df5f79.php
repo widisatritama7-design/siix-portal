@@ -483,6 +483,11 @@
                                 <th rowspan="2" class="px-4 py-2 text-center text-xs font-medium text-zinc-500 uppercase" style="min-width: 170px;">Model</th>
                                 <th rowspan="2" class="px-3 py-2 text-center text-xs font-medium text-zinc-500 uppercase" style="min-width: 100px;">PCB Type</th>
 
+                                
+                                <th rowspan="2" class="px-3 py-2 text-center text-xs font-medium text-zinc-500 uppercase">
+                                    Status Running
+                                </th>
+
                                 <th rowspan="2" class="px-3 py-2 text-center text-xs font-medium text-zinc-500 uppercase">Shift</th>
                                 <th rowspan="2" class="px-3 py-2 text-center text-xs font-medium text-zinc-500 uppercase">Group</th>
                                 <th rowspan="2" class="px-3 py-2 text-center text-xs font-medium text-zinc-500 uppercase">Line</th>
@@ -513,10 +518,6 @@
                                     Second Last
                                 </th>
                                 
-                                <th colspan="1" class="px-3 py-2 text-center text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase bg-zinc-100 dark:bg-zinc-800/60">
-                                    Status Running
-                                </th>
-                                
                                 <th colspan="3" class="px-3 py-2 text-center text-xs font-bold text-emerald-700 dark:text-emerald-300 uppercase bg-emerald-50 dark:bg-emerald-900/30">
                                     Total
                                 </th>
@@ -531,11 +532,7 @@
                             
                             <tr class="bg-zinc-50 dark:bg-zinc-800/50">
                                 
-                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-emerald-600 uppercase bg-emerald-50/50 dark:bg-emerald-900/10">OK</th>
-                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-red-600 uppercase bg-red-50/50 dark:bg-red-900/10">NG</th>
-                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-amber-600 uppercase bg-amber-50/50 dark:bg-amber-900/10">Reject Rate %</th>
-                                
-                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-700 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">QTY</th>
+
                                 
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-emerald-600 uppercase bg-emerald-50/50 dark:bg-emerald-900/10">OK</th>
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-red-600 uppercase bg-red-50/50 dark:bg-red-900/10">NG</th>
@@ -549,7 +546,11 @@
                                 
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-700 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">QTY</th>
                                 
-                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-zinc-600 uppercase bg-zinc-100/50 dark:bg-zinc-800/30">Status</th>
+                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-emerald-600 uppercase bg-emerald-50/50 dark:bg-emerald-900/10">OK</th>
+                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-red-600 uppercase bg-red-50/50 dark:bg-red-900/10">NG</th>
+                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-amber-600 uppercase bg-amber-50/50 dark:bg-amber-900/10">Reject Rate %</th>
+                                
+                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-700 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">QTY</th>
                                 
                                 <th class="px-3 py-2 text-center text-[10px] font-bold text-emerald-700 uppercase bg-emerald-100/50 dark:bg-emerald-900/20">OK</th>
                                 <th class="px-3 py-2 text-center text-[10px] font-bold text-red-700 uppercase bg-red-100/50 dark:bg-red-900/20">NG</th>
@@ -593,6 +594,20 @@
                                             <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">LH</span>
                                         <?php elseif($scan->pcb_type === 'RH'): ?>
                                             <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">RH</span>
+                                        <?php else: ?>
+                                            <span class="text-zinc-400 italic text-[10px]">-</span>
+                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
+                                    </td>
+
+                                    
+                                    <td class="px-3 py-3 text-center bg-zinc-50/50 dark:bg-zinc-800/20">
+                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($scan->status_running): ?>
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold
+                                                <?php echo e(strtolower($scan->status_running) === 'running' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300'); ?>">
+                                                <span class="w-1.5 h-1.5 rounded-full <?php echo e(strtolower($scan->status_running) === 'running' ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-400'); ?>"></span>
+                                                <?php echo e($scan->status_running); ?>
+
+                                            </span>
                                         <?php else: ?>
                                             <span class="text-zinc-400 italic text-[10px]">-</span>
                                         <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
@@ -705,20 +720,6 @@
                                             <?php echo e($summary['second_last']['qty']); ?>
 
                                         </span>
-                                    </td>
-
-                                    
-                                    <td class="px-3 py-3 text-center bg-zinc-50/50 dark:bg-zinc-800/20">
-                                        <?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if BLOCK]><![endif]--><?php endif; ?><?php if($scan->status_running): ?>
-                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold
-                                                <?php echo e(strtolower($scan->status_running) === 'running' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300'); ?>">
-                                                <span class="w-1.5 h-1.5 rounded-full <?php echo e(strtolower($scan->status_running) === 'running' ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-400'); ?>"></span>
-                                                <?php echo e($scan->status_running); ?>
-
-                                            </span>
-                                        <?php else: ?>
-                                            <span class="text-zinc-400 italic text-[10px]">-</span>
-                                        <?php endif; ?><?php if(\Livewire\Mechanisms\ExtendBlade\ExtendBlade::isRenderingLivewireComponent()): ?><!--[if ENDBLOCK]><![endif]--><?php endif; ?>
                                     </td>
 
                                     

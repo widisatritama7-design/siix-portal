@@ -555,12 +555,13 @@
                                     @error('description') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                 </div>
                                 
+                                <!-- ✅ BAGIAN YANG DIUBAH: Sekarang support image + dokumen -->
                                 <div>
-                                    <label class="block text-sm font-medium mb-1">Attachments (Images)</label>
+                                    <label class="block text-sm font-medium mb-1">Attachments (Images & Files)</label>
                                     <input type="file" 
                                         wire:model="files"
                                         multiple
-                                        accept="image/*"
+                                        accept="image/*,.pdf,.doc,.docx,.xls,.xlsx"
                                         class="w-full px-3 py-2 border rounded-lg dark:bg-zinc-800 dark:border-zinc-700 focus:ring-2 focus:ring-blue-500 transition-all">
                                     @error('files.*') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                                     
@@ -568,17 +569,35 @@
                                         <div class="mt-2 flex flex-wrap gap-2">
                                             @foreach($tempFiles as $index => $file)
                                                 <div class="relative group">
-                                                    <img src="{{ $file->temporaryUrl() }}" class="w-20 h-20 object-cover rounded-lg shadow-md">
+                                                    @php
+                                                        $extension = strtolower($file->getClientOriginalExtension());
+                                                        $isImage = in_array($extension, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp']);
+                                                    @endphp
+
+                                                    @if($isImage)
+                                                        {{-- Preview untuk gambar --}}
+                                                        <img src="{{ $file->temporaryUrl() }}" 
+                                                            class="w-20 h-20 object-cover rounded-lg shadow-md border border-gray-200 dark:border-zinc-600">
+                                                    @else
+                                                        {{-- Preview untuk file non-image --}}
+                                                        <div class="w-20 h-20 bg-gray-100 dark:bg-zinc-800 rounded-lg flex flex-col items-center justify-center border border-gray-200 dark:border-zinc-600 shadow-md">
+                                                            <svg class="w-8 h-8 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                            </svg>
+                                                            <span class="text-xs text-gray-500 dark:text-gray-400 mt-1 uppercase font-semibold">{{ $extension }}</span>
+                                                        </div>
+                                                    @endif
+
                                                     <button type="button" 
                                                             wire:click="removeTempFile({{ $index }})"
-                                                            class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600 transition-colors">
+                                                            class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs hover:bg-red-600 transition-colors shadow-md">
                                                         ×
                                                     </button>
                                                 </div>
                                             @endforeach
                                         </div>
                                     @endif
-                                    <p class="text-xs text-zinc-500 mt-1">You can upload multiple images (max 10MB each)</p>
+                                    <p class="text-xs text-zinc-500 mt-1">You can upload images, PDF, DOC, DOCX, XLS, XLSX (max 10MB each)</p>
                                 </div>
                             </div>
                         @endif

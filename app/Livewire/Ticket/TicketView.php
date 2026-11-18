@@ -12,6 +12,8 @@ use Illuminate\Support\Facades\Storage;
 use App\Mail\Ticket\FeedbackCreated;
 use App\Mail\Ticket\FeedbackCreatedForUser;
 use Carbon\Carbon;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Reader\Csv as CsvReader;
 
 class TicketView extends Component
 {
@@ -51,6 +53,20 @@ class TicketView extends Component
     public $filesToDelete = [];
     public $existingPhotos = [];
     public $existingFiles = [];
+
+    // Tambahkan di bagian properties (dekat image modal)
+    public $showFileModal = false;
+    public $fileModalUrl = '';
+    public $fileModalTitle = '';
+    public $fileModalExtension = '';
+
+    // Properties tambahan
+    public $spreadsheetPreview = [];      // array of rows
+    public $spreadsheetHeaders = [];      // header row
+    public $spreadsheetSheetNames = [];   // nama sheet (jika Excel multi-sheet)
+    public $spreadsheetActiveSheet = 0;   // index sheet aktif
+    public $spreadsheetHasPreview = false;
+    public $spreadsheetError = '';
     
     protected function rules()
     {
@@ -99,6 +115,130 @@ class TicketView extends Component
             'ticket' => $this->ticket,
             'feedbacks' => $this->ticket->feedbacks()->with('user')->orderBy('created_at', 'desc')->get(),
         ])->layout('layouts.app');
+    }
+
+    public function openFileModal($url, $title, $extension)
+    {
+        $this->fileModalUrl = $url;
+        $this->fileModalTitle = $title;
+        $this->fileModalExtension = strtolower($extension);
+        $this->showFileModal = true;
+
+        // Reset spreadsheet preview
+        $this->spreadsheetPreview = [];
+        $this->spreadsheetHeaders = [];
+        $this->spreadsheetSheetNames = [];
+        $this->spreadsheetActiveSheet = 0;
+        $this->spreadsheetHasPreview = false;
+        $this->spreadsheetError = '';
+
+        // Kalau file spreadsheet, coba parse
+        if (in_array($this->fileModalExtension, ['xlsx', 'xls', 'csv'])) {
+            $this->parseSpreadsheet($url, $this->fileModalExtension);
+        }
+    }
+
+    public function closeFileModal()
+    {
+        $this->showFileModal = false;
+        $this->fileModalUrl = '';
+        $this->fileModalTitle = '';
+        $this->fileModalExtension = '';
+        $this->spreadsheetPreview = [];
+        $this->spreadsheetHeaders = [];
+        $this->spreadsheetSheetNames = [];
+        $this->spreadsheetActiveSheet = 0;
+        $this->spreadsheetHasPreview = false;
+        $this->spreadsheetError = '';
+    }
+    /**
+     * Parse spreadsheet untuk preview
+     */
+    protected function parseSpreadsheet(string $url, string $extension): void
+    {
+        try {
+            // Convert Storage URL ke absolute path
+            $relativePath = str_replace('/storage/', '', parse_url($url, PHP_URL_PATH));
+            $fullPath = storage_path('app/public/' . $relativePath);
+
+            if (!file_exists($fullPath)) {
+                $this->spreadsheetError = 'File tidak ditemukan di storage.';
+                return;
+            }
+
+            // Baca file
+            if ($extension === 'csv') {
+                $reader = new CsvReader();
+                $reader->setReadDataOnly(true);
+                $spreadsheet = $reader->load($fullPath);
+            } else {
+                $reader = IOFactory::createReaderForFile($fullPath);
+                $reader->setReadDataOnly(true);
+                $spreadsheet = $reader->load($fullPath);
+            }
+
+            // Kumpulkan nama sheet
+            $this->spreadsheetSheetNames = $spreadsheet->getSheetNames();
+
+            // Parse sheet aktif (index 0 default)
+            $this->loadSheetData($spreadsheet, $this->spreadsheetActiveSheet);
+
+            $this->spreadsheetHasPreview = true;
+        } catch (\Throwable $e) {
+            $this->spreadsheetError = 'Gagal membaca file: ' . $e->getMessage();
+            \Log::error('Spreadsheet preview error: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Load data dari sheet tertentu
+     */
+    protected function loadSheetData($spreadsheet, int $sheetIndex): void
+    {
+        $sheet = $spreadsheet->getSheet($sheetIndex);
+        $highestRow = $sheet->getHighestDataRow();
+        $highestColumn = $sheet->getHighestDataColumn();
+
+        // Batasi baris supaya tidak overload (max 200 row preview)
+        $maxRows = min($highestRow, 200);
+
+        $rows = [];
+        for ($row = 1; $row <= $maxRows; $row++) {
+            $rowData = [];
+            foreach (range('A', $highestColumn) as $col) {
+                $cellValue = $sheet->getCell($col . $row)->getValue();
+                $rowData[] = $cellValue;
+            }
+            $rows[] = $rowData;
+        }
+
+        // Baris pertama = header
+        $this->spreadsheetHeaders = !empty($rows) ? array_shift($rows) : [];
+        $this->spreadsheetPreview = $rows;
+    }
+
+    /**
+     * Ganti sheet yang dipreview (jika Excel multi-sheet)
+     */
+    public function switchSpreadsheetSheet(int $index): void
+    {
+        if (!in_array($this->fileModalExtension, ['xlsx', 'xls'])) {
+            return;
+        }
+
+        try {
+            $relativePath = str_replace('/storage/', '', parse_url($this->fileModalUrl, PHP_URL_PATH));
+            $fullPath = storage_path('app/public/' . $relativePath);
+
+            $reader = IOFactory::createReaderForFile($fullPath);
+            $reader->setReadDataOnly(true);
+            $spreadsheet = $reader->load($fullPath);
+
+            $this->spreadsheetActiveSheet = $index;
+            $this->loadSheetData($spreadsheet, $index);
+        } catch (\Throwable $e) {
+            $this->spreadsheetError = 'Gagal membaca sheet: ' . $e->getMessage();
+        }
     }
     
     public function refreshTicket()

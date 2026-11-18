@@ -42,11 +42,11 @@ $attributes = $attributes->merge([
     <?php if (!function_exists('__32faceab033f640da906bff24d008dfe')) { require $__blaze->compile('/www/wwwroot/test.siix-ems.co.id/siix-portal/vendor/livewire/flux/src/../stubs/resources/views/flux/icon/x-mark.blade.php'); } ?>
 <?php $__componentData = ['variant' => $iconVariant]; ?>
 <?php $__blaze->pushData($__componentData); ?>
-<?php __32faceab033f640da906bff24d008dfe($__blaze, $__componentData, ['variant' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($__componentData['variant'])], [], $__this ?? (isset($this) ? $this : null)); ?>
+<?php __32faceab033f640da906bff24d008dfe($__blaze, $__componentData, ['variant' => \Livewire\Blaze\Runtime\BlazeRuntime::sanitizeFoldedAttribute($__componentData['variant'])], [], $__this ?? (isset($this) ? $this : null)); ?>
 <?php $__blaze->popData(); ?>
 <?php $__slots19e9f12f8a300195bcfcda1eb1bbca00['slot'] = new \Illuminate\View\ComponentSlot($__blaze->processPassthroughContent('trim', trim(ob_get_clean())), []); ?>
 <?php $__blaze->pushSlots($__slots19e9f12f8a300195bcfcda1eb1bbca00); ?>
-<?php __19e9f12f8a300195bcfcda1eb1bbca00($__blaze, $__data19e9f12f8a300195bcfcda1eb1bbca00, $__blaze->mergeAttributes(['attributes' => $__data19e9f12f8a300195bcfcda1eb1bbca00['attributes'], 'size' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($__data19e9f12f8a300195bcfcda1eb1bbca00['size']), 'x-data' => 'fluxInputClearable', 'x-on:click' => 'clear()', 'tabindex' => '-1', 'aria-label' => $__data19e9f12f8a300195bcfcda1eb1bbca00['ariaLabel'], 'data-flux-clear-button' => true]), $__slots19e9f12f8a300195bcfcda1eb1bbca00, $__this ?? (isset($this) ? $this : null)); ?>
+<?php __19e9f12f8a300195bcfcda1eb1bbca00($__blaze, $__data19e9f12f8a300195bcfcda1eb1bbca00, $__blaze->mergeAttributes(['attributes' => $__data19e9f12f8a300195bcfcda1eb1bbca00['attributes'], 'size' => \Livewire\Blaze\Runtime\BlazeRuntime::sanitizeFoldedAttribute($__data19e9f12f8a300195bcfcda1eb1bbca00['size']), 'x-data' => 'fluxInputClearable', 'x-on:click' => 'clear()', 'tabindex' => '-1', 'aria-label' => $__data19e9f12f8a300195bcfcda1eb1bbca00['ariaLabel'], 'data-flux-clear-button' => true]), $__slots19e9f12f8a300195bcfcda1eb1bbca00, $__this ?? (isset($this) ? $this : null)); ?>
 <?php if (! empty($__slotsStack19e9f12f8a300195bcfcda1eb1bbca00)) { $__slots19e9f12f8a300195bcfcda1eb1bbca00 = array_pop($__slotsStack19e9f12f8a300195bcfcda1eb1bbca00); } ?>
 <?php if (! empty($__dataStack19e9f12f8a300195bcfcda1eb1bbca00)) { $__data19e9f12f8a300195bcfcda1eb1bbca00 = array_pop($__dataStack19e9f12f8a300195bcfcda1eb1bbca00); } ?>
 <?php $__blaze->popData(); ?>

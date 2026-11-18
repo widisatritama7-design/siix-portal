@@ -56,7 +56,7 @@ if (($wireModel = $attributes->wire('model')) && $wireModel->directive && ! $wir
 <?php $__blaze->pushData($__dataf08645fb94831a81ec4df5129a3f3d32); ?>
 <?php ob_start(); ?><?php echo e($content); ?><?php $__slotsf08645fb94831a81ec4df5129a3f3d32['slot'] = new \Illuminate\View\ComponentSlot($__blaze->processPassthroughContent('trim', trim(ob_get_clean())), []); ?>
 <?php $__blaze->pushSlots($__slotsf08645fb94831a81ec4df5129a3f3d32); ?>
-<?php __f08645fb94831a81ec4df5129a3f3d32($__blaze, $__dataf08645fb94831a81ec4df5129a3f3d32, ['kbd' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($__dataf08645fb94831a81ec4df5129a3f3d32['kbd'])], $__slotsf08645fb94831a81ec4df5129a3f3d32, $__this ?? (isset($this) ? $this : null)); ?>
+<?php __f08645fb94831a81ec4df5129a3f3d32($__blaze, $__dataf08645fb94831a81ec4df5129a3f3d32, ['kbd' => \Livewire\Blaze\Runtime\BlazeRuntime::sanitizeFoldedAttribute($__dataf08645fb94831a81ec4df5129a3f3d32['kbd'])], $__slotsf08645fb94831a81ec4df5129a3f3d32, $__this ?? (isset($this) ? $this : null)); ?>
 <?php if (! empty($__slotsStackf08645fb94831a81ec4df5129a3f3d32)) { $__slotsf08645fb94831a81ec4df5129a3f3d32 = array_pop($__slotsStackf08645fb94831a81ec4df5129a3f3d32); } ?>
 <?php if (! empty($__dataStackf08645fb94831a81ec4df5129a3f3d32)) { $__dataf08645fb94831a81ec4df5129a3f3d32 = array_pop($__dataStackf08645fb94831a81ec4df5129a3f3d32); } ?>
 <?php $__blaze->popData(); ?>
@@ -76,7 +76,7 @@ if (($wireModel = $attributes->wire('model')) && $wireModel->directive && ! $wir
 <?php $__blaze->pushData($__dataf08645fb94831a81ec4df5129a3f3d32); ?>
 <?php ob_start(); ?><?php echo e($content); ?><?php $__slotsf08645fb94831a81ec4df5129a3f3d32['slot'] = new \Illuminate\View\ComponentSlot($__blaze->processPassthroughContent('trim', trim(ob_get_clean())), []); ?>
 <?php $__blaze->pushSlots($__slotsf08645fb94831a81ec4df5129a3f3d32); ?>
-<?php __f08645fb94831a81ec4df5129a3f3d32($__blaze, $__dataf08645fb94831a81ec4df5129a3f3d32, ['kbd' => \Illuminate\View\Compilers\BladeCompiler::sanitizeComponentAttribute($__dataf08645fb94831a81ec4df5129a3f3d32['kbd'])], $__slotsf08645fb94831a81ec4df5129a3f3d32, $__this ?? (isset($this) ? $this : null)); ?>
+<?php __f08645fb94831a81ec4df5129a3f3d32($__blaze, $__dataf08645fb94831a81ec4df5129a3f3d32, ['kbd' => \Livewire\Blaze\Runtime\BlazeRuntime::sanitizeFoldedAttribute($__dataf08645fb94831a81ec4df5129a3f3d32['kbd'])], $__slotsf08645fb94831a81ec4df5129a3f3d32, $__this ?? (isset($this) ? $this : null)); ?>
 <?php if (! empty($__slotsStackf08645fb94831a81ec4df5129a3f3d32)) { $__slotsf08645fb94831a81ec4df5129a3f3d32 = array_pop($__slotsStackf08645fb94831a81ec4df5129a3f3d32); } ?>
 <?php if (! empty($__dataStackf08645fb94831a81ec4df5129a3f3d32)) { $__dataf08645fb94831a81ec4df5129a3f3d32 = array_pop($__dataStackf08645fb94831a81ec4df5129a3f3d32); } ?>
 <?php $__blaze->popData(); ?>

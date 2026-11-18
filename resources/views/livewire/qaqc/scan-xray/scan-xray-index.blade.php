@@ -185,6 +185,11 @@
                                 <th rowspan="2" class="px-4 py-2 text-center text-xs font-medium text-zinc-500 uppercase" style="min-width: 170px;">Model</th>
                                 <th rowspan="2" class="px-3 py-2 text-center text-xs font-medium text-zinc-500 uppercase" style="min-width: 100px;">PCB Type</th>
 
+                                {{-- ✅ STATUS RUNNING — sekarang rowspan="2", TANPA sub-header "Status" --}}
+                                <th rowspan="2" class="px-3 py-2 text-center text-xs font-medium text-zinc-500 uppercase">
+                                    Status Running
+                                </th>
+
                                 <th rowspan="2" class="px-3 py-2 text-center text-xs font-medium text-zinc-500 uppercase">Shift</th>
                                 <th rowspan="2" class="px-3 py-2 text-center text-xs font-medium text-zinc-500 uppercase">Group</th>
                                 <th rowspan="2" class="px-3 py-2 text-center text-xs font-medium text-zinc-500 uppercase">Line</th>
@@ -214,10 +219,6 @@
                                 <th colspan="1" class="px-3 py-2 text-center text-xs font-bold text-cyan-700 dark:text-cyan-300 uppercase bg-cyan-50 dark:bg-cyan-900/30">
                                     Second Last
                                 </th>
-                                {{-- ✅ STATUS RUNNING GLOBAL (1 kolom) --}}
-                                <th colspan="1" class="px-3 py-2 text-center text-xs font-bold text-zinc-700 dark:text-zinc-300 uppercase bg-zinc-100 dark:bg-zinc-800/60">
-                                    Status Running
-                                </th>
                                 {{-- TOTAL (3 kolom) --}}
                                 <th colspan="3" class="px-3 py-2 text-center text-xs font-bold text-emerald-700 dark:text-emerald-300 uppercase bg-emerald-50 dark:bg-emerald-900/30">
                                     Total
@@ -232,6 +233,8 @@
 
                             {{-- BARIS HEADER 2 --}}
                             <tr class="bg-zinc-50 dark:bg-zinc-800/50">
+                                {{-- ❌ <th>Status</th> DIHAPUS — karena Status Running sudah rowspan="2" --}}
+
                                 {{-- FIRST --}}
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-emerald-600 uppercase bg-emerald-50/50 dark:bg-emerald-900/10">OK</th>
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-red-600 uppercase bg-red-50/50 dark:bg-red-900/10">NG</th>
@@ -250,8 +253,6 @@
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-amber-600 uppercase bg-amber-50/50 dark:bg-amber-900/10">Reject Rate %</th>
                                 {{-- SECOND LAST --}}
                                 <th class="px-3 py-2 text-center text-[10px] font-semibold text-cyan-700 uppercase bg-cyan-50/50 dark:bg-cyan-900/10">QTY</th>
-                                {{-- ✅ STATUS RUNNING GLOBAL --}}
-                                <th class="px-3 py-2 text-center text-[10px] font-semibold text-zinc-600 uppercase bg-zinc-100/50 dark:bg-zinc-800/30">Status</th>
                                 {{-- TOTAL --}}
                                 <th class="px-3 py-2 text-center text-[10px] font-bold text-emerald-700 uppercase bg-emerald-100/50 dark:bg-emerald-900/20">OK</th>
                                 <th class="px-3 py-2 text-center text-[10px] font-bold text-red-700 uppercase bg-red-100/50 dark:bg-red-900/20">NG</th>
@@ -292,6 +293,19 @@
                                             <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300">LH</span>
                                         @elseif($scan->pcb_type === 'RH')
                                             <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300">RH</span>
+                                        @else
+                                            <span class="text-zinc-400 italic text-[10px]">-</span>
+                                        @endif
+                                    </td>
+
+                                    {{-- ✅ STATUS RUNNING GLOBAL (dipindah ke sini, setelah PCB Type) --}}
+                                    <td class="px-3 py-3 text-center bg-zinc-50/50 dark:bg-zinc-800/20">
+                                        @if($scan->status_running)
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold
+                                                {{ strtolower($scan->status_running) === 'running' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300' }}">
+                                                <span class="w-1.5 h-1.5 rounded-full {{ strtolower($scan->status_running) === 'running' ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-400' }}"></span>
+                                                {{ $scan->status_running }}
+                                            </span>
                                         @else
                                             <span class="text-zinc-400 italic text-[10px]">-</span>
                                         @endif
@@ -392,19 +406,6 @@
                                         <span class="inline-flex items-center justify-center min-w-[36px] px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 font-bold text-xs">
                                             {{ $summary['second_last']['qty'] }}
                                         </span>
-                                    </td>
-
-                                    {{-- ✅ STATUS RUNNING GLOBAL (1 kolom saja) --}}
-                                    <td class="px-3 py-3 text-center bg-zinc-50/50 dark:bg-zinc-800/20">
-                                        @if($scan->status_running)
-                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-semibold
-                                                {{ strtolower($scan->status_running) === 'running' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-300' }}">
-                                                <span class="w-1.5 h-1.5 rounded-full {{ strtolower($scan->status_running) === 'running' ? 'bg-emerald-500 animate-pulse' : 'bg-zinc-400' }}"></span>
-                                                {{ $scan->status_running }}
-                                            </span>
-                                        @else
-                                            <span class="text-zinc-400 italic text-[10px]">-</span>
-                                        @endif
                                     </td>
 
                                     {{-- TOTAL --}}
