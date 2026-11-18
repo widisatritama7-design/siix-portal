@@ -174,49 +174,70 @@ class BlindTestReport extends Component
 
     // ==================== AGGREGATE PER DEFECT ====================
     /**
-     * Hitung PASS langsung dari user_answers (bukan lookup ke blind_test_items).
-     *
-     * Definisi:
-     * - Total Employee per defect = jumlah orang unik yang memiliki jawaban untuk defect itu
-     * - PASS = jumlah orang yang is_correct = true (dan tidak MISSING/pending)
-     * - FAIL = Total Employee - PASS
+     * Defect list diambil dari question_snapshot (sumber kebenaran),
+     * sehingga jumlah defect yang tampil = jumlah defect di soal (maks 5/10).
+     * PASS/FAIL dihitung dari user_answers per defect.
      */
     protected function getAggregatedDefectData()
     {
         $records = $this->getFilteredQuery()->get();
 
-        // deffect_item_id => ['employees' => [empId => 'pass'|'fail'], ]
         $bucket = [];
 
+        // STEP 1: Seed defect dari question_snapshot
+        foreach ($records as $bt) {
+            $snapshotItems = $this->extractSnapshotItems($bt->question_snapshot ?? []);
+
+            foreach ($snapshotItems as $it) {
+                $deffectId = (int) ($it['deffect_id'] ?? $it['deffect_item_id'] ?? 0);
+                if ($deffectId <= 0) continue;
+
+                if (!isset($bucket[$deffectId])) {
+                    $bucket[$deffectId] = [
+                        'name'      => $it['deffect_name'] ?? null,
+                        'employees' => [],
+                    ];
+                } elseif (empty($bucket[$deffectId]['name']) && !empty($it['deffect_name'])) {
+                    $bucket[$deffectId]['name'] = $it['deffect_name'];
+                }
+            }
+        }
+
+        $hasSnapshot = !empty($bucket);
+
+        // STEP 2: Hitung PASS/FAIL dari user_answers
         foreach ($records as $bt) {
             $employeeId  = $bt->employee_id;
             $userAnswers = collect($bt->user_answers ?? []);
 
             foreach ($userAnswers as $ua) {
-                $deffectId  = (int) ($ua['deffect_item_id'] ?? 0);
+                $deffectId = (int) ($ua['deffect_item_id'] ?? 0);
                 if ($deffectId <= 0) continue;
+
+                // Kalau snapshot ada → HANYA proses defect yg ada di snapshot
+                if ($hasSnapshot && !isset($bucket[$deffectId])) {
+                    continue;
+                }
+
+                if (!isset($bucket[$deffectId])) {
+                    $bucket[$deffectId] = [
+                        'name'      => $ua['deffect_name'] ?? null,
+                        'employees' => [],
+                    ];
+                }
 
                 $userAnswer = $ua['user_answer'] ?? '';
                 $locStatus  = $ua['location_status'] ?? null;
 
-                // Skip yang tidak dijawab / pending
                 if ($userAnswer === 'MISSING') continue;
                 if ($locStatus === 'pending')  continue;
 
                 $status = !empty($ua['is_correct']) ? 'pass' : 'fail';
 
-                if (!isset($bucket[$deffectId])) {
-                    $bucket[$deffectId] = ['employees' => []];
-                }
-
-                // Kalau orang ini sudah pernah tercatat untuk defect ini,
-                // prioritaskan PASS (kalau ada yang pass)
                 if (!isset($bucket[$deffectId]['employees'][$employeeId])) {
                     $bucket[$deffectId]['employees'][$employeeId] = $status;
-                } else {
-                    if ($status === 'pass') {
-                        $bucket[$deffectId]['employees'][$employeeId] = 'pass';
-                    }
+                } elseif ($status === 'pass') {
+                    $bucket[$deffectId]['employees'][$employeeId] = 'pass';
                 }
             }
         }
@@ -229,16 +250,47 @@ class BlindTestReport extends Component
             $pass          = collect($v['employees'])->filter(fn ($s) => $s === 'pass')->count();
             $fail          = $totalEmployee - $pass;
 
+            $name = $deffects[$deffectId]->deffect_item_name
+                    ?? $v['name']
+                    ?? '(Deleted Deffect #' . $deffectId . ')';
+
             return [
                 'deffect_id'     => $deffectId,
-                'deffect_name'   => $deffects[$deffectId]->deffect_item_name
-                                        ?? '(Deleted Deffect #'.$deffectId.')',
+                'deffect_name'   => $name,
                 'total_employee' => $totalEmployee,
                 'pass'           => $pass,
                 'fail'           => $fail,
                 'total'          => $totalEmployee,
             ];
-        })->sortByDesc('total_employee')->values();
+        })->sortBy('deffect_name')->values();
+    }
+
+    protected function extractSnapshotItems($snapshot): array
+    {
+        if (empty($snapshot) || !is_array($snapshot)) return [];
+
+        // Format lama: array item langsung
+        if (isset($snapshot[0]['deffect_id']) || isset($snapshot[0]['deffect_item_id'])) {
+            return $snapshot;
+        }
+
+        // Format baru: array of questions (tiap ada 'items')
+        if (isset($snapshot[0]['items'])) {
+            $all = [];
+            foreach ($snapshot as $q) {
+                foreach ($q['items'] ?? [] as $it) {
+                    $all[] = $it;
+                }
+            }
+            return $all;
+        }
+
+        // Single question object: {items:[...]}
+        if (isset($snapshot['items']) && is_array($snapshot['items'])) {
+            return $snapshot['items'];
+        }
+
+        return [];
     }
 
     // ==================== DISTRIBUTION ====================

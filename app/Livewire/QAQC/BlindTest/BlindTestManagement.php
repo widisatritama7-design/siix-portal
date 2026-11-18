@@ -18,7 +18,7 @@ class BlindTestManagement extends Component
     use WithPagination;
 
     public const DEFAULT_DURATION_MINUTES = 5;
-    public const QC_DURATION_MINUTES = 10;
+    public const QC_DURATION_MINUTES = 5;
 
     // ==================== FORM PROPERTIES ====================
     public $blind_test_id;
@@ -300,9 +300,7 @@ class BlindTestManagement extends Component
         $this->customer_id      = $question->customer_id;
         $this->model_id         = $question->model_id;
         $this->question_ids     = [$question->id];
-        $this->duration_minutes = $question->section === 'QC'
-            ? self::QC_DURATION_MINUTES
-            : self::DEFAULT_DURATION_MINUTES;
+        $this->duration_minutes = self::DEFAULT_DURATION_MINUTES;
 
         $this->modalTitle = 'Create Blind Test';
         $this->dispatch('open-modal-blind-test');
@@ -606,8 +604,7 @@ class BlindTestManagement extends Component
         $this->section          = $bt->section;
         $this->customer_id      = $bt->customer_id;
         $this->model_id         = $bt->model_id;
-        $this->duration_minutes = $bt->duration_minutes
-            ?? ($bt->section === 'QC' ? self::QC_DURATION_MINUTES : self::DEFAULT_DURATION_MINUTES);
+        $this->duration_minutes = $bt->duration_minutes ?? self::DEFAULT_DURATION_MINUTES;
 
         $this->question_ids = is_array($bt->question_ids)
             ? $bt->question_ids

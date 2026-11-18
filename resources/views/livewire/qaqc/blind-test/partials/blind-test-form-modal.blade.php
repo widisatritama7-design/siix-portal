@@ -20,7 +20,7 @@
                     <div>
                         <h2 class="text-lg font-bold text-white">{{ $modalTitle }}</h2>
                         <p class="text-xs text-blue-100">
-                            Pilih employee & buat test (durasi otomatis {{ $section === 'QC' ? '10' : '5' }} menit)
+                            Pilih employee & buat test (durasi otomatis {{ $this->durationMinutes }} menit)
                         </p>
                     </div>
                 </div>
@@ -389,13 +389,15 @@
                             <div class="flex items-center gap-4 p-4 rounded-xl bg-cyan-50 dark:bg-cyan-950/20 border-2 border-cyan-200 dark:border-cyan-800">
                                 <div>
                                     <div class="text-sm font-bold text-cyan-800 dark:text-cyan-300">
-                                        {{ $section === 'QC' ? '10 Menit' : '5 Menit' }}
-                                        @if($section === 'QC')
-                                            <span class="ml-1 text-[10px] px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 font-bold uppercase">QC</span>
+                                        {{ $this->durationMinutes }} Menit
+                                        @if($section)
+                                            <span class="ml-1 text-[10px] px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300 font-bold uppercase">
+                                                {{ $section }}
+                                            </span>
                                         @endif
                                     </div>
                                     <div class="text-xs text-cyan-600 dark:text-cyan-400">
-                                        Durasi otomatis {{ $section === 'QC' ? '10' : '5' }} menit (section {{ $section }}).
+                                        Durasi otomatis {{ $this->durationMinutes }} menit (section {{ $section }}).
                                         Test akan close sendiri saat waktu habis.
                                     </div>
                                 </div>

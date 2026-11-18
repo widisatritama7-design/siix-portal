@@ -436,9 +436,6 @@
                                     </div>
                                     <p class="text-[11px] text-amber-700 dark:text-amber-400 mt-2 italic">
                                         Pilih model, defect item, dan lokasi. Max <strong>{{ $maxDefects }}</strong> defect per question
-                                        @if($section === 'QC')
-                                            <span class="text-blue-700 dark:text-blue-400 font-semibold">(khusus section QC)</span>
-                                        @endif
                                         .
                                     </p>
                                 </div>

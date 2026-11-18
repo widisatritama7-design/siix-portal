@@ -16,7 +16,7 @@ class QuestionManagement extends Component
     use WithPagination;
 
     public const MAX_DEFECTS = 5;
-    public const MAX_DEFECTS_QC = 10;
+    public const MAX_DEFECTS_QC = 5;
 
     public $question_id;
     public $customer_id = '';
@@ -291,15 +291,6 @@ class QuestionManagement extends Component
             $this->dispatch('notify',
                 message: 'Section ' . $this->section . ' wajib memiliki tepat ' .
                         $this->maxDefects . ' defect. Saat ini: ' . $this->totalDefects . '.',
-                type: 'error');
-            return;
-        }
-
-        // KHUSUS QC: wajib TEPAT 10
-        if ($this->section === 'QC' && $this->totalDefects !== self::MAX_DEFECTS_QC) {
-            $this->dispatch('notify',
-                message: 'Section QC wajib memiliki tepat ' . self::MAX_DEFECTS_QC .
-                        ' defect. Saat ini: ' . $this->totalDefects . '.',
                 type: 'error');
             return;
         }
